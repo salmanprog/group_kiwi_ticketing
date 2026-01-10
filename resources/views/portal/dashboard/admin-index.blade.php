@@ -31,84 +31,102 @@
             @endforeach
         </div>
 
-        <!-- Line Chart -->
-        <div id="line_chart_container" class="row">
-            <div class="col-md-12">
-                <div class="card mb-3">
+       <div class="row">
+            <!-- Line Chart -->
+            <div class="col-md-8">
+                <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Monthly User Registrations ({{ now()->year }})</h5>
+                        <h5>Estimates and Contracts Created</h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="salesLineChart" height="100"></canvas>
+                        <canvas id="salesLineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>User Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="userPieChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Pie Chart -->
-        <div id="pie_chart_container" class="row">
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">User Types Distribution</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="userPieChart" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
 
 
         @include('portal.footer')
     </section>
 
     @push('scripts')
-        <script src="{{ asset('admin/assets/lib/chartjs/chart.min.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <script>
-            // Dynamic Line Chart from backend
-            const ctx = document.getElementById('salesLineChart').getContext('2d');
-            const salesLineChart = new Chart(ctx, {
+            // Line Chart
+            const lineCtx = document.getElementById('salesLineChart').getContext('2d');
+            new Chart(lineCtx, {
                 type: 'line',
                 data: {
                     labels: @json($line_chart['labels']),
-                    datasets: [{
-                        label: 'User Registrations',
-                        data: @json($line_chart['data']),
-                        fill: true,
-                        backgroundColor: 'rgba(0,123,255,0.1)',
-                        borderColor: '#007bff',
-                        tension: 0.3
-                    }]
+                    datasets: [
+                        {
+                            label: 'Estimates Sent',
+                            data: @json($line_chart['estimates']),
+                            fill: true,
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)', // yellow
+                            borderColor: '#ffc107',
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Contracts Created',
+                            data: @json($line_chart['contracts']),
+                            fill: true,
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)', // green
+                            borderColor: '#28a745',
+                            tension: 0.3
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            display: true
+                        legend: { display: true },
+                        title: {
+                            display: true,
+                            text: 'Estimates and Contracts Created (Monthly)'
                         }
                     },
                     scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                        y: { beginAtZero: true }
                     }
                 }
             });
-        </script>
 
-        <script>
-            // Pie Chart for User Types
+            // Pie Chart
             const pieCtx = document.getElementById('userPieChart').getContext('2d');
-            const userPieChart = new Chart(pieCtx, {
+            const labels = @json($pie_chart['labels']);
+            const data = @json($pie_chart['data']);
+
+            // Assign colors to each user type
+            const typeColors = {
+                'Companies': '#28a745',   // green
+                'Managers': '#ffc107',    // yellow
+                'Clients': '#6c757d',     // gray
+                'Salesmen': '#dc3545'     // red
+            };
+            const backgroundColors = labels.map(l => typeColors[l] ?? '#007bff');
+
+            new Chart(pieCtx, {
                 type: 'pie',
                 data: {
-                    labels: @json($pie_chart['labels']),
+                    labels: labels,
                     datasets: [{
-                        data: @json($pie_chart['data']),
-                        backgroundColor: [
-                            '#007bff', '#28a745', '#ffc107', '#dc3545', '#6610f2', '#20c997'
-                        ],
+                        data: data,
+                        backgroundColor: backgroundColors,
                         borderColor: '#fff',
                         borderWidth: 1
                     }]
@@ -116,9 +134,7 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+                        legend: { position: 'bottom' }
                     }
                 }
             });

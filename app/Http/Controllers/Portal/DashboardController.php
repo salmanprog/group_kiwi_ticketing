@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Models\{CmsWidget, CompanyUser};
 use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
 use CustomHelper;
 use DB;
 use Auth;
@@ -13,43 +14,74 @@ class DashboardController extends Controller
 {
     public function adminIndex()
     {
-        if(Auth::user()->user_type !== 'admin'){
-            return redirect()->back()->with('error','You are not authorized to access this page');
+        if (Auth::user()->user_type !== 'admin') {
+            return redirect()->back()->with('error', 'You are not authorized to access this page');
         }
-        
+
         $data['page_title'] = 'Dashboard';
         $data['widgets'] = [
             'company' => [
                 'title' => 'Companies',
                 'count' => DB::table('users')->where('user_type', 'company')->count(),
-                'link' => route('company-management.index'),
-                'icon' => 'fa fa-building',
+                'link'  => route('company-management.index'),
+                'icon'  => 'fa fa-building',
                 'color' => 'bg-danger',
             ],
             'manager' => [
                 'title' => 'Managers',
                 'count' => DB::table('users')->where('user_type', 'manager')->count(),
-                'link' => route('manager-management.index'),
-                'icon' => 'fa fa-user-tie',
+                'link'  => route('manager-management.index'),
+                'icon'  => 'fa fa-user-tie',
                 'color' => 'bg-primary',
             ],
             'client' => [
                 'title' => 'Clients',
                 'count' => DB::table('users')->where('user_type', 'client')->count(),
-                'link' => route('client-management.index'),
-                'icon' => 'fa fa-users',
+                'link'  => route('client-management.index'),
+                'icon'  => 'fa fa-users',
                 'color' => 'bg-success',
             ],
             'salesman' => [
                 'title' => 'Salesmen',
                 'count' => DB::table('users')->where('user_type', 'salesman')->count(),
-                'link' => route('salesman-management.index'),
-                'icon' => 'fa fa-user-tag',
+                'link'  => route('salesman-management.index'),
+                'icon'  => 'fa fa-user-tag',
                 'color' => 'bg-warning',
             ],
         ];
-        $data['line_chart'] = CmsWidget::getLineChart('users');
-        $data['pie_chart'] = CmsWidget::getPieChart('admin');
+
+        $months = collect(range(1, 12))->map(fn ($m) =>
+            Carbon::create()->month($m)->format('M')
+        );
+
+        $estimateData = [];
+        $contractData = [];
+
+        foreach (range(1, 12) as $month) {
+            $estimateData[] = DB::table('user_estimate')
+                ->whereMonth('created_at', $month)
+                ->count();
+
+            $contractData[] = DB::table('contracts')
+                ->whereMonth('created_at', $month)
+                ->count();
+        }
+
+        $data['line_chart'] = [
+            'labels' => $months,
+            'estimates' => $estimateData,
+            'contracts' => $contractData,
+        ];
+        
+        $data['pie_chart'] = [
+            'labels' => ['Companies', 'Managers', 'Clients', 'Salesmen'],
+            'data' => [
+                DB::table('users')->where('user_type', 'company')->count(),
+                DB::table('users')->where('user_type', 'manager')->count(),
+                DB::table('users')->where('user_type', 'client')->count(),
+                DB::table('users')->where('user_type', 'salesman')->count(),
+            ],
+        ];
 
         return $this->__cbAdminView('dashboard.admin-index', $data);
     }
