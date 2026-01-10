@@ -305,7 +305,7 @@
             display: none;
         }
 
-        /* a.nav-link.menu-toggle.has-dtex-tr[data-expanded="true"] {
+        a.nav-link.menu-toggle.has-dtex-tr[data-expanded="true"] {
             background: #9FC23F !important;
             color: #fff !important;
         }
@@ -317,7 +317,7 @@
         ul.nested-submenu li.nav-item.active a {
             color: #9FC23F;
             background: #ffffff;
-        } */
+        }
     </style>
 </head>
 
@@ -700,11 +700,11 @@
                                                                 </a>
                                                             </li>
                                                         @endif
-                                                        <!-- <li class="nav-item">
-                                                        <a class="nav-link" href="#">
-                                                            Email and Mail Templates
-                                                        </a>
-                                                    </li> -->
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="javascript:void(0);">
+                                                                Email Templates
+                                                            </a>
+                                                        </li>
                                                     </ul>
                                                 </li>
                                             @endif
