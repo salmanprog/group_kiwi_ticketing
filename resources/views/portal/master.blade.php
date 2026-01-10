@@ -305,7 +305,7 @@
             display: none;
         }
 
-        a.nav-link.menu-toggle.has-dtex-tr[data-expanded="true"] {
+        /* a.nav-link.menu-toggle.has-dtex-tr[data-expanded="true"] {
             background: #9FC23F !important;
             color: #fff !important;
         }
@@ -317,7 +317,7 @@
         ul.nested-submenu li.nav-item.active a {
             color: #9FC23F;
             background: #ffffff;
-        }
+        } */
     </style>
 </head>
 
@@ -652,7 +652,7 @@
                                 @if ($cmsCrmPermission->is_view == '1')
                                     <!-- CRM (with children) -->
                                     <li data-type="child" class="nav-item">
-                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);"
                                             data-expanded="false">
                                             <i class="fas fa-users"></i>
                                             <span class="toggle-none">CRM</span>
@@ -716,7 +716,7 @@
                                 @if ($cmsSalesTeamPermission->is_view == '1')
                                     <!-- Sales Team (with children) -->
                                     <li data-type="child" class="nav-item">
-                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);"
                                             data-expanded="false">
                                             <i class="fas fa-user-friends"></i>
                                             <span class="toggle-none">Sales Team</span>
@@ -746,7 +746,7 @@
                                 @if ($cmsOpportunityPermission->is_view == '1')
                                     <!-- Opportunities (with children) -->
                                     <li data-type="child" class="nav-item">
-                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);"
                                             data-expanded="false">
                                             <i class="fas fa-briefcase"></i>
                                             <span class="toggle-none">Opportunities</span>
