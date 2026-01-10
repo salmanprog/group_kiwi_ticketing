@@ -1,0 +1,507 @@
+{{-- @extends('portal.master')
+@section('content')
+    <section class="main-content">
+        <div class="row">
+            <div class="col-sm-12">
+                @include('portal.flash-message')
+                <div class="card">
+                    <div class="card-header card-default">
+                        Add Contact
+                    </div>
+                    <div class="container mt-4">
+                        <form method="post" action="{{ route('client-management.store') }}" enctype="multipart/form-data">
+                            {{ csrf_field() }}
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Contact Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>Organization</label>
+                                            <select name="organization_id" class="form-control select2">
+                                                <option value="">-- Select Type --</option>
+                                                @foreach ($organizations as $organization)
+                                                    <option value="{{ $organization->id }}">{{ $organization->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                         <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Position</label>
+                                                <input required type="text" name="position" value="{{ old('position') }}" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>First Name</label>
+                                                <input required type="text" name="first_name" value="{{ old('first_name') }}" class="form-control">
+                                            </div>
+                                        </div>
+                                          <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Last Name</label>
+                                                <input required type="text" name="last_name" value="{{ old('last_name') }}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Email</label>
+                                                <input required type="email" name="email" value="{{ old('email') }}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Mobile No</label>
+                                                <input required type="text" name="mobile_no" value="{{ old('mobile_no') }}" class="form-control"
+                                                    placeholder="+92-3001234567" pattern="^\+?\d{1,3}-\d{9,11}$"
+                                                    title="Enter a valid number like +92-3001234567">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <button class="btn btn-success">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @include('portal.footer')
+    </section>
+@endsection --}}
+
+
+
+@extends('portal.master')
+@section('content')
+    <section class="main-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                @include('portal.flash-message')
+                <div class="card">
+                    <div class="card-header custfor-flex-header">
+                        <div class="header-content">
+                            {{-- <i class="fas fa-user-plus"></i> --}}
+                            <h3>Add New Contact</h3>
+                        </div>
+                        <div class="header-actions">
+                            <a href="{{ route('client-management.index') }}" class="btn btn-outline">
+                                Back to List
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{{ route('client-management.store') }}" enctype="multipart/form-data"
+                            class="client-form">
+                            {{ csrf_field() }}
+
+                            <div class="form-section">
+                                <div class="section-header">
+                                    {{-- <i class="fas fa-user-circle"></i> --}}
+                                    <h5>Contact Details</h5>
+                                    <span class="section-badge">Required Fields</span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-building"></i> --}}
+                                                Account
+                                                <span class="required">*</span>
+                                            </label>
+                                            <select name="organization_id" class="form-control select2" required>
+                                                <option value="">-- Select Organization --</option>
+                                                @foreach ($organizations as $organization)
+                                                    <option value="{{ $organization->id }}"
+                                                        {{ old('organization_id') == $organization->id ? 'selected' : '' }}>
+                                                        {{ $organization->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-briefcase"></i> --}}
+                                                Position
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="position" value="{{ old('position') }}"
+                                                class="form-control" placeholder="Enter client's position">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-user"></i> --}}
+                                                First Name
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="first_name" value="{{ old('first_name') }}"
+                                                class="form-control" placeholder="Enter first name">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-user"></i> --}}
+                                                Last Name
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="last_name" value="{{ old('last_name') }}"
+                                                class="form-control" placeholder="Enter last name">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-envelope"></i> --}}
+                                                Email Address
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="email" name="email" value="{{ old('email') }}"
+                                                class="form-control" placeholder="client@example.com">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-mobile-alt"></i> --}}
+                                                Mobile Number
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="mobile_no" value="{{ old('mobile_no') }}"
+                                                class="form-control" placeholder="+92-3001234567"
+                                                pattern="^\+?\d{1,3}-\d{9,11}$">
+                                            <small class="form-hint">Format: +CountryCode-Number</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-outline">
+                                    Add Contact
+                                </button>
+                                <button type="reset" class="btn btn-secondary">
+                                    Reset Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @include('portal.footer')
+    </section>
+
+    <style>
+        /* Professional Green Theme - #A0C242 */
+        .main-content {
+            background: #f8faf9;
+            min-height: 100vh;
+            padding: 30px;
+            padding-top: 90px;
+        }
+
+        .custfor-flex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(160, 194, 66, 0.1);
+            margin-bottom: 30px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 20px 30px;
+            color: #1f2937;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content i {
+            font-size: 1.8rem;
+            opacity: 0.9;
+        }
+
+        .header-content h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e6e3;
+        }
+
+        .section-header i {
+            width: 35px;
+            height: 35px;
+            background: #A0C242;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .section-header h5 {
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        .section-badge {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-label i {
+            color: #A0C242;
+            width: 16px;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 4px;
+        }
+
+        .form-control {
+            border: 1px solid #dce4e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-control:focus {
+            border-color: #A0C242 !important;
+            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
+            outline: none;
+        }
+
+        .form-hint {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Select2 Customization */
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #dce4e0;
+            border-radius: 6px;
+            padding: 8px 15px;
+            height: auto;
+            background: #fff;
+        }
+
+        .select2-container--default .select2-selection--single:focus {
+            border-color: #A0C242;
+            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
+            outline: none;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            padding: 0;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #A0C242 0%, #8AB933 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(160, 194, 66, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+                padding-top: 90px;
+            }
+
+            .custfor-flex-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-content {
+                justify-content: center;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Simple animations */
+        .form-section {
+            transition: transform 0.2s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Input focus animations */
+        .form-control:focus {
+            transform: translateY(-1px);
+        }
+    </style>
+@endsection

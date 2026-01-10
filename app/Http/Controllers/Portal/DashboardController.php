@@ -1,0 +1,274 @@
+<?php
+
+namespace App\Http\Controllers\Portal;
+
+use App\Http\Controllers\Controller;
+use App\Models\{CmsWidget, CompanyUser};
+use Illuminate\Support\Facades\Route;
+use CustomHelper;
+use DB;
+use Auth;
+
+class DashboardController extends Controller
+{
+    public function adminIndex()
+    {
+        if(Auth::user()->user_type !== 'admin'){
+            return redirect()->back()->with('error','You are not authorized to access this page');
+        }
+        
+        $data['page_title'] = 'Dashboard';
+        $data['widgets'] = [
+            'company' => [
+                'title' => 'Companies',
+                'count' => DB::table('users')->where('user_type', 'company')->count(),
+                'link' => route('company-management.index'),
+                'icon' => 'fa fa-building',
+                'color' => 'bg-danger',
+            ],
+            'manager' => [
+                'title' => 'Managers',
+                'count' => DB::table('users')->where('user_type', 'manager')->count(),
+                'link' => route('manager-management.index'),
+                'icon' => 'fa fa-user-tie',
+                'color' => 'bg-primary',
+            ],
+            'client' => [
+                'title' => 'Clients',
+                'count' => DB::table('users')->where('user_type', 'client')->count(),
+                'link' => route('client-management.index'),
+                'icon' => 'fa fa-users',
+                'color' => 'bg-success',
+            ],
+            'salesman' => [
+                'title' => 'Salesmen',
+                'count' => DB::table('users')->where('user_type', 'salesman')->count(),
+                'link' => route('salesman-management.index'),
+                'icon' => 'fa fa-user-tag',
+                'color' => 'bg-warning',
+            ],
+        ];
+        $data['line_chart'] = CmsWidget::getLineChart('users');
+        $data['pie_chart'] = CmsWidget::getPieChart('admin');
+
+        return $this->__cbAdminView('dashboard.admin-index', $data);
+    }
+
+
+    public function companyIndex()
+    {
+        if(Auth::user()->user_type !== 'company'){
+            return redirect()->back()->with('error','You are not authorized to access this page');
+        }
+        $data['page_title'] = 'Dashboard';
+        $data['widgets'] = [
+            'manager' => [
+                'title' => 'Managers',
+                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'manager')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'link' => route('manager-management.index'),
+                'icon' => 'fa fa-user-tie',
+                'color' => 'bg-primary',
+            ],
+            'client' => [
+                'title' => 'Clients',
+                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'client')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'link' => route('client-management.index'),
+                'icon' => 'fa fa-users',
+                'color' => 'bg-success',
+            ],
+            'salesman' => [
+                'title' => 'Salesmen',
+                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'salesman')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'link' => route('salesman-management.index'),
+                'icon' => 'fa fa-user-tag',
+                'color' => 'bg-warning',
+            ],
+            'contract' => [
+                'title' => 'Contracts',
+                'count' => DB::table('contracts')
+                    ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),
+                'link' => route('contract.index'),
+                'icon' => 'fa fa-file-contract',
+                'color' => 'bg-info',
+            ],
+             'organization' => [
+                'title' => 'Organizations',
+                'count' => DB::table('organizations')
+                ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),             
+                'link' => route('organization.index'),
+                'icon' => 'fa fa-building',
+                'color' => 'bg-danger',
+            ],
+            // 'products' => [
+            //     'title' => 'Products',
+            //     'count' => DB::table('company_products')
+            //     ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+            //         ->count(),
+            //     'link' => route('product.index'),
+            //     'icon' => 'fa fa-box',
+            //     'color' => 'bg-warning',
+            // ],
+        ];
+
+        // Chart Data
+        $data['line_chart'] = CmsWidget::getLineChart('contract');
+        $data['contract_chart'] = CmsWidget::getStatusPieChart('contracts');
+        $data['estimate_chart'] = CmsWidget::getStatusPieChart('user_estimate');
+
+
+        return $this->__cbAdminView('dashboard.company-index', $data);
+    }
+
+      public function managerIndex()
+    {
+        if(Auth::user()->user_type !== 'manager'){
+            return redirect()->back()->with('error','You are not authorized to access this page');
+        }
+        $data['page_title'] = 'Dashboard';
+        $data['widgets'] = [
+            'client' => [
+                'title' => 'Clients',
+                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'client')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'link' => route('client-management.index'),
+                'icon' => 'fa fa-users',
+                'color' => 'bg-success',
+            ],
+            'salesman' => [
+                'title' => 'Salesmen',
+                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'salesman')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'link' => route('salesman-management.index'),
+                'icon' => 'fa fa-user-tag',
+                'color' => 'bg-warning',
+            ],
+            'contract' => [
+                'title' => 'Contracts',
+                'count' => DB::table('contracts')
+                    ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),
+                'link' => route('contract.index'),
+                'icon' => 'fa fa-file-contract',
+                'color' => 'bg-info',
+            ],
+             'organization' => [
+                'title' => 'Organizations',
+                'count' => DB::table('organizations')
+                ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),             
+                'link' => route('organization.index'),
+                'icon' => 'fa fa-building',
+                'color' => 'bg-danger',
+            ],
+            'products' => [
+                'title' => 'Products',
+                'count' => DB::table('company_products')
+                ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),
+                'link' => route('product.index'),
+                'icon' => 'fa fa-box',
+                'color' => 'bg-warning',
+            ],
+        ];
+
+        // Chart Data
+        $data['line_chart'] = CmsWidget::getLineChart('contract');
+        $data['contract_chart'] = CmsWidget::getStatusPieChart('contracts');
+        $data['estimate_chart'] = CmsWidget::getStatusPieChart('user_estimate');
+
+
+        return $this->__cbAdminView('dashboard.company-index', $data);
+    }
+
+
+      public function salesmanIndex()
+    {
+        if(Auth::user()->user_type !== 'salesman'){
+            return redirect()->back()->with('error','You are not authorized to access this page');
+        }
+        $data['page_title'] = 'Dashboard';
+        $data['widgets'] = [
+            'client' => [
+                'title' => 'Clients',
+                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'client')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'link' => route('client-management.index'),
+                'icon' => 'fa fa-users',
+                'color' => 'bg-success',
+            ],
+            'contract' => [
+                'title' => 'Contracts',
+                'count' => DB::table('contracts')
+                    ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),
+                'link' => route('contract.index'),
+                'icon' => 'fa fa-file-contract',
+                'color' => 'bg-info',
+            ],
+            'organization' => [
+                'title' => 'Organizations',
+                'count' => DB::table('organizations')
+                ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),             
+                'link' => route('organization.index'),
+                'icon' => 'fa fa-building',
+                'color' => 'bg-danger',
+            ],
+            'products' => [
+                'title' => 'Products',
+                'count' => DB::table('company_products')
+                ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->count(),
+                'link' => route('product.index'),
+                'icon' => 'fa fa-box',
+                'color' => 'bg-warning',
+            ],
+        ];
+
+        // Chart Data
+        $data['line_chart'] = CmsWidget::getLineChart('contract');
+        $data['contract_chart'] = CmsWidget::getStatusPieChart('contracts');
+        $data['estimate_chart'] = CmsWidget::getStatusPieChart('user_estimate');
+
+
+        return $this->__cbAdminView('dashboard.company-index', $data);
+    }
+
+
+    public function clientIndex()
+    {
+        if(Auth::user()->user_type !== 'client'){
+            return redirect()->back()->with('error','You are not authorized to access this page');
+        }
+        $data['page_title'] = 'Dashboard';
+        $data['widgets'] = [
+            'contract' => [
+                'title' => 'Contracts',
+                'count' => DB::table('contracts')
+                    ->where('client_id', Auth::user()->id)
+                    ->count(),
+                'link' => route('contract.index'),
+                'icon' => 'fa fa-file-contract',
+                'color' => 'bg-info',
+            ],
+            'estimate' => [
+                'title' => 'Estimates',
+                'count' => DB::table('user_estimate')
+                    ->where('client_id', Auth::user()->id)
+                    ->count(),
+                'link' => route('estimate.index'),
+                'icon' => 'fa fa-file-contract',
+                'color' => 'bg-warning',
+            ],
+            'organization' => [
+                'title' => 'Organizations',
+                'count' => DB::table('organizations')
+                ->where('client_id', Auth::user()->id)
+                    ->count(),             
+                'link' => route('organization.index'),
+                'icon' => 'fa fa-building',
+                'color' => 'bg-danger',
+            ],
+        ];
+        return $this->__cbAdminView('dashboard.client-index', $data);
+    }
+}
