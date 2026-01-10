@@ -1,0 +1,8 @@
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^group.kiwiticketing.com$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www.group.kiwiticketing.com$
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
+
+
+==============================htaccess end------------------------------------

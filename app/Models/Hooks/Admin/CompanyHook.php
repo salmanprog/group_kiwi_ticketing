@@ -31,6 +31,8 @@ class CompanyHook
             'company.*',
             'users.name as admin_name',
             'users.email as admin_email',
+            'users.mobile_no as admin_mobile_no',
+            'users.image_url as admin_image_url',
         ])
             ->join('company_users', 'company_users.company_id', '=', 'company.id')
             ->join('users', 'users.id', '=', 'company_users.user_id')
@@ -171,6 +173,14 @@ class CompanyHook
     */
     public function hook_before_edit($request, $slug, &$postData)
     {
+        $postData['name'] = $request['company_name'];
+        $postData['mobile_no'] = $request['company_mobile_no'];
+        $postData['address'] = $request['company_address'];
+        $postData['description'] = $request['company_description'];
+        $postData['website'] = $request['company_website'];
+        if (!empty($request['company_image_url'])) {
+            $postData['image_url'] = uploadMedia('company', $request['company_image_url'], '50X50');
+        }
         $postData['status'] = $request['status'];
 
     }
