@@ -75,7 +75,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             @if($record->image_url)
-                                                <img src="{{ asset($record->image_url) }}" height="60" class="mt-2">
+                                                <img src="{{ \Storage::url($record->image_url) }}" height="60" class="mt-2" alt="Company Logo">
                                             @endif
                                             <label class="form-label">Company Logo <span class="required">*</span></label>
                                             <input type="file" name="company_image_url"
@@ -138,7 +138,7 @@
                                             <label class="form-label">Profile Picture <span
                                                     class="required">*</span></label>
                                             @if($record->admin_image_url)
-                                            <img style="width: 150px; height: 100px; object-fit: contain;" src="{{ (\Storage::exists($record->admin_image_url)) ? \Storage::url($record->admin_image_url) : \URL::to('images/user-placeholder.jpg'), }}">
+                                            <img style="width: 150px; height: 100px; object-fit: contain;" src="{{ \Storage::url($record->admin_image_url) }}">
                                             @endif
                                         </div>
                                     </div>
