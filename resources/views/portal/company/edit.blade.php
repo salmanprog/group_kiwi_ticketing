@@ -1,35 +1,100 @@
-{{-- @extends('portal.master')
+@extends('portal.master')
 @section('content')
     <section class="main-content">
-        <div class="row">
-            <div class="col-sm-12">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
                 @include('portal.flash-message')
                 <div class="card">
-                    <div class="card-header card-default">
-                        Update Company Status
+                    <div class="card-header">
+                        <div class="header-content">
+                            <h3>Edit Company</h3>
+                        </div>
+                        <div class="header-actions">
+                            <a href="{{ route('company-management.index') }}" class="btn btn-outline">
+                                Back to List
+                            </a>
+                        </div>
                     </div>
-                    <div class="container mt-4">
-                        <form method="post"
-                            action="{{ route('company-management.update', ['company_management' => $record->slug]) }}"
-                            enctype="multipart/form-data">
+                    <div class="card-body">
+                        <form method="post" action="{{ route('company-management.update', ['company_management' => $record->slug]) }}" enctype="multipart/form-data">
                             {{ csrf_field() }}
                             <input type="hidden" name="_method" value="PUT">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5>Company Details</h5>
+                            <!-- Company Details -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Company Information</h5>
+                                    <span class="section-badge">Required Fields</span>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Company Name</label>
-                                                <input required type="text" name="company_name" class="form-control"
-                                                    value="{{ $record->name }}" readonly>
-                                            </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Company Name <span class="required">*</span></label>
+                                            <input required type="text" name="company_name" class="form-control"
+                                                value="{{ old('company_name',$record->name)}}" placeholder="Enter company name">
                                         </div>
                                     </div>
-                                      <div class="row">
-                                        <div class="col-md-6">
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Company Email <span class="required">*</span></label>
+                                            <input required type="email" value="{{ old('email',$record->email) }}"
+                                                name="company_email" class="form-control" placeholder="company@example.com" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Company Mobile No <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="company_mobile_no"
+                                                value="{{ old('company_mobile_no',$record->mobile_no) }}" class="form-control"
+                                                placeholder="+92-3001234567" pattern="^\+?\d{1,3}-\d{9,11}$" readonly>
+                                            <small class="form-hint">Format: +CountryCode-Number</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Company Website</label>
+                                            <input type="url" name="company_website"
+                                                value="{{ old('company_website',$record->website) }}" class="form-control"
+                                                placeholder="https://example.com">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Company Address <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="company_address"
+                                                value="{{ old('company_address',$record->address) }}" class="form-control"
+                                                placeholder="Enter full address">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            @if($record->image_url)
+                                                <img src="{{ asset($record->image_url) }}" height="60" class="mt-2">
+                                            @endif
+                                            <label class="form-label">Company Logo <span class="required">*</span></label>
+                                            <input type="file" name="company_image_url"
+                                                value="{{ old('company_image_url') }}" class="form-control"
+                                                accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Company Description</label>
+                                            <textarea name="company_description" rows="4" class="form-control"
+                                                placeholder="Brief description about the company">{{ old('company_description', $record->description) }}</textarea>
+                                            @error('company_description')
+                                                <small class="error-message">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
                                             <div class="form-group">
                                                 <label>Status</label>
                                                 <select name="status" class="form-control">
@@ -38,54 +103,97 @@
                                                 </select>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group mt-3 col-md-12 text-right">
-                                            <button class="btn btn-success">Submit</button>
+                                </div>
+                            </div>
+
+                            <!-- Admin Details -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Owner/Admin Details</h5>
+                                    <span class="section-badge">Required Fields</span>
+                                </div>
+                                <input type="hidden" name="user_type" value="admin">
+                                <input type="hidden" name="user_group_id" value="2">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Full Name <span class="required">*</span></label>
+                                            <input required type="text" name="namea" value="{{ old('name', $record->admin_name) }}"
+                                                class="form-control" placeholder="Enter full name" readonly>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Email Address <span
+                                                    class="required">*</span></label>
+                                            <input required type="email" name="emaila" value="{{ old('email', $record->admin_email) }}"
+                                                class="form-control" placeholder="user@example.com" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Profile Picture <span
+                                                    class="required">*</span></label>
+                                            @if($record->admin_image_url)
+                                            <img style="width: 150px; height: 100px; object-fit: contain;" src="{{ (\Storage::exists($record->admin_image_url)) ? \Storage::url($record->admin_image_url) : \URL::to('images/user-placeholder.jpg'), }}">
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Mobile Number <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="mobile_noa"
+                                                value="{{ old('mobile_no', $record->admin_mobile_no) }}" class="form-control"
+                                                placeholder="+92-3001234567" pattern="^\+?\d{1,3}-\d{9,11}$" readonly>
+                                            <small class="form-hint">Format: +CountryCode-Number</small>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    Update Company
+                                </button>
+                                <a href="{{ route('company-management.index') }}" class="btn btn-secondary">
+                                    Cancel
+                                </a>
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
         </div>
         @include('portal.footer')
     </section>
-@endsection --}}
 
-
-
-
-@extends('portal.master')
-@section('content')
     <style>
-        :root {
-            --primary-color: #A0C242;
-            --primary-dark: #8AA835;
-            --primary-light: #E8F4D3;
-            --secondary-color: #2C3E50;
-            --light-bg: #F8F9FA;
-            --border-color: #E0E0E0;
-            --text-color: #333333;
-            --text-light: #6C757D;
-        }
-
-        body {
-            font-family: "Poppins", sans-serif !important;
-            font-size: 14px !important;
-            line-height: 1.4;
-            background-color: #f5f7fa;
-            color: var(--text-color);
-        }
-
+        /* --- Same UI as Organization Type Page --- */
         .main-content {
             background: #f8faf9;
             min-height: 100vh;
             padding: 30px;
             padding-top: 90px;
+        }
+
+        .btn-outline2 {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card {
@@ -102,35 +210,110 @@
             border-bottom: 1px solid #e5e7eb;
             padding: 20px 30px;
             color: #1f2937;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .card-header h3 {
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content h3 {
             margin: 0;
             font-weight: 600;
             font-size: 18px;
+        }
+
+        .header-actions .btn-outline {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
         }
 
         .card-body {
             padding: 30px;
         }
 
+        .form-section {
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-1px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e6e3;
+        }
+
+        .section-header h5 {
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        .section-badge {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid #e5e7eb;
+        }
+
         .form-group {
             margin-bottom: 25px;
         }
 
-        label {
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-weight: 600;
-            color: var(--secondary-color);
+            color: #2c3e50;
             margin-bottom: 8px;
-            font-size: 15px;
-            display: block;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 4px;
         }
 
         .form-control {
             border: 1px solid #dce4e0;
             border-radius: 6px;
             padding: 12px 15px;
-            font-size: 14px;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             background: #fff;
         }
@@ -141,8 +324,33 @@
             outline: none;
         }
 
-        .form-select {
-            cursor: pointer;
+        .form-hint {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #eaeaea;
         }
 
         .btn {
@@ -153,7 +361,18 @@
             transition: all 0.2s ease;
             border: 1px solid transparent;
             cursor: pointer;
-            text-decoration: none;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
         }
 
         .btn-primary {
@@ -167,207 +386,45 @@
             box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
         }
 
-        .btn-outline-secondary {
-            background: #ffffff;
-            border-color: #d1d5db;
-            color: #374151;
-        }
-
-        .btn-outline-secondary:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
-        }
-
-        .company-info {
-            background: #ffffff;
-            border: 1px solid #eaeaea;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-
-        .company-info h5 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .company-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .company-detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .company-detail-label {
-            font-size: 12px;
-            color: #7f8c8d;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .company-detail-value {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 14px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-badge.active {
-            background: #f3f4f6;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-        }
-
-        .status-badge.disabled {
-            background: #f3f4f6;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-        }
-
-        .form-text {
-            color: #7f8c8d;
-            font-size: 13px;
-            margin-top: 5px;
-            display: block;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-start;
-            padding-top: 20px;
-            margin-top: 20px;
-            border-top: 1px solid #eaeaea;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
             .main-content {
                 padding: 15px;
                 padding-top: 90px;
             }
 
+            .card-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-content {
+                justify-content: center;
+            }
+
             .card-body {
                 padding: 20px;
             }
 
+            .form-section {
+                padding: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
             .btn {
                 width: 100%;
-                margin-bottom: 10px;
-            }
-
-            .company-details {
-                grid-template-columns: 1fr;
-            }
-
-            .button-group {
-                flex-direction: column;
+                justify-content: center;
             }
         }
     </style>
-
-    <section class="main-content">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                @include('portal.flash-message')
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Update Company Status</h3>
-                    </div>
-                    <div class="card-body">
-                        <!-- Company Information -->
-                        <div class="company-info">
-                            <h5>Company Information</h5>
-                            <div class="company-details">
-                                <div class="company-detail-item">
-                                    <span class="company-detail-label">Company Name</span>
-                                    <span class="company-detail-value">{{ $record->name }}</span>
-                                </div>
-                                <div class="company-detail-item">
-                                    <span class="company-detail-label">Current Status</span>
-                                    <span class="company-detail-value">
-                                        @if ($record->status == 1)
-                                            <span class="status-badge">Active</span>
-                                        @else
-                                            <span class="status-badge">Disabled</span>
-                                        @endif
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <form method="post"
-                            action="{{ route('company-management.update', ['company_management' => $record->slug]) }}"
-                            enctype="multipart/form-data">
-                            {{ csrf_field() }}
-                            <input type="hidden" name="_method" value="PUT">
-
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="statusSelect">Status</label>
-                                        <select name="status" class="form-control form-select" id="statusSelect">
-                                            <option value="1" {{ $record->status == 1 ? 'selected' : '' }}>
-                                                Active
-                                            </option>
-                                            <option value="0" {{ $record->status == 0 ? 'selected' : '' }}>
-                                                Disabled
-                                            </option>
-                                        </select>
-                                        <div class="form-text">
-                                            Active companies can operate normally, while disabled companies cannot access
-                                            the system.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="button-group">
-                                <button type="submit" class="btn btn-primary">
-                                    Update Status
-                                </button>
-                                <a href="{{ route('company-management.index') }}" class="btn btn-outline-secondary">
-                                    Back to List
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @include('portal.footer')
-    </section>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const statusSelect = document.getElementById('statusSelect');
-
-            // Add visual feedback when status changes
-            statusSelect.addEventListener('change', function() {
-                if (this.value === '1') {
-                    this.style.borderLeft = '4px solid #A0C242';
-                } else {
-                    this.style.borderLeft = '4px solid #e74c3c';
-                }
-            });
-
-            // Trigger change event on page load
-            statusSelect.dispatchEvent(new Event('change'));
-        });
-    </script>
 @endsection
