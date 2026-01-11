@@ -354,7 +354,7 @@
                 <div class="row">
                     <div class="col cust-header-css">
                         @if (Auth::user()->user_type == 'admin')
-                            <a class="admin-logo" href="{{ route('admin.dashboard') }}">
+                            <a class="admin-logo a" href="{{ route('admin.dashboard') }}">
                                 <h1>
                                     <img style="width: 205px;" alt="logo"
                                         src="https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png"
@@ -364,17 +364,26 @@
                                 </h1>
                             </a>
                         @elseif (Auth::user()->user_type == 'company')
-                            <a class="admin-logo" href="{{ route('company.dashboard') }}">
+                        @php
+                            // Fetch company record for logged-in user
+                            $company = \App\Models\Company::where('id', \App\Models\CompanyUser::getCompany(Auth::id())->id)->first();
+                            $company_logo = $company ? $company->image_url : null;
+                        @endphp
+                            <a class="admin-logo c" href="{{ route('company.dashboard') }}">
                                 <h1>
+                                    <!-- Large logo -->
                                     <img style="width: 205px;" alt="logo"
-                                        src="https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png"
+                                        src="{{ $company_logo ? \Storage::url($company_logo) : 'https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png' }}"
                                         class="toggle-none hidden-xs">
-                                    <img style="width: 45px;display:none;padding-top: 10px;" alt="logo"
-                                        src="https://i.ibb.co/Fq5kfj8n/imageasdasdasdasd.png" class="for-coll">
+
+                                    <!-- Small/collapsed logo -->
+                                    <img style="width: 45px; display:none; padding-top: 10px;" alt="logo"
+                                        src="{{ $company_logo ? \Storage::url($company_logo) : 'https://i.ibb.co/Fq5kfj8n/imageasdasdasdasd.png' }}"
+                                        class="for-coll">
                                 </h1>
                             </a>
                         @elseif (Auth::user()->user_type == 'manager')
-                            <a class="admin-logo" href="{{ route('manager.dashboard') }}">
+                            <a class="admin-logo m" href="{{ route('manager.dashboard') }}">
                                 <h1>
                                     <img style="width: 205px;" alt="logo"
                                         src="https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png"
@@ -384,7 +393,7 @@
                                 </h1>
                             </a>
                         @elseif (Auth::user()->user_type == 'salesman')
-                            <a class="admin-logo" href="{{ route('salesman.dashboard') }}">
+                            <a class="admin-logo s" href="{{ route('salesman.dashboard') }}">
                                 <h1>
                                     <img style="width: 205px;" alt="logo"
                                         src="https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png"
@@ -394,7 +403,7 @@
                                 </h1>
                             </a>
                         @else
-                            <a class="admin-logo" href="{{ route('client.dashboard') }}">
+                            <a class="admin-logo n" href="{{ route('client.dashboard') }}">
                                 <h1>
                                     <img style="width: 205px;" alt="logo"
                                         src="https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png"
@@ -811,11 +820,22 @@
                                 @endif
 
                                 <!-- Reporting -->
-                                <li data-type="parent" class="nav-item">
-                                    <a class="nav-link" href="javascript:void(0);">
-                                        <i class="fas fa-chart-bar"></i>
-                                        <span class="toggle-none">Reporting</span>
-                                    </a>
+                                 
+                                <li data-type="child" class="nav-item">
+                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
+                                            data-expanded="false">
+                                             <i class="fas fa-chart-bar"></i>
+                                            <span class="toggle-none">Reporting</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+                                        <ul class="submenu">
+                                            <li class="nav-item">
+                                                <a class="nav-link submenu-link"
+                                                    href="{{ route('get=all-company') }}">
+                                                    Company Report
+                                                </a>
+                                            </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </div>
