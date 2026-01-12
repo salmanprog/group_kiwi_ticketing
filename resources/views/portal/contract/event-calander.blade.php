@@ -258,6 +258,12 @@ function openEstimatesModal(estimates, date){
     color: #6b7280;
     font-size: 12px;
 }
+
+.for-fonts-css span.badge {
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
+}
 #invoice-calendar { background: #fff; border-radius: 10px; padding: 10px; }
 </style>
 @endsection
