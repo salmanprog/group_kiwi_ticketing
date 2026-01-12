@@ -99,4 +99,14 @@ class Organization extends Model
     {
         return $this->belongsTo(Event::class, 'event_type_id');
     }
+
+    public function contract()
+    {
+        return $this->hasMany(Contract::class, 'organization_id', 'id');
+    }
+
+    public function estimate()
+    {
+        return $this->hasMany(Estimate::class, 'organization_id', 'id');
+    }
 }

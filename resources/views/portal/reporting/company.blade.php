@@ -39,14 +39,14 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Company Name</th>
-                                        <th>Owner Name</th>
-                                        <th>Company Account</th>
-                                        <th>Company Salesman</th>
+                                        <th>Name</th>
+                                        <th>No. of Contract</th>
+                                        <th>No. of Estimate</th>
+                                        <!-- <th>Company Salesman</th>
                                         <th>Company Managers</th>
                                         <th>Company Estimate</th>
                                         <th>Status</th>
-                                        <th>Action</th>
+                                        <th>Action</th> -->
                                     </tr>
                                 </thead>
                                 <tbody class="for-fbold">
@@ -90,14 +90,18 @@
                         if (res.data && Array.isArray(res.data)) {
                             res.data.forEach(function(company) {
                                 tbody += '<tr>';
-                                tbody += '<td>' + company.company_name + '</td>';
-                                tbody += '<td>' + company.owner_name + '</td>';
-                                tbody += '<td>' + company.total_accounts + '</td>';
-                                tbody += '<td>' + company.total_salesman + '</td>';
-                                tbody += '<td>' + company.total_manager + '</td>';
-                                tbody += '<td>' + company.total_estimate + '</td>';
-                                tbody += '<td>' + company.status + '</td>';
-                                tbody += '<td>' + company.action + '</td>';
+                                tbody += '<td>' + company.organization_name + '</td>';
+                                tbody += '<td>' + company.total_contract + '</td>';
+                                tbody += '<td>';
+                                if (company.contracts && Array.isArray(company.contracts)) {
+                                    company.contracts.forEach(function(contract) {
+                                        tbody += contract.total_estimate || '0';
+                                    });
+                                } else {
+                                    tbody += '0';
+                                }
+                                tbody += '</td>';
+
                                 tbody += '</tr>';
                             });
                         } else {

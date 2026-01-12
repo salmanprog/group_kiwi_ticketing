@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{CompanyAdmin,Company};
+use App\Models\{CompanyAdmin,Company,Organization,CompanyUser};
 
 class ReportingController extends CRUDCrontroller
 {
@@ -126,28 +126,35 @@ class ReportingController extends CRUDCrontroller
         $request = $request ?? request(); // fallback to current request
         $keyword = $request->input('keyword', '');
 
-        $companies = Company::with('companyAdmin.user')->withCount('organizations','companymanager as manager_count','companysalesman as salesman_count','estimates as estimates_count')
-            ->when($keyword, function ($query, $keyword) {
-                $query->where('name', 'like', "%$keyword%")
-                    ->orWhereHas('admin', function($q) use ($keyword) {
-                        $q->where('name', 'like', "%$keyword%")
-                            ->orWhere('email', 'like', "%$keyword%");
-                    });
-            })
-            ->get();
+        // $companies = Company::with('companyAdmin.user')->withCount('organizations','companymanager as manager_count','companysalesman as salesman_count','estimates as estimates_count')
+        //     ->when($keyword, function ($query, $keyword) {
+        //         $query->where('name', 'like', "%$keyword%")
+        //             ->orWhereHas('admin', function($q) use ($keyword) {
+        //                 $q->where('name', 'like', "%$keyword%")
+        //                     ->orWhere('email', 'like', "%$keyword%");
+        //             });
+        //     })
+        //     ->get();
+        $getCompany = CompanyUser::getCompany(Auth::user()->id);
+        $companies = Organization::where('company_id', $getCompany->id)
+                    ->withCount('contract as contract_count')
+                    ->with(['contract' => function($q) {
+                        $q->withCount('estimates'); // dynamically counts estimates per contract
+                    }])
+                    ->get();
 
-        $data = $companies->map(function($company) {
-            return [
-                'company_name' => $company->name ?? '-',
-                'owner_name' => optional($company->companyAdmin->user)->name ?? '-',
-                'total_accounts' => $company->organizations_count,
-                'total_salesman' => $company->salesman_count ?? 0,
-                'total_manager' => $company->manager_count ?? 0,
-                'total_estimate' => $company->estimates_count ?? 0,
-                'status' => $company->status == 1 ? '<span class="status-badge status-active">Active</span>' : '<span class="status-badge status-inactive">Inactive</span>',
-                'action' => '<a href="" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>'
-            ];
-        });
+        $data = $companies->map(function($org) {
+                    return [
+                        'organization_name' => $org->name,
+                        'total_contract' => $org->contract_count,
+                        'contracts' => $org->contract->map(function($contract) {
+                            return [
+                                'contract_number' => $contract->contract_number,
+                                'total_estimate' => $contract->estimates_count,
+                            ];
+                        }),
+                    ];
+                });
 
         return response()->json([
             'data' => $data,
