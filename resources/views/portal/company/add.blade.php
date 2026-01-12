@@ -76,8 +76,13 @@
                                         <div class="form-group">
                                             <label class="form-label">Company Logo <span class="required">*</span></label>
                                             <input required type="file" name="company_image_url"
-                                                value="{{ old('company_image_url') }}" class="form-control"
-                                                accept="image/*">
+                                                class="form-control" accept="image/*" id="companyImageInput">
+
+                                            <!-- Preview -->
+                                            <div class="mt-2">
+                                                <img id="companyImagePreview" src="{{ old('company_image_url') ? asset(old('company_image_url')) : '#' }}" 
+                                                    alt="Preview" style="max-width: 150px; max-height: 150px; display: none; border:1px solid #ddd; padding:5px;">
+                                            </div>
                                         </div>
                                     </div>
 
@@ -123,10 +128,16 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Profile Picture <span
-                                                    class="required">*</span></label>
-                                            <input required type="file" name="image_url"
-                                                value="{{ old('image_url') }}" class="form-control" accept="image/*">
+                                            <label class="form-label">Profile Picture <span class="required">*</span></label>
+                                            <input required type="file" name="image_url" class="form-control" accept="image/*" id="profileImageInput">
+
+                                            <!-- Preview -->
+                                            <div class="mt-2">
+                                                <img id="profileImagePreview" 
+                                                    src="{{ old('image_url') ? asset(old('image_url')) : '#' }}" 
+                                                    alt="Preview" 
+                                                    style="max-width: 150px; max-height: 150px; display: none; border:1px solid #ddd; padding:5px; border-radius:5px;">
+                                            </div>
                                         </div>
                                     </div>
 
@@ -175,6 +186,43 @@
             </div>
         </div>
         @include('portal.footer')
+        <script>
+            const imageInput = document.getElementById('companyImageInput');
+            const imagePreview = document.getElementById('companyImagePreview');
+
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.src = event.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '#';
+                    imagePreview.style.display = 'none';
+                }
+            });
+
+            const profileInput = document.getElementById('profileImageInput');
+            const profilePreview = document.getElementById('profileImagePreview');
+
+            profileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        profilePreview.src = event.target.result;
+                        profilePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    profilePreview.src = '#';
+                    profilePreview.style.display = 'none';
+                }
+            });
+        </script>
     </section>
 
     <style>

@@ -1,179 +1,3 @@
-{{-- @extends('portal.master')
-@section('content')
- <section class="main-content">
-    <div class="row">
-        <div class="col-sm-12">
-            @include('portal.flash-message')
-
-            <div class="card">
-                <div class="card-header card-default">
-                    Edit Organization Details
-                </div>
-
-                <div class="card-body">
-                    <form method="post" action="{{ route('organization.update', ['organization' => $record->slug]) }}" enctype="multipart/form-data" onsubmit="return validateForm(') }}">
-                        {{ csrf_field() }}
-                        <input type="hidden" name="_method" value="PUT">
-
-                        <!-- SECTION 1: Basic Info -->
-                        <div class="card mb-4 border">
-                            <div class="card-header bg-light">
-                                <strong>Basic Information</strong>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label>Name <span class="text-danger">*</span></label>
-                                        <input required type="text" name="name" class="form-control" value="{{ $record->name }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Organization Type</label>
-                                        <select name="organization_type_id" class="form-control select2">
-                                            <option value="">-- Select Type --</option>
-                                            @foreach ($organization_types as $organization_type)
-                                                <option value="{{ $organization_type->id }}" {{ $record->organization_type_id == $organization_type->id ? 'selected' : '' }}>{{ $organization_type->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Event Type</label>
-                                        <select name="event_type_id" class="form-control">
-                                            <option value="">-- Select Event Type --</option>
-                                            @foreach ($organization_events as $event)
-                                                <option value="{{ $event->id }}"  {{ $record->id == $event->id ? 'selected' : '' }}>{{ $event->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Department</label>
-                                        <input type="text" name="department" class="form-control" value="{{ $record->department }}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SECTION 2: Address Details -->
-                        <div class="card mb-4 border">
-                            <div class="card-header bg-light">
-                                <strong>Address Details</strong>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label>Address Line 1</label>
-                                        <input type="text" name="address_one" class="form-control" value="{{ $record->address_one }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Address Line 2</label>
-                                        <input type="text" name="address_two" class="form-control" value="{{ $record->address_two }}">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label>City</label>
-                                        <input type="text" name="city" class="form-control" value="{{ $record->city }}">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label>State</label>
-                                        <input type="text" name="state" class="form-control" value="{{ $record->state }}">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label>Zip</label>
-                                        <input type="text" name="zip" class="form-control" value="{{ $record->zip }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Country</label>
-                                        <input type="text" name="country" class="form-control" value="{{ $record->country }}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SECTION 3: Contact Info -->
-                        <div class="card mb-4 border">
-                            <div class="card-header bg-light">
-                                <strong>Contact Information</strong>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label>Email</label>
-                                        <input type="email" name="email" class="form-control" value="{{ $record->email }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Phone</label>
-                                        <input type="text" name="phone" class="form-control" value="{{ $record->phone }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Fax</label>
-                                        <input type="text" name="fax" class="form-control" value="{{ $record->fax }}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SECTION 4: Event & Opportunity -->
-                        <div class="card mb-4 border">
-                            <div class="card-header bg-light">
-                                <strong>Event & Opportunity</strong>
-                            </div>
-                            <div class="card-body">
-                                <div class="form-row">
-                                    <div class="form-group col-md-6">
-                                        <label>Size</label>
-                                        <input type="number" name="size" class="form-control" value="{{ $record->size }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>First Meeting</label>
-                                        <input type="date" name="first_meeting" class="form-control" value="{{ $record->first_meeting }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Closing Probability (%)</label>
-                                        <input type="number" name="closing_probability" class="form-control" value="{{ $record->closing_probability }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Event Date</label>
-                                        <input type="date" name="event_date" class="form-control" value="{{ $record->event_date }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Event Status</label>
-                                        <input type="text" name="event_status" class="form-control" value="{{ $record->event_status }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Next Objective</label>
-                                        <input type="text" name="next_objective" class="form-control" value="{{ $record->next_objective }}">
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label>Follow-Up Date</label>
-                                        <input type="date" name="follow_up_date" class="form-control" value="{{ $record->follow_up_date }}">
-                                    </div>
-                                     <div class="col-md-6">
-                                                <label>Status</label>
-                                                <select name="status" class="form-control">
-                                                    <option value="1" {{ $record->status == 1 ? 'selected' : '' }}>Active</option>
-                                                    <option value="0" {{ $record->status == 0 ? 'selected' : '' }}>Disabled</option>
-                                                </select>
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Submit -->
-                        <div class="text-right mt-4">
-                            <button class="btn btn-success btn-lg">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    @include('portal.footer')
-</section>
-
-@endsection
- --}}
-
-
-
-
 @extends('portal.master')
 @section('content')
     <section class="main-content">
@@ -184,7 +8,7 @@
                 <div class="card">
                     <div class="card-header custfor-flex-header">
                         <div class="header-content">
-                            <h3>Edit Organization Details</h3>
+                            <h3>Edit Account Details</h3>
                         </div>
                         <div class="header-actions">
                             <a href="{{ route('organization.index') }}" class="btn btn-outline">
@@ -194,10 +18,9 @@
                     </div>
 
                     <div class="card-body">
-                        <form method="post" action="{{ route('organization.update', ['organization' => $record->slug]) }}"
-                            enctype="multipart/form-data">
-                            {{ csrf_field() }}
-                            @method('PUT')
+                        <form method="post" action="{{ route('organization.update', ['organization' => $record->slug]) }}" enctype="multipart/form-data" onsubmit="return validateForm(') }}">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="_method" value="PUT">
 
                             <!-- Basic Information -->
                             <div class="form-section">
@@ -208,44 +31,23 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Name <span class="required">*</span></label>
+                                            <label class="form-label">Account Name <span class="required">*</span></label>
                                             <input required type="text" name="name" class="form-control"
-                                                value="{{ old('name', $record->name) }}">
+                                                value="{{ $record->name }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Organization Type</label>
-                                            <select name="organization_type_id" class="form-control select2">
-                                                <option value="">-- Select Type --</option>
-                                                @foreach ($organization_types as $organization_type)
-                                                    <option value="{{ $organization_type->id }}"
-                                                        {{ old('organization_type_id', $record->organization_type_id) == $organization_type->id ? 'selected' : '' }}>
-                                                        {{ $organization_type->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                            <label class="form-label">Contact <span class="required">*</span></label>
+                                            <input required type="text" name="contact" class="form-control"
+                                                value="{{ $record->contact }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Event Type</label>
-                                            <select name="event_type_id" class="form-control">
-                                                <option value="">-- Select Event Type --</option>
-                                                @foreach ($organization_events as $event)
-                                                    <option value="{{ $event->id }}"
-                                                        {{ old('event_type_id', $record->event_type_id) == $event->id ? 'selected' : '' }}>
-                                                        {{ $event->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">Department</label>
                                             <input type="text" name="department" class="form-control"
-                                                value="{{ old('department', $record->department) }}">
+                                                value="{{ $record->department }}">
                                         </div>
                                     </div>
                                 </div>
@@ -259,44 +61,44 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Address Line 1</label>
-                                            <input type="text" name="address_one" class="form-control"
-                                                value="{{ old('address_one', $record->address_one) }}">
+                                            <label class="form-label">City</label>
+                                            <input type="text" name="city" class="form-control"
+                                                value="{{ $record->city }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Address Line 2</label>
-                                            <input type="text" name="address_two" class="form-control"
-                                                value="{{ old('address_two', $record->address_two) }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="form-label">City</label>
-                                            <input type="text" name="city" class="form-control"
-                                                value="{{ old('city', $record->city) }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
                                             <label class="form-label">State</label>
                                             <input type="text" name="state" class="form-control"
-                                                value="{{ old('state', $record->state) }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="form-label">Zip</label>
-                                            <input type="text" name="zip" class="form-control"
-                                                value="{{ old('zip', $record->zip) }}">
+                                                value="{{ $record->state }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Country</label>
                                             <input type="text" name="country" class="form-control"
-                                                value="{{ old('country', $record->country) }}">
+                                                value="{{ $record->country }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Zip</label>
+                                            <input type="text" name="zip" class="form-control"
+                                                value="{{ $record->zip }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address Line 1</label>
+                                            <input type="text" name="address_one" class="form-control"
+                                                value="{{ $record->address_one }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address Line 2</label>
+                                            <input type="text" name="address_two" class="form-control"
+                                                value="{{ $record->address_two }}">
                                         </div>
                                     </div>
                                 </div>
@@ -312,21 +114,28 @@
                                         <div class="form-group">
                                             <label class="form-label">Email</label>
                                             <input type="email" name="email" class="form-control"
-                                                value="{{ old('email', $record->email) }}">
+                                                value="{{ $record->email }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Phone</label>
                                             <input type="text" name="phone" class="form-control"
-                                                value="{{ old('phone', $record->phone) }}">
+                                                value="{{ $record->phone }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Fax</label>
                                             <input type="text" name="fax" class="form-control"
-                                                value="{{ old('fax', $record->fax) }}">
+                                                value="{{ $record->fax }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Rep</label>
+                                            <input type="text" name="rep" class="form-control"
+                                                value="{{ $record->rep }}">
                                         </div>
                                     </div>
                                 </div>
@@ -340,77 +149,118 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Size</label>
+                                            <label class="form-label">Organization Type</label>
+                                            <select name="organization_type_id" class="form-control select2">
+                                                <option value="">-- Select Type --</option>
+                                                @foreach ($organization_types as $organization_type)
+                                                     <option value="{{ $organization_type->id }}" {{ $record->organization_type_id == $organization_type->id ? 'selected' : '' }}>{{ $organization_type->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Organization Size</label>
                                             <input type="number" name="size" class="form-control"
-                                                value="{{ old('size', $record->size) }}">
+                                                value="{{ $record->size }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Event History</label>
+                                            <select name="event_history_id" class="form-control">
+                                                <option value="">-- Select Event History --</option>
+                                                @foreach ($organization_history_events as $event_history)
+                                                    <option value="{{ $event_history->id }}" {{ $record->event_history_id == $event_history->id ? 'selected' : '' }}>{{ $event_history->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Group Type</label>
+                                            <select name="event_type_id" class="form-control">
+                                                <option value="">-- Select Group Type --</option>
+                                                @foreach ($organization_events as $event)
+                                                    <option value="{{ $event->id }}" {{ $record->event_type_id == $event->id ? 'selected' : '' }}>{{ $event->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Group Size</label>
+                                            <input type="number" name="group_size" class="form-control"
+                                                value="{{ $record->group_size }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">First Meeting</label>
                                             <input type="date" name="first_meeting" class="form-control"
-                                                value="{{ old('first_meeting', $record->first_meeting) }}">
+                                                value="{{ $record->first_meeting }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Hot Button</label>
+                                            <input type="text" name="hot_button" class="form-control"
+                                                value="{{ $record->hot_button }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Closing Probability (%)</label>
                                             <input type="number" name="closing_probability" class="form-control"
-                                                value="{{ old('closing_probability', $record->closing_probability) }}">
+                                                value="{{ $record->closing_probability }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Event Date</label>
                                             <input type="date" name="event_date" class="form-control"
-                                                value="{{ old('event_date', $record->event_date) }}">
+                                                value="{{ $record->event_date }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Event Status</label>
                                             <input type="text" name="event_status" class="form-control"
-                                                value="{{ old('event_status', $record->event_status) }}">
+                                                value="{{ $record->event_status }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Next Objective</label>
                                             <input type="text" name="next_objective" class="form-control"
-                                                value="{{ old('next_objective', $record->next_objective) }}">
+                                                value="{{ $record->next_objective }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Follow-Up Date</label>
                                             <input type="date" name="follow_up_date" class="form-control"
-                                                value="{{ old('follow_up_date', $record->follow_up_date) }}">
+                                                value="{{ $record->follow_up_date }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Status</label>
-                                            <select name="status" class="form-control">
-                                                <option value="1"
-                                                    {{ old('status', $record->status) == 1 ? 'selected' : '' }}>Active
-                                                </option>
-                                                <option value="0"
-                                                    {{ old('status', $record->status) == 0 ? 'selected' : '' }}>Disabled
-                                                </option>
-                                            </select>
+                                                <label>Status</label>
+                                                <select name="status" class="form-control">
+                                                    <option value="1" {{ $record->status == 1 ? 'selected' : '' }}>Active</option>
+                                                    <option value="0" {{ $record->status == 0 ? 'selected' : '' }}>Disabled</option>
+                                                </select>
                                         </div>
-                                    </div>
                                 </div>
                             </div>
 
                             <!-- Submit -->
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">
-                                    Update
+                                <button type="submit" class="btn btn-primary btn-outline">
+                                    Submit
                                 </button>
-                                <a href="{{ route('organization.index') }}" class="btn btn-secondary">
-                                    Cancel
-                                </a>
+                                <button type="reset" class="btn btn-secondary">
+                                    Reset Form
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -421,26 +271,12 @@
     </section>
 
     <style>
-        /* --- Same UI as Organization Type Page --- */
+        /* Clean White Theme */
         .main-content {
-            background: #f8faf9;
+            background: #ffffff;
             min-height: 100vh;
             padding: 30px;
             padding-top: 90px;
-        }
-
-        .btn-outline2 {
-            background: #9FC23F !important;
-            border: 1px solid #fff !important;
-            border-radius: 8px;
-            padding: 10px 20px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .custfor-flex-header {
@@ -450,11 +286,11 @@
         }
 
         .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(160, 194, 66, 0.1);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
-            background: #fff;
+            background: #ffffff;
             overflow: hidden;
         }
 
@@ -475,9 +311,15 @@
             margin: 0;
             font-weight: 600;
             font-size: 18px;
+            color: #1f2937;
         }
 
-        .header-actions .btn-outline {
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline {
             background: #9FC23F !important;
             border: 1px solid #fff !important;
             border-radius: 8px;
@@ -492,7 +334,8 @@
         }
 
         .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid #ffffff !important;
+            background-color: #8ab02e !important;
             color: white;
         }
 
@@ -502,15 +345,10 @@
 
         .form-section {
             background: #ffffff;
-            border: 1px solid #eaeaea;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 25px;
             margin-bottom: 20px;
-            transition: transform 0.2s ease;
-        }
-
-        .form-section:hover {
-            transform: translateY(-1px);
         }
 
         .section-header {
@@ -519,12 +357,12 @@
             gap: 12px;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 1px solid #e0e6e3;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .section-header h5 {
             margin: 0;
-            color: #2c3e50;
+            color: #1f2937;
             font-weight: 600;
             font-size: 1.1rem;
             flex: 1;
@@ -545,52 +383,58 @@
         }
 
         .form-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            color: #2c3e50;
+            font-weight: 500;
+            color: #1f2937;
             margin-bottom: 8px;
             font-size: 0.95rem;
+            display: block;
         }
 
         .required {
-            color: #e74c3c;
+            color: #dc2626;
             margin-left: 4px;
         }
 
         .form-control {
-            border: 1px solid #dce4e0;
+            border: 1px solid #d1d5db;
             border-radius: 6px;
-            padding: 12px 15px;
+            padding: 10px 15px;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: #fff;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            color: #1f2937;
         }
 
         .form-control:focus {
-            border-color: #A0C242 !important;
-            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
+            border-color: #9fc23f !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
             outline: none;
+        }
+
+        .form-hint {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
         }
 
         /* Select2 Customization */
         .select2-container--default .select2-selection--single {
-            border: 1px solid #dce4e0;
+            border: 1px solid #d1d5db;
             border-radius: 6px;
             padding: 8px 15px;
             height: auto;
-            background: #fff;
+            background: #ffffff;
         }
 
         .select2-container--default .select2-selection--single:focus {
-            border-color: #A0C242;
-            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
             outline: none;
         }
 
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #2c3e50;
+            color: #1f2937;
             font-size: 0.95rem;
             padding: 0;
         }
@@ -606,7 +450,7 @@
             justify-content: flex-end;
             padding-top: 20px;
             margin-top: 20px;
-            border-top: 1px solid #eaeaea;
+            border-top: 1px solid #e5e7eb;
         }
 
         .btn {
@@ -627,22 +471,22 @@
         }
 
         .btn-secondary:hover {
-            background: #7f8c8d;
-            transform: translateY(-1px);
+            background: #f9fafb;
+            border-color: #9ca3af;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #A0C242 0%, #8AB933 100%);
-            color: white;
-            box-shadow: 0 2px 8px rgba(160, 194, 66, 0.3);
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
         }
 
         .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
+            background: #1d4ed8;
+            border-color: #1d4ed8;
         }
 
-        /* Responsive */
+        /* Responsive Design */
         @media (max-width: 768px) {
             .main-content {
                 padding: 15px;
@@ -679,8 +523,28 @@
 
             .btn {
                 width: 100%;
-                justify-content: center;
+                text-align: center;
             }
+        }
+
+        /* Input focus animations */
+        .form-control:focus {
+            transform: translateY(-1px);
+        }
+
+        /* Date input styling */
+        input[type="date"] {
+            color: #1f2937;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.4);
+            cursor: pointer;
+        }
+
+        /* Placeholder color */
+        .form-control::placeholder {
+            color: #9ca3af;
         }
     </style>
 @endsection

@@ -28,7 +28,7 @@ class OrganizationType extends Model
      * @var array
      */
     protected $fillable = [
-        'company_id','slug','status','name','created_at', 'updated_at', 'deleted_at'
+        'created_by','slug','status','name','created_at', 'updated_at', 'deleted_at'
     ];
 
     /**

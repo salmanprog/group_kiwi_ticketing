@@ -6,3 +6,63 @@ RewriteRule (.*) /public/$1 [L]
 
 
 ==============================htaccess end------------------------------------
+
+
+
+CREATE TABLE `organization_event_history` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `created_by` bigint(20) UNSIGNED NOT NULL,
+  `slug` varchar(255) DEFAULT NULL,
+  `name` text DEFAULT NULL,
+  `status` varchar(191) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+)
+
+
+ALTER TABLE `organization_event_history`
+  ADD PRIMARY KEY (`id`)
+
+  ALTER TABLE `organization_event_history`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+  INSERT INTO `organization_event_history` (`id`, `created_by`, `slug`, `name`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, '1', 'no-interest', 'No Interest', '1', NULL, NULL, NULL);
+
+  INSERT INTO `organization_event_history` (`id`, `created_by`, `slug`, `name`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, '1', 'some-interest', 'Some Interest', '1', NULL, NULL, NULL);
+
+    INSERT INTO `organization_event_history` (`id`, `created_by`, `slug`, `name`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, '1', 'does-picnic-somtime', 'Some picnic sometimes', '1', NULL, NULL, NULL);
+
+    INSERT INTO `organization_event_history` (`id`, `created_by`, `slug`, `name`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, '1', 'does-annual-picnic', 'Some annual picnic', '1', NULL, NULL, NULL);
+
+
+
+    contact
+    rep
+    group_size
+    hot_button
+    event_history_id
+
+    ALTER TABLE `organizations` ADD `contact` VARCHAR(255) NULL DEFAULT NULL AFTER `name`;
+    ALTER TABLE `organizations` ADD `rep` VARCHAR(255) NULL DEFAULT NULL AFTER `size`;
+    ALTER TABLE `organizations` ADD `group_size` VARCHAR(255) NULL DEFAULT NULL AFTER `size`;
+
+
+
+
+    ALTER TABLE `contracts` ADD `title` VARCHAR(255) NULL DEFAULT NULL AFTER `organization_id`;
+    ALTER TABLE `contracts` ADD `salutation` VARCHAR(255) NULL DEFAULT NULL AFTER `title`;
+    ALTER TABLE `contracts` ADD `ticket_rate` VARCHAR(255) NULL DEFAULT NULL AFTER `salutation`;
+    ALTER TABLE `contracts` ADD `catering_menu` VARCHAR(255) NULL DEFAULT NULL AFTER `ticket_rate`;
+    ALTER TABLE `contracts` ADD `catering_price` VARCHAR(255) NULL DEFAULT NULL AFTER `catering_menu`;
+    ALTER TABLE `contracts` ADD `deposite_amount` VARCHAR(255) NULL DEFAULT NULL AFTER `catering_price`;
+    ALTER TABLE `contracts` ADD `hours` VARCHAR(255) NULL DEFAULT NULL AFTER `deposite_amount`;
+    ALTER TABLE `contracts` ADD `alt_contact` VARCHAR(255) NULL DEFAULT NULL AFTER `hours`;
+    ALTER TABLE `contracts` ADD `note_history` VARCHAR(255) NULL DEFAULT NULL AFTER `alt_contact`;
+    ALTER TABLE `contracts` ADD `contract_status` VARCHAR(255) NULL DEFAULT NULL AFTER `note_history`;
+
+
+
+    ALTER TABLE `organization_users` CHANGE `position` `position` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+    

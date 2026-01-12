@@ -34,10 +34,12 @@
         <!-- Charts Row 1 -->
         <div class="row font-cls">
             <!-- Contract Registrations Line Chart -->
-            <div class="col-md-4">
+            <div class="col-md-8">
                 <div class="card mb-3">
                     <div class="card-header">
-                        <h5 class="mb-0 graph-heading">Contracts Created ({{ now()->year }})</h5>
+                        <h5 class="mb-0 graph-heading">
+                            Estimate and Contracts Created ({{ now()->year }})
+                        </h5>
                     </div>
                     <div class="card-body">
                         <canvas id="contractCreationChart" height="200"></canvas>
@@ -47,27 +49,26 @@
 
             <!-- Estimate Status Pie Chart -->
             <div class="col-md-4">
-                <div class="card mb-3">
+                <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0 graph-heading">Estimate Status Distribution</h5>
+                        <h5>Estimate Status Distribution</h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="estimatePieChart" height="200"></canvas>
+                        <canvas id="estimatePieChart"></canvas>
+                    </div>
+                </div>
+            
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Contract Status Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="contractStatusChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Contract Status Line Chart -->
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5 class="mb-0 graph-heading">Contract Status Distribution</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="contractStatusChart" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
         <!-- Charts Row 2 -->
@@ -87,41 +88,52 @@
                 type: 'line',
                 data: {
                     labels: @json($line_chart['labels']),
-                    datasets: [{
-                        label: 'Contracts Created',
-                        data: @json($line_chart['data']),
-                        fill: true,
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        borderColor: '#007bff',
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-
-            // Estimate Status Pie Chart
-            new Chart(document.getElementById('estimatePieChart'), {
-                type: 'pie',
-                data: {
-                    labels: @json($estimate_chart['labels']),
-                    datasets: [{
-                        data: @json($estimate_chart['data']),
-                        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-                    }]
+                    datasets: @json($line_chart['datasets'])
                 },
                 options: {
                     responsive: true,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'top'
                         }
-                    }
+                    },
+                    tension: 0.3
+                }
+            });
+            /* =======================
+            Graph 2: Estimate Status Pie
+            ======================= */
+            const estimateLabels = @json($estimate_chart['labels']);
+            const estimateData   = @json($estimate_chart['data']);
+
+            const estimateColors = estimateLabels.map(label => {
+                switch (label.toLowerCase()) {
+                    case 'approved': return '#28a745';
+                    case 'sent': return '#ffc107';
+                    case 'draft': return '#6c757d';
+                    case 'rejected': return '#dc3545';
+                    default: return '#adb5bd';
                 }
             });
 
-            // Contract Status Monthly Line Chart
+            new Chart(document.getElementById('estimatePieChart'), {
+                type: 'pie',
+                data: {
+                    labels: estimateLabels,
+                    datasets: [{
+                        data: estimateData,
+                        backgroundColor: estimateColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            /* =======================
+            Graph 3: Contract Status Pie
+            ======================= */
             new Chart(document.getElementById('contractStatusChart'), {
                 type: 'pie',
                 data: {
@@ -133,11 +145,7 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        }
-                    }
+                    plugins: { legend: { position: 'top' } }
                 }
             });
         </script>

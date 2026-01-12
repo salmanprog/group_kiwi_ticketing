@@ -22,6 +22,7 @@ use App\Http\Controllers\Portal\EstimateController;
 use App\Http\Controllers\Portal\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Portal\ContractController;
+use App\Http\Controllers\Portal\ReportingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +68,9 @@ Route::middleware(['custom_auth:web'])->group( function(){
     Route::get('client/dashboard',[DashboardController::class,'clientIndex'])->name('client.dashboard');
     Route::get('client-management/ajax-listing',[ClientController::class,'ajaxListing'])->name('client-management.ajax-listing');
     Route::resource('client-management',ClientController::class);
+    Route::get('/organization/fetch/{id}', [ClientController::class, 'fetch'])
+    ->name('organization.fetch');
+
 
     Route::get('organization-type/ajax-listing',[OrganizationTypeController::class,'ajaxListing'])->name('organization-type.ajax-listing');
     Route::resource('organization-type',OrganizationTypeController::class);
@@ -112,5 +116,8 @@ Route::middleware(['custom_auth:web'])->group( function(){
     Route::get('event-calander',[ContractController::class,'eventCalander'])->name('event-calander');
     Route::get('credit-note/{slug}',[ContractController::class,'addCreditNote'])->name('contract.add-credit-note');
     Route::post('credit-note',[ContractController::class,'saveCreditNote'])->name('contract.save-credit-note');
+
+    Route::get('report-company',[ReportingController::class,'getAllCompanies'])->name('get=all-company');
+    Route::get('company/ajax-listing', [ReportingController::class, 'ajaxListing'])->name('company.ajax-listing');
 
 });

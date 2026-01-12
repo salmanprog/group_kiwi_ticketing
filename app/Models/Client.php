@@ -28,7 +28,7 @@ class Client extends Model
      * @var array
      */
     protected $fillable = [
-        'organization_id','company_id','slug','client_id','created_by','first_name','last_name','email','mobile_no','position','created_at','updated_at','deleted_at'
+        'organization_id','company_id','slug','client_id','created_by','first_name','last_name','email','mobile_no','position','title','salutation','ticket_rate','catering_menu','catering_price','deposite_amount','hours','alt_contact','note_history','contract_status','created_at','updated_at','deleted_at'
     ];
 
     /**
@@ -53,4 +53,9 @@ class Client extends Model
      * @var string
      */
     protected $__cache_expire_time = 1; //days
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id','id');
+    }
 }

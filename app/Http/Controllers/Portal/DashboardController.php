@@ -89,28 +89,47 @@ class DashboardController extends Controller
 
     public function companyIndex()
     {
-        if(Auth::user()->user_type !== 'company'){
-            return redirect()->back()->with('error','You are not authorized to access this page');
+        if (Auth::user()->user_type !== 'company') {
+            return redirect()->back()->with('error', 'You are not authorized to access this page');
         }
+
+        $companyId = CompanyUser::getCompany(Auth::id())->id;
+
         $data['page_title'] = 'Dashboard';
+
+        /* =======================
+        | Widgets
+        ======================= */
         $data['widgets'] = [
             'manager' => [
                 'title' => 'Managers',
-                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'manager')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'count' => DB::table('users')
+                    ->join('company_users', 'company_users.user_id', '=', 'users.id')
+                    ->where('users.user_type', 'manager')
+                    ->where('company_users.company_id', $companyId)
+                    ->count(),
                 'link' => route('manager-management.index'),
                 'icon' => 'fa fa-user-tie',
                 'color' => 'bg-primary',
             ],
             'client' => [
                 'title' => 'Clients',
-                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'client')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'count' => DB::table('users')
+                    ->join('company_users', 'company_users.user_id', '=', 'users.id')
+                    ->where('users.user_type', 'client')
+                    ->where('company_users.company_id', $companyId)
+                    ->count(),
                 'link' => route('client-management.index'),
                 'icon' => 'fa fa-users',
                 'color' => 'bg-success',
             ],
             'salesman' => [
                 'title' => 'Salesmen',
-                'count' => DB::table('users')->join('company_users', 'company_users.user_id', '=', 'users.id')->where('users.user_type', 'salesman')->where('company_users.company_id', CompanyUser::getCompany(Auth::id())->id)->count(),
+                'count' => DB::table('users')
+                    ->join('company_users', 'company_users.user_id', '=', 'users.id')
+                    ->where('users.user_type', 'salesman')
+                    ->where('company_users.company_id', $companyId)
+                    ->count(),
                 'link' => route('salesman-management.index'),
                 'icon' => 'fa fa-user-tag',
                 'color' => 'bg-warning',
@@ -118,37 +137,78 @@ class DashboardController extends Controller
             'contract' => [
                 'title' => 'Contracts',
                 'count' => DB::table('contracts')
-                    ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
+                    ->where('company_id', $companyId)
                     ->count(),
                 'link' => route('contract.index'),
                 'icon' => 'fa fa-file-contract',
                 'color' => 'bg-info',
             ],
-             'organization' => [
+            'organization' => [
                 'title' => 'Organizations',
                 'count' => DB::table('organizations')
-                ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
-                    ->count(),             
+                    ->where('company_id', $companyId)
+                    ->count(),
                 'link' => route('organization.index'),
                 'icon' => 'fa fa-building',
                 'color' => 'bg-danger',
             ],
-            // 'products' => [
-            //     'title' => 'Products',
-            //     'count' => DB::table('company_products')
-            //     ->where('company_id', CompanyUser::getCompany(Auth::id())->id)
-            //         ->count(),
-            //     'link' => route('product.index'),
-            //     'icon' => 'fa fa-box',
-            //     'color' => 'bg-warning',
-            // ],
         ];
 
-        // Chart Data
-        $data['line_chart'] = CmsWidget::getLineChart('contract');
-        $data['contract_chart'] = CmsWidget::getStatusPieChart('contracts');
-        $data['estimate_chart'] = CmsWidget::getStatusPieChart('user_estimate');
+        /* =======================
+        | Graph 1: Estimates + Contracts per Month
+        ======================= */
 
+        $contracts = DB::table('contracts')
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+            ->where('company_id', $companyId)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $estimates = DB::table('user_estimate')
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+            ->where('company_id', $companyId)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $months = [];
+        $contractData = [];
+        $estimateData = [];
+
+        for ($m = 1; $m <= 12; $m++) {
+            $months[] = Carbon::create()->month($m)->format('M');
+            $contractData[] = $contracts[$m] ?? 0;
+            $estimateData[] = $estimates[$m] ?? 0;
+        }
+
+        $data['line_chart'] = [
+            'labels' => $months,
+            'datasets' => [
+                [
+                    'label' => 'Estimates Sent',
+                    'data' => $estimateData,
+                    'borderColor' => '#28a745',
+                    'backgroundColor' => 'rgba(40,167,69,0.1)',
+                    'fill' => true,
+                ],
+                [
+                    'label' => 'Contracts Created',
+                    'data' => $contractData,
+                    'borderColor' => '#007bff',
+                    'backgroundColor' => 'rgba(0,123,255,0.1)',
+                    'fill' => true,
+                ],
+            ],
+        ];
+
+        /* =======================
+        | Pie Charts
+        ======================= */
+        $data['estimate_chart'] = CmsWidget::getStatusPieChart('user_estimate');
+        $data['contract_chart'] = CmsWidget::getStatusPieChart('contracts');
 
         return $this->__cbAdminView('dashboard.company-index', $data);
     }

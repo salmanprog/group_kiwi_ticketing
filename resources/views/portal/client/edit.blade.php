@@ -1,66 +1,335 @@
-{{-- @extends('portal.master')
+@extends('portal.master')
 @section('content')
-<section class="main-content py-4">
-    <div class="container">
-        @include('portal.flash-message')
-
-          <!-- Client Details Card -->
-        @if ($record)
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Client Details</h5>
-            </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <p><strong>Name:</strong> {{ $record->name }}</p>
-                        <p><strong>Email:</strong> {{ $record->email }}</p>
-                        <p><strong>Mobile No:</strong> {{ $record->mobile_no }}</p>
+    <section class="main-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                @include('portal.flash-message')
+                <div class="card">
+                    <div class="card-header custfor-flex-header">
+                        <div class="header-content">
+                            {{-- <i class="fas fa-user-plus"></i> --}}
+                            <h3>Edit Contact</h3>
+                        </div>
+                        <div class="header-actions">
+                            <a href="{{ route('client-management.index') }}" class="btn btn-outline">
+                                Back to List
+                            </a>
+                        </div>
                     </div>
-                    <div class="col-md-4 text-center">
-                        <p><strong>Profile Picture:</strong></p>
-                        <img src="{{ $record->image_url }}" 
-                             alt="Admin Picture" class="img-fluid rounded border" style="max-height: 180px;" loading="lazy">
+                    <div class="card-body">
+                       <form method="post" action="{{ route('client-management.update', ['client_management' => $record->slug]) }}" enctype="multipart/form-data" class="client-form">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="_method" value="PUT">
+
+                            <div class="form-section">
+                                <div class="section-header">
+                                    {{-- <i class="fas fa-user-circle"></i> --}}
+                                    <h5>Contact Details</h5>
+                                    <span class="section-badge">Required Fields</span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Title
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="title" value="{{ $record->title }}"
+                                                class="form-control" placeholder="Enter title">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Salutation <span class="required">*</span>
+                                            </label>
+                                            <select name="salutation" class="form-control" required>
+                                                <option value="">-- Select Salutation --</option>
+                                                <option value="Mr"  {{ $record->salutation == 'Mr' ? 'selected' : '' }}>Mr</option>
+                                                <option value="Mrs" {{ $record->salutation == 'Mrs' ? 'selected' : '' }}>Mrs</option>
+                                                <option value="Ms"  {{ $record->salutation == 'Ms' ? 'selected' : '' }}>Ms</option>
+                                                <option value="Dr"  {{ $record->salutation == 'Dr' ? 'selected' : '' }}>Dr</option>
+                                                <option value="Prof"{{ $record->salutation == 'Prof' ? 'selected' : '' }}>Prof</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-building"></i> --}}
+                                                Account
+                                                <span class="required">*</span>
+                                            </label>
+                                           @php
+                                                $organization = $organizations->firstWhere('id', $record->organization_id);
+                                            @endphp
+                                            <input type="hidden" name="org_id" id="org_id" value="{{$record->organization_id}}">
+                                            <input required type="text" name="abc" id="abc" value="{{ $organization ? $organization->name : 'N/A' }}"
+                                                class="form-control" placeholder="Enter Organization" readonly>
+                                        </div>
+                                    </div>
+                                    <!-- Basic Information -->
+                                    <div class="form-section">
+                                        <div class="section-header">
+                                            <h5>Account Information</h5>
+                                            <span class="section-badge">Required</span>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Account Name <span class="required">*</span></label>
+                                                    <input required type="text" name="name" class="form-control"
+                                                        value="{{ old('name') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Contact <span class="required">*</span></label>
+                                                    <input required type="text" name="contact" class="form-control"
+                                                        value="{{ old('contact') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">Department</label>
+                                                    <input type="text" name="department" class="form-control"
+                                                        value="{{ old('department') }}" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address Details -->
+                                    <div class="form-section">
+                                        <div class="section-header">
+                                            <h5>Address Details</h5>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">City</label>
+                                                    <input required type="text" name="city" class="form-control"
+                                                        value="{{ old('city') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">State</label>
+                                                    <input required type="text" name="state" class="form-control"
+                                                        value="{{ old('state') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Country</label>
+                                                    <input required type="text" name="country" class="form-control"
+                                                        value="{{ old('country') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Zip</label>
+                                                    <input required type="text" name="zip" class="form-control"
+                                                        value="{{ old('zip') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">Address Line 1</label>
+                                                    <input required type="text" name="address_one" class="form-control"
+                                                        value="{{ old('address_one') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">Address Line 2</label>
+                                                    <input type="text" name="address_two" class="form-control"
+                                                        value="{{ old('address_two') }}" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Information -->
+                                    <div class="form-section">
+                                        <div class="section-header">
+                                            <h5>Contact Information</h5>
+                                        </div>
+                                        <div class="row">
+                                             <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">
+                                                        {{-- <i class="fas fa-user"></i> --}}
+                                                        First Name
+                                                        <span class="required">*</span>
+                                                    </label>
+                                                    <input required type="text" name="first_name" value="{{ $record->first_name }}"
+                                                        class="form-control" placeholder="Enter first name">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">
+                                                        {{-- <i class="fas fa-user"></i> --}}
+                                                        Last Name
+                                                        <span class="required">*</span>
+                                                    </label>
+                                                    <input required type="text" name="last_name" value="{{ $record->last_name }}"
+                                                        class="form-control" placeholder="Enter last name">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Email</label>
+                                                    <input required type="email" name="email" class="form-control"
+                                                        value="{{ $record->email }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Phone</label>
+                                                    <input type="text" name="mobile_no" class="form-control"
+                                                        value="{{ $record->mobile_no }}" readonly> 
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Fax</label>
+                                                    <input type="text" name="fax" class="form-control"
+                                                        value="{{ old('fax') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Rep</label>
+                                                    <input type="text" name="rep" class="form-control"
+                                                        value="{{ old('rep') }}" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contract Detail -->
+                                    <div class="form-section">
+                                        <div class="section-header">
+                                            <h5>Contract Detail</h5>
+                                        </div>
+                                        <div class="row">
+                                             <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">
+                                                        Ticket Rate
+                                                        <span class="required">*</span>
+                                                    </label>
+                                                    <input required type="text" name="ticket_rate" value="{{ $record->ticket_rate }}"
+                                                        class="form-control" placeholder="Enter ticket rate">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">
+                                                        Catering Menu
+                                                        <span class="required">*</span>
+                                                    </label>
+                                                    <input required type="text" name="catering_menu" value="{{ $record->catering_menu }}"
+                                                        class="form-control" placeholder="Enter catering menu">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Catering Price</label>
+                                                    <input required type="text" name="catering_price" class="form-control"
+                                                        value="{{ $record->catering_price }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Deposite Amount</label>
+                                                    <input required type="text" name="deposite_amount" class="form-control"
+                                                        value="{{ $record->deposite_amount }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Hours</label>
+                                                    <input required type="text" name="hours" class="form-control"
+                                                        value="{{ $record->hours }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Alt Contacts</label>
+                                                    <input required type="text" name="alt_contact" class="form-control"
+                                                        value="{{ $record->alt_contact }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">Notes/History</label>
+                                                    <input type="text" name="note_history" class="form-control"
+                                                        value="{{ $record->note_history }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Status</label>
+                                                    <select name="contract_status" class="form-control">
+                                                        <option value="">Select Status</option>
+                                                        <option {{ $record->contract_status == 'called' ? 'selected' : '' }} value="called">Called</option>
+                                                        <option {{ $record->contract_status == 'dead' ? 'selected' : '' }} value="dead">Dead</option>
+                                                        <option {{ $record->contract_status == 'lead' ? 'selected' : '' }} value="lead">Lead</option>
+                                                        <option {{ $record->contract_status == 'pending' ? 'selected' : '' }} value="pending">Pending</option>
+                                                        <option {{ $record->contract_status == 'tentative_date' ? 'selected' : '' }} value="tentative_date">Tentative Date</option>
+                                                        <option {{ $record->contract_status == 'loa_send_close' ? 'selected' : '' }} value="loa_send_close">LOA Sent (Closed)</option>
+                                                        <option {{ $record->contract_status == 'loa_received' ? 'selected' : '' }} value="loa_received">LOA Received</option>
+                                                        <option {{ $record->contract_status == 'gate_group' ? 'selected' : '' }} value="gate_group">Gate Group</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12" style="display:none">
+                                            <div class="form-group">
+                                                <label>Status</label>
+                                                <select name="status" class="form-control">
+                                                    <option value="1" selected>Active</option>
+                                                    <option value="0">Disabled</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-outline">
+                                    Update Contact
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        @endif
-      
-    </div>
+        @include('portal.footer')
+    </section>
 
-    @include('portal.footer')
-</section>
-@endsection --}}
-
-
-@extends('portal.master')
-@section('content')
     <style>
-        :root {
-            --primary-color: #A0C242;
-            --primary-dark: #8AA835;
-            --primary-light: #E8F4D3;
-            --secondary-color: #2C3E50;
-            --light-bg: #F8F9FA;
-            --border-color: #E0E0E0;
-            --text-color: #333333;
-            --text-light: #6C757D;
-        }
-
-        body {
-            font-family: "Poppins", sans-serif !important;
-            background-color: #f5f7fa;
-            color: var(--text-color);
-            font-size: 14px !important;
-            line-height: 1.4;
-        }
-
+        /* Professional Green Theme - #A0C242 */
         .main-content {
             background: #f8faf9;
             min-height: 100vh;
             padding: 30px;
             padding-top: 90px;
+        }
+
+        .custfor-flex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .card {
@@ -79,143 +348,199 @@
             color: #1f2937;
         }
 
-        .card-header h3 {
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content i {
+            font-size: 1.8rem;
+            opacity: 0.9;
+        }
+
+        .header-content h3 {
             margin: 0;
             font-weight: 600;
             font-size: 18px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
         }
 
         .card-body {
             padding: 30px;
         }
 
-        .client-details-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            align-items: start;
-        }
-
-        .client-info {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            padding: 15px;
+        .form-section {
             background: #ffffff;
             border: 1px solid #eaeaea;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            padding: 25px;
+            margin-bottom: 20px;
         }
 
-        .info-item:hover {
-            transform: translateX(5px);
-            border-color: #A0C242;
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e6e3;
         }
 
-        .info-icon {
-            width: 45px;
-            height: 45px;
-            background: #f3f4f6;
-            border-radius: 8px;
+        .section-header i {
+            width: 35px;
+            height: 35px;
+            background: #A0C242;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #374151;
-            font-size: 18px;
-            flex-shrink: 0;
-            font-weight: bold;
+            color: white;
+            font-size: 1rem;
         }
 
-        .info-content {
+        .section-header h5 {
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.1rem;
             flex: 1;
         }
 
-        .info-label {
-            font-size: 13px;
-            color: #7f8c8d;
-            font-weight: 500;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .profile-section {
-            text-align: center;
-            padding: 20px;
-            background: #ffffff;
-            border: 1px solid #eaeaea;
-            border-radius: 12px;
-        }
-
-        .profile-picture {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #A0C242;
-            box-shadow: 0 4px 20px rgba(160, 194, 66, 0.2);
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .profile-picture:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(160, 194, 66, 0.3);
-        }
-
-        .profile-label {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 16px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
+        .section-badge {
             background: #f3f4f6;
             color: #374151;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
             border: 1px solid #e5e7eb;
         }
 
-        .action-buttons {
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-label i {
+            color: #A0C242;
+            width: 16px;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 4px;
+        }
+
+        .form-control {
+            border: 1px solid #dce4e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-control:focus {
+            border-color: #A0C242 !important;
+            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
+            outline: none;
+        }
+
+        .form-hint {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Select2 Customization */
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #dce4e0;
+            border-radius: 6px;
+            padding: 8px 15px;
+            height: auto;
+            background: #fff;
+        }
+
+        .select2-container--default .select2-selection--single:focus {
+            border-color: #A0C242;
+            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
+            outline: none;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            padding: 0;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+        }
+
+        /* Form Actions */
+        .form-actions {
             display: flex;
             gap: 15px;
             justify-content: flex-end;
-            margin-top: 30px;
             padding-top: 20px;
+            margin-top: 20px;
             border-top: 1px solid #eaeaea;
         }
 
         .btn {
+            padding: 10px 25px;
             border-radius: 6px;
             font-weight: 600;
-            padding: 10px 25px;
             font-size: 14px;
             transition: all 0.2s ease;
             border: 1px solid transparent;
             cursor: pointer;
-            text-decoration: none;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
         }
 
         .btn-primary {
@@ -229,61 +554,38 @@
             box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
         }
 
-        .btn-outline-secondary {
-            background: #ffffff;
-            border-color: #d1d5db;
-            color: #374151;
-        }
-
-        .btn-outline-secondary:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
-        }
-
-        .alert {
-            border-radius: 8px;
-            border: none;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
             .main-content {
                 padding: 15px;
                 padding-top: 90px;
             }
 
+            .custfor-flex-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header-content {
+                justify-content: center;
+            }
+
             .card-body {
                 padding: 20px;
             }
 
-            .client-details-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+            .form-section {
+                padding: 20px;
             }
 
-            .profile-section {
-                order: -1;
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
             }
 
-            .profile-picture {
-                width: 150px;
-                height: 150px;
-            }
-
-            .action-buttons {
+            .form-actions {
                 flex-direction: column;
             }
 
@@ -291,111 +593,67 @@
                 width: 100%;
                 justify-content: center;
             }
-
-            .info-item {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-
-            .info-icon {
-                align-self: center;
-            }
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6b7280;
+        /* Simple animations */
+        .form-section {
+            transition: transform 0.2s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Input focus animations */
+        .form-control:focus {
+            transform: translateY(-1px);
         }
     </style>
-
-    <section class="main-content">
-        <div class="container">
-            @include('portal.flash-message')
-
-            <!-- Client Details Card -->
-            @if ($record)
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Client Details</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="client-details-grid">
-                            <!-- Client Information -->
-                            <div class="client-info">
-                                <div class="info-item">
-                                    {{-- <div class="info-icon">
-                                        Email
-                                    </div> --}}
-                                    <div class="info-content">
-                                        <div class="info-label">Email Address</div>
-                                        <p class="info-value">{{ $record->email }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="info-item">
-                                    {{-- <div class="info-icon">
-                                        Phone
-                                    </div> --}}
-                                    <div class="info-content">
-                                        <div class="info-label">Mobile Number</div>
-                                        <p class="info-value">{{ $record->mobile_no ?? 'Not provided' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Profile Picture -->
-                            <div class="profile-section">
-                                <span class="profile-label">
-                                    Profile Picture
-                                </span>
-                                @if ($record->image_url)
-                                    <img src="{{ $record->image_url }}" alt="{{ $record->name }}" class="profile-picture"
-                                        loading="lazy"
-                                        onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='block'">
-                                @endif
-                                <div id="avatar-fallback" style="display: {{ $record->image_url ? 'none' : 'block' }};">
-                                    <div
-                                        style="width: 200px; height: 200px; border-radius: 50%; background: #f3f4f6; border: 4px solid #A0C242; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                                        <span
-                                            style="font-size: 24px; font-weight: 600; color: #374151;">{{ substr($record->name, 0, 1) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @else
-                <div class="card">
-                    <div class="card-body">
-                        <div class="empty-state">
-                            <h4>Client Not Found</h4>
-                            <p>The requested client details could not be found.</p>
-                            <a href="{{ route('manager-management.index') }}" class="btn btn-primary mt-3">
-                                Back to Clients List
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        </div>
-
-        @include('portal.footer')
-    </section>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add loading state to profile picture
-            const profilePictures = document.querySelectorAll('.profile-picture');
-            profilePictures.forEach(img => {
-                img.addEventListener('load', function() {
-                    this.style.opacity = '1';
-                });
-
-                img.style.opacity = '0';
-                img.style.transition = 'opacity 0.3s ease';
-            });
-        });
-    </script>
 @endsection
+@push('scripts')
+<script>
+$(document).ready(function () {
+
+    let organizationId = $('#org_id').val();
+
+    // Load on page load (EDIT PAGE)
+    if (organizationId) {
+        loadOrganization(organizationId);
+    }
+
+    function loadOrganization(organizationId) {
+
+        $.ajax({
+            url: "{{ route('organization.fetch', ':id') }}".replace(':id', organizationId),
+            type: "GET",
+            success: function (res) {
+                if (res.status) {
+                    let org = res.data;
+
+                    // Account Information
+                    $('input[name="name"]').val(org.name);
+                    $('input[name="contact"]').val(org.contact);
+                    $('input[name="department"]').val(org.department);
+
+                    // Address
+                    $('input[name="city"]').val(org.city);
+                    $('input[name="state"]').val(org.state);
+                    $('input[name="country"]').val(org.country);
+                    $('input[name="zip"]').val(org.zip);
+                    $('input[name="address_one"]').val(org.address_one);
+                    $('input[name="address_two"]').val(org.address_two);
+
+                    // Contact Info
+                    $('input[name="fax"]').val(org.fax);
+                    $('input[name="rep"]').val(org.rep);
+                }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+});
+</script>
+@endpush

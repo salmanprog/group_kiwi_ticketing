@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Organization, CompanyUser, OrganizationUser};
+use App\Models\{Organization, CompanyUser, OrganizationUser,Client};
 use Auth;
 
 class ClientController extends CRUDCrontroller
@@ -40,8 +40,8 @@ class ClientController extends CRUDCrontroller
                     'first_name' => 'required|min:2|max:50',
                     'last_name' => 'required|min:2|max:50',
                     'email' => 'required|email|max:100',
-                    'mobile_no' => 'required',
-                    'position' => 'required',
+                    //'mobile_no' => 'required',
+                    //'position' => 'required',
                     'organization_id' => 'required',
                 ], $custom_messages);
 
@@ -58,7 +58,7 @@ class ClientController extends CRUDCrontroller
 
     /**
      * This function is used for before the index view render
-     * data pass on view eg: $this->__data['title'] = 'Title';
+     * data pass on view eg: $this->__data['title'] = 'Titlse';
      */
     public function beforeRenderIndexView()
     {
@@ -73,7 +73,8 @@ class ClientController extends CRUDCrontroller
     public function dataTableRecords($record)
     {
 
-        $options = '<a href="' . route('client-management.show', ['client_management' => $record->slug]) . '" title="Edit" class="btn btn-xs btn-success"><i class="fa fa-eye"></i></a>';
+        $options = '<a href="' . route('client-management.edit', ['client_management' => $record->slug]) . '" title="Edit" class="btn btn-xs btn-primary"><i class="fa fa-pencil"></i></a>';
+        $options .= '<a href="' . route('client-management.show', ['client_management' => $record->slug]) . '" title="Edit" class="btn btn-xs btn-success"><i class="fa fa-eye"></i></a>';
         return [
             $record->organization_name,
             $record->first_name,
@@ -107,7 +108,7 @@ class ClientController extends CRUDCrontroller
      */
     public function beforeRenderEditView($slug)
     {
-
+        $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
     }
 
     /**
@@ -132,5 +133,29 @@ class ClientController extends CRUDCrontroller
     public function beforeDeleteLoadModel()
     {
 
+    }
+    
+    public function show($slug)
+    {
+         $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
+        $record = Client::with('organization')->where('slug', $slug)
+            ->firstOrFail();
+        $this->__data['record'] = $record;
+
+        return $this->__cbAdminView($this->__detailView, $this->__data);
+    }
+
+    public function fetch($id)
+    {
+        $organization = Organization::find($id);
+
+        if (!$organization) {
+            return response()->json(['status' => false]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $organization
+        ]);
     }
 }

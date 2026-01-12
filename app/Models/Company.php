@@ -76,5 +76,23 @@ class Company extends Model
         return $query->companyAdmin->user;
     }
 
+    public function organizations()
+    {
+        return $this->hasMany(Organization::class, 'company_id', 'id');
+    }
 
+    public function companymanager()
+    {
+        return $this->hasMany(CompanyUser::class, 'company_id', 'id')->where('user_type','manager');
+    }
+
+    public function companysalesman()
+    {
+        return $this->hasMany(CompanyUser::class, 'company_id', 'id')->where('user_type','salesman');
+    }
+
+    public function estimates()
+    {
+        return $this->hasMany(Estimate::class, 'company_id', 'id');
+    }
 }

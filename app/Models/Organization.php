@@ -34,6 +34,7 @@ class Organization extends Model
         'client_id',
         'company_id',
         'name',
+        'contact',
         'slug',
         'department',
         'address_one',
@@ -46,6 +47,8 @@ class Organization extends Model
         'phone',
         'fax',
         'size',
+        'rep',
+        'group_size',
         'first_meeting',
         'hot_button',
         'closing_probability',
@@ -82,5 +85,18 @@ class Organization extends Model
      */
     protected $__cache_expire_time = 1; //days
 
-    
+    public function organizationType()
+    {
+        return $this->belongsTo(OrganizationType::class, 'organization_type_id');
+    }
+
+    public function eventHistory()
+    {
+        return $this->belongsTo(EventHistoryType::class, 'event_history_id');
+    }
+
+    public function eventType()
+    {
+        return $this->belongsTo(Event::class, 'event_type_id');
+    }
 }

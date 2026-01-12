@@ -1,42 +1,7 @@
-{{-- @extends('portal.master')
-@section('content')
-<section class="main-content py-4">
-    <div class="container">
-        @include('portal.flash-message')
-
-          <!-- Client Details Card -->
-        @if ($record)
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Contact Details</h5>
-            </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <p><strong>Name:</strong> {{ $record->name }}</p>
-                        <p><strong>Email:</strong> {{ $record->email }}</p>
-                        <p><strong>Mobile No:</strong> {{ $record->mobile_no }}</p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <p><strong>Profile Picture:</strong></p>
-                        <img src="{{ $record->image_url }}" 
-                             alt="Admin Picture" class="img-fluid rounded border" style="max-height: 180px;" loading="lazy">
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
-      
-    </div>
-
-    @include('portal.footer')
-</section>
-@endsection --}}
-
-
 @extends('portal.master')
+
 @section('content')
-    <style>
+<style>
         :root {
             --primary-color: #A0C242;
             --primary-dark: #8AA835;
@@ -307,93 +272,213 @@
             color: #6b7280;
         }
     </style>
-
-    <section class="main-content">
-        <div class="container">
+<section class="main-content">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
             @include('portal.flash-message')
 
-            <!-- Client Details Card -->
-            @if ($record)
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Contact Details</h3>
+            <div class="card">
+                <div class="card-header custfor-flex-header">
+                    <div class="header-content">
+                        <h3>View Contact</h3>
                     </div>
-                    <div class="card-body">
-                        <div class="client-details-grid">
-                            <!-- Client Information -->
-                            <div class="client-info">
-                                <div class="info-item">
-                                    {{-- <div class="info-icon">
-                                        Email
-                                    </div> --}}
-                                    <div class="info-content">
-                                        <div class="info-label">Email Address</div>
-                                        <p class="info-value">{{ $record->email }}</p>
-                                    </div>
-                                </div>
+                </div>
 
-                                <div class="info-item">
-                                    {{-- <div class="info-icon">
-                                        Phone
-                                    </div> --}}
-                                    <div class="info-content">
-                                        <div class="info-label">Mobile Number</div>
-                                        <p class="info-value">{{ $record->mobile_no ?? 'Not provided' }}</p>
-                                    </div>
-                                </div>
+                <div class="card-body">
+
+                    {{-- ================= Contact Details ================= --}}
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Contact Details</h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label">Title</label>
+                                <div class="view-value">{{ $record->title ?? '—' }}</div>
                             </div>
 
-                            <!-- Profile Picture -->
-                            <div class="profile-section">
-                                <span class="profile-label">
-                                    Profile Picture
-                                </span>
-                                @if ($record->image_url)
-                                    <img src="{{ $record->image_url }}" alt="{{ $record->name }}" class="profile-picture"
-                                        loading="lazy"
-                                        onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='block'">
-                                @endif
-                                <div id="avatar-fallback" style="display: {{ $record->image_url ? 'none' : 'block' }};">
-                                    <div
-                                        style="width: 200px; height: 200px; border-radius: 50%; background: #f3f4f6; border: 4px solid #A0C242; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                                        <span
-                                            style="font-size: 24px; font-weight: 600; color: #374151;">{{ substr($record->name, 0, 1) }}</span>
-                                    </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Salutation</label>
+                                <div class="view-value">{{ $record->salutation ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Account</label>
+                                <div class="view-value">
+                                    {{ optional($record->organization)->name ?? 'N/A' }}
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @else
-                <div class="card">
-                    <div class="card-body">
-                        <div class="empty-state">
-                            <h4>Client Not Found</h4>
-                            <p>The requested client details could not be found.</p>
-                            <a href="{{ route('manager-management.index') }}" class="btn btn-primary mt-3">
-                                Back to Clients List
-                            </a>
+
+                    {{-- ================= Account Information ================= --}}
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Account Information</h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Account Name</label>
+                                <div class="view-value">{{ $record->organization->name ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Contact</label>
+                                <div class="view-value">{{ $record->organization->contact ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Department</label>
+                                <div class="view-value">{{ $record->organization->department ?? '—' }}</div>
+                            </div>
                         </div>
                     </div>
+
+                    {{-- ================= Address Details ================= --}}
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Address Details</h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">City</label>
+                                <div class="view-value">{{ $record->organization->city ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">State</label>
+                                <div class="view-value">{{ $record->organization->state ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Country</label>
+                                <div class="view-value">{{ $record->organization->country ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Zip</label>
+                                <div class="view-value">{{ $record->organization->zip ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Address Line 1</label>
+                                <div class="view-value">{{ $record->organization->address_one ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Address Line 2</label>
+                                <div class="view-value">{{ $record->organization->address_two ?? '—' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ================= Contact Information ================= --}}
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Contact Information</h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <div class="view-value">{{ $record->first_name ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <div class="view-value">{{ $record->last_name ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <div class="view-value">{{ $record->email ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <div class="view-value">{{ $record->mobile_no ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Fax</label>
+                                <div class="view-value">{{ $record->fax ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Rep</label>
+                                <div class="view-value">{{ $record->rep ?? '—' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ================= Contract Detail ================= --}}
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Contract Detail</h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Ticket Rate</label>
+                                <div class="view-value">{{ $record->ticket_rate ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Catering Menu</label>
+                                <div class="view-value">{{ $record->catering_menu ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Catering Price</label>
+                                <div class="view-value">{{ $record->catering_price ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Deposit Amount</label>
+                                <div class="view-value">{{ $record->deposite_amount ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Hours</label>
+                                <div class="view-value">{{ $record->hours ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Alt Contacts</label>
+                                <div class="view-value">{{ $record->alt_contact ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Notes / History</label>
+                                <div class="view-value">{{ $record->note_history ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Contract Status</label>
+                                <div class="view-value">{{ ucfirst(str_replace('_',' ', $record->contract_status)) }}</div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            @endif
+            </div>
         </div>
+    </div>
 
-        @include('portal.footer')
-    </section>
+    @include('portal.footer')
+</section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add loading state to profile picture
-            const profilePictures = document.querySelectorAll('.profile-picture');
-            profilePictures.forEach(img => {
-                img.addEventListener('load', function() {
-                    this.style.opacity = '1';
-                });
-
-                img.style.opacity = '0';
-                img.style.transition = 'opacity 0.3s ease';
-            });
-        });
-    </script>
+<style>
+.view-value{
+    padding:12px 15px;
+    background:#f9fafb;
+    border:1px solid #e5e7eb;
+    border-radius:6px;
+    font-size:.95rem;
+    color:#111827;
+}
+</style>
 @endsection

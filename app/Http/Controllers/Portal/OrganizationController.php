@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{CompanyUser, OrganizationType, Event};
+use App\Models\{CompanyUser, OrganizationType, Event, EventHistoryType,Organization};
 use Auth;
 
 class OrganizationController extends CRUDCrontroller
@@ -40,7 +40,15 @@ class OrganizationController extends CRUDCrontroller
                     'name' => 'required|min:2|max:50',
                     'organization_type_id' => 'required',
                     'event_type_id' => 'required',
+                    'contact' => 'required',
                     'department' => 'required',
+                    'city' => 'required',
+                    'state' => 'required',
+                    'country' => 'required',
+                    'zip' => 'required',
+                    'address_one' => 'required',
+                    'email' => 'required',
+                    'phone' => 'required',
                 ], $custom_messages);
 
                 break;
@@ -73,11 +81,16 @@ class OrganizationController extends CRUDCrontroller
 
         if (Auth::user()->user_type == 'company' || Auth::user()->user_type == 'salesman' || Auth::user()->user_type == 'manager') {
             $options = '<a href="' . route('organization.edit', ['organization' => $record->slug]) . '" title="Edit" class="btn btn-xs btn-primary"><i class="fa fa-pencil"></i></a>';
+            $options .= '<a href="' . route('organization.show', ['organization' => $record->slug]) . '" title="View" class="btn btn-xs btn-success"><i class="fa fa-eye"></i></a>';
             $options .= '<a title="Delete" class="btn btn-xs btn-danger _delete_record" data-slug="' . $record->slug . '"><i class="fa fa-trash"></i></a>';
+            
             return [
                 $record->name,
-                $record->organization_name,
-                $record->event_name,
+                $record->contact,
+                $record->email,
+                $record->phone,
+                $record->event_date,
+                $record->follow_up_date,
                 $record->status == 1 ? '<span class="btn btn-xs btn-success">Active</span>' : '<span class="btn btn-xs btn-danger">Disabled</span>',
                 // date(config("constants.ADMIN_DATE_FORMAT") , strtotime($record->created_at)),
                 $options
@@ -102,8 +115,9 @@ class OrganizationController extends CRUDCrontroller
     {
 
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $this->__data['organization_types'] = OrganizationType::where('company_id', $company->id)->where('status', 1)->get();
-        $this->__data['organization_events'] = Event::where('company_id', $company->id)->where('status', 1)->get();
+        $this->__data['organization_types'] = OrganizationType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+        $this->__data['organization_events'] = Event::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+        $this->__data['organization_history_events'] = EventHistoryType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
     }
 
     /**
@@ -122,8 +136,9 @@ class OrganizationController extends CRUDCrontroller
     public function beforeRenderEditView($slug)
     {
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $this->__data['organization_types'] = OrganizationType::where('company_id', $company->id)->where('status', 1)->get();
-        $this->__data['organization_events'] = Event::where('company_id', $company->id)->where('status', 1)->get();
+        $this->__data['organization_types'] = OrganizationType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+        $this->__data['organization_events'] = Event::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+         $this->__data['organization_history_events'] = EventHistoryType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
     }
 
     /**
@@ -145,7 +160,18 @@ class OrganizationController extends CRUDCrontroller
 
     public function show($slug)
     {
+        $company = CompanyUser::getCompany(Auth::user()->id);
 
+        $record = Organization::with([
+                'organizationType',
+                'eventHistory',
+                'eventType'
+            ])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
+        $this->__data['record'] = $record;
+
+        return $this->__cbAdminView($this->__detailView, $this->__data);
     }
 }

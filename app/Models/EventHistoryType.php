@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Event extends Model
+class EventHistoryType extends Model
 {
     use SoftDeletes,CRUDGenerator;
     /**
@@ -13,7 +13,7 @@ class Event extends Model
      *
      * @var string
      */
-    protected $table = 'organization_event_type';
+    protected $table = 'organization_event_history';
 
     /**
      * The primary key associated with the table.
