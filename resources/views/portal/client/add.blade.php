@@ -196,7 +196,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Phone</label>
                                                     <input required type="text" name="mobile_no" class="form-control"
-                                                        value="{{ old('mobile_no') }}" readonly>
+                                                        value="{{ old('mobile_no') }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">

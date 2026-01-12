@@ -371,15 +371,20 @@
                         @endphp
                             <a class="admin-logo c" href="{{ route('company.dashboard') }}">
                                 <h1>
-                                    <!-- Large logo -->
                                     <img style="width: 205px;" alt="logo"
-                                        src="{{ $company_logo ? \Storage::url($company_logo) : 'https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png' }}"
+                                        src="https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png"
                                         class="toggle-none hidden-xs">
+                                    <img style="width: 45px;display:none;padding-top: 10px;" alt="logo"
+                                        src="https://i.ibb.co/Fq5kfj8n/imageasdasdasdasd.png" class="for-coll">
+                                    <!-- Large logo -->
+                                    <!-- <img style="width: 205px;" alt="logo"
+                                        src="{{ $company_logo ? \Storage::url($company_logo) : 'https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png' }}"
+                                        class="toggle-none hidden-xs"> -->
 
                                     <!-- Small/collapsed logo -->
-                                    <img style="width: 45px; display:none; padding-top: 10px;" alt="logo"
+                                    <!-- <img style="width: 45px; display:none; padding-top: 10px;" alt="logo"
                                         src="{{ $company_logo ? \Storage::url($company_logo) : 'https://i.ibb.co/Fq5kfj8n/imageasdasdasdasd.png' }}"
-                                        class="for-coll">
+                                        class="for-coll"> -->
                                 </h1>
                             </a>
                         @elseif (Auth::user()->user_type == 'manager')
@@ -829,10 +834,16 @@
                                             <i class="fas fa-chevron-down arrow-icon"></i>
                                         </a>
                                         <ul class="submenu">
-                                            <li class="nav-item">
+                                            <!-- <li class="nav-item">
                                                 <a class="nav-link submenu-link"
                                                     href="{{ route('get=all-company') }}">
                                                     Company Report
+                                                </a>
+                                            </li> -->
+                                            <li class="nav-item">
+                                                <a class="nav-link submenu-link"
+                                                    href="{{ route('get=all-company') }}">
+                                                    Summary Report
                                                 </a>
                                             </li>
                                     </ul>
