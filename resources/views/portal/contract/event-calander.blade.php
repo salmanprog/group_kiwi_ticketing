@@ -1,7 +1,6 @@
 @extends('portal.master')
 
 @section('content')
-
     @push('stylesheets')
         <link href="{{ asset('admin/assets/lib/datatables/jquery.dataTables.min.css') }}" rel="stylesheet">
         <link href="{{ asset('admin/assets/lib/datatables/responsive.bootstrap.min.css') }}" rel="stylesheet">
@@ -34,7 +33,7 @@
 
     <!-- MODAL -->
     <div class="modal fade" id="contractsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-xl for-fonts-css">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Contracts</h5>
@@ -69,7 +68,7 @@
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
 
                 const calendarEl = document.getElementById('invoice-calendar');
                 const contracts = @json($contracts);
@@ -90,7 +89,7 @@
                 // CREATE EVENTS (SHOW COUNT)
                 let events = Object.keys(grouped).map(date => {
                     return {
-                        title: 'Total Groups '+grouped[date].length,
+                        title: 'Total Groups ' + grouped[date].length,
                         start: date,
                         extendedProps: {
                             contracts: grouped[date],
@@ -104,9 +103,10 @@
                     height: '80vh',
                     events: events,
 
-                    eventClick: function (info) {
+                    eventClick: function(info) {
                         info.jsEvent.preventDefault();
-                        openContractsModal(info.event.extendedProps.contracts, info.event.extendedProps.date);
+                        openContractsModal(info.event.extendedProps.contracts, info.event.extendedProps
+                            .date);
                     }
                 });
 
@@ -131,16 +131,16 @@
             //         let url = `{{ route('contract.show', ':slug') }}`.replace(':slug', contract.slug);
 
             //         list.innerHTML += `
-            //         <li class="list-group-item d-flex justify-content-between align-items-center">
-            //             <div>
-            //                 <strong>#${contract.contract_number}</strong>
-            //                 <span class="badge bg-${badge} ms-2">${contract.is_accept}</span>
-            //             </div>
-            //             <a href="${url}" class="btn btn-sm btn-outline-primary">
-            //                 View
-            //             </a>
-            //         </li>
-            //     `;
+    //         <li class="list-group-item d-flex justify-content-between align-items-center">
+    //             <div>
+    //                 <strong>#${contract.contract_number}</strong>
+    //                 <span class="badge bg-${badge} ms-2">${contract.is_accept}</span>
+    //             </div>
+    //             <a href="${url}" class="btn btn-sm btn-outline-primary">
+    //                 View
+    //             </a>
+    //         </li>
+    //     `;
             //     });
 
             //     let modal = new bootstrap.Modal(document.getElementById('contractsModal'));
@@ -165,7 +165,7 @@
                 }
 
                 contracts.forEach((contract, index) => {
-                    
+
                     let totalQty = 0;
                     let totalPrice = 0;
 
@@ -217,9 +217,29 @@
     <style>
         .main-content {
             background: #f8faf9;
+            font-family: "Poppins", sans-serif !important;
             min-height: 100vh;
             padding: 15px;
             padding-top: 90px;
+        }
+
+        .for-fonts-css {
+            font-family: "Poppins", sans-serif !important;
+        }
+
+        .for-fonts-css thead.table-light {
+            font-size: 13px;
+        }
+
+        .for-fonts-css thead.table-light tr th {
+            color: #6b7280;
+            font-weight: 700;
+        }
+
+        .for-fonts-css span.badge {
+            font-weight: 400;
+            font-size: 12px;
+            text-transform: uppercase;
         }
 
         .card {
@@ -263,5 +283,4 @@
             padding: 10px;
         }
     </style>
-
 @endsection

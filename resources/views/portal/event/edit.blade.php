@@ -56,26 +56,28 @@
                     <!-- Card Header -->
                     <div class="card-header custfor-flex-header">
                         <div class="header-content">
-                            <i class="fas fa-question-circle"></i>
+                            {{-- <i class="fas fa-question-circle"></i> --}}
                             <h3>Edit Event Type</h3>
                         </div>
                         <div class="header-actions">
                             <a href="{{ route('event-type.index') }}" class="btn btn-outline">
-                                <i class="fas fa-arrow-left"></i> Back to List
+                                {{-- <i class="fas fa-arrow-left"></i> --}}
+                                 Back to List
                             </a>
                         </div>
                     </div>
 
                     <!-- Card Body -->
                     <div class="card-body">
-                        <form method="post" action="{{ route('event-type.update',['event_type' => $record->slug]) }}" enctype="multipart/form-data">
+                        <form method="post" action="{{ route('event-type.update', ['event_type' => $record->slug]) }}"
+                            enctype="multipart/form-data">
                             {{ csrf_field() }}
                             <input type="hidden" name="_method" value="PUT">
 
                             <!-- Section: FAQ Details -->
                             <div class="form-section">
                                 <div class="section-header">
-                                    <i class="fas fa-info-circle"></i>
+                                    {{-- <i class="fas fa-info-circle"></i> --}}
                                     <h5>Event Details</h5>
                                     <span class="section-badge">Required Fields</span>
                                 </div>
@@ -84,13 +86,12 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fas fa-tag"></i>
+                                                {{-- <i class="fas fa-tag"></i> --}}
                                                 Name
                                                 <span class="required">*</span>
                                             </label>
                                             <input required type="text" name="name" class="form-control"
-                                                   placeholder="Enter FAQ name"
-                                                   value="{{ $record->name }}">
+                                                placeholder="Enter FAQ name" value="{{ $record->name }}">
                                         </div>
                                     </div>
                                 </div>
@@ -99,12 +100,14 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fas fa-toggle-on"></i>
+                                                {{-- <i class="fas fa-toggle-on"></i> --}}
                                                 Status
                                             </label>
                                             <select name="status" class="form-control">
-                                                <option value="1" {{ $record->status == 1 ? 'selected' : '' }}>Active</option>
-                                                <option value="0" {{ $record->status == 0 ? 'selected' : '' }}>Disabled</option>
+                                                <option value="1" {{ $record->status == 1 ? 'selected' : '' }}>Active
+                                                </option>
+                                                <option value="0" {{ $record->status == 0 ? 'selected' : '' }}>Disabled
+                                                </option>
                                             </select>
                                         </div>
                                     </div>
@@ -114,10 +117,12 @@
                             <!-- Actions -->
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Submit
+                                    {{-- <i class="fas fa-save"></i> --}}
+                                     Submit
                                 </button>
                                 <button type="reset" class="btn btn-secondary">
-                                    <i class="fas fa-redo"></i> Reset
+                                    {{-- <i class="fas fa-redo"></i> --}}
+                                     Reset
                                 </button>
                             </div>
                         </form>
@@ -130,12 +135,26 @@
 
     {{-- Reuse the same CSS from Add Product Category page --}}
     <style>
-        /* --- Same UI Theme --- */
+        /* --- Same UI as Organization Type Page --- */
         .main-content {
             background: #f8faf9;
             min-height: 100vh;
             padding: 30px;
             padding-top: 90px;
+        }
+
+        .btn-outline2 {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .custfor-flex-header {
@@ -154,10 +173,10 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, #A0C242 0%, #8AB933 100%);
-            border-bottom: none;
-            padding: 25px 30px;
-            color: white;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 20px 30px;
+            color: #1f2937;
         }
 
         .header-content {
@@ -174,21 +193,21 @@
         .header-content h3 {
             margin: 0;
             font-weight: 600;
-            font-size: 1.5rem;
+            font-size: 18px;
         }
 
         .header-actions .btn-outline {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            padding: 8px 16px;
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
             color: white;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .btn-outline:hover {
@@ -201,7 +220,7 @@
         }
 
         .form-section {
-            background: #f8faf9;
+            background: #ffffff;
             border: 1px solid #eaeaea;
             border-radius: 8px;
             padding: 25px;
@@ -243,13 +262,13 @@
         }
 
         .section-badge {
-            background: #eafaf1;
-            color: #A0C242;
+            background: #f3f4f6;
+            color: #374151;
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 600;
-            border: 1px solid #d5f5e3;
+            border: 1px solid #e5e7eb;
         }
 
         .form-group {
@@ -302,21 +321,20 @@
         }
 
         .btn {
-            padding: 12px 25px;
+            padding: 10px 25px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            border: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
             cursor: pointer;
+            color: #fff;
         }
 
         .btn-secondary {
-            background: #95a5a6;
-            color: white;
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #374151;
         }
 
         .btn-secondary:hover {
@@ -325,9 +343,17 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #A0C242 0%, #8AB933 100%);
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
             color: white;
-            box-shadow: 0 2px 8px rgba(160, 194, 66, 0.3);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary:hover {

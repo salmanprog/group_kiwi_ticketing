@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header custfor-flex-header">
                         <div class="header-content">
-                            <i class="fas fa-user-plus"></i>
+                            {{-- <i class="fas fa-user-plus"></i> --}}
                             <h3>Add Credit Note</h3>
                         </div>
                     </div>
@@ -21,7 +21,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fas fa-briefcase"></i>
+                                                {{-- <i class="fas fa-briefcase"></i> --}}
                                                 Amount
                                                 <span class="required">*</span>
                                             </label>
@@ -34,7 +34,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fas fa-file-invoice"></i>
+                                                {{-- <i class="fas fa-file-invoice"></i> --}}
                                                 Invoice Number
                                                 <span class="required">*</span>
                                             </label>
@@ -47,7 +47,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fas fa-file-contract"></i>
+                                                {{-- <i class="fas fa-file-contract"></i> --}}
                                                 Contract Number
                                                 <span class="required">*</span>
                                             </label>
@@ -61,11 +61,12 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fas fa-comment"></i>
+                                                {{-- <i class="fas fa-comment"></i> --}}
                                                 Reason
                                                 <span class="required">*</span>
                                             </label>
-                                            <textarea required name="reason" rows="3" style="height: 100px" class="form-control" placeholder="Enter reason for this request">{{ old('reason') }}</textarea>
+                                            <textarea required name="reason" rows="3" style="height: 100px" class="form-control"
+                                                placeholder="Enter reason for this request">{{ old('reason') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -74,10 +75,12 @@
 
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-user-plus"></i> Add
+                                    {{-- <i class="fas fa-user-plus"></i> --}}
+                                    Add
                                 </button>
                                 <button type="reset" class="btn btn-secondary">
-                                    <i class="fas fa-redo"></i> Reset Form
+                                    {{-- <i class="fas fa-redo"></i> --}}
+                                    Reset Form
                                 </button>
                             </div>
                         </form>
@@ -89,12 +92,26 @@
     </section>
 
     <style>
-        /* Professional Green Theme - #A0C242 */
+        /* --- Same UI as Estimate Page --- */
         .main-content {
             background: #f8faf9;
             min-height: 100vh;
             padding: 30px;
             padding-top: 90px;
+        }
+
+        .btn-outline2 {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .custfor-flex-header {
@@ -113,10 +130,10 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, #A0C242 0%, #8AB933 100%);
-            border-bottom: none;
-            padding: 25px 30px;
-            color: white;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 20px 30px;
+            color: #1f2937;
         }
 
         .header-content {
@@ -133,26 +150,21 @@
         .header-content h3 {
             margin: 0;
             font-weight: 600;
-            font-size: 1.5rem;
+            font-size: 18px;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-outline {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            padding: 8px 16px;
+        .header-actions .btn-outline {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
             color: white;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .btn-outline:hover {
@@ -165,11 +177,16 @@
         }
 
         .form-section {
-            background: #f8faf9;
+            background: #ffffff;
             border: 1px solid #eaeaea;
             border-radius: 8px;
             padding: 25px;
             margin-bottom: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-1px);
         }
 
         .section-header {
@@ -202,13 +219,13 @@
         }
 
         .section-badge {
-            background: #eafaf1;
-            color: #A0C242;
+            background: #f3f4f6;
+            color: #374151;
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 600;
-            border: 1px solid #d5f5e3;
+            border: 1px solid #e5e7eb;
         }
 
         .form-group {
@@ -250,39 +267,7 @@
             outline: none;
         }
 
-        .form-hint {
-            color: #7f8c8d;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: block;
-        }
-
-        /* Select2 Customization */
-        .select2-container--default .select2-selection--single {
-            border: 1px solid #dce4e0;
-            border-radius: 6px;
-            padding: 8px 15px;
-            height: auto;
-            background: #fff;
-        }
-
-        .select2-container--default .select2-selection--single:focus {
-            border-color: #A0C242;
-            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
-            outline: none;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #2c3e50;
-            font-size: 0.95rem;
-            padding: 0;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 100%;
-        }
-
-        /* Form Actions */
+        /* Actions */
         .form-actions {
             display: flex;
             gap: 15px;
@@ -293,21 +278,20 @@
         }
 
         .btn {
-            padding: 12px 25px;
+            padding: 10px 25px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            border: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
             cursor: pointer;
+            color: #fff;
         }
 
         .btn-secondary {
-            background: #95a5a6;
-            color: white;
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #374151;
         }
 
         .btn-secondary:hover {
@@ -326,7 +310,7 @@
             box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
         }
 
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
             .main-content {
                 padding: 15px;
@@ -365,20 +349,6 @@
                 width: 100%;
                 justify-content: center;
             }
-        }
-
-        /* Simple animations */
-        .form-section {
-            transition: transform 0.2s ease;
-        }
-
-        .form-section:hover {
-            transform: translateY(-1px);
-        }
-
-        /* Input focus animations */
-        .form-control:focus {
-            transform: translateY(-1px);
         }
     </style>
 @endsection
