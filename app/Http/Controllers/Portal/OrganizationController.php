@@ -163,14 +163,22 @@ class OrganizationController extends CRUDCrontroller
         $company = CompanyUser::getCompany(Auth::user()->id);
 
         $record = Organization::with([
-                'organizationType',
-                'eventHistory',
-                'eventType'
-            ])
-            ->where('slug', $slug)
-            ->firstOrFail();
+            'organizationType',
+            'eventHistory',
+            'eventType',
+            'estimate.estimateinvoices', // 👈 use your new relation name
+        ])
+        ->where('slug', $slug)
+        ->firstOrFail();
+
+        // Flatten all invoices from estimates
+        $invoices = $record->estimate
+            ->flatMap(fn($e) => $e->estimateinvoices ?? collect())
+            ->values();
 
         $this->__data['record'] = $record;
+        $this->__data['company'] = $company;
+        $this->__data['invoices'] = $invoices;
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }
