@@ -234,7 +234,7 @@
             margin-bottom: 2px;
             font-weight: 600;
             font-size: 14px;
-            line-height: 0.35px;
+            line-height: 14px;
         }
 
         .static-sidebar-menu .nav-link:hover {
