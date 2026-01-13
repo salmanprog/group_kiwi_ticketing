@@ -232,8 +232,9 @@
             text-decoration: none;
             border-radius: 13px;
             margin-bottom: 2px;
-            font-weight: 500;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 0.35px;
         }
 
         .static-sidebar-menu .nav-link:hover {
