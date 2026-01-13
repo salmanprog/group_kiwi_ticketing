@@ -620,16 +620,6 @@
              <!-- Parties Section -->
                     <div class="address-section">
                         <div class="address-box">
-                            <h4><i class="fas fa-building me-2"></i>Company Info</h4>
-                            <p>
-                                <strong>{{ $company->name }}</strong><br>
-                                {{ $company->address }}<br>
-                                <i class="fas fa-envelope me-1"></i> {{ $company->email }}<br>
-                                <i class="fas fa-phone me-1"></i> {{ $company->mobile_no }}
-                            </p>
-                        </div>
-
-                        <div class="address-box">
                             <h4><i class="fas fa-users me-2"></i>Account Info</h4>
                             <p>
                                 <strong>{{ $organizations->name }}</strong><br>
@@ -647,61 +637,339 @@
                             </p>
                         </div>
                     </div>
-                    <!-- Linked Estimates -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-file-invoice-dollar me-2"></i>Estimates Linked to this Client
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Estimate #</th>
-                                            <th>Issue Date</th>
-                                            <th>Status</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($record->estimates ?? [] as $estimate)
-                                            <tr>
-                                                <td>
-                                                    <a href="{{ route('estimate.show', $estimate->slug) }}" class="text-decoration-none fw-bold">
-                                                        <i class="fas fa-external-link-alt me-1"></i>
-                                                        {{ strtoupper($estimate->estimate_number ?? $estimate->slug) }}
-                                                    </a>
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($estimate->issue_date)->format('F j, Y') }}</td>
-                                                <td>
-                                                    <span class="badge status-{{ $estimate->status }}">
-                                                        {{ strtoupper($estimate->status ?? '-') }}
-                                                    </span>
-                                                    @if ($estimate->is_adjusted)
-                                                        <small class="text-muted"><em>(Adjusted)</em></small>
-                                                    @endif
-                                                </td>
-                                                <td>${{ number_format($estimate->total ?? 0, 2) }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center text-muted py-4">
-                                                    <i class="fas fa-inbox fa-2x mb-2"></i><br>
-                                                    <em>No estimates linked to this client.</em>
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+
+                    <!-- Address Details Section -->
+                    <div class="address-section">
+                        <div class="address-box">
+                            <h4><i class="fas fa-users me-2"></i>Address Info</h4>
+                            <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">City</label>
+                                <div class="view-value">{{ $record->organization->city ?? '—' }}</div>
                             </div>
 
-                            @if (Auth::user()->user_type == 'company')
-                                <div class="mt-3 text-end">
-                                    <a href="{{ route('estimate.create', ['client' => encrypt($record->slug)]) }}" class="btn btn-primary">
-                                        <i class="fas fa-plus me-1"></i>Add New Estimate
-                                    </a>
-                                </div>
-                            @endif
+                            <div class="col-md-6">
+                                <label class="form-label">State</label>
+                                <div class="view-value">{{ $record->organization->state ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Country</label>
+                                <div class="view-value">{{ $record->organization->country ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Zip</label>
+                                <div class="view-value">{{ $record->organization->zip ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Address Line 1</label>
+                                <div class="view-value">{{ $record->organization->address_one ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Address Line 2</label>
+                                <div class="view-value">{{ $record->organization->address_two ?? '—' }}</div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Details Section -->
+                    <div class="address-section">
+                        <div class="address-box">
+                            <h4><i class="fas fa-users me-2"></i>Contact Info</h4>
+                            <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <div class="view-value">{{ $record->first_name ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <div class="view-value">{{ $record->last_name ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <div class="view-value">{{ $record->email ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <div class="view-value">{{ $record->mobile_no ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Fax</label>
+                                <div class="view-value">{{ $record->fax ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Rep</label>
+                                <div class="view-value">{{ $record->rep ?? '—' }}</div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- Contract Details Section -->
+                    <div class="address-section">
+                        <div class="address-box">
+                            <h4><i class="fas fa-users me-2"></i>Contract Info</h4>
+                            <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Ticket Rate</label>
+                                <div class="view-value">{{ $record->ticket_rate ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Catering Menu</label>
+                                <div class="view-value">{{ $record->catering_menu ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Catering Price</label>
+                                <div class="view-value">{{ $record->catering_price ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Deposit Amount</label>
+                                <div class="view-value">{{ $record->deposite_amount ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Hours</label>
+                                <div class="view-value">{{ $record->hours ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Alt Contacts</label>
+                                <div class="view-value">{{ $record->alt_contact ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Notes / History</label>
+                                <div class="view-value">{{ $record->note_history ?? '—' }}</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Contract Status</label>
+                                <div class="view-value">{{ ucfirst(str_replace('_',' ', $record->contract_status)) }}</div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                   <!-- Notes DETAILS -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Notes</h5>
+                            <small id="notes-status" class="text-success"></small>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-section mt-4">
+                                @if($activityLog->count())
+                                    <ul class="list-group" id="activityLogList">
+                                        @foreach($activityLog as $log)
+                                            <li class="list-group-item">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
+                                                        <div class="text-muted small">
+                                                            {{ $log->notesTextarea ?? '' }}
+                                                        </div>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        {{ $log->created_at->format('d M Y, h:i A') }}
+                                                    </small>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-muted">No activity found.</p>
+                                @endif
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Add Notes</label>
+                                <input type="hidden" name="client_id" id="client_id" value="{{$record->client_id}}">
+                                <input type="hidden" name="organization_id" id="organization_id" value="{{$record->organization_id}}">
+                                <textarea
+                                    id="notesTextarea"
+                                    class="form-control"
+                                    rows="4"
+                                    readonly
+                                    placeholder="Click here to add notes..."
+                                >{{ $organizations->notes ?? '' }}</textarea>
+
+                                <button
+                                    id="saveNotesBtn"
+                                    class="btn btn-primary mt-2 d-none"
+                                >
+                                    Save Notes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linked Estimates -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Estimates Information</h5>
+                            <span class="section-badge"><a href="{{ route('estimate.create') }}" target="_blank">Add New Estimate</a></span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Estimate No</th>
+                                    <th>Status</th>
+                                    <th>Estimate Date</th>
+                                    <th>Refrence</th>
+                                    <th>Subtotal</th>
+                                    <th>Amount</th>
+                                    <th>Valid Until</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($organizations->estimate as $key => $estimate)
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td><a href="{{ route('estimate.show', ['estimate' => $estimate->slug]) }}" target="_blank">
+                                            {{ $estimate->estimate_number ?? '-' }}
+                                        </a></td>
+                                        <td>{{ $estimate->status ?? '-' }}</td>
+                                        <td>{{ $estimate->issue_date ?? '-' }}</td>
+                                        <td>-</td>
+                                        <td>
+                                            {{ isset($estimate->subtotal) 
+                                                ? number_format($estimate->subtotal, 2) 
+                                                : '-' }}
+                                        </td>
+                                        <td>
+                                            {{ isset($estimate->total) 
+                                                ? number_format($estimate->total, 2) 
+                                                : '-' }}
+                                        </td>
+                                        <td>{{ $estimate->valid_until ?? '-' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">
+                                            No estimates found
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+
+                     <!-- Contract INFORMATION -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Contract Information</h5>
+                            <span class="section-badge">
+                                <a href="{{ route('estimate.create') }}" target="_blank">Add New Contract</a>
+                            </span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Contract No</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($organizations->contract as $key => $contract)
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+
+                                        <td>
+                                            <a href="{{ route('contract.show', ['contract' => $contract->slug]) }}" target="_blank">
+                                                {{ $contract->contract_number ?? '-' }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $contract->client->name ?? '-' }}</td>
+                                        <td>
+                                            @if ($contract->is_accept)
+                                                <span class="badge bg-success">Accepted</span>
+                                            @else
+                                                <span class="badge bg-warning">Pending</span>
+                                            @endif
+                                        </td>
+
+                                        <td>{{ number_format($contract->total ?? 0, 2) }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">
+                                            No contract found
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Invoice INFORMATION -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Invoice Information</h5>
+                            <span class="section-badge">
+                                <a href="{{ route('estimate.create') }}" target="_blank">Add New Invoice</a>
+                            </span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Invoice No</th>
+                                        <th>Status</th>
+                                        <th>Invoice Date</th>
+                                        <th>Due Date</th>
+                                        <th>Reference</th>
+                                        <th>Subtotal</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($invoices as $key => $invoice)
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>
+                                                <a href="{{ route('invoice.show', $invoice->slug) }}" target="_blank">
+                                                    {{ $invoice->invoice_number ?? '-' }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $invoice->status ?? '-' }}</td>
+                                            <td>{{ $invoice->issue_date ?? '-' }}</td>
+                                            <td>{{ $invoice->due_date ?? '-' }}</td>
+                                            <td>{{ $invoice->reference ?? '-' }}</td>
+                                            <td>{{ number_format($invoice->subtotal ?? 0, 2) }}</td>
+                                            <td>{{ number_format($invoice->total ?? 0, 2) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">
+                                                No invoices found
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -712,4 +980,93 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const textarea = document.getElementById('notesTextarea');
+    const saveBtn = document.getElementById('saveNotesBtn');
+    const status = document.getElementById('notes-status');
+
+    const clientId = document.getElementById('client_id').value;
+    const orgId = document.getElementById('organization_id').value;
+
+    let originalText = textarea.value;
+
+    // Enable editing on click
+    textarea.addEventListener('click', function () {
+        textarea.removeAttribute('readonly');
+        saveBtn.classList.remove('d-none');
+        originalText = textarea.value;
+    });
+
+    // Save notes
+    saveBtn.addEventListener('click', function () {
+        saveBtn.disabled = true;
+        status.textContent = 'Saving...';
+
+        fetch("{{ route('organization.notes.save') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin', // ✅ important to send session
+            body: JSON.stringify({
+                notes: textarea.value,
+                client_id: clientId,
+                organization_id: orgId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                status.textContent = 'Error saving';
+                return;
+            }
+
+            // Clear textarea
+            textarea.value = '';
+            textarea.setAttribute('readonly', true);
+            saveBtn.classList.add('d-none');
+            status.textContent = 'Saved ✔';
+
+            // Update activity log dynamically
+            const list = document.getElementById('activityLogList');
+            list.innerHTML = '';
+
+            data.activityLogs.forEach(log => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+
+                li.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>${log.createdBy?.name ?? 'System'}</strong>
+                            <div class="text-muted small">
+                                ${log.notesTextarea}
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            ${log.created_at}
+                        </small>
+                    </div>
+                `;
+
+                list.appendChild(li);
+            });
+
+            setTimeout(() => status.textContent = '', 2000);
+        })
+        .catch(err => {
+            console.error(err);
+            textarea.value = originalText;
+            status.textContent = 'Error saving';
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+        });
+    });
+});
+</script>
+
+
     @endsection

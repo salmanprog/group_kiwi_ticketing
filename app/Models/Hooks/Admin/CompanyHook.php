@@ -143,7 +143,7 @@ class CompanyHook
         foreach ($organizationTypes as $type) {
             \DB::table('organization_type')->insert([
                 'name' => $type,
-                'company_id' => $record->id,
+                'created_by' => $record->id,
                 'slug' => Str::slug($type) . $record->id,
             ]);
         }

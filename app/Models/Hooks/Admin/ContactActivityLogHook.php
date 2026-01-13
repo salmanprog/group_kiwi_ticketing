@@ -1,10 +1,15 @@
 <?php
 
 namespace App\Models\Hooks\Admin;
-use App\Models\{CompanyUser};
-use Auth;
 
-class OrganizationHook
+use Illuminate\Support\Facades\Hash;
+use App\Models\{Company, CompanyUser, CompanyAdmin};
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+
+class ContactActivityLogHook
 {
     private $_model;
 
@@ -21,44 +26,9 @@ class OrganizationHook
    | @request = laravel http request class
    |
    */
-    public function hook_query_index(&$query,$request, $slug=NULL) {
-        //Your code here
-
-        $query->select('organizations.*','organization_type.name as organization_name','organization_event_type.name as event_name')
-        ->join('organization_type','organization_type.id','organizations.organization_type_id')
-        ->join('organization_event_type','organization_event_type.id','organizations.event_type_id');
-
-        if(Auth::user()->user_type != 'admin'){
-               if(Auth::user()->user_type != 'client'){
-                    $getCompany = CompanyUser::getCompany(Auth::user()->id); 
-                    $query->where('organizations.company_id', $getCompany->id);   
-                }else{
-                    $query->where('organizations.client_id', Auth::user()->id);
-                }   
-        }            
-
-        if( !empty($request['keyword']) ){
-            $keyword = $request['keyword'];
-            $query->where(function($where) use ($keyword){
-                $where->orWhere('organizations.name','like',"$keyword%");
-                $where->orWhere('organization_type.name','like',"$keyword%");
-                $where->orWhere('organization_event_type.name','like',"$keyword%");
-            });
-        }
-
-            if (!empty($request['start_date']) && !empty($request['end_date'])) {
-                $query->whereBetween('organizations.created_at', [
-                    $request['start_date'] . ' 00:00:00',
-                    $request['end_date'] . ' 23:59:59'
-                ]);
-            }
-
-        if( !empty($request['status']) && $request['status'] != 'all' ){
-            $status = ( $request['status'] == 'active' ) ? 1 : 0;
-            $query->where('organizations.status', $status);
-        }
-
-
+    public function hook_query_index(&$query, $request, $slug = NULL)
+    {
+        
     }
 
     /*
@@ -68,12 +38,10 @@ class OrganizationHook
     | @arr
     |
     */
-    public function hook_before_add($request,&$postdata)
+    public function hook_before_add($request, &$postdata)
     {
-        $getCompany = CompanyUser::getCompany(Auth::user()->id); 
-        $postdata['company_id'] = $getCompany->id;
-        $postdata['created_by'] = Auth::user()->id;
-        $postdata['slug'] = uniqid() . time();
+        $postdata['slug'] = $this->_model::generateUniqueSlug(uniqid(uniqid()));
+
     }
 
     /*
@@ -83,9 +51,9 @@ class OrganizationHook
     | @record
     |
     */
-    public function hook_after_add($request,$record)
+    public function hook_after_add($request, $record)
     {
-        //Your code here
+        
     }
 
     /*
@@ -99,7 +67,7 @@ class OrganizationHook
     */
     public function hook_before_edit($request, $slug, &$postData)
     {
-        $postData['updated_by'] = Auth::user()->id;
+
     }
 
     /*
@@ -110,7 +78,8 @@ class OrganizationHook
     | @$slug    = $slug
     |
     */
-    public function hook_after_edit($request, $slug) {
+    public function hook_after_edit($request, $slug)
+    {
         //Your code here
     }
 
@@ -122,7 +91,8 @@ class OrganizationHook
     | @$id      = record id = int / array
     |
     */
-    public function hook_before_delete($request, $slug) {
+    public function hook_before_delete($request, $slug)
+    {
         //Your code here
 
     }
@@ -135,13 +105,14 @@ class OrganizationHook
     | @records        = deleted records
     |
     */
-    public function hook_after_delete($request,$records) {
+    public function hook_after_delete($request, $records)
+    {
         //Your code here
     }
 
     public function create_cache_signature($request)
     {
-        $cache_params = $request->except(['user','api_token']);
-        return 'product_' . md5(implode('',$cache_params));
+        $cache_params = $request->except(['user', 'api_token']);
+        return 'UserAdmin_' . md5(implode('', $cache_params));
     }
 }

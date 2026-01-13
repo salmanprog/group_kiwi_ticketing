@@ -11,6 +11,9 @@
                         <h3>Account Details</h3>
                     </div>
                     <div class="header-actions">
+                        <a href="{{ route('organization.edit', ['organization' => $record->slug]) }}" class="btn btn-outline">
+                            Edit
+                        </a>
                         <a href="{{ route('organization.index') }}" class="btn btn-outline">
                             Back to List
                         </a>
@@ -19,29 +22,33 @@
 
                 <div class="card-body">
 
-                    <!-- OWNER INFORMATION -->
-                    <div class="form-section">
+                    <!-- Company INFORMATION -->
+                    <!-- <div class="form-section">
                         <div class="section-header">
-                            <h5>Owner Information</h5>
+                            <h5>Company Information</h5>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label">Account Owner</label>
+                                <label class="form-label">Company Name</label>
                                 <div class="view-field">{{ $company->name ?? '-' }}</div>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Owner Email</label>
-                                <div class="view-field">{{ $record->email ?? '-' }}</div>
+                                <label class="form-label">Company Email</label>
+                                <div class="view-field">{{ $company->email ?? '-' }}</div>
                             </div>
 
-                            <div class="col-md-12">
-                                <label class="form-label">Owner Phone</label>
-                                <div class="view-field">{{ $record->mobile_no ?? '-' }}</div>
+                            <div class="col-md-6">
+                                <label class="form-label">Company Phone</label>
+                                <div class="view-field">{{ $company->mobile_no ?? '-' }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Company Website</label>
+                                <div class="view-field">{{ $company->website ?? '-' }}</div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- BASIC INFORMATION -->
                     <div class="form-section">
@@ -56,13 +63,13 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Account Owner</label>
-                                <div class="view-field">{{ $company->name ?? '-' }}</div>
+                                <label class="form-label">Account Email</label>
+                                <div class="view-field">{{ $record->email ?? '-' }}</div>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Contact</label>
-                                <div class="view-field">{{ $record->contact ?? '-' }}</div>
+                                <div class="view-field">{{ $record->phone ?? '-' }}</div>
                             </div>
 
                             <div class="col-md-6">
@@ -129,7 +136,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">Created By</label>
-                                <div class="view-field">{{ $record->description ?? '-' }}</div>
+                                <div class="view-field">{{ $record->createdBy->name ?? 'N/A' }} {{ $record->createdBy->created_at ?? '' }}</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Currcency</label>
@@ -137,7 +144,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Modified By</label>
-                                <div class="view-field">{{ $record->description ?? '-' }}</div>
+                                <div class="view-field">{{ $record->updatedBy->name ?? 'N/A'}} {{ $record->createdBy->updated_at ?? '' }}</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Exchange Rate</label>
@@ -147,7 +154,7 @@
                     </div>
 
                     <!-- Notes DETAILS -->
-                    <div class="form-section">
+                    <!-- <div class="form-section">
                         <div class="section-header">
                             <h5>Notes</h5>
                         </div>
@@ -158,7 +165,7 @@
                                 <div class="view-field"><textarea></textarea></div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- CONTACT INFORMATION -->
                     <div class="form-section">
@@ -169,7 +176,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">Contact Name</label>
-                                <div class="view-field">{{ $record->name ?? '-' }}</div>
+                                <div class="view-field">{{ $record->contact ?? '-' }}</div>
                             </div>
 
                             <div class="col-md-6">
@@ -244,6 +251,60 @@
                         </div>
                     </div>
 
+                    <!-- Contract INFORMATION -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Contract Information</h5>
+                            <span class="section-badge">
+                                <a href="{{ route('estimate.create') }}" target="_blank">Add New Contract</a>
+                            </span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Contract No</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($record->contract as $key => $contract)
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+
+                                        <td>
+                                            <a href="{{ route('contract.show', ['contract' => $contract->slug]) }}" target="_blank">
+                                                {{ $contract->contract_number ?? '-' }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $contract->client->name ?? '-' }}</td>
+                                        <td>
+                                            @if ($contract->is_accept)
+                                                <span class="badge bg-success">Accepted</span>
+                                            @else
+                                                <span class="badge bg-warning">Pending</span>
+                                            @endif
+                                        </td>
+
+                                        <td>{{ number_format($contract->total ?? 0, 2) }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">
+                                            No contract found
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    
                     <!-- Invoice INFORMATION -->
                     <div class="form-section">
                         <div class="section-header">
@@ -295,27 +356,7 @@
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h5>Emails</h5>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                            <td colspan="8" class="text-center text-muted">
-                                                No Emails found
-                                            </td>
-                                        </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-
+                    
                     <!-- EVENT & OPPORTUNITY -->
                     <!-- <div class="form-section">
                         <div class="section-header">

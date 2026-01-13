@@ -166,12 +166,15 @@ class OrganizationController extends CRUDCrontroller
             'organizationType',
             'eventHistory',
             'eventType',
+            'createdBy',
+            'updatedBy',
+            'contract.client',
             'estimate.estimateinvoices', // 👈 use your new relation name
         ])
         ->where('slug', $slug)
         ->firstOrFail();
 
-        // Flatten all invoices from estimates
+        // Flatten all invoices from estimate
         $invoices = $record->estimate
             ->flatMap(fn($e) => $e->estimateinvoices ?? collect())
             ->values();
