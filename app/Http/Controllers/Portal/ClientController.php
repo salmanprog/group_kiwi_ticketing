@@ -137,10 +137,25 @@ class ClientController extends CRUDCrontroller
     
     public function show($slug)
     {
-         $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
-        $record = Client::with('organization')->where('slug', $slug)
+        $company = CompanyUser::getCompany(Auth::user()->id);
+         $this->__data['organizations'] = Organization::with([
+            'organizationType',
+            'eventHistory',
+            'eventType',
+            'estimate.estimateinvoices', // 👈 use your new relation name
+        ])->where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->first();
+        // Load client with estimates and invoices
+        $record = Client::with('estimates.estimateinvoices')
+            ->where('slug', $slug)
             ->firstOrFail();
+
+        // Flatten invoices from all estimates
+        $invoices = $record->estimates
+            ->flatMap(fn($e) => $e->estimateinvoices ?? collect())
+        ->values();
         $this->__data['record'] = $record;
+        $this->__data['company'] = $company;
+        $this->__data['invoices'] = $invoices;
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }

@@ -1,7 +1,7 @@
 @extends('portal.master')
 
 @section('content')
-<style>
+    <style>
         :root {
             --primary-color: #A0C242;
             --primary-dark: #8AA835;
@@ -17,468 +17,699 @@
             font-family: "Poppins", sans-serif !important;
             background-color: #f5f7fa;
             color: var(--text-color);
+            font-size: 14px !important;
+            line-height: 1.4;
         }
 
-        .main-content {
-            background: #f8faf9;
-            min-height: 100vh;
-            padding: 30px;
-            padding-top: 90px;
+        /* Mobile First Approach */
+        .contract-wrapper {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        .contract-header {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .contract-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .contract-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .contract-number {
+            background: var(--primary-light);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .status.pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .status.accepted {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .status.rejected {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .status.draft {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .address-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .address-box {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            box-sizing: border-box;
+        }
+
+        .address-box h4 {
+            margin-bottom: 12px;
+            color: #1f2937;
+            font-weight: 600;
+            border-bottom: 1px solid var(--primary-light);
+            padding-bottom: 6px;
+            font-size: 16px;
         }
 
         .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(160, 194, 66, 0.1);
-            margin-bottom: 30px;
-            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            margin-bottom: 20px;
             overflow: hidden;
         }
 
         .card-header {
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 20px 30px;
-            color: #1f2937;
-        }
-
-        .card-header h3 {
-            margin: 0;
+            background: #F8F9FA;
+            border-bottom: 1px solid var(--primary-color);
+            color: var(--secondary-color);
             font-weight: 600;
-            font-size: 18px;
+            padding: 12px 15px;
+            border-radius: 0 !important;
+            font-size: 15px;
         }
 
-        .card-body {
-            padding: 30px;
+        /* Table Responsiveness */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .client-details-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            align-items: start;
+        .table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 600px;
         }
 
-        .client-info {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            padding: 15px;
-            background: #ffffff;
-            border: 1px solid #eaeaea;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .info-item:hover {
-            transform: translateX(5px);
-            border-color: #A0C242;
-        }
-
-        .info-icon {
-            width: 45px;
-            height: 45px;
-            background: #f3f4f6;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #374151;
-            font-size: 18px;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-
-        .info-content {
-            flex: 1;
-        }
-
-        .info-label {
+        .table th {
+            background: #F8F9FA;
+            color: var(--secondary-color);
+            font-weight: 600;
+            padding: 12px 8px;
+            text-align: left;
+            border: 1px solid var(--border-color);
             font-size: 13px;
-            color: #7f8c8d;
-            font-weight: 500;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        .info-value {
+        .table td {
+            padding: 10px 8px;
+            border: 1px solid var(--border-color);
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(160, 194, 66, 0.05);
+        }
+
+        /* Badge Styles */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
             font-weight: 600;
-            color: #2c3e50;
-            font-size: 16px;
-            margin: 0;
+            font-size: 11px;
+            display: inline-block;
         }
 
-        .profile-section {
-            text-align: center;
-            padding: 20px;
-            background: #ffffff;
-            border: 1px solid #eaeaea;
-            border-radius: 12px;
+        .bg-success {
+            background-color: #28a745 !important;
         }
 
-        .profile-picture {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #A0C242;
-            box-shadow: 0 4px 20px rgba(160, 194, 66, 0.2);
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
+        .bg-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
         }
 
-        .profile-picture:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(160, 194, 66, 0.3);
+        .bg-danger {
+            background-color: #dc3545 !important;
         }
 
-        .profile-label {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 16px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
-            background: #f3f4f6;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eaeaea;
-        }
-
+        /* Button Styles for Mobile */
         .btn {
             border-radius: 6px;
             font-weight: 600;
-            padding: 10px 25px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            border: none;
             font-size: 14px;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-            cursor: pointer;
-            text-decoration: none;
+            width: 100%;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+            text-align: center;
+            display: block;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #A0C242 0%, #8AB933 100%);
+            background: var(--primary-color) !important;
+            border: 1px solid var(--primary-color) !important;
             color: white;
-            box-shadow: 0 2px 8px rgba(160, 194, 66, 0.3);
         }
 
         .btn-primary:hover {
+            background: var(--primary-dark);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
         }
 
-        .btn-outline-secondary {
-            background: #ffffff;
-            border-color: #d1d5db;
-            color: #374151;
+        .btn-success {
+            background: #28a745;
+            color: white;
         }
 
-        .btn-outline-secondary:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
         }
 
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            width: auto;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        .btn-lg {
+            padding: 12px 20px;
+            font-size: 16px;
+        }
+
+        /* Form Styles */
+        .form-control {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(160, 194, 66, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--secondary-color);
+            display: block;
+            font-size: 14px;
+        }
+
+        /* Alert Styles */
         .alert {
-            border-radius: 8px;
-            border: none;
-            padding: 15px 20px;
-            margin-bottom: 25px;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
         .alert-success {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            background-color: #d4edda;
+            border-color: #c3e6cb;
             color: #155724;
-            border-left: 4px solid #28a745;
         }
 
         .alert-danger {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
             color: #721c24;
-            border-left: 4px solid #dc3545;
         }
 
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 15px;
-                padding-top: 90px;
+        /* Utility Classes */
+        .text-success {
+            color: #28a745 !important;
+            font-weight: 600;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+            font-weight: 600;
+        }
+
+        .text-muted {
+            color: var(--text-light);
+        }
+
+        .fw-bold {
+            font-weight: 600;
+        }
+
+        .fw-semibold {
+            font-weight: 500;
+        }
+
+        .theme-bg {
+            background-color: var(--primary-color) !important;
+        }
+
+        .theme-text {
+            color: #1f2937 !important;
+        }
+
+        /* Action Sections */
+        .actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Nested Tables */
+        .table-sm {
+            font-size: 12px;
+        }
+
+        .table-sm th,
+        .table-sm td {
+            padding: 6px 8px;
+        }
+
+        /* Small Mobile Optimization */
+        @media (max-width: 480px) {
+            .contract-wrapper {
+                padding: 12px;
+                margin-top: 10px;
             }
 
-            .card-body {
-                padding: 20px;
+            .contract-title {
+                font-size: 18px;
             }
 
-            .client-details-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+            .address-box {
+                padding: 12px;
             }
 
-            .profile-section {
-                order: -1;
+            .address-box h4 {
+                font-size: 15px;
             }
 
-            .profile-picture {
-                width: 150px;
-                height: 150px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
+            .card-header {
+                padding: 10px 12px;
+                font-size: 14px;
             }
 
             .btn {
-                width: 100%;
-                justify-content: center;
+                padding: 8px 12px;
+                font-size: 13px;
             }
 
-            .info-item {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
+            .btn-lg {
+                padding: 10px 16px;
+                font-size: 14px;
             }
 
-            .info-icon {
-                align-self: center;
+            .table th,
+            .table td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+
+            .alert {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .form-control {
+                padding: 8px;
+                font-size: 13px;
             }
         }
 
-        .empty-state {
+        /* Fix for very small screens */
+        @media (max-width: 360px) {
+            .contract-wrapper {
+                padding: 10px;
+            }
+
+            .contract-title {
+                font-size: 18px;
+            }
+
+            .address-box {
+                padding: 10px;
+            }
+
+            .btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .table {
+                min-width: 500px;
+            }
+        }
+
+        /* Tablet Styles */
+        @media (min-width: 768px) {
+            .contract-wrapper {
+                padding: 25px;
+                border-radius: 10px;
+            }
+
+            .contract-title {
+                font-size: 18px;
+            }
+
+            .contract-meta {
+                flex-direction: row;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .address-section {
+                flex-direction: row;
+            }
+
+            .address-box {
+                flex: 1;
+                min-width: 200px;
+                padding: 20px;
+            }
+
+            .card-header {
+                padding: 15px 20px;
+                font-size: 16px;
+            }
+
+            .btn {
+                width: auto;
+                margin-bottom: 0;
+            }
+
+            /* Client Actions */
+            .d-flex.justify-content-center.gap-3 {
+                flex-direction: row;
+            }
+
+            .d-flex.justify-content-center.gap-3 .btn {
+                width: auto;
+            }
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 992px) {
+            .contract-wrapper {
+                padding: 30px;
+            }
+
+            .contract-title {
+                font-size: 18px;
+            }
+
+            .address-box {
+                padding: 25px;
+            }
+
+            .table th {
+                padding: 15px;
+                font-size: 14px;
+            }
+
+            .table td {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+
+        /* Client Actions Specific Styles */
+        .d-flex.justify-content-center.gap-3 {
+            display: flex !important;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        @media (min-width: 576px) {
+            .d-flex.justify-content-center.gap-3 {
+                flex-direction: row;
+            }
+        }
+
+        /* Nested Table Container */
+        .nested-table-container {
+            background: var(--light-bg);
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        /* Text Center for Mobile */
+        .text-center-mobile {
             text-align: center;
-            padding: 40px 20px;
-            color: #6b7280;
+        }
+
+        @media (min-width: 768px) {
+            .text-center-mobile {
+                text-align: left;
+            }
+        }
+
+        /* Improve touch targets */
+        .btn,
+        .table td {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Loading states */
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Focus states for accessibility */
+        .btn:focus,
+        .form-control:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Ensure proper text wrapping */
+        .address-box p,
+        .card-body p {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Icon sizing */
+        .fas {
+            font-size: 0.9em;
+        }
+
+        /* Small text adjustments */
+        small {
+            font-size: 12px;
+        }
+
+        span.badge.status-sent{
+            color:red;
+        }
+
+        @media (min-width: 768px) {
+            small {
+                font-size: 13px;
+            }
         }
     </style>
-<section class="main-content">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            @include('portal.flash-message')
 
-            <div class="card">
-                <div class="card-header custfor-flex-header">
-                    <div class="header-content">
-                        <h3>View Contact</h3>
+    <section class="main-content">
+        <div class="container">
+            <div class="contract-wrapper">
+
+                <!-- Contract Header -->
+                <div class="contract-header">
+                    <div class="contract-title">
+                        <i class="fas fa-file-contract me-2"></i>Contact Details
                     </div>
+
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
                 </div>
 
-                <div class="card-body">
-
-                    {{-- ================= Contact Details ================= --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h5>Contact Details</h5>
+               
+            
+             <!-- Parties Section -->
+                    <div class="address-section">
+                        <div class="address-box">
+                            <h4><i class="fas fa-building me-2"></i>Company Info</h4>
+                            <p>
+                                <strong>{{ $company->name }}</strong><br>
+                                {{ $company->address }}<br>
+                                <i class="fas fa-envelope me-1"></i> {{ $company->email }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ $company->mobile_no }}
+                            </p>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label class="form-label">Title</label>
-                                <div class="view-value">{{ $record->title ?? '—' }}</div>
+                        <div class="address-box">
+                            <h4><i class="fas fa-users me-2"></i>Account Info</h4>
+                            <p>
+                                <strong>{{ $organizations->name }}</strong><br>
+                                <i class="fas fa-envelope me-1"></i> {{ $organizations->email ?? '-' }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ $organizations->mobile_no ?? '-' }}
+                            </p>
+                        </div>
+
+                        <div class="address-box">
+                            <h4><i class="fas fa-user me-2"></i>Contact Info</h4>
+                            <p>
+                                <strong>{{ $record->first_name }} {{ $record->last_name }}</strong><br>
+                                <i class="fas fa-envelope me-1"></i> {{ $record->email ?? '-' }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ $record->mobile_no ?? '-' }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Linked Estimates -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>Estimates Linked to this Client
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Estimate #</th>
+                                            <th>Issue Date</th>
+                                            <th>Status</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($record->estimates ?? [] as $estimate)
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ route('estimate.show', $estimate->slug) }}" class="text-decoration-none fw-bold">
+                                                        <i class="fas fa-external-link-alt me-1"></i>
+                                                        {{ strtoupper($estimate->estimate_number ?? $estimate->slug) }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($estimate->issue_date)->format('F j, Y') }}</td>
+                                                <td>
+                                                    <span class="badge status-{{ $estimate->status }}">
+                                                        {{ strtoupper($estimate->status ?? '-') }}
+                                                    </span>
+                                                    @if ($estimate->is_adjusted)
+                                                        <small class="text-muted"><em>(Adjusted)</em></small>
+                                                    @endif
+                                                </td>
+                                                <td>${{ number_format($estimate->total ?? 0, 2) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">
+                                                    <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                                    <em>No estimates linked to this client.</em>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Salutation</label>
-                                <div class="view-value">{{ $record->salutation ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Account</label>
-                                <div class="view-value">
-                                    {{ optional($record->organization)->name ?? 'N/A' }}
+                            @if (Auth::user()->user_type == 'company')
+                                <div class="mt-3 text-end">
+                                    <a href="{{ route('estimate.create', ['client' => encrypt($record->slug)]) }}" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Add New Estimate
+                                    </a>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ================= Account Information ================= --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h5>Account Information</h5>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Account Name</label>
-                                <div class="view-value">{{ $record->organization->name ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Contact</label>
-                                <div class="view-value">{{ $record->organization->contact ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Department</label>
-                                <div class="view-value">{{ $record->organization->department ?? '—' }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ================= Address Details ================= --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h5>Address Details</h5>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">City</label>
-                                <div class="view-value">{{ $record->organization->city ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">State</label>
-                                <div class="view-value">{{ $record->organization->state ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Country</label>
-                                <div class="view-value">{{ $record->organization->country ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Zip</label>
-                                <div class="view-value">{{ $record->organization->zip ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Address Line 1</label>
-                                <div class="view-value">{{ $record->organization->address_one ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Address Line 2</label>
-                                <div class="view-value">{{ $record->organization->address_two ?? '—' }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ================= Contact Information ================= --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h5>Contact Information</h5>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">First Name</label>
-                                <div class="view-value">{{ $record->first_name ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Last Name</label>
-                                <div class="view-value">{{ $record->last_name ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <div class="view-value">{{ $record->email ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <div class="view-value">{{ $record->mobile_no ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Fax</label>
-                                <div class="view-value">{{ $record->fax ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Rep</label>
-                                <div class="view-value">{{ $record->rep ?? '—' }}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ================= Contract Detail ================= --}}
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h5>Contract Detail</h5>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Ticket Rate</label>
-                                <div class="view-value">{{ $record->ticket_rate ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Catering Menu</label>
-                                <div class="view-value">{{ $record->catering_menu ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Catering Price</label>
-                                <div class="view-value">{{ $record->catering_price ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Deposit Amount</label>
-                                <div class="view-value">{{ $record->deposite_amount ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Hours</label>
-                                <div class="view-value">{{ $record->hours ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Alt Contacts</label>
-                                <div class="view-value">{{ $record->alt_contact ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Notes / History</label>
-                                <div class="view-value">{{ $record->note_history ?? '—' }}</div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Contract Status</label>
-                                <div class="view-value">{{ ucfirst(str_replace('_',' ', $record->contract_status)) }}</div>
-                            </div>
+                            @endif
                         </div>
                     </div>
 
                 </div>
-            </div>
-        </div>
-    </div>
+        </section>
 
-    @include('portal.footer')
-</section>
-
-<style>
-.view-value{
-    padding:12px 15px;
-    background:#f9fafb;
-    border:1px solid #e5e7eb;
-    border-radius:6px;
-    font-size:.95rem;
-    color:#111827;
-}
-</style>
-@endsection
+        <!-- Bootstrap & Font Awesome -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @endsection
