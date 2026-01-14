@@ -1007,9 +1007,10 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
             },
-            credentials: 'same-origin', // ✅ important to send session
+            credentials: 'same-origin',
             body: JSON.stringify({
                 notes: textarea.value,
                 client_id: clientId,
