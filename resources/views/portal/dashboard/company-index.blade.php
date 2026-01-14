@@ -13,7 +13,7 @@
         <!-- Widgets -->
         <div class="row">
             @foreach ($widgets as $widget)
-                <div class="col-lg col-md-4 col-sm-6">
+                <div class="col-lg col-md-4 col-sm-6 for-gp-cust">
                     <a href="{{ $widget['link'] }}" class="text-decoration-none">
                         <div class="card text-white cust-cardboard mb-3">
                             <div class="card-body for-card-flex">
