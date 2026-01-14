@@ -658,9 +658,9 @@
                     <div class="address-box">
                         <h4><i class="fas fa-users me-2"></i>Organization</h4>
                         <p>
-                            <strong>{{ $record->organization->name }}</strong><br>
-                            <i class="fas fa-envelope me-1"></i> {{ $record->organization->email ?? '-' }}<br>
-                            <i class="fas fa-phone me-1"></i> {{ $record->organization->mobile_no ?? '-' }}
+                            <strong>{{ optional($record->organization)->name ?? '-' }}</strong><br>
+                            <i class="fas fa-envelope me-1"></i> {{ optional($record->organization)->email ?? '-' }}<br>
+                            <i class="fas fa-phone me-1"></i> {{ optional($record->organization)->mobile_no ?? '-' }}
                         </p>
                     </div>
 
