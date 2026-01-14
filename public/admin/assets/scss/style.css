@@ -173,7 +173,7 @@ b {
 .table-responsive {
   border-bottom-right-radius: 14px;
   border-bottom-left-radius: 14px;
-  border: 1px solid rgb(0, 0, 0, .08);
+  /* border: 1px solid rgb(0, 0, 0, .08); */
 }
 
 .default-logo {
@@ -7258,6 +7258,30 @@ body.nav-collapsed .nano {
   color: #4b5563;
   font-weight: 500;
 }
+
+.tbl-heading-css h5 {
+  margin: 0;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+.tbl-heading-css {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.for-tbls-css tbody tr td .bg-success {
+  background-color: #7bcb4d !important;
+  border-color: #7bcb4d !important;
+  color: #ffffff !important;
+}
+
 
 @media (max-width: 991px) {
   .cust-p {
