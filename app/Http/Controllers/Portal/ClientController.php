@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Organization, CompanyUser, OrganizationUser,Client};
+use App\Models\{Organization, CompanyUser, OrganizationUser,Client,ContactActivityLog};
 use Auth;
 
 class ClientController extends CRUDCrontroller
@@ -137,10 +137,34 @@ class ClientController extends CRUDCrontroller
     
     public function show($slug)
     {
-         $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
-        $record = Client::with('organization')->where('slug', $slug)
+        $company = CompanyUser::getCompany(Auth::user()->id);
+        
+        // Load client with estimates and invoices
+        $record = Client::with('estimates.estimateinvoices')
+            ->where('slug', $slug)
             ->firstOrFail();
+        
+        $organizations =  Organization::with([
+        'organizationType',
+        'eventHistory',
+        'eventType',
+        'createdBy',
+        'updatedBy',
+        'contract.client',
+        'estimate.estimateinvoices', // 👈 use your new relation name
+        ])->where('status', 1)->where('id', $record->organization_id)->first();
+
+        $activityLog = ContactActivityLog::with('createdBy')->where('client_id',$record->client_id)->where('organization_id',$record->organization_id)->get();
+
+        // Flatten invoices from all estimates
+          $invoices = $organizations->estimate
+            ->flatMap(fn($e) => $e->estimateinvoices ?? collect())
+            ->values();
         $this->__data['record'] = $record;
+        $this->__data['company'] = $company;
+        $this->__data['invoices'] = $invoices;
+        $this->__data['organizations'] = $organizations;
+        $this->__data['activityLog'] = $activityLog;
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }

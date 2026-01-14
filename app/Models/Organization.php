@@ -33,6 +33,8 @@ class Organization extends Model
         'event_history_id',
         'client_id',
         'company_id',
+        'created_by',
+        'updated_by',
         'name',
         'contact',
         'slug',
@@ -108,5 +110,20 @@ class Organization extends Model
     public function estimate()
     {
         return $this->hasMany(Estimate::class, 'organization_id', 'id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by', 'id');
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(User::class, 'client_id', 'id');
     }
 }

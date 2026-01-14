@@ -58,4 +58,21 @@ class Client extends Model
     {
         return $this->belongsTo(Organization::class, 'organization_id','id');
     }
+
+    public function estimates()
+    {
+        return $this->hasMany(Estimate::class, 'client_id', 'id');
+    }
+
+    public function invoices()
+    {
+        return $this->hasManyThrough(
+            Invoice::class,   // final model
+            Estimate::class,  // intermediate model
+            'client_id',      // Estimate foreign key to Client
+            'estimate_id',    // Invoice foreign key to Estimate
+            'id',             // Client primary key
+            'id'              // Estimate primary key
+        );
+    }
 }

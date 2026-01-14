@@ -76,6 +76,11 @@ class Estimate extends Model
     {
         return $this->hasOne(Invoice::class, 'estimate_id');
     }
+
+    public function estimateinvoices()
+    {
+        return $this->hasMany(Invoice::class, 'estimate_id', 'id');
+    }
     /**
      * Generate unique slug
      */

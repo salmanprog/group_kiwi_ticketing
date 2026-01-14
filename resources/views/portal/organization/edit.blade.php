@@ -256,10 +256,7 @@
                             <!-- Submit -->
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary btn-outline">
-                                    Submit
-                                </button>
-                                <button type="reset" class="btn btn-secondary">
-                                    Reset Form
+                                    Update
                                 </button>
                             </div>
                         </form>

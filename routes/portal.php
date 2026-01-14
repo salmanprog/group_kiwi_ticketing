@@ -23,6 +23,8 @@ use App\Http\Controllers\Portal\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Portal\ContractController;
 use App\Http\Controllers\Portal\ReportingController;
+use App\Http\Controllers\Portal\ContactActivityLogController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -119,5 +121,6 @@ Route::middleware(['custom_auth:web'])->group( function(){
 
     Route::get('report-company',[ReportingController::class,'getAllCompanies'])->name('get=all-company');
     Route::get('company/ajax-listing', [ReportingController::class, 'ajaxListing'])->name('company.ajax-listing');
-
+    Route::post('/organization/notes/save', [ContactActivityLogController::class, 'saveNotes'])
+        ->name('organization.notes.save');
 });
