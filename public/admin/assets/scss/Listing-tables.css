@@ -192,13 +192,14 @@
            color: #6b7280;
            font-size: 14px;
            transition: background 0.3s ease;
+           line-height: 20px;
        }
 
-       .for-fbold td:first-of-type {
+       /* .for-fbold td:first-of-type {
            font-weight: 600;
            color: #333;
            font-size: 14px;
-       }
+       } */
 
        .table tbody tr {
            transition: all 0.3s ease;
