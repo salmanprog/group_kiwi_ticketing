@@ -1003,25 +1003,25 @@
                     saveBtn.disabled = true;
                     status.textContent = 'Saving...';
 
-                    fetch("{{ route('organization.notes.save') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                        },
-                        credentials: 'same-origin', // ✅ important to send session
-                        body: JSON.stringify({
-                            notes: textarea.value,
-                            client_id: clientId,
-                            organization_id: orgId
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.success) {
-                            status.textContent = 'Error saving';
-                            return;
-                        }
+        fetch("{{ route('organization.notes.save') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin', // ✅ important to send session
+            body: JSON.stringify({
+                notes: textarea.value,
+                client_id: clientId,
+                organization_id: orgId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                status.textContent = 'Error saving';
+                return;
+            }
 
                         // Clear textarea
                         textarea.value = '';
