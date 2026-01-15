@@ -253,6 +253,17 @@ function openEstimatesModal(estimates, date){
 .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
 .legend-color.contracts { width: 16px; height: 16px; border-radius: 4px; background: blue; }
 .legend-color.estimates { width: 16px; height: 16px; border-radius: 4px; background: green; }
+.for-fonts-css h5.modal-title { font-size: 18px; font-weight: 700; color: #1f2937; }
+.for-fonts-css thead.table-light tr th {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.for-fonts-css span.badge {
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
+}
 #invoice-calendar { background: #fff; border-radius: 10px; padding: 10px; }
 </style>
 @endsection

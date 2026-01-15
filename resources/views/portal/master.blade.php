@@ -232,12 +232,18 @@
             text-decoration: none;
             border-radius: 13px;
             margin-bottom: 2px;
-            font-weight: 500;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 14px;
         }
 
         .static-sidebar-menu .nav-link:hover {
             background-color: #f5f5f5;
+            color: #111827;
+        }
+
+        .static-sidebar-menu .nav-link:hover i {
+            color: #9fc23f;
         }
 
         .static-sidebar-menu .nav-link.active {
@@ -260,10 +266,10 @@
             color: #4b5563;
         }
 
-        .static-sidebar-menu .submenu-link:hover,
+        /* .static-sidebar-menu .submenu-link:hover,
         .static-sidebar-menu .submenu-link.active {
             color: #4b5563;
-        }
+        } */
 
         .menu-toggle {
             background: #fff !important;
@@ -286,6 +292,7 @@
         li.nav-item.active a {
             background: #9FC23F;
             color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
 
         li.nav-item.active a i {
@@ -364,11 +371,14 @@
                                 </h1>
                             </a>
                         @elseif (Auth::user()->user_type == 'company')
-                        @php
-                            // Fetch company record for logged-in user
-                            $company = \App\Models\Company::where('id', \App\Models\CompanyUser::getCompany(Auth::id())->id)->first();
-                            $company_logo = $company ? $company->image_url : null;
-                        @endphp
+                            @php
+                                // Fetch company record for logged-in user
+                                $company = \App\Models\Company::where(
+                                    'id',
+                                    \App\Models\CompanyUser::getCompany(Auth::id())->id,
+                                )->first();
+                                $company_logo = $company ? $company->image_url : null;
+                            @endphp
                             <a class="admin-logo c" href="{{ route('company.dashboard') }}">
                                 <h1>
                                     <img style="width: 205px;" alt="logo"
@@ -825,27 +835,26 @@
                                 @endif
 
                                 <!-- Reporting -->
-                                 
+
                                 <li data-type="child" class="nav-item">
-                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
-                                            data-expanded="false">
-                                             <i class="fas fa-chart-bar"></i>
-                                            <span class="toggle-none">Reporting</span>
-                                            <i class="fas fa-chevron-down arrow-icon"></i>
-                                        </a>
-                                        <ul class="submenu">
-                                            <!-- <li class="nav-item">
+                                    <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
+                                        data-expanded="false">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <span class="toggle-none">Reporting</span>
+                                        <i class="fas fa-chevron-down arrow-icon"></i>
+                                    </a>
+                                    <ul class="submenu">
+                                        <!-- <li class="nav-item">
                                                 <a class="nav-link submenu-link"
                                                     href="{{ route('get=all-company') }}">
                                                     Company Report
                                                 </a>
                                             </li> -->
-                                            <li class="nav-item">
-                                                <a class="nav-link submenu-link"
-                                                    href="{{ route('get=all-company') }}">
-                                                    Summary Report
-                                                </a>
-                                            </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link submenu-link" href="{{ route('get=all-company') }}">
+                                                Summary Report
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>

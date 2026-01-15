@@ -2,7 +2,7 @@
 @section('content')
     <section class="main-content">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 @include('portal.flash-message')
                 <div class="card">
                     <div class="card-header custfor-flex-header">
@@ -17,7 +17,9 @@
                         </div>
                     </div>
                     <div class="card-body">
-                       <form method="post" action="{{ route('client-management.update', ['client_management' => $record->slug]) }}" enctype="multipart/form-data" class="client-form">
+                        <form method="post"
+                            action="{{ route('client-management.update', ['client_management' => $record->slug]) }}"
+                            enctype="multipart/form-data" class="client-form">
                             {{ csrf_field() }}
                             <input type="hidden" name="_method" value="PUT">
 
@@ -46,11 +48,16 @@
                                             </label>
                                             <select name="salutation" class="form-control" required>
                                                 <option value="">-- Select Salutation --</option>
-                                                <option value="Mr"  {{ $record->salutation == 'Mr' ? 'selected' : '' }}>Mr</option>
-                                                <option value="Mrs" {{ $record->salutation == 'Mrs' ? 'selected' : '' }}>Mrs</option>
-                                                <option value="Ms"  {{ $record->salutation == 'Ms' ? 'selected' : '' }}>Ms</option>
-                                                <option value="Dr"  {{ $record->salutation == 'Dr' ? 'selected' : '' }}>Dr</option>
-                                                <option value="Prof"{{ $record->salutation == 'Prof' ? 'selected' : '' }}>Prof</option>
+                                                <option value="Mr" {{ $record->salutation == 'Mr' ? 'selected' : '' }}>
+                                                    Mr</option>
+                                                <option value="Mrs" {{ $record->salutation == 'Mrs' ? 'selected' : '' }}>
+                                                    Mrs</option>
+                                                <option value="Ms" {{ $record->salutation == 'Ms' ? 'selected' : '' }}>
+                                                    Ms</option>
+                                                <option value="Dr" {{ $record->salutation == 'Dr' ? 'selected' : '' }}>
+                                                    Dr</option>
+                                                <option value="Prof"{{ $record->salutation == 'Prof' ? 'selected' : '' }}>
+                                                    Prof</option>
                                             </select>
                                         </div>
                                     </div>
@@ -61,246 +68,267 @@
                                                 Account
                                                 <span class="required">*</span>
                                             </label>
-                                           @php
-                                                $organization = $organizations->firstWhere('id', $record->organization_id);
+                                            @php
+                                                $organization = $organizations->firstWhere(
+                                                    'id',
+                                                    $record->organization_id,
+                                                );
                                             @endphp
-                                            <input type="hidden" name="org_id" id="org_id" value="{{$record->organization_id}}">
-                                            <input required type="text" name="abc" id="abc" value="{{ $organization ? $organization->name : 'N/A' }}"
+                                            <input type="hidden" name="org_id" id="org_id"
+                                                value="{{ $record->organization_id }}">
+                                            <input required type="text" name="abc" id="abc"
+                                                value="{{ $organization ? $organization->name : 'N/A' }}"
                                                 class="form-control" placeholder="Enter Organization" readonly>
                                         </div>
                                     </div>
-                                    <!-- Basic Information -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Account Information</h5>
-                                            <span class="section-badge">Required</span>
+
+
+                                </div>
+                            </div>
+
+                            <!-- Basic Information -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Account Information</h5>
+                                    <span class="section-badge">Required</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Account Name <span class="required">*</span></label>
+                                            <input required type="text" name="name" class="form-control"
+                                                value="{{ old('name') }}" readonly>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Account Name <span class="required">*</span></label>
-                                                    <input required type="text" name="name" class="form-control"
-                                                        value="{{ old('name') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Contact <span class="required">*</span></label>
-                                                    <input required type="text" name="contact" class="form-control"
-                                                        value="{{ old('contact') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Department</label>
-                                                    <input type="text" name="department" class="form-control"
-                                                        value="{{ old('department') }}" readonly>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Contact <span class="required">*</span></label>
+                                            <input required type="text" name="contact" class="form-control"
+                                                value="{{ old('contact') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Department</label>
+                                            <input type="text" name="department" class="form-control"
+                                                value="{{ old('department') }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Details -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Address Details</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">City</label>
+                                            <input required type="text" name="city" class="form-control"
+                                                value="{{ old('city') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">State</label>
+                                            <input required type="text" name="state" class="form-control"
+                                                value="{{ old('state') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Country</label>
+                                            <input required type="text" name="country" class="form-control"
+                                                value="{{ old('country') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Zip</label>
+                                            <input required type="text" name="zip" class="form-control"
+                                                value="{{ old('zip') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address Line 1</label>
+                                            <input required type="text" name="address_one" class="form-control"
+                                                value="{{ old('address_one') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address Line 2</label>
+                                            <input type="text" name="address_two" class="form-control"
+                                                value="{{ old('address_two') }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Contact Information</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-user"></i> --}}
+                                                First Name
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="first_name"
+                                                value="{{ $record->first_name }}" class="form-control"
+                                                placeholder="Enter first name">
                                         </div>
                                     </div>
 
-                                    <!-- Address Details -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Address Details</h5>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-user"></i> --}}
+                                                Last Name
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="last_name"
+                                                value="{{ $record->last_name }}" class="form-control"
+                                                placeholder="Enter last name">
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">City</label>
-                                                    <input required type="text" name="city" class="form-control"
-                                                        value="{{ old('city') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">State</label>
-                                                    <input required type="text" name="state" class="form-control"
-                                                        value="{{ old('state') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Country</label>
-                                                    <input required type="text" name="country" class="form-control"
-                                                        value="{{ old('country') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Zip</label>
-                                                    <input required type="text" name="zip" class="form-control"
-                                                        value="{{ old('zip') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Address Line 1</label>
-                                                    <input required type="text" name="address_one" class="form-control"
-                                                        value="{{ old('address_one') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Address Line 2</label>
-                                                    <input type="text" name="address_two" class="form-control"
-                                                        value="{{ old('address_two') }}" readonly>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <input required type="email" name="email" class="form-control"
+                                                value="{{ $record->email }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Phone</label>
+                                            <input type="text" name="mobile_no" class="form-control"
+                                                value="{{ $record->mobile_no }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Fax</label>
+                                            <input type="text" name="fax" class="form-control"
+                                                value="{{ old('fax') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Rep</label>
+                                            <input type="text" name="rep" class="form-control"
+                                                value="{{ old('rep') }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contract Detail -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Contract Detail</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Ticket Rate
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="ticket_rate"
+                                                value="{{ $record->ticket_rate }}" class="form-control"
+                                                placeholder="Enter ticket rate">
                                         </div>
                                     </div>
 
-                                    <!-- Contact Information -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Contact Information</h5>
-                                        </div>
-                                        <div class="row">
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        {{-- <i class="fas fa-user"></i> --}}
-                                                        First Name
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="first_name" value="{{ $record->first_name }}"
-                                                        class="form-control" placeholder="Enter first name">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        {{-- <i class="fas fa-user"></i> --}}
-                                                        Last Name
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="last_name" value="{{ $record->last_name }}"
-                                                        class="form-control" placeholder="Enter last name">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Email</label>
-                                                    <input required type="email" name="email" class="form-control"
-                                                        value="{{ $record->email }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Phone</label>
-                                                    <input type="text" name="mobile_no" class="form-control"
-                                                        value="{{ $record->mobile_no }}" readonly> 
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Fax</label>
-                                                    <input type="text" name="fax" class="form-control"
-                                                        value="{{ old('fax') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Rep</label>
-                                                    <input type="text" name="rep" class="form-control"
-                                                        value="{{ old('rep') }}" readonly>
-                                                </div>
-                                            </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Catering Menu
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="catering_menu"
+                                                value="{{ $record->catering_menu }}" class="form-control"
+                                                placeholder="Enter catering menu">
                                         </div>
                                     </div>
-
-                                    <!-- Contract Detail -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Contract Detail</h5>
-                                        </div>
-                                        <div class="row">
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        Ticket Rate
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="ticket_rate" value="{{ $record->ticket_rate }}"
-                                                        class="form-control" placeholder="Enter ticket rate">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        Catering Menu
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="catering_menu" value="{{ $record->catering_menu }}"
-                                                        class="form-control" placeholder="Enter catering menu">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Catering Price</label>
-                                                    <input required type="text" name="catering_price" class="form-control"
-                                                        value="{{ $record->catering_price }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Deposite Amount</label>
-                                                    <input required type="text" name="deposite_amount" class="form-control"
-                                                        value="{{ $record->deposite_amount }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Hours</label>
-                                                    <input required type="text" name="hours" class="form-control"
-                                                        value="{{ $record->hours }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Alt Contacts</label>
-                                                    <input required type="text" name="alt_contact" class="form-control"
-                                                        value="{{ $record->alt_contact }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Notes/History</label>
-                                                    <input type="text" name="note_history" class="form-control"
-                                                        value="{{ $record->note_history }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Status</label>
-                                                    <select name="contract_status" class="form-control">
-                                                        <option value="">Select Status</option>
-                                                        <option {{ $record->contract_status == 'called' ? 'selected' : '' }} value="called">Called</option>
-                                                        <option {{ $record->contract_status == 'dead' ? 'selected' : '' }} value="dead">Dead</option>
-                                                        <option {{ $record->contract_status == 'lead' ? 'selected' : '' }} value="lead">Lead</option>
-                                                        <option {{ $record->contract_status == 'pending' ? 'selected' : '' }} value="pending">Pending</option>
-                                                        <option {{ $record->contract_status == 'tentative_date' ? 'selected' : '' }} value="tentative_date">Tentative Date</option>
-                                                        <option {{ $record->contract_status == 'loa_send_close' ? 'selected' : '' }} value="loa_send_close">LOA Sent (Closed)</option>
-                                                        <option {{ $record->contract_status == 'loa_received' ? 'selected' : '' }} value="loa_received">LOA Received</option>
-                                                        <option {{ $record->contract_status == 'gate_group' ? 'selected' : '' }} value="gate_group">Gate Group</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12" style="display:none">
-                                            <div class="form-group">
-                                                <label>Status</label>
-                                                <select name="status" class="form-control">
-                                                    <option value="1" selected>Active</option>
-                                                    <option value="0">Disabled</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Catering Price</label>
+                                            <input required type="text" name="catering_price" class="form-control"
+                                                value="{{ $record->catering_price }}">
                                         </div>
                                     </div>
-
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Deposite Amount</label>
+                                            <input required type="text" name="deposite_amount" class="form-control"
+                                                value="{{ $record->deposite_amount }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Hours</label>
+                                            <input required type="text" name="hours" class="form-control"
+                                                value="{{ $record->hours }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Alt Contacts</label>
+                                            <input required type="text" name="alt_contact" class="form-control"
+                                                value="{{ $record->alt_contact }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Notes/History</label>
+                                            <input type="text" name="note_history" class="form-control"
+                                                value="{{ $record->note_history }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select name="contract_status" class="form-control">
+                                                <option value="">Select Status</option>
+                                                <option {{ $record->contract_status == 'called' ? 'selected' : '' }}
+                                                    value="called">Called</option>
+                                                <option {{ $record->contract_status == 'dead' ? 'selected' : '' }}
+                                                    value="dead">Dead</option>
+                                                <option {{ $record->contract_status == 'lead' ? 'selected' : '' }}
+                                                    value="lead">Lead</option>
+                                                <option {{ $record->contract_status == 'pending' ? 'selected' : '' }}
+                                                    value="pending">Pending</option>
+                                                <option
+                                                    {{ $record->contract_status == 'tentative_date' ? 'selected' : '' }}
+                                                    value="tentative_date">Tentative Date</option>
+                                                <option
+                                                    {{ $record->contract_status == 'loa_send_close' ? 'selected' : '' }}
+                                                    value="loa_send_close">LOA Sent (Closed)</option>
+                                                <option {{ $record->contract_status == 'loa_received' ? 'selected' : '' }}
+                                                    value="loa_received">LOA Received</option>
+                                                <option {{ $record->contract_status == 'gate_group' ? 'selected' : '' }}
+                                                    value="gate_group">Gate Group</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="display:none">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select name="status" class="form-control">
+                                                <option value="1" selected>Active</option>
+                                                <option value="0">Disabled</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -611,49 +639,49 @@
     </style>
 @endsection
 @push('scripts')
-<script>
-$(document).ready(function () {
+    <script>
+        $(document).ready(function() {
 
-    let organizationId = $('#org_id').val();
+            let organizationId = $('#org_id').val();
 
-    // Load on page load (EDIT PAGE)
-    if (organizationId) {
-        loadOrganization(organizationId);
-    }
-
-    function loadOrganization(organizationId) {
-
-        $.ajax({
-            url: "{{ route('organization.fetch', ':id') }}".replace(':id', organizationId),
-            type: "GET",
-            success: function (res) {
-                if (res.status) {
-                    let org = res.data;
-
-                    // Account Information
-                    $('input[name="name"]').val(org.name);
-                    $('input[name="contact"]').val(org.contact);
-                    $('input[name="department"]').val(org.department);
-
-                    // Address
-                    $('input[name="city"]').val(org.city);
-                    $('input[name="state"]').val(org.state);
-                    $('input[name="country"]').val(org.country);
-                    $('input[name="zip"]').val(org.zip);
-                    $('input[name="address_one"]').val(org.address_one);
-                    $('input[name="address_two"]').val(org.address_two);
-
-                    // Contact Info
-                    $('input[name="fax"]').val(org.fax);
-                    $('input[name="rep"]').val(org.rep);
-                }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
+            // Load on page load (EDIT PAGE)
+            if (organizationId) {
+                loadOrganization(organizationId);
             }
-        });
-    }
 
-});
-</script>
+            function loadOrganization(organizationId) {
+
+                $.ajax({
+                    url: "{{ route('organization.fetch', ':id') }}".replace(':id', organizationId),
+                    type: "GET",
+                    success: function(res) {
+                        if (res.status) {
+                            let org = res.data;
+
+                            // Account Information
+                            $('input[name="name"]').val(org.name);
+                            $('input[name="contact"]').val(org.contact);
+                            $('input[name="department"]').val(org.department);
+
+                            // Address
+                            $('input[name="city"]').val(org.city);
+                            $('input[name="state"]').val(org.state);
+                            $('input[name="country"]').val(org.country);
+                            $('input[name="zip"]').val(org.zip);
+                            $('input[name="address_one"]').val(org.address_one);
+                            $('input[name="address_two"]').val(org.address_two);
+
+                            // Contact Info
+                            $('input[name="fax"]').val(org.fax);
+                            $('input[name="rep"]').val(org.rep);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+
+        });
+    </script>
 @endpush
