@@ -863,7 +863,9 @@
                                     @endforeach
                                 </ul>
                             @else
-                                <p class="text-muted">No activity found.</p>
+                                <ul class="list-group" id="activityLogList">
+                                    <li class="list-group-item">No activity found.</li>
+                                </ul>
                             @endif
                         </div>
                         <div class="col-md-12">
@@ -1071,6 +1073,7 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
             },
             credentials: 'same-origin', // ✅ important to send session

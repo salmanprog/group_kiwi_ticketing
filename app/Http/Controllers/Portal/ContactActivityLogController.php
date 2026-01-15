@@ -139,8 +139,6 @@ class ContactActivityLogController extends CRUDCrontroller
     {
         $request->validate([
             'notes' => 'required|string',
-            'organization_id' => 'required|exists:organizations,id',
-            'client_id' => 'nullable|exists:organization_users,id',
         ]);
 
         try {
