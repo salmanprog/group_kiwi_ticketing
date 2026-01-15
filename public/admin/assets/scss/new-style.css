@@ -1,0 +1,115 @@
+.card {
+    border: none !important;
+    border-radius: 12px !important; 
+    box-shadow: 0 4px 20px rgba(160, 194, 66, 0.1);
+    margin-bottom: 30px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 30px !important;
+}
+
+.card-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 20px 30px !important;
+    color: #1f2937 !important;
+}
+
+.custfor-flex-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-content h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.tbl-heading-css h5 {
+  margin: 0;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+.tbl-heading-css {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.for-tbls-css tbody tr td .bg-success {
+  background-color: #7bcb4d !important;
+  border-color: #7bcb4d !important;
+  color: #ffffff !important;
+}
+
+.for-gp-cust {
+    padding-inline: 8px;
+}
+
+span.btn.btn-success {
+     position: relative;
+     padding-left: 15px; /* space for dots */
+     background-color: #7bcb4d00 !important;
+     border-color: #7bcb4d00 !important;
+     color: #7bcb4d !important;
+     font-size: 14px;
+     font-weight: 500;
+
+}
+
+.form-section {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.section-header h5 {
+    margin: 0;
+    color: #1f2937;
+    font-weight: 600;
+    font-size: 1.1rem;
+    flex: 1;
+}
+
+.view-field {
+    color: #575962;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #1f2937;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    display: block;
+}
