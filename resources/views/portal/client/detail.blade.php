@@ -856,7 +856,7 @@
                                                     </div>
                                                 </div>
                                                 <small class="text-muted">
-                                                    {{ $log->created_at->format('d M Y, h:i A') }}
+                                                    {{ TimeWithAgo($log->created_at->format('d M Y, h:i A')) }}
                                                 </small>
                                             </div>
                                         </li>
