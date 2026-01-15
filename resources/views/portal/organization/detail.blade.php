@@ -116,12 +116,11 @@
                     <!-- Description DETAILS -->
                     <div class="form-section">
                         <div class="section-header">
-                            <h5>Description Information</h5>
+                            <h5>Description</h5>
                         </div>
 
                         <div class="row">
                             <div class="col-md-12">
-                                <label class="form-label">Description</label>
                                 <div class="view-field">{{ $record->description ?? '-' }}</div>
                             </div>
                         </div>
@@ -136,7 +135,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">Created By</label>
-                                <div class="view-field">{{ $record->createdBy->name ?? 'N/A' }} {{ $record->createdBy->created_at ?? '' }}</div>
+                                <div class="view-field">{{ $record->createdBy->name ?? 'N/A' }} {{ TimeWithAgo($record->created_at) ?? '' }}</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Currcency</label>
@@ -144,7 +143,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Modified By</label>
-                                <div class="view-field">{{ $record->updatedBy->name ?? 'N/A'}} {{ $record->createdBy->updated_at ?? '' }}</div>
+                                <div class="view-field">{{ $record->updatedBy->name ?? 'N/A'}} {{ TimeWithAgo($record->updated_at) ?? '' }}</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Exchange Rate</label>

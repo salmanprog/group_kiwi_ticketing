@@ -6,30 +6,4 @@ RewriteRule (.*) /public/$1 [L]
 
 
 ==============================htaccess end------------------------------------
-
-ALTER TABLE `organizations` ADD `created_by` INT(11) NOT NULL DEFAULT '0' AFTER `company_id`;
-ALTER TABLE `organizations` ADD `updated_by` INT(11) NOT NULL DEFAULT '0' AFTER `created_by`;
-
-
-ALTER TABLE `contact_activity_log`
-  ADD PRIMARY KEY (`id`);
-
-  ALTER TABLE `contact_activity_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
-
-
-  CREATE TABLE `contact_activity_log` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_by` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `client_id` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `organization_id` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notesTextarea` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `status` enum('failed','success') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'success',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-)
-
-
-
-ALTER TABLE `contact_activity_log` ADD `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+ALTER TABLE `organizations` ADD `description` LONGTEXT NULL DEFAULT NULL AFTER `department`;

@@ -39,6 +39,7 @@ class Organization extends Model
         'contact',
         'slug',
         'department',
+        'description',
         'address_one',
         'address_two',
         'city',

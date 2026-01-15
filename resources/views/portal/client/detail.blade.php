@@ -790,7 +790,9 @@
                                         @endforeach
                                     </ul>
                                 @else
-                                    <p class="text-muted">No activity found.</p>
+                                    <ul class="list-group" id="activityLogList">
+                                        <li class="list-group-item">No activity found.</li>
+                                    </ul>
                                 @endif
                             </div>
                             <div class="col-md-12">
@@ -1003,69 +1005,70 @@
                     saveBtn.disabled = true;
                     status.textContent = 'Saving...';
 
-        fetch("{{ route('organization.notes.save') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            credentials: 'same-origin', // ✅ important to send session
-            body: JSON.stringify({
-                notes: textarea.value,
-                client_id: clientId,
-                organization_id: orgId
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success) {
-                status.textContent = 'Error saving';
-                return;
-            }
-
-                        // Clear textarea
-                        textarea.value = '';
-                        textarea.setAttribute('readonly', true);
-                        saveBtn.classList.add('d-none');
-                        status.textContent = 'Saved ✔';
-
-                        // Update activity log dynamically
-                        const list = document.getElementById('activityLogList');
-                        list.innerHTML = '';
-
-                        data.activityLogs.forEach(log => {
-                            const li = document.createElement('li');
-                            li.className = 'list-group-item';
-
-                            li.innerHTML = `
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <strong>${log.createdBy?.name ?? 'System'}</strong>
-                                        <div class="text-muted small">
-                                            ${log.notesTextarea}
-                                        </div>
-                                    </div>
-                                    <small class="text-muted">
-                                        ${log.created_at}
-                                    </small>
-                                </div>
-                            `;
-
-                            list.appendChild(li);
-                        });
-
-                        setTimeout(() => status.textContent = '', 2000);
+                fetch("{{ route('organization.notes.save') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', 
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        notes: textarea.value,
+                        client_id: clientId,
+                        organization_id: orgId
                     })
-                    .catch(err => {
-                        console.error(err);
-                        textarea.value = originalText;
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
                         status.textContent = 'Error saving';
-                    })
-                    .finally(() => {
-                        saveBtn.disabled = false;
+                        return;
+                    }
+
+                                // Clear textarea
+                                textarea.value = '';
+                                textarea.setAttribute('readonly', true);
+                                saveBtn.classList.add('d-none');
+                                status.textContent = 'Saved ✔';
+
+                                // Update activity log dynamically
+                                const list = document.getElementById('activityLogList');
+                                list.innerHTML = '';
+
+                                data.activityLogs.forEach(log => {
+                                    const li = document.createElement('li');
+                                    li.className = 'list-group-item';
+
+                                    li.innerHTML = `
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <strong>${log.createdBy?.name ?? 'System'}</strong>
+                                                <div class="text-muted small">
+                                                    ${log.notesTextarea}
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">
+                                                ${log.created_at}
+                                            </small>
+                                        </div>
+                                    `;
+
+                                    list.appendChild(li);
+                                });
+
+                                setTimeout(() => status.textContent = '', 2000);
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                textarea.value = originalText;
+                                status.textContent = 'Error saving';
+                            })
+                            .finally(() => {
+                                saveBtn.disabled = false;
+                            });
+                        });
                     });
-                });
-            });
             </script>
 
 
