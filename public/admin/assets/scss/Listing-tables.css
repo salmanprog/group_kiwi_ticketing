@@ -499,3 +499,22 @@
        .status-select:hover {
            border-color: #9ca3af;
        }
+
+       a.btn.btn-xs.btn-info {
+           display: inline-flex;
+           align-items: center;
+           gap: 4px;
+           padding: 2px 8px;
+           border-radius: 4px;
+           font-size: 10px;
+           font-weight: 500;
+           background-color: #eff6ff !important;
+           color: #2563eb !important;
+           border: 1px solid #dbeafe !important;
+           transition: color 0.2s ease, background-color 0.2s ease;
+       }
+
+       a.btn.btn-xs.btn-info:hover {
+           background-color: #dbeafe;
+           color: #1d4ed8;
+       }
