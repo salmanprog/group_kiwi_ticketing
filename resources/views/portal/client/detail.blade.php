@@ -856,14 +856,16 @@
                                                     </div>
                                                 </div>
                                                 <small class="text-muted">
-                                                    {{ $log->created_at->format('d M Y, h:i A') }}
+                                                    {{ TimeWithAgo($log->created_at->format('d M Y, h:i A')) }}
                                                 </small>
                                             </div>
                                         </li>
                                     @endforeach
                                 </ul>
                             @else
-                                <p class="text-muted">No activity found.</p>
+                                <ul class="list-group" id="activityLogList">
+                                    <li class="list-group-item">No activity found.</li>
+                                </ul>
                             @endif
                         </div>
                         <div class="col-md-12">
@@ -1040,68 +1042,69 @@
             </div>
     </section>
 
-    <!-- Bootstrap & Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('notesTextarea');
-            const saveBtn = document.getElementById('saveNotesBtn');
-            const status = document.getElementById('notes-status');
+        <!-- Bootstrap & Font Awesome -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const textarea = document.getElementById('notesTextarea');
+    const saveBtn = document.getElementById('saveNotesBtn');
+    const status = document.getElementById('notes-status');
 
-            const clientId = document.getElementById('client_id').value;
-            const orgId = document.getElementById('organization_id').value;
+    const clientId = document.getElementById('client_id').value;
+    const orgId = document.getElementById('organization_id').value;
 
-            let originalText = textarea.value;
+    let originalText = textarea.value;
 
-            // Enable editing on click
-            textarea.addEventListener('click', function() {
-                textarea.removeAttribute('readonly');
-                saveBtn.classList.remove('d-none');
-                originalText = textarea.value;
-            });
+    // Enable editing on click
+    textarea.addEventListener('click', function () {
+        textarea.removeAttribute('readonly');
+        saveBtn.classList.remove('d-none');
+        originalText = textarea.value;
+    });
 
-            // Save notes
-            saveBtn.addEventListener('click', function() {
-                saveBtn.disabled = true;
-                status.textContent = 'Saving...';
+    // Save notes
+    saveBtn.addEventListener('click', function () {
+        saveBtn.disabled = true;
+        status.textContent = 'Saving...';
 
-                fetch("{{ route('organization.notes.save') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                        },
-                        credentials: 'same-origin', // ✅ important to send session
-                        body: JSON.stringify({
-                            notes: textarea.value,
-                            client_id: clientId,
-                            organization_id: orgId
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.success) {
-                            status.textContent = 'Error saving';
-                            return;
-                        }
+        fetch("{{ route('organization.notes.save') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            credentials: 'same-origin', // ✅ important to send session
+            body: JSON.stringify({
+                notes: textarea.value,
+                client_id: clientId,
+                organization_id: orgId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                status.textContent = 'Error saving';
+                return;
+            }
 
-                        // Clear textarea
-                        textarea.value = '';
-                        textarea.setAttribute('readonly', true);
-                        saveBtn.classList.add('d-none');
-                        status.textContent = 'Saved ✔';
+            // Clear textarea
+            textarea.value = '';
+            textarea.setAttribute('readonly', true);
+            saveBtn.classList.add('d-none');
+            status.textContent = 'Saved ✔';
 
-                        // Update activity log dynamically
-                        const list = document.getElementById('activityLogList');
-                        list.innerHTML = '';
+            // Update activity log dynamically
+            const list = document.getElementById('activityLogList');
+            list.innerHTML = '';
 
-                        data.activityLogs.forEach(log => {
-                            const li = document.createElement('li');
-                            li.className = 'list-group-item';
+            data.activityLogs.forEach(log => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
 
-                            li.innerHTML = `
+                li.innerHTML = `
                     <div class="d-flex justify-content-between">
                         <div>
                             <strong>${log.createdBy?.name ?? 'System'}</strong>
@@ -1115,22 +1118,22 @@
                     </div>
                 `;
 
-                            list.appendChild(li);
-                        });
-
-                        setTimeout(() => status.textContent = '', 2000);
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        textarea.value = originalText;
-                        status.textContent = 'Error saving';
-                    })
-                    .finally(() => {
-                        saveBtn.disabled = false;
-                    });
+                list.appendChild(li);
             });
+
+            setTimeout(() => status.textContent = '', 2000);
+        })
+        .catch(err => {
+            console.error(err);
+            textarea.value = originalText;
+            status.textContent = 'Error saving';
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
         });
-    </script>
+    });
+});
+</script>
 
 
 @endsection

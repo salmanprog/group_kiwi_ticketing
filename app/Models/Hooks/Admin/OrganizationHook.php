@@ -24,9 +24,17 @@ class OrganizationHook
     public function hook_query_index(&$query,$request, $slug=NULL) {
         //Your code here
 
-        $query->select('organizations.*','organization_type.name as organization_name','organization_event_type.name as event_name')
-        ->join('organization_type','organization_type.id','organizations.organization_type_id')
-        ->join('organization_event_type','organization_event_type.id','organizations.event_type_id');
+        $query->select(
+                'organizations.*',
+                'organization_type.name as organization_name',
+                'organization_event_type.name as event_name',
+                'organization_users.first_name as contact_first_name',
+                'organization_users.last_name as contact_last_name',
+                'organization_users.slug as contact_slug'
+            )
+            ->join('organization_type', 'organization_type.id', '=', 'organizations.organization_type_id')
+            ->join('organization_event_type', 'organization_event_type.id', '=', 'organizations.event_type_id')
+            ->leftJoin('organization_users', 'organization_users.organization_id', '=', 'organizations.id');
 
         if(Auth::user()->user_type != 'admin'){
                if(Auth::user()->user_type != 'client'){

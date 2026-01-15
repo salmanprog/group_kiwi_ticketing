@@ -52,6 +52,21 @@
                                 </div>
                             </div>
 
+                             <!-- Description -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Details</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Description <span class="required">*</span></label>
+                                            <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Address Details -->
                             <div class="form-section">
                                 <div class="section-header">

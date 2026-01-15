@@ -85,8 +85,18 @@ class OrganizationController extends CRUDCrontroller
             $options .= '<a title="Delete" class="btn btn-xs btn-danger _delete_record" data-slug="' . $record->slug . '"><i class="fa fa-trash"></i></a>';
             
             return [
-                $record->name,
-                $record->contact,
+                '<a href="' . route('organization.show', ['organization' => $record->slug]) . '" 
+                    title="View" class="btn btn-xs btn-info">'
+                    . e($record->name) . // escape the name to prevent XSS
+                '</a>',
+                '<a href="' 
+                . (trim(($record->contact_first_name ?? '') . ' ' . ($record->contact_last_name ?? '')) !== '' 
+                    ? route('client-management.show', ['client_management' => $record->contact_slug]) 
+                    : '#') 
+                . '" class="btn btn-xs btn-info">'
+                . e(trim(($record->contact_first_name ?? '') . ' ' . ($record->contact_last_name ?? '')) ?: 'N/A')
+                . '</a>',
+
                 $record->email,
                 $record->phone,
                 $record->event_date,

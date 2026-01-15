@@ -2,6 +2,7 @@
 
 use App\Helpers\CustomCache;
 use App\Helpers\CustomHelper;
+use Carbon\Carbon;
 
 /**
  * This function is used to get login user
@@ -119,6 +120,29 @@ if( !function_exists('CustomCache') ){
         return new CustomCache;
     }
 }
+/**
+ * Custom Time
+ */
+if( !function_exists('TimeWithAgo') ){
+    function TimeWithAgo($datetime)
+    {
+        if (! $datetime) {
+            return '';
+        }
+
+        $timezone = config('app.timezone');
+
+        // Eloquent timestamps are already Carbon instances in UTC
+        $date = $datetime instanceof Carbon
+            ? $datetime->copy()->timezone($timezone)
+            : Carbon::parse($datetime, 'UTC')->timezone($timezone);
+
+        $time = $date->format('H:i');
+        $ago  = $date->diffForHumans(now($timezone), true);
+        return "{$time} ({$ago} ago)";
+    }
+}
+
 
 
 
