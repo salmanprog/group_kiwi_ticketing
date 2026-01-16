@@ -143,10 +143,25 @@ class ContractController extends CRUDCrontroller
             'client',
             'estimates',
             'invoices.installmentPlan.payments',
-            'invoices.creditNotes'
+            'invoices.creditNotes',
+            'items'
         ])
             ->where('slug', $slug)
             ->first();
+
+        if (Auth::user()->user_type == 'client') {
+            $this->__data['products'] = [];
+        } else {
+            $this->__data['products'] = \App\Models\Product::where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
+
+        }
+
+        if (Auth::user()->user_type == 'client') {
+            $this->__data['logs'] = [];
+        } else {
+            $this->__data['logs'] = \App\Models\ActivityLog::where('module_id', $this->__data['record']->id)->where('module', 'contract')->orderBy('id', 'desc')->get();
+
+        }
 
         // dd($this->__data['record']->company);
 
@@ -183,7 +198,7 @@ class ContractController extends CRUDCrontroller
     public function eventCalander()
     {
 
-        $this->__data['contracts'] = Contract::with('organization','userestimates','userestimates.items')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
+        $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
         $this->__data['estimates'] = Estimate::with('client')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
         // dd($this->_data['contracts']);
         // $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id','>', 0)->get();
@@ -237,4 +252,48 @@ class ContractController extends CRUDCrontroller
 
         return redirect()->route('contract.show', $contract->slug)->with('success', 'Credit note added successfully');
     }
+
+    public function modifyContract(Request $request)
+    {
+        $contract = Contract::where('id', $request->contract_id)->first();
+
+        $getContractModified = \App\Models\ContractModified::where('contract_id', $contract->id)->count();
+        $slug = $contract->slug . '-' . $getContractModified + 1;
+
+        $ContractModified = \App\Models\ContractModified::create([
+            'contract_id' => $contract->id,
+            'created_by' => Auth::id(),
+            'slug' => $slug,
+        ]);
+
+        foreach ($request->products as $key => $product) {
+            $productget = \App\Models\Product::where('id', $product['product_id'])->first();
+            // dd($product);
+            \App\Models\ContractModifiedItem::create([
+                'contract_modified_id' => $ContractModified->id,
+                'contract_id' => $contract->id,
+                'created_by' => Auth::id(),
+                'name' => $productget->name,
+                'quantity' => $product['qty'],
+                'unit' => $productget->unit,
+                'price' => $product['unit_price'],
+                'total_price' => $product['qty'] * $product['unit_price'],
+            ]);
+        }
+
+
+
+        if ($request->confirmed_with_client == 'yes') {
+
+            $invoice = Invoice::generateInvoiceForContract($ContractModified->slug);
+
+        } else {
+
+
+            dd($contract);
+        }
+
+        return redirect()->route('contract.show', $contract->slug)->with('success', 'Contract modified successfully');
+    }
+
 }

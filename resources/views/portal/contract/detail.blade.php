@@ -727,13 +727,65 @@
                         </div>
 
                         @if (Auth::user()->user_type == 'company')
-                            <div class="mt-3 text-end">
-                                <a href="{{ route('estimate.create', ['contract' => encrypt($record->slug)]) }}"
-                                    class="btn btn-primary">
-                                    <i class="fas fa-plus me-1"></i>Add New Estimate
-                                </a>
+                           <div class="mt-3 text-end">
+                                <button type="button" 
+                                        class="btn btn-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modifyContractModal">
+                                    <i class="fas fa-plus me-1"></i>Modify Contract
+                                </button>
                             </div>
                         @endif
+                    </div>
+                </div>
+
+                    <!-- Linked Estimates -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>Contract Items
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Unit</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total Price</th>
+                                        <th>Accepted By client</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if ($record->items && $record->items->count())
+                                        @foreach ($record->items as $item)
+                                            <tr>
+                                                <td>{{ $item->name }}  @if($item->is_modified == 1) <span class="badge bg-warning">M</span> @endif</td>
+                                                <td>{{ $item->unit }}</td>
+                                                <td>{{ $item->price }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>{{ $item->total_price }}</td>
+                                                <td>
+                                                    @if ($item->is_accepted_by_client == 1)
+                                                        <span class="badge bg-success">Yes</span>
+                                                    @else
+                                                        <span class="badge bg-danger">No</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                                <em>No products found.</em>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -759,6 +811,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse ($record->invoices as $invoice)
+                                    
                                         <tr>
                                             <td>
                                                 <a href="{{ route('invoice.show', $invoice->slug) }}"
@@ -807,6 +860,51 @@
                                                     @else
                                                         <span class="text-muted">--</span>
                                                     @endif
+                                                    @if($invoice->status == "unpaid" && $invoice->is_installment !=1)
+                                                    <button type="button" 
+                                                            class="btn btn-primary" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#paymentModal" 
+                                                            data-id="{{ $invoice->id }}" >
+                                                        Pay Now
+                                                    </button>
+                                                    @endif
+                                                    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <form action="{{ route('update-invoice-status') }}" method="POST">
+                                                                        @csrf
+                                                                        <input type="hidden" name="invoice_id" id="invoice_id" value="{{ $invoice->id }}">
+                                                                        <input type="hidden" name="total" id="total" value="{{ $invoice->total }}">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title" id="paymentModalLabel">Update Payment Status</h5>
+                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <input type="hidden" name="id" id="modal_invoice_id">
+
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Payment Type</label>
+                                                                                    <select name="payment_type" class="form-select" required>
+                                                                                        <option value="cash">Cash</option>
+                                                                                        <option value="cheque">Cheque</option>
+                                                                                    </select>
+                                                                                </div>
+
+                                                                                <div class="mb-3">
+                                                                                    <label class="form-label">Notes</label>
+                                                                                    <textarea name="notes" class="form-control" rows="3" placeholder="Add payment details, transaction ID, etc."></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                                <button type="submit" class="btn btn-success">Submit Payment</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                    
                                                 </td>
                                             @endif
                                         </tr>
@@ -852,7 +950,59 @@
                                                                             </td>
                                                                             <td>{{ $installment->paid_at ? \Carbon\Carbon::parse($installment->paid_at)->format('F j, Y') : '-' }}
                                                                             </td>
-                                                                        </tr>
+                                                                            <td>
+                                                                                    @if($installment->paid_at == null)
+                                                                                        <button type="button" 
+                                                                                                class="btn btn-primary" 
+                                                                                                data-bs-toggle="modal" 
+                                                                                                data-bs-target="#paymentInstallmentModal" 
+                                                                                                data-id="{{ $installment->id }}" >
+                                                                                            Pay Now installment
+                                                                                        </button>
+                                                                                        <div class="modal fade" id="paymentInstallmentModal" tabindex="-1" aria-labelledby="paymentInstallmentModalLabel" aria-hidden="true">
+                                                                                                    <div class="modal-dialog">
+                                                                                                        <form action="{{ route('update-installment-status') }}" method="POST">
+                                                                                                            @csrf
+                                                                                                               <input type="hidden" name="plane_id" id="plane_id" value="{{$invoice->installmentPlan->id }}">
+                                                                                                            <input type="hidden" name="invoice_id" id="invoice_id" value="{{ $invoice->id }}">
+                                                                                                            <input type="hidden" name="installment_id" id="installment_id" value="{{ $installment->id }}">
+                                                                                                            <input type="hidden" name="total" id="total" value="{{ $installment->amount }}">
+                                                                                                            <div class="modal-content">
+                                                                                                                <div class="modal-header">
+                                                                                                                    <h5 class="modal-title" id="paymentModalLabel">Update Payment Status</h5>
+                                                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                                                </div>
+                                                                                                                <div class="modal-body">
+                                                                                                                    <input type="hidden" name="id" id="modal_invoice_id">
+
+                                                                                                                    <div class="mb-3">
+                                                                                                                        <label class="form-label">Payment Type</label>
+                                                                                                                        <select name="payment_type" class="form-select" required>
+                                                                                                                            <option value="cash">Cash</option>
+                                                                                                                            <option value="cheque">Cheque</option>
+                                                                                                                        </select>
+                                                                                                                    </div>
+
+                                                                                                                    <div class="mb-3">
+                                                                                                                        <label class="form-label">Notes</label>
+                                                                                                                        <textarea name="notes" class="form-control" rows="3" placeholder="Add payment details, transaction ID, etc."></textarea>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                <div class="modal-footer">
+                                                                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                                                                    <button type="submit" class="btn btn-success">Submit Payment</button>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </form>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                         @else
+                                                                                         {{ $installment->payment_type }}
+                                                                                         @endif
+
+                                                                                    </td>
+                                        </td>
+                                                                        </tr> 
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
@@ -940,6 +1090,48 @@
                         </div>
                     </div>
 
+                    @if(Auth::user()->user_type != 'client')
+                  <div class="activity-section shadow-sm rounded bg-white p-4">
+    <div class="section-header d-flex align-items-center mb-3">
+        <i class="fas fa-history me-2 text-primary"></i>
+        <h5 class="mb-0">Recent Activity</h5>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 20%">Date & Time</th>
+                    <!-- <th style="width: 15%">User</th> -->
+                    <th style="width: 50%">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($logs as $log)
+                    <tr>
+                        <td class="text-nowrap">{{ $log->created_at->format('M d, Y H:i') }}</td>
+                        <!-- <td>
+                            <span class="badge bg-light text-dark border">
+                                {{ $log->user_name ?? 'System' }}
+                            </span>
+                        </td> -->
+                        <td class="text-truncate" style="max-width: 300px;">
+                            {{ $log->description }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            No activity logs found.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+                    @endif
+
                     <!-- Company Edit Section -->
                     @if (Auth::user()->user_type == 'company')
                         <div class="card">
@@ -1014,10 +1206,201 @@
 
                 </div>
             </div>
+
+  <div class="modal fade" id="modifyContractModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form action="{{ route('contract.modify') }}" method="POST">
+            @csrf
+            <input type="hidden" name="contract_id" value="{{ $record->id }}">
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modify Contract Products</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    
+                    <div class="row align-items-end mb-4 border-bottom pb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Product</label>
+                            <select id="productSelect" class="form-select">
+                                <option value="" data-price="0">Choose...</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}" 
+                                            data-price="{{ $product->price }}" 
+                                            data-name="{{ $product->name }}">
+                                        {{ $product->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Price</label>
+                            <input type="number" id="tempPrice" class="form-control" step="0.01">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Qty</label>
+                            <input type="number" id="tempQty" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Line Total</label>
+                            <input type="text" id="tempTotal" class="form-control bg-light" readonly value="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" id="addToTable" class="btn btn-info w-100">
+                                <i class="fas fa-plus"></i> Add to List
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="productTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th style="width: 150px;">Price</th>
+                                    <th style="width: 100px;">Qty</th>
+                                    <th>Total</th>
+                                    <th style="width: 50px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                            <tfoot>
+                                <tr class="table-secondary">
+                                    <th colspan="3" class="text-end">Grand Total:</th>
+                                    <th>
+                                        <span id="grandTotal">0.00</span>
+                                        <input type="hidden" name="grand_total" id="hiddenGrandTotal" value="0">
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top">
+                        <label class="form-label font-weight-bold">Client Confirmation Status</label>
+                        <select name="confirmed_with_client" class="form-select" required>
+                            <option value="no">No, haven't asked yet</option>
+                            <option value="yes">Yes, I don't need to ask / Approved</option>
+                        </select>
+                        <small class="text-muted text-info">Please select "Yes" if you have verbal or written approval for these changes.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success px-4">Save All Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
         </section>
 
         <!-- Bootstrap & Font Awesome -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+   
+   <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const productSelect = document.getElementById('productSelect');
+    const tempPrice = document.getElementById('tempPrice');
+    const tempQty = document.getElementById('tempQty');
+    const tempTotal = document.getElementById('tempTotal'); // Ensure this ID exists in your HTML
+    const addButton = document.getElementById('addToTable');
+    const tableBody = document.querySelector('#productTable tbody');
+    const grandTotalElement = document.getElementById('grandTotal');
+    let rowCount = 0; 
+
+    // Function to update the preview total in the entry row
+    function calculateLineTotal() {
+        if (tempTotal) { // Only run if the element exists
+            const price = parseFloat(tempPrice.value) || 0;
+            const qty = parseInt(tempQty.value) || 0;
+            tempTotal.value = (price * qty).toFixed(2);
+        }
+    }
+
+    // Update price and total when product is selected
+    productSelect.addEventListener('change', function() {
+        const price = this.options[this.selectedIndex].getAttribute('data-price');
+        tempPrice.value = price;
+        calculateLineTotal();
+    });
+
+    // Update total when user manually changes Price or Qty
+    tempPrice.addEventListener('input', calculateLineTotal);
+    tempQty.addEventListener('input', calculateLineTotal);
+
+    // Add product to the table
+    addButton.addEventListener('click', function() {
+        const productId = productSelect.value;
+        const productName = productSelect.options[productSelect.selectedIndex].text;
+        const price = parseFloat(tempPrice.value) || 0;
+        const qty = parseInt(tempQty.value) || 0;
+
+        if (!productId || qty <= 0) {
+            alert("Please select a product and valid quantity.");
+            return;
+        }
+
+        const total = (price * qty).toFixed(2);
+
+        const row = `
+            <tr>
+                <td>
+                    ${productName}
+                    <input type="hidden" name="products[${rowCount}][product_id]" value="${productId}">
+                </td>
+                <td>
+                    <input type="number" name="products[${rowCount}][unit_price]" value="${price}" class="form-control" readonly>
+                </td>
+                <td>
+                    <input type="number" name="products[${rowCount}][qty]" value="${qty}" class="form-control" readonly>
+                </td>
+                <td class="row-total">${total}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-row">Delete</button>
+                </td>
+            </tr>
+        `;
+
+        tableBody.insertAdjacentHTML('beforeend', row);
+        updateGrandTotal();
+        
+        rowCount++; 
+        
+        // Reset inputs
+        productSelect.value = "";
+        tempPrice.value = "";
+        tempQty.value = 1;
+        if(tempTotal) tempTotal.value = "0.00";
+    });
+
+    // Remove row
+    tableBody.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-row')) {
+            e.target.closest('tr').remove();
+            updateGrandTotal();
+        }
+    });
+
+    function updateGrandTotal() {
+        let grandTotal = 0;
+        document.querySelectorAll('.row-total').forEach(cell => {
+            grandTotal += parseFloat(cell.textContent);
+        });
+        grandTotalElement.textContent = grandTotal.toFixed(2);
+    }
+});
+</script>
+
     @endsection
+

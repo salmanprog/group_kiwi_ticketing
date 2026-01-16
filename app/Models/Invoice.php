@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 // use App
 
 class Invoice extends Model
@@ -50,6 +51,8 @@ class Invoice extends Model
         'updated_at',
         'deleted_at',
         'paid_amount',
+        'payment_type',
+        'description',
     ];
 
     /**
@@ -106,7 +109,7 @@ class Invoice extends Model
         return $this->hasOne(Company::class, 'id', 'company_id');
     }
 
-      public function estimate()
+    public function estimate()
     {
         return $this->hasOne(Estimate::class, 'id', 'estimate_id');
     }
@@ -159,6 +162,17 @@ class Invoice extends Model
                 'unit' => $item->unit,
                 'total_price' => $item->total_price,
             ]);
+
+            ContractItem::create([
+                'contract_id' => $contract->id,
+                'name' => $item->name,
+                'quantity' => $item->quantity,
+                'unit' => $item->unit,
+                'price' => $item->price,
+                'total_price' => $item->total_price,
+                'invoice_id' => $invoice->id,
+                'accepted_by_client' => 1,
+            ]);
         }
 
         foreach ($estimate->taxes as $tax) {
@@ -166,6 +180,13 @@ class Invoice extends Model
                 'invoice_id' => $invoice->id,
                 'name' => $tax->name,
                 'percent' => $tax->percent,
+            ]);
+
+            ContractTaxes::create([
+                'contract_id' => $contract->id,
+                'name' => $tax->name,
+                'percent' => $tax->percent,
+                'invoice_id' => $invoice->id,
             ]);
         }
 
@@ -175,7 +196,76 @@ class Invoice extends Model
                 'name' => $discount->name,
                 'value' => $discount->value,
             ]);
+
+            ContractDiscountItem::create([
+                'contract_id' => $contract->id,
+                'name' => $discount->name,
+                'value' => $discount->value,
+                'invoice_id' => $invoice->id,
+            ]);
         }
+        return $invoice;
+    }
+
+    public static function generateInvoiceForContract($modifiedContractSlug)
+    {
+        $contractModified = \App\Models\ContractModified::where('slug', $modifiedContractSlug)->first();
+
+        $getContractItems = \App\Models\ContractModifiedItem::where('contract_modified_id', $contractModified->id)->get();
+        $contract = \App\Models\Contract::where('id', $contractModified->contract_id)->first();
+
+        $subTotal = (float) 0;
+        $total = (float) 0;
+
+        foreach ($getContractItems as $item) {
+            $lineTotal = (float) $item->price * (int) $item->quantity;
+            $subTotal += $lineTotal;
+            $total += $lineTotal;
+        }
+
+        $slug = self::generateInvoiceNumber();
+        $invoice = new Invoice();
+        $invoice->invoice_number = $slug;
+        $invoice->slug = $slug;
+        $invoice->client_id = $contract->client_id;
+        $invoice->company_id = $contract->company_id;
+        $invoice->created_by = $contract->client_id;
+        $invoice->estimate_id = $contract->id;
+        $invoice->issue_date = now();
+        $invoice->due_date = now()->addDays(15);
+        $invoice->subtotal = $subTotal;
+        $invoice->total = $total;
+        $invoice->note = $contract->note;
+        $invoice->terms = $contract->terms;
+        $invoice->contract_id = $contract->id;
+        $invoice->status = 'unpaid';
+        $invoice->save();
+
+        foreach ($getContractItems as $item) {
+
+            InvoiceItem::create([
+                'invoice_id' => $invoice->id,
+                'name' => $item->name,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'unit' => $item->unit,
+                'total_price' => $item->price * $item->quantity,
+                'is_accepted_by_client' => '1',
+            ]);
+
+            ContractItem::create([
+                'contract_id' => $contract->id,
+                'name' => $item->name,
+                'quantity' => $item->quantity,
+                'unit' => $item->unit,
+                'price' => $item->price,
+                'total_price' => $item->price * $item->quantity,
+                'invoice_id' => $invoice->id,
+                'is_modified' => '1',
+                'is_accepted_by_client' => '1',
+            ]);
+        }
+
         return $invoice;
     }
 
@@ -192,15 +282,15 @@ class Invoice extends Model
             $contract = Contract::find($contract->id);
 
             if ($invoice->status === 'unpaid') {
-        
+
                 if ($estimate->total > 0) {
                     self::where('estimate_id', $estimate->id)
                         ->update(['status' => 'cancelled']);
                     $generateInvoice = self::generateInvoice($request, $estimate, $contract);
                     return $generateInvoice;
-                }else {
-                    
-                     self::checkCreaditAmount($request, $estimate, $contract);   
+                } else {
+
+                    self::checkCreaditAmount($request, $estimate, $contract);
                 }
             } elseif ($invoice->status === 'partial') {
                 self::managePartialInvoice($request, $estimate, $contract);
@@ -251,12 +341,12 @@ class Invoice extends Model
         // --- Case 1: Overpaid (Client ne zyada pay kar diya) ---
         if ($remaining < 0) {
             $creditNote = CreditNote::create([
-                'invoice_id'  => $oldInvoice->id,
+                'invoice_id' => $oldInvoice->id,
                 'estimate_id' => $estimate->id,
                 'contract_id' => $contract->id,
-                'amount'      => abs($remaining),
-                'reason'      => 'Client overpayment adjustment',
-                'status'      => 'open',
+                'amount' => abs($remaining),
+                'reason' => 'Client overpayment adjustment',
+                'status' => 'open',
             ]);
 
             $oldInvoice->update(['status' => 'cancelled']);
@@ -276,29 +366,29 @@ class Invoice extends Model
 
         $invoice = new Invoice();
         $invoice->invoice_number = $slug;
-        $invoice->slug           = $slug;
-        $invoice->client_id      = $estimate->client_id;
-        $invoice->company_id     = $estimate->company_id;
-        $invoice->created_by     = $estimate->created_by;
-        $invoice->estimate_id    = $estimate->id;
-        $invoice->issue_date     = now();
-        $invoice->due_date       = now()->addDays(15);
-        $invoice->subtotal       = $estimate->subtotal;
-        $invoice->total          = $estimate->total;
-        $invoice->note           = $estimate->note;
-        $invoice->terms          = $estimate->terms;
-        $invoice->contract_id    = $contract->id;
-        $invoice->status         = 'unpaid';
+        $invoice->slug = $slug;
+        $invoice->client_id = $estimate->client_id;
+        $invoice->company_id = $estimate->company_id;
+        $invoice->created_by = $estimate->created_by;
+        $invoice->estimate_id = $estimate->id;
+        $invoice->issue_date = now();
+        $invoice->due_date = now()->addDays(15);
+        $invoice->subtotal = $estimate->subtotal;
+        $invoice->total = $estimate->total;
+        $invoice->note = $estimate->note;
+        $invoice->terms = $estimate->terms;
+        $invoice->contract_id = $contract->id;
+        $invoice->status = 'unpaid';
         $invoice->save();
 
         // 8. Copy items, taxes, discounts from estimate
         foreach ($estimate->items as $item) {
             InvoiceItem::create([
-                'invoice_id'  => $invoice->id,
-                'name'        => $item->name,
-                'quantity'    => $item->quantity,
-                'price'       => $item->price,
-                'unit'        => $item->unit,
+                'invoice_id' => $invoice->id,
+                'name' => $item->name,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'unit' => $item->unit,
                 'total_price' => $item->total_price,
             ]);
         }
@@ -306,16 +396,16 @@ class Invoice extends Model
         foreach ($estimate->taxes as $tax) {
             InvoiceTax::create([
                 'invoice_id' => $invoice->id,
-                'name'       => $tax->name,
-                'percent'    => $tax->percent,
+                'name' => $tax->name,
+                'percent' => $tax->percent,
             ]);
         }
 
         foreach ($estimate->discounts as $discount) {
             InvoiceDiscount::create([
                 'invoice_id' => $invoice->id,
-                'name'       => $discount->name,
-                'value'      => $discount->value,
+                'name' => $discount->name,
+                'value' => $discount->value,
             ]);
         }
 
@@ -330,22 +420,22 @@ class Invoice extends Model
             ->sum('amount');
         $oldInvoice = self::where('estimate_id', $estimate->id)->where('status', 'unpaid')->first();
         // dd($oldInvoice);
-           $oldInvoice->update(['status' => 'cancelled']);
-            InstallmentPayment::where('estimate_id', $estimate->id)
-                ->where('is_paid', 0)
-                ->update(['status' => 'cancelled']);
+        $oldInvoice->update(['status' => 'cancelled']);
+        InstallmentPayment::where('estimate_id', $estimate->id)
+            ->where('is_paid', 0)
+            ->update(['status' => 'cancelled']);
 
-            InstallmentPlan::where('estimate_id', $estimate->id)->update(['status' => 'cancelled']);
+        InstallmentPlan::where('estimate_id', $estimate->id)->update(['status' => 'cancelled']);
 
         $remaining = $estimate->total - $totalPaid;
         if ($remaining < 0) {
             $creditNote = CreditNote::create([
-                'invoice_id'  => $oldInvoice->id,
+                'invoice_id' => $oldInvoice->id,
                 'estimate_id' => $estimate->id,
                 'contract_id' => $contract->id,
-                'amount'      => abs($remaining),
-                'reason'      => 'Client overpayment adjustment',
-                'status'      => 'open',
+                'amount' => abs($remaining),
+                'reason' => 'Client overpayment adjustment',
+                'status' => 'open',
             ]);
             return $creditNote;
         }

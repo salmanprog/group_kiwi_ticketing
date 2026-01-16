@@ -446,7 +446,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                Category
+                                                Category 
                                                 <span class="required">*</span>
                                             </label>
                                             <select required name="company_product_category_id"

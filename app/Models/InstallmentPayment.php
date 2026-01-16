@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InstallmentPayment extends Model 
+class InstallmentPayment extends Model
 {
     use CRUDGenerator;
     /**
@@ -37,7 +37,9 @@ class InstallmentPayment extends Model
         'created_at',
         'updated_at',
         'status',
-        'estimate_id'
+        'estimate_id',
+        'payment_type',
+        'notes',
     ];
 
     /**
