@@ -291,7 +291,7 @@ font-size: 14px;
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     border: 1px solid #e0e0e0 !important;
     border-radius: 6px !important;
-    padding: 8px 16px !important;
+    padding: 7px 21.2px !important;
     margin: 0 3px !important;
     color: #666 !important;
     font-weight: 500 !important;
@@ -308,6 +308,18 @@ font-size: 14px;
     background: #A0C242 !important;
     color: white !important;
     border-color: #A0C242 !important;
+    padding: 3px 12.56px !important;
+}
+
+.dataTables_paginate.paging_simple_numbers {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+div.dataTables_paginate a.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 /* Loading State */
