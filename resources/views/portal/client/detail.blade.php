@@ -1,6 +1,11 @@
 @extends('portal.master')
 
 @section('content')
+
+    @push('stylesheets')
+        <link href="{{ asset('admin/assets/scss/new-style.css') }}" rel="stylesheet" type="text/css">
+    @endpush
+
     <style>
         :root {
             --primary-color: #A0C242;
@@ -117,24 +122,6 @@
             font-weight: 600;
             font-size: 1.1rem;
             flex: 1;
-        }
-
-        .card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: #F8F9FA;
-            border-bottom: 1px solid var(--primary-color);
-            color: var(--secondary-color);
-            font-weight: 600;
-            padding: 12px 15px;
-            border-radius: 0 !important;
-            font-size: 15px;
         }
 
         /* Table Responsiveness */
@@ -283,13 +270,6 @@
             box-shadow: 0 0 0 0.2rem rgba(160, 194, 66, 0.25);
         }
 
-        .form-label {
-            font-weight: 500;
-            color: #1f2937;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-            display: block;
-        }
 
         /* Alert Styles */
         .alert {
@@ -664,10 +644,10 @@
 
     <section class="main-content">
         <div class="container">
-            <div class="contract-wrapper">
+            <div class="card">
 
                 <!-- Contract Header -->
-                <div class="contract-header">
+                {{-- <div class="contract-header">
                     <div class="contract-title">
                         <i class="fas fa-file-contract me-2"></i>Contact Details
                     </div>
@@ -685,35 +665,73 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     @endif
+                </div> --}}
+
+                <div class="card-header custfor-flex-header">
+                    <div class="header-content">
+                        {{-- <i class="fas fa-user-plus"></i> --}}
+                        <h3>Contact Details</h3>
+                    </div>
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
                 </div>
 
+                <div class="card-body">
 
+                    <!-- Parties Section -->
 
-                <!-- Parties Section -->
-                <div class="address-section">
-                    <div class="address-box">
-                        <h4><i class="fas fa-users me-2"></i>Account Info</h4>
-                        <p>
-                            <strong>{{ $organizations->name }}</strong><br>
-                            <i class="fas fa-envelope me-1"></i> {{ $organizations->email ?? '-' }}<br>
-                            <i class="fas fa-phone me-1"></i> {{ $organizations->mobile_no ?? '-' }}
-                        </p>
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Account Information</h5>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Contact Name</label>
+                                <div class="view-field">{{ $organizations->name }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Contact Email</label>
+                                <div class="view-field">{{ $organizations->email ?? '-' }}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Contact Number</label>
+                                <div class="view-field">{{ $organizations->mobile_no ?? '-' }}</div>
+                            </div>
+
+                        </div>
                     </div>
 
-                    <div class="address-box">
-                        <h4><i class="fas fa-user me-2"></i>Contact Info</h4>
-                        <p>
-                            <strong>{{ $record->first_name }} {{ $record->last_name }}</strong><br>
-                            <i class="fas fa-envelope me-1"></i> {{ $record->email ?? '-' }}<br>
-                            <i class="fas fa-phone me-1"></i> {{ $record->mobile_no ?? '-' }}
-                        </p>
-                    </div>
-                </div>
+                    {{-- <div class="address-section">
 
-                <!-- Address Details Section -->
-                <div class="address-section">
-                    <div class="address-box">
-                        <h4><i class="fas fa-users me-2"></i>Address Info</h4>
+                        <div class="address-box">
+                            <h4>Contact Info</h4>
+                            <p>
+                                <strong>{{ $record->first_name }} {{ $record->last_name }}</strong><br>
+                                <i class="fas fa-envelope me-1"></i> {{ $record->email ?? '-' }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ $record->mobile_no ?? '-' }}
+                            </p>
+                        </div>
+                    </div> --}}
+
+                    <!-- Address Details Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Address Info</h5>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">City</label>
@@ -746,12 +764,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Contact Details Section -->
-                <div class="address-section">
-                    <div class="address-box">
-                        <h4><i class="fas fa-users me-2"></i>Contact Info</h4>
+                    <!-- Contact Details Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Contact Info</h5>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">First Name</label>
@@ -784,12 +802,12 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Contract Details Section -->
-                <div class="address-section">
-                    <div class="address-box">
-                        <h4><i class="fas fa-users me-2"></i>Contract Info</h4>
+                    <!-- Contract Details Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Contract Info</h5>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label">Ticket Rate</label>
@@ -833,278 +851,278 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Notes DETAILS -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <h5>Notes</h5>
-                        <small id="notes-status" class="text-success"></small>
-                    </div>
+                    <!-- Notes DETAILS -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Notes</h5>
+                            <small id="notes-status" class="text-success"></small>
+                        </div>
 
-                    <div class="row">
-                        <div class="form-section mt-4">
-                            @if ($activityLog->count())
-                                <ul class="list-group" id="activityLogList">
-                                    @foreach ($activityLog as $log)
-                                        <li class="list-group-item">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
-                                                    <div class="text-muted small">
-                                                        {{ $log->notesTextarea ?? '' }}
+                        <div class="row">
+                            <div class="form-section mt-4">
+                                @if ($activityLog->count())
+                                    <ul class="list-group" id="activityLogList">
+                                        @foreach ($activityLog as $log)
+                                            <li class="list-group-item">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
+                                                        <div class="text-muted small">
+                                                            {{ $log->notesTextarea ?? '' }}
+                                                        </div>
                                                     </div>
+                                                    <small class="text-muted">
+                                                        {{ TimeWithAgo($log->created_at->format('d M Y, h:i A')) }}
+                                                    </small>
                                                 </div>
-                                                <small class="text-muted">
-                                                    {{ TimeWithAgo($log->created_at->format('d M Y, h:i A')) }}
-                                                </small>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <ul class="list-group" id="activityLogList">
-                                    <li class="list-group-item">No activity found.</li>
-                                </ul>
-                            @endif
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label">Add Notes</label>
-                            <input type="hidden" name="client_id" id="client_id" value="{{ $record->client_id }}">
-                            <input type="hidden" name="organization_id" id="organization_id"
-                                value="{{ $record->organization_id }}">
-                            <textarea id="notesTextarea" class="form-control" rows="4" readonly placeholder="Click here to add notes...">{{ $organizations->notes ?? '' }}</textarea>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <ul class="list-group" id="activityLogList">
+                                        <li class="list-group-item">No activity found.</li>
+                                    </ul>
+                                @endif
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Add Notes</label>
+                                <input type="hidden" name="client_id" id="client_id" value="{{ $record->client_id }}">
+                                <input type="hidden" name="organization_id" id="organization_id"
+                                    value="{{ $record->organization_id }}">
+                                <textarea id="notesTextarea" class="form-control" rows="4" readonly placeholder="Click here to add notes...">{{ $organizations->notes ?? '' }}</textarea>
 
-                            <button id="saveNotesBtn" class="btn btn-primary mt-2 d-none">
-                                Save Notes
-                            </button>
+                                <button id="saveNotesBtn" class="btn btn-primary mt-2 d-none">
+                                    Save Notes
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Linked Estimates -->
-                <div class="form-section for-cust-css">
-                    <div class="section-header tbl-heading-css">
-                        <h5>Estimates Information</h5>
-                        <span class="section-badge"><a href="{{ route('estimate.create') }}" target="_blank">Add New
-                                Estimate</a></span>
+                    <!-- Linked Estimates -->
+                    <div class="form-section for-cust-css">
+                        <div class="section-header tbl-heading-css">
+                            <h5>Estimates Information</h5>
+                            <span class="section-badge"><a href="{{ route('estimate.create') }}" target="_blank">Add New
+                                    Estimate</a></span>
+                        </div>
+
+                        <div class="table-responsive for-tbls-css">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Estimate No</th>
+                                        <th>Status</th>
+                                        <th>Estimate Date</th>
+                                        <th>Refrence</th>
+                                        <th>Subtotal</th>
+                                        <th>Amount</th>
+                                        <th>Valid Until</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($organizations->estimate as $key => $estimate)
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td><a href="{{ route('estimate.show', ['estimate' => $estimate->slug]) }}"
+                                                    target="_blank">
+                                                    {{ $estimate->estimate_number ?? '-' }}
+                                                </a></td>
+                                            <td>{{ $estimate->status ?? '-' }}</td>
+                                            <td>{{ $estimate->issue_date ?? '-' }}</td>
+                                            <td>-</td>
+                                            <td>
+                                                {{ isset($estimate->subtotal) ? number_format($estimate->subtotal, 2) : '-' }}
+                                            </td>
+                                            <td>
+                                                {{ isset($estimate->total) ? number_format($estimate->total, 2) : '-' }}
+                                            </td>
+                                            <td>{{ $estimate->valid_until ?? '-' }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">
+                                                No estimates found
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div class="table-responsive for-tbls-css">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Estimate No</th>
-                                    <th>Status</th>
-                                    <th>Estimate Date</th>
-                                    <th>Refrence</th>
-                                    <th>Subtotal</th>
-                                    <th>Amount</th>
-                                    <th>Valid Until</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($organizations->estimate as $key => $estimate)
+                    <!-- Contract INFORMATION -->
+                    <div class="form-section for-cust-css">
+                        <div class="section-header tbl-heading-css">
+                            <h5>Contract Information</h5>
+                            <span class="section-badge">
+                                <a href="{{ route('estimate.create') }}" target="_blank">Add New Contract</a>
+                            </span>
+                        </div>
+
+                        <div class="table-responsive for-tbls-css">
+                            <table class="table table-bordered table-striped">
+                                <thead>
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
-                                        <td><a href="{{ route('estimate.show', ['estimate' => $estimate->slug]) }}"
-                                                target="_blank">
-                                                {{ $estimate->estimate_number ?? '-' }}
-                                            </a></td>
-                                        <td>{{ $estimate->status ?? '-' }}</td>
-                                        <td>{{ $estimate->issue_date ?? '-' }}</td>
-                                        <td>-</td>
-                                        <td>
-                                            {{ isset($estimate->subtotal) ? number_format($estimate->subtotal, 2) : '-' }}
-                                        </td>
-                                        <td>
-                                            {{ isset($estimate->total) ? number_format($estimate->total, 2) : '-' }}
-                                        </td>
-                                        <td>{{ $estimate->valid_until ?? '-' }}</td>
+                                        <th>#</th>
+                                        <th>Contract No</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted">
-                                            No estimates found
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse($organizations->contract as $key => $contract)
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+
+                                            <td>
+                                                <a href="{{ route('contract.show', ['contract' => $contract->slug]) }}"
+                                                    target="_blank">
+                                                    {{ $contract->contract_number ?? '-' }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $contract->client->name ?? '-' }}</td>
+                                            <td>
+                                                @if ($contract->is_accept)
+                                                    <span class="badge bg-success">Accepted</span>
+                                                @else
+                                                    <span class="badge bg-warning">Pending</span>
+                                                @endif
+                                            </td>
+
+                                            <td>{{ number_format($contract->total ?? 0, 2) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">
+                                                No contract found
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                    <!-- Invoice INFORMATION -->
+                    <div class="form-section for-cust-css">
+                        <div class="section-header tbl-heading-css">
+                            <h5>Invoice Information</h5>
+                            <span class="section-badge">
+                                <a href="{{ route('estimate.create') }}" target="_blank">Add New Invoice</a>
+                            </span>
+                        </div>
 
-                <!-- Contract INFORMATION -->
-                <div class="form-section for-cust-css">
-                    <div class="section-header tbl-heading-css">
-                        <h5>Contract Information</h5>
-                        <span class="section-badge">
-                            <a href="{{ route('estimate.create') }}" target="_blank">Add New Contract</a>
-                        </span>
-                    </div>
-
-                    <div class="table-responsive for-tbls-css">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Contract No</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($organizations->contract as $key => $contract)
+                        <div class="table-responsive for-tbls-css">
+                            <table class="table table-bordered table-striped">
+                                <thead>
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
-
-                                        <td>
-                                            <a href="{{ route('contract.show', ['contract' => $contract->slug]) }}"
-                                                target="_blank">
-                                                {{ $contract->contract_number ?? '-' }}
-                                            </a>
-                                        </td>
-                                        <td>{{ $contract->client->name ?? '-' }}</td>
-                                        <td>
-                                            @if ($contract->is_accept)
-                                                <span class="badge bg-success">Accepted</span>
-                                            @else
-                                                <span class="badge bg-warning">Pending</span>
-                                            @endif
-                                        </td>
-
-                                        <td>{{ number_format($contract->total ?? 0, 2) }}</td>
+                                        <th>#</th>
+                                        <th>Invoice No</th>
+                                        <th>Status</th>
+                                        <th>Invoice Date</th>
+                                        <th>Due Date</th>
+                                        <th>Reference</th>
+                                        <th>Subtotal</th>
+                                        <th>Amount</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted">
-                                            No contract found
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- Invoice INFORMATION -->
-                <div class="form-section for-cust-css">
-                    <div class="section-header tbl-heading-css">
-                        <h5>Invoice Information</h5>
-                        <span class="section-badge">
-                            <a href="{{ route('estimate.create') }}" target="_blank">Add New Invoice</a>
-                        </span>
-                    </div>
-
-                    <div class="table-responsive for-tbls-css">
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Invoice No</th>
-                                    <th>Status</th>
-                                    <th>Invoice Date</th>
-                                    <th>Due Date</th>
-                                    <th>Reference</th>
-                                    <th>Subtotal</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($invoices as $key => $invoice)
-                                    <tr>
-                                        <td>{{ $key + 1 }}</td>
-                                        <td>
-                                            <a href="{{ route('invoice.show', $invoice->slug) }}" target="_blank">
-                                                {{ $invoice->invoice_number ?? '-' }}
-                                            </a>
-                                        </td>
-                                        <td>{{ $invoice->status ?? '-' }}</td>
-                                        <td>{{ $invoice->issue_date ?? '-' }}</td>
-                                        <td>{{ $invoice->due_date ?? '-' }}</td>
-                                        <td>{{ $invoice->reference ?? '-' }}</td>
-                                        <td>{{ number_format($invoice->subtotal ?? 0, 2) }}</td>
-                                        <td>{{ number_format($invoice->total ?? 0, 2) }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted">
-                                            No invoices found
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse($invoices as $key => $invoice)
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>
+                                                <a href="{{ route('invoice.show', $invoice->slug) }}" target="_blank">
+                                                    {{ $invoice->invoice_number ?? '-' }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $invoice->status ?? '-' }}</td>
+                                            <td>{{ $invoice->issue_date ?? '-' }}</td>
+                                            <td>{{ $invoice->due_date ?? '-' }}</td>
+                                            <td>{{ $invoice->reference ?? '-' }}</td>
+                                            <td>{{ number_format($invoice->subtotal ?? 0, 2) }}</td>
+                                            <td>{{ number_format($invoice->total ?? 0, 2) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">
+                                                No invoices found
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
             </div>
     </section>
 
-        <!-- Bootstrap & Font Awesome -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const textarea = document.getElementById('notesTextarea');
-    const saveBtn = document.getElementById('saveNotesBtn');
-    const status = document.getElementById('notes-status');
+    <!-- Bootstrap & Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('notesTextarea');
+            const saveBtn = document.getElementById('saveNotesBtn');
+            const status = document.getElementById('notes-status');
 
-    const clientId = document.getElementById('client_id').value;
-    const orgId = document.getElementById('organization_id').value;
+            const clientId = document.getElementById('client_id').value;
+            const orgId = document.getElementById('organization_id').value;
 
-    let originalText = textarea.value;
+            let originalText = textarea.value;
 
-    // Enable editing on click
-    textarea.addEventListener('click', function () {
-        textarea.removeAttribute('readonly');
-        saveBtn.classList.remove('d-none');
-        originalText = textarea.value;
-    });
+            // Enable editing on click
+            textarea.addEventListener('click', function() {
+                textarea.removeAttribute('readonly');
+                saveBtn.classList.remove('d-none');
+                originalText = textarea.value;
+            });
 
-    // Save notes
-    saveBtn.addEventListener('click', function () {
-        saveBtn.disabled = true;
-        status.textContent = 'Saving...';
+            // Save notes
+            saveBtn.addEventListener('click', function() {
+                saveBtn.disabled = true;
+                status.textContent = 'Saving...';
 
-        fetch("{{ route('organization.notes.save') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            credentials: 'same-origin', // ✅ important to send session
-            body: JSON.stringify({
-                notes: textarea.value,
-                client_id: clientId,
-                organization_id: orgId
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success) {
-                status.textContent = 'Error saving';
-                return;
-            }
+                fetch("{{ route('organization.notes.save') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        credentials: 'same-origin', // ✅ important to send session
+                        body: JSON.stringify({
+                            notes: textarea.value,
+                            client_id: clientId,
+                            organization_id: orgId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            status.textContent = 'Error saving';
+                            return;
+                        }
 
-            // Clear textarea
-            textarea.value = '';
-            textarea.setAttribute('readonly', true);
-            saveBtn.classList.add('d-none');
-            status.textContent = 'Saved ✔';
+                        // Clear textarea
+                        textarea.value = '';
+                        textarea.setAttribute('readonly', true);
+                        saveBtn.classList.add('d-none');
+                        status.textContent = 'Saved ✔';
 
-            // Update activity log dynamically
-            const list = document.getElementById('activityLogList');
-            list.innerHTML = '';
+                        // Update activity log dynamically
+                        const list = document.getElementById('activityLogList');
+                        list.innerHTML = '';
 
-            data.activityLogs.forEach(log => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item';
+                        data.activityLogs.forEach(log => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
 
-                li.innerHTML = `
+                            li.innerHTML = `
                     <div class="d-flex justify-content-between">
                         <div>
                             <strong>${log.createdBy?.name ?? 'System'}</strong>
@@ -1118,22 +1136,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 `;
 
-                list.appendChild(li);
-            });
+                            list.appendChild(li);
+                        });
 
-            setTimeout(() => status.textContent = '', 2000);
-        })
-        .catch(err => {
-            console.error(err);
-            textarea.value = originalText;
-            status.textContent = 'Error saving';
-        })
-        .finally(() => {
-            saveBtn.disabled = false;
+                        setTimeout(() => status.textContent = '', 2000);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        textarea.value = originalText;
+                        status.textContent = 'Error saving';
+                    })
+                    .finally(() => {
+                        saveBtn.disabled = false;
+                    });
+            });
         });
-    });
-});
-</script>
+    </script>
 
 
 @endsection

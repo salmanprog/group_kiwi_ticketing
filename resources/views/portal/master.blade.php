@@ -304,6 +304,10 @@
             color: #fff;
         }
 
+        li.nav-item.active a:hover i {
+            color: #fff;
+        }
+
         .nav-collapsed .static-sidebar-menu .nav-link i:first-child {
             margin-right: 0;
         }

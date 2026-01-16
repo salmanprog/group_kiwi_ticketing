@@ -122,7 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
             events.push({
                 title: `Contracts: ${cCount}`,
                 start: date,
-                color: 'blue',
+                className: 'event-contract',
+                // color: 'blue',
                 extendedProps: {
                     type: 'contract',
                     items: grouped[date].contracts
@@ -134,7 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
             events.push({
                 title: `Estimates: ${eCount}`,
                 start: date,
-                color: 'green',
+                className: 'event-estimate',
+                // color: 'green',
                 extendedProps: {
                     type: 'estimate',
                     items: grouped[date].estimates
@@ -198,7 +200,14 @@ function openContractsModal(contracts, date){
                 <td>${totalPrice}</td>
                 <td>${contract.organization?.size || ''}</td>
                 <td><span class="badge bg-${badge}">${contract.is_accept}</span></td>
-                <td class="text-end"><a href="${url}" class="btn btn-sm btn-outline-primary">View</a></td>
+                <td class="text-end"><a href="${url}" class="btn btn-sm btn-outline-primary"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right:4px; vertical-align:middle;">
+                    <path d="M15 3h6v6"></path>
+                    <path d="M10 14 21 3"></path>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                </svg>View</a></td>
             </tr>
         `;
     });
@@ -234,6 +243,14 @@ function openEstimatesModal(estimates, date){
                     class="btn btn-sm btn-outline-primary"
                     target="_blank">
                     View
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        style="margin-right:4px; vertical-align:middle;">
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14 21 3"></path>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    </svg>
                     </a>
                 </td>
             </tr>
