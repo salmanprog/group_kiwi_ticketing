@@ -40,17 +40,17 @@
 
                                         <!-- Start Date -->
                                         <!-- <div class="date-filter-group">
-                                                                        <label for="start_date" class="filter-label">Start Date</label>
-                                                                        <input type="date" id="start_date" name="start_date" class="date-input"
-                                                                            placeholder="Start Date" value="{{ request('start_date') }}">
-                                                                    </div> -->
+                                                                            <label for="start_date" class="filter-label">Start Date</label>
+                                                                            <input type="date" id="start_date" name="start_date" class="date-input"
+                                                                                placeholder="Start Date" value="{{ request('start_date') }}">
+                                                                        </div> -->
 
                                         <!-- End Date -->
                                         <!-- <div class="date-filter-group">
-                                                                        <label for="end_date" class="filter-label">End Date</label>
-                                                                        <input type="date" id="end_date" name="end_date" class="date-input"
-                                                                            placeholder="End Date" value="{{ request('end_date') }}">
-                                                                    </div> -->
+                                                                            <label for="end_date" class="filter-label">End Date</label>
+                                                                            <input type="date" id="end_date" name="end_date" class="date-input"
+                                                                                placeholder="End Date" value="{{ request('end_date') }}">
+                                                                        </div> -->
 
                                         <div class="status-filter-group">
                                             <label for="status" class="filter-label">Status</label>
@@ -107,7 +107,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="table-responsive">
+                        {{-- <div class="table-responsive">
                             <table id="" class="table">
                                 <thead>
                                     <tr>
@@ -145,8 +145,16 @@
                                         <td><a href="#" class="btn btn-xs btn-info">Brad Pitt</a></td>
                                         <td>wayes59344@jofuso.com</td>
                                         <td>+92-123654788</td>
-                                        <td>2026-02-07</td>
-                                        <td>2026-01-06</td>
+                                        <td>
+                                            <span class="event-date-badge">
+                                                2026-01-06
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="follow-update-date">
+                                                2026-01-06
+                                            </span>
+                                        </td>
                                         <td><span class="btn btn-xs btn-success">Active</span></td>
                                         <td>
                                             <span class="f-line">
@@ -200,7 +208,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
