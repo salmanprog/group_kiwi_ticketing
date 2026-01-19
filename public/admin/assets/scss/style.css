@@ -1857,8 +1857,8 @@ body.horizontal .footer {
 
 .btn-primary:focus {
   color: #fff;
-  background-color: #4b71fa !important;
-  border-color: #4b71fa !important;
+  background-color: #9fc23fb8 !important;
+  border-color: #9fc23fb8 !important;
 }
 
 .btn-info {
