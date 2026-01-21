@@ -51,6 +51,7 @@ class ProductHook
     */
     public function hook_before_add($request,&$postdata)
     {
+        // dd($request->all());
         $postdata['slug'] = uniqid() . time();
         $getCompany = CompanyUser::getCompany(Auth::user()->id); 
         $postdata['company_id'] = $getCompany->id;
@@ -82,6 +83,9 @@ class ProductHook
         if($request->notes_toggle != 'on'){
             $postData['description'] = null;            
         }
+
+        $postData['tax'] = ($request->tax??0);
+        $postData['gratuity'] = ($request->gratuity??0);
     }
 
     /*

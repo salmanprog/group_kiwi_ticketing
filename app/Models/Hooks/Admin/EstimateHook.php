@@ -132,13 +132,17 @@ class EstimateHook
 
         if (!empty($request->products)) {
             foreach ($request->products as $product) {
+                // dd($product);
                 if (!empty($product['name']) && !empty($product['quantity']) && !empty($product['price'])) {
                     EstimateItem::create([
                         'user_estimate_id' => $estimate->id,
                         'name' => $product['name'],
                         'quantity' => $product['quantity'],
                         'price' => $product['price'],
-                        'total_price' => ($product['price'] * $product['quantity']),
+                        'product_price'=> $product['product_total_price'],
+                        'tax'=> $product['tax'],
+                        'gratuity'=> $product['gratuity'],
+                        'total_price' => ($product['product_total_price'] * $product['quantity']),
                         'unit' => 'each',
                     ]);
                 }

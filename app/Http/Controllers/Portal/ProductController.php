@@ -77,7 +77,8 @@ class ProductController extends CRUDCrontroller
             $record->name,
             $record->price,
             $record->unit,
-            date(config("constants.ADMIN_DATE_FORMAT") , strtotime($record->created_at)),
+            $record->tax,
+            $record->gratuity,
             $options
         ];
     }

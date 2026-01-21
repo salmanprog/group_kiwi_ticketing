@@ -874,6 +874,9 @@
                                                     <th>Product</th>
                                                     <th>Quantity</th>
                                                     <th>Unit Price</th>
+                                                    <th>Tax</th>
+                                                    <th>Gratuity</th>
+                                                    <th>Total Price</th>
                                                     <th>Total</th>
                                                     <th class="no-print">Action</th>
                                                 </tr>
@@ -909,9 +912,9 @@
                                     <input type="hidden" name="total" id="totalInput" value="0">
 
                                     <div class="action-buttons">
-                                        <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
+                                        <!-- <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
                                             <i class="fas fa-plus me-1"></i>Add Field
-                                        </button>
+                                        </button> -->
                                         <button type="button" class="btn btn-primary btn-sm no-print"
                                             data-toggle="modal" data-target="#productModal">
                                             <i class="fas fa-cube me-1"></i>Add Product
@@ -1003,7 +1006,10 @@
                                         <tr>
                                             <th>Select</th>
                                             <th>Product Name</th>
-                                            <th>Price</th>
+                                            <th>Product Price</th>
+                                            <th>Tax</th>
+                                            <th>Gratuity</th>
+                                            <th>Total Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1011,10 +1017,16 @@
                                             <tr>
                                                 <td><input type="checkbox" class="product-checkbox"
                                                         data-name="{{ $product->name }}"
-                                                        data-price="{{ $product->price }}">
+                                                        data-price="{{ $product->price }}"
+                                                        data-producttax="{{ $product->tax }}"
+                                                        data-gratuity="{{ $product->gratuity }}"
+                                                        data-producttotalprice="{{ $product->total_price }}">
                                                 </td>
                                                 <td>{{ $product->name }}</td>
                                                 <td>${{ number_format($product->price, 2) }}</td>
+                                                <td>${{ number_format($product->tax, 2) }}</td>
+                                                <td>${{ number_format($product->gratuity, 2) }}</td>
+                                                <td>${{ number_format($product->total_price, 2) }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -1246,6 +1258,8 @@
                                                                 <td>${item.quantity || '0'}</td>
                                                                 <td>${item.unit || '-'}</td>
                                                                 <td>${item.price || '0.00'}</td>
+                                                                <td>${item.tax || '0.00'}</td>
+                                                                <td>${item.gratuity || '0.00'}</td>
                                                                 <td><strong>${item.total_price || '0.00'}</strong></td>
                                                             </tr>
                                                         `).join('')}
@@ -1501,6 +1515,9 @@
             <td><input type="text" name="products[${productIndex}][name]" class="form-control"></td>
             <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
             <td><input type="number" name="products[${productIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="0" step="0.01" min="0"></td>
             <td class="total-cell">$0.00</td>
             <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
         `;
@@ -1529,13 +1546,18 @@
             checkboxes.forEach((checkbox) => {
                 const name = checkbox.dataset.name;
                 const price = parseFloat(checkbox.dataset.price).toFixed(2);
-
+                const tax = parseFloat(checkbox.dataset.producttax).toFixed(2);
+                const gratuity = parseFloat(checkbox.dataset.gratuity).toFixed(2);
+                const product_total_price = parseFloat(checkbox.dataset.producttotalprice).toFixed(2);
                 const row = document.createElement("tr");
                 row.innerHTML = `
                 <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
                 <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                <td class="total-cell">$${price}</td>
+                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax}" readonly step="0.01" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity}" readonly step="0.01" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${product_total_price}" readonly step="0.01" min="0"></td>
+                <td class="total-cell">$${product_total_price}</td>
                 <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
             `;
                 table.appendChild(row);
@@ -1712,13 +1734,19 @@
             existingEstimateItems.forEach(item => {
                 const qty = parseFloat(item.quantity) || 1;
                 const price = parseFloat(item.price) || 0;
-                const total = qty * price;
+                const productPrice = parseFloat(item.product_price) || 0;
+                const tax = parseFloat(item.tax) || 0;
+                const gratuity = parseFloat(item.gratuity) || 0;
+                const total = qty * productPrice;
 
                 const row = document.createElement("tr");
                 row.innerHTML = `
                 <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
                 <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" step="0.01" oninput="updateTotal(this)" min="0"></td>
                 <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" step="0.01" oninput="updateTotal(this)" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" step="0.01" min="0" readonly></td>
+                <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity.toFixed(2)}" step="0.01" min="0" readonly></td>
+                <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" step="0.01" min="0" readonly></td>
                 <td class="total-cell">$${total.toFixed(2)}</td>
                 <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
             `;
