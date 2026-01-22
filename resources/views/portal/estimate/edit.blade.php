@@ -876,7 +876,7 @@
                                                     <th>Unit Price</th>
                                                     <th>Tax</th>
                                                     <th>Gratuity</th>
-                                                    <th>Total Price</th>
+                                                    <th>Product Price (Tax + Gratuity)</th>
                                                     <th>Total</th>
                                                     <th class="no-print">Action</th>
                                                 </tr>
@@ -1534,7 +1534,7 @@
         function updateTotal(input) {
             const row = input.closest("tr");
             const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
-            const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
+            const price = parseFloat(row.querySelector('input[name*="[product_total_price]"]').value) || 0;
             row.querySelector(".total-cell").innerText = `$${(qty * price).toFixed(2)}`;
             calculateTotals();
         }
@@ -1743,7 +1743,7 @@
                 row.innerHTML = `
                 <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
                 <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" step="0.01" oninput="updateTotal(this)" min="0"></td>
-                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" step="0.01" oninput="updateTotal(this)" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" step="0.01" oninput="updateTotal(this)" min="0" readonly></td>
                 <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" step="0.01" min="0" readonly></td>
                 <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity.toFixed(2)}" step="0.01" min="0" readonly></td>
                 <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" step="0.01" min="0" readonly></td>
