@@ -1666,7 +1666,7 @@
 
             rows.forEach(row => {
                 const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
-                const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
+                const price = parseFloat(row.querySelector('input[name*="[product_total_price]"]').value) || 0;
                 subtotal += qty * price;
             });
 
