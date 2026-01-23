@@ -32,7 +32,8 @@ class Estimate extends Model
         'event_date',
         'contract_id',
         'is_adjusted',
-        'terms_and_condition'
+        'terms_and_condition',
+        'is_installment',
     ];
 
     /**
@@ -81,6 +82,11 @@ class Estimate extends Model
     public function estimateinvoices()
     {
         return $this->hasMany(Invoice::class, 'estimate_id', 'id');
+    }
+
+    public function installments()
+    {
+        return $this->hasMany(EstimateInstallment::class, 'estimate_id', 'id');
     }
     /**
      * Generate unique slug

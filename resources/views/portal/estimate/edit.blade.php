@@ -803,7 +803,7 @@
 
                     {{-- Form Start --}}
                     <div class="form-section">
-                        <form method="POST" action="{{ route('estimate.update', ['estimate' => $record->slug]) }}">
+                        <form method="POST" action="{{ route('estimate.update', ['estimate' => $record->slug]) }}" id="update-estimate-form">
                             @csrf
                             @method('PUT')
 
@@ -1016,20 +1016,27 @@
                                 @endif
                             </div> -->
 
-                            <div class="row">
+                       <div class="row">
                             <div class="col-md-6">
+                                                                        @if ($record->status != 'approved')
+
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="installmentCheck">
                                     <label class="form-check-label" for="installmentCheck">Is Installment?</label>
                                 </div>
+                                @endif
 
                                 <div id="installmentSection" class="border p-3 rounded d-none bg-light">
-                                    <h6>Installment Schedule</h6>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0">Installment Schedule</h6>
+                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
+                                        </div>
                                     <div id="dynamicInputsContainer"></div>
                                     <hr>
                                     <div class="d-flex justify-content-between">
                                         <strong>Remaining Total:</strong>
                                         <span id="remainingTotal">$1,000.00</span>
+                                        <input type="hidden" name="remaining_total" id="remainingTotalInput">
                                     </div>
                                 </div>
                             </div>
@@ -1049,6 +1056,9 @@
                                 </div>
                             </div>
                         </div>
+
+
+
                         </form>
 
                         {{-- Hidden form for Send action --}}
@@ -1560,6 +1570,7 @@
         const existingEstimateItems = @json($record->items ?? []);
         const existingEstimateTaxes = @json($record->taxes ?? []);
         const existingEstimateDiscounts = @json($record->discounts ?? []);
+        const existingEstimateInstallments = @json($record->installments ?? []);
 
         let productIndex = 1;
         let taxes = [];
@@ -1790,10 +1801,12 @@
             }
 
             document.getElementById("totalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
+            document.getElementById("remainingTotal").innerText = `$${total.toFixed(2)}`;
             document.getElementById("subtotalInput").value = subtotal.toFixed(2);
             document.getElementById("taxTotalInput").value = totalTaxAmount.toFixed(2);
             document.getElementById("discountTotalInput").value = totalDiscountAmount.toFixed(2);
             document.getElementById("totalInput").value = total.toFixed(2);
+            document.getElementById("remainingTotalInput").value = total.toFixed(2);
         }
 
         document.querySelector("#productTable tbody").addEventListener('input', function(e) {
@@ -1829,6 +1842,36 @@
             });
         }
 
+        function loadExistingInstallments() {
+            // Check if there is actually data to load
+            if (existingEstimateInstallments.length > 0) {
+                // 1. Ensure the checkbox is checked and UI is visible
+                const checkbox = document.getElementById('installmentCheck'); // Replace with your actual ID
+                const section = document.getElementById('installmentSection');   // Replace with your actual ID
+                const container = document.getElementById('dynamicInputsContainer'); // The div where rows go
+                
+                if (checkbox) checkbox.checked = true;
+                if (section) section.classList.remove('d-none');
+
+                // 2. Clear container to prevent duplicates
+                container.innerHTML = '';
+
+                // 3. Loop through existing installments
+                existingEstimateInstallments.forEach(item => {
+                    const amount = parseFloat(item.amount) || 0;
+                    const date = item.installment_date || "";
+
+                    // We reuse your createRowHtml logic
+                    // Note: installmentIndex++ happens inside createRowHtml
+                    const rowHtml = createRowHtml(amount.toFixed(2), date);
+                    container.insertAdjacentHTML('beforeend', rowHtml);
+                });
+
+                // 4. Recalculate the remaining balance UI
+                calculateBalance();
+            }
+        }
+
         function submitSentForm() {
             document.getElementById('sentForm').submit();
         }
@@ -1838,6 +1881,7 @@
             renderTaxes();
             renderDiscounts();
             calculateTotals();
+            loadExistingInstallments();
         };
 
 
@@ -1845,67 +1889,208 @@
         //installment logic 
 
 
-        let totalAmount = document.getElementById('totalInput').value; // Your provided total amount
-const checkbox = document.getElementById('installmentCheck');
-const modal = new bootstrap.Modal(document.getElementById('installmentModal'));
+   const checkbox = document.getElementById('installmentCheck');
+const modalElement = document.getElementById('installmentModal');
+const modal = new bootstrap.Modal(modalElement);
 const container = document.getElementById('dynamicInputsContainer');
 const section = document.getElementById('installmentSection');
 
-// 1. Show modal on check
+// Template for a new row
+
+// Add a simple counter or use a timestamp for the key
+let installmentIndex = 0; 
+
+function createRowHtml(amount = "",date = "") {
+    installmentIndex++; // Increment to give each row a unique "ID"
+    
+    return `
+        <div class="row mb-2 installment-row">
+            <div class="col-md-5">
+                <input type="number" 
+                       name="installments[${installmentIndex}][amount]" 
+                       class="form-control inst-amount" 
+                       placeholder="Amount" 
+                       value="${amount}" 
+                       oninput="calculateBalance()" 
+                       step="0.01" min="0" required>
+            </div>
+            <div class="col-md-5">
+                <input type="date" 
+                       name="installments[${installmentIndex}][date]" 
+                       class="form-control inst-date" 
+                       required>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger w-100 btn-remove">×</button>
+            </div>
+        </div>`;
+}
+
+// 1. Checkbox Toggle
 checkbox.addEventListener('change', function() {
     if (this.checked) {
         modal.show();
     } else {
         section.classList.add('d-none');
         container.innerHTML = '';
+        calculateBalance();
     }
 });
 
-// 2. Generate Inputs
+// 2. Initial Generation from Modal
 document.getElementById('generateFields').addEventListener('click', function() {
-    const count = document.getElementById('numInstallments').value;
-    if (count <= 0) return alert("Enter a valid number");
+    const count = parseInt(document.getElementById('numInstallments').value);
+    if (!count || count <= 0) return alert("Please enter a valid number");
 
-    container.innerHTML = ''; // Clear previous
+    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
+    container.innerHTML = '';
     section.classList.remove('d-none');
 
-    for (let i = 1; i <= count; i++) {
-        const row = `
-            <div class="row mb-2">
-                <div class="col">
-                    <input type="number" class="form-control inst-amount" placeholder="Amount ${i}" oninput="calculateBalance()">
-                </div>
-                <div class="col">
-                    <input type="date" class="form-control inst-date">
-                </div>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', row);
+    // Logic: Split total by number of installments for the user
+    let splitAmount = (totalAmount / count).toFixed(2);
+
+    for (let i = 0; i < count; i++) {
+        // Last row gets the remainder to avoid rounding errors
+        if (i === count - 1) {
+            let currentSum = splitAmount * (count - 1);
+            let lastPart = totalAmount - currentSum;
+            container.insertAdjacentHTML('beforeend', createRowHtml(lastPart.toFixed(2),""));
+        } else {
+            container.insertAdjacentHTML('beforeend', createRowHtml(splitAmount));
+        }
     }
     modal.hide();
+    calculateBalance();
 });
 
-// 3. Calculate Balance
-function calculateBalance() {
+// 3. Add Single Row (Auto-fills with remaining balance)
+document.getElementById('addRowBtn').addEventListener('click', function() {
+    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
     let paidSoFar = 0;
-    const amounts = document.querySelectorAll('.inst-amount');
+    document.querySelectorAll('.inst-amount').forEach(el => paidSoFar += parseFloat(el.value) || 0);
     
+    let remaining = totalAmount - paidSoFar;
+    let fillValue = remaining > 0 ? remaining.toFixed(2) : "";
+    
+    container.insertAdjacentHTML('beforeend', createRowHtml(fillValue));
+    calculateBalance();
+});
+
+// 4. Remove Row
+container.addEventListener('click', function(e) {
+    if (e.target.classList.contains('btn-remove')) {
+        e.target.closest('.installment-row').remove();
+        calculateBalance();
+    }
+});
+
+// 5. Calculation Logic (Prevents Negative & Checks Completion)
+function calculateBalance() {
+    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
+    let runningTotal = 0;
+    const amounts = document.querySelectorAll('.inst-amount');
+
     amounts.forEach(input => {
-        paidSoFar += Number(input.value) || 0;
+        let val = parseFloat(input.value) || 0;
+
+        // Condition: If this input makes the total go over, cap it
+        if (runningTotal + val > totalAmount) {
+            val = totalAmount - runningTotal;
+            input.value = val > 0 ? val.toFixed(2) : 0;
+        }
+        runningTotal += val;
     });
 
-    const remaining = totalAmount - paidSoFar;
-    document.getElementById('remainingTotal').innerText = `$${remaining.toFixed(2)}`;
+    let remaining = totalAmount - runningTotal;
+    const display = document.getElementById('remainingTotal');
     
-    // Optional: Turn text red if they exceed the total
-    document.getElementById('remainingTotal').style.color = remaining < 0 ? 'red' : 'black';
+    display.innerText = `$${remaining.toFixed(2)}`;
+    
+    // UI Feedback
+    if (remaining > 0) {
+        display.className = "fw-bold text-warning"; // Still needs more
+    } else {
+        display.className = "fw-bold text-success"; // Perfect balance
+    }
 }
 
-// Cancel handler
+// 6. Final Form Validation
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
+    let currentTotal = 0;
+    document.querySelectorAll('.inst-amount').forEach(el => currentTotal += parseFloat(el.value) || 0);
+
+    // Using a small margin for decimal floating point math
+    if (Math.abs(totalAmount - currentTotal) > 0.01) {
+        e.preventDefault();
+        alert(`Validation Error: The total of all installments ($${currentTotal.toFixed(2)}) must equal the total amount ($${totalAmount.toFixed(2)}).`);
+    }
+});
+
+// Cancel Modal
 document.getElementById('cancelModal').addEventListener('click', () => {
     checkbox.checked = false;
     modal.hide();
 });
 
+    </script>
+
+    <script>
+        
+// 1. Target your specific form ID
+const estimateForm = document.getElementById('update-estimate-form');
+
+estimateForm.addEventListener('submit', function (e) {
+    // 2. Only run this check if the "Is Installment" checkbox is checked
+    const isInstallment = document.getElementById('installmentCheck').checked;
+    
+    if (isInstallment) {
+        const totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
+        let paidSoFar = 0;
+        
+        // Sum up all dynamic installment fields
+        const amounts = document.querySelectorAll('.inst-amount');
+        amounts.forEach(input => {
+            paidSoFar += parseFloat(input.value) || 0;
+        });
+
+        // 3. Validation: Check if balance is zero (using a small margin for decimals)
+        const difference = Math.abs(totalAmount - paidSoFar);
+        
+        if (difference > 0.01) {
+            // STOP the form submission
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 4. Visual Feedback
+            const remainingDisplay = document.getElementById('remainingTotal');
+            remainingDisplay.style.color = 'red';
+            
+            alert(`Validation Error: The installment total ($${paidSoFar.toFixed(2)}) must match the estimate total ($${totalAmount.toFixed(2)}). \n\nRemaining to allocate: $${(totalAmount - paidSoFar).toFixed(2)}`);
+            
+            // Optional: Scroll to the installment section so they see the error
+            document.getElementById('installmentSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+});
+
+estimateForm.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        // If the user is NOT in a textarea, prevent the default submit action
+        if (e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            return false;
+        }
+    }
+});
 
     </script>
+
+
+
+
+
+
+
+    
 @endsection

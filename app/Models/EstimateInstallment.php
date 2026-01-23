@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InstallmentPayment extends Model
+class EstimateInstallment extends Model
 {
-    use CRUDGenerator;
+    use SoftDeletes,CRUDGenerator;
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'installment_payments';
+    protected $table = 'user_estimate_installments';
 
     /**
      * The primary key associated with the table.
@@ -28,19 +28,7 @@ class InstallmentPayment extends Model
      * @var array
      */
     protected $fillable = [
-        'installment_plan_id',
-        'installment_number',
-        'amount',
-        'due_date',
-        'is_paid',
-        'paid_at',
-        'created_at',
-        'updated_at',
-        'status',
-        'estimate_id',
-        'contract_id',
-        'payment_type',
-        'notes',
+        'estimate_id','amount','installment_date','created_at', 'updated_at', 'deleted_at'
     ];
 
     /**
@@ -65,5 +53,4 @@ class InstallmentPayment extends Model
      * @var string
      */
     protected $__cache_expire_time = 1; //days
-
 }

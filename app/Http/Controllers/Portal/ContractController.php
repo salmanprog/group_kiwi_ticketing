@@ -189,7 +189,7 @@ class ContractController extends CRUDCrontroller
     {
         $record = Contract::where('slug', $slug)->first();
         $record->event_date = $request->event_date;
-        $record->terms = $request->terms;
+        $record->terms_and_condition = $request->terms;
         $record->notes = $request->notes;
         $record->save();
         return redirect()->back()->with('success', 'Contract accepted successfully');

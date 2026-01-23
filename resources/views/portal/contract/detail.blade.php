@@ -752,6 +752,9 @@
                                         <th>Item Name</th>
                                         <th>Unit</th>
                                         <th>Price</th>
+                                        <th>Tax</th>
+                                        <th>Gratuity</th>
+                                        <th>Price (tax + gratuity)</th>
                                         <th>Quantity</th>
                                         <th>Total Price</th>
                                         <th>Accepted By client</th>
@@ -764,6 +767,9 @@
                                                 <td>{{ $item->name }}  @if($item->is_modified == 1) <span class="badge bg-warning">M</span> @endif</td>
                                                 <td>{{ $item->unit }}</td>
                                                 <td>{{ $item->price }}</td>
+                                                <td>{{ $item->taxes }}</td>
+                                                <td>{{ $item->gratuity }}</td>
+                                                <td>{{ $item->price + $item->taxes + $item->gratuity }}</td>
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>{{ $item->total_price }}</td>
                                                 <td>
@@ -1083,7 +1089,7 @@
                         </div>
                         <div class="card-body">
                             <h5 class="fw-bold theme-text mb-3">Terms</h5>
-                            <p class="mb-4">{{ $record->terms ?: 'No terms specified.' }}</p>
+                            <p class="mb-4">{{ $record->terms_and_condition ?: 'No terms specified.' }}</p>
 
                             <h5 class="fw-bold theme-text mb-3">Notes</h5>
                             <p>{{ $record->notes ?: 'No notes available.' }}</p>
@@ -1151,7 +1157,7 @@
 
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Terms</label>
-                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms }}</textarea>
+                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
                                     </div>
 
                                     <div class="mb-3">

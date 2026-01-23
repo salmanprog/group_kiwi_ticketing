@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{OrganizationUser, CompanyUser, Client, Product, Estimate, User, Invoice, Contract};
+use App\Models\{OrganizationUser, CompanyUser, Client, Product, Estimate, User, Invoice, Contract,EstimateInstallment};
 use Auth;
 use Illuminate\Support\Facades\Crypt;
 use DB;
@@ -154,6 +154,7 @@ class EstimateController extends CRUDCrontroller
         $estimate = Estimate::where('slug', $slug)->first();
         $this->__data['clients'] = Client::where('company_id', $company->id)->get();
         $this->__data['products'] = Product::where('company_id', $company->id)->get();
+        $this->__data['installments'] = EstimateInstallment::where('estimate_id', $estimate->id)->get();
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
             ->join('users', 'users.id', '=', 'user_activity_logs.user_id')
             ->where('module', 'estimate')->where('module_id', $estimate->id)
@@ -194,6 +195,7 @@ class EstimateController extends CRUDCrontroller
             'invoices' => function ($q) {
                 $q->where('status', '!=', 'cancelled');
             },
+            'installments',
         ])
             ->where('slug', $slug)
             ->first();
@@ -316,6 +318,9 @@ class EstimateController extends CRUDCrontroller
                     'event_date' => $estimate->event_date,
                     'total' => $estimate->total,
                     'terms' => $estimate->terms,
+                    'is_accept' => 1,
+                    'notes' => $estimate->note,
+                    'terms_and_condition' => $estimate->terms_and_condition,
                 ]);
             } else {
                 $contract->total += $estimate->total;
@@ -325,7 +330,7 @@ class EstimateController extends CRUDCrontroller
 
             $estimate->update(['contract_id' => $contract->id]);
 
-            $invoice = Invoice::generateInvoice($request, $estimate, $contract);
+            $invoice = Invoice::generateInvoice($request, $estimate, $contract); 
 
             $this->logActivity('estimate', $estimate->id, 'Estimate Approved', $oldEstimateData, $estimate->toArray());
             $this->logActivity('contract', $contract->id, 'Contract Updated/Created', [], $contract->toArray());

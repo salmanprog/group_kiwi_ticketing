@@ -21,7 +21,10 @@ class ContractItem extends Model
         'total_price',
         'is_modified',
         'invoice_id',
-        'is_accepted_by_client'
+        'is_accepted_by_client',
+        'product_price',
+        'taxes',
+        'gratuity',
     ];
 
     public function contract()

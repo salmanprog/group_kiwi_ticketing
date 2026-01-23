@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use DB;
 
 // use App
 
@@ -133,77 +134,110 @@ class Invoice extends Model
 
     public static function generateInvoice($request, $estimate, $contract)
     {
-        $estimate = Estimate::with('items', 'taxes', 'discounts', 'company', 'organization', 'client')->where('slug', $request->slug)->first();
-        $slug = self::generateInvoiceNumber();
-        $invoice = new Invoice();
-        $invoice->invoice_number = $slug;
-        $invoice->slug = $slug;
-        $invoice->client_id = $estimate->client_id;
-        $invoice->company_id = $estimate->company_id;
-        $invoice->created_by = $estimate->created_by;
-        $invoice->estimate_id = $estimate->id;
-        $invoice->issue_date = now();
-        $invoice->due_date = now()->addDays(15);
-        $invoice->subtotal = $estimate->subtotal;
-        $invoice->total = $estimate->total;
-        $invoice->note = $estimate->note;
-        $invoice->terms = $estimate->terms;
-        $invoice->contract_id = $contract->id;
-        $invoice->status = 'unpaid';
-        $invoice->save();
+        $estimate = Estimate::with('items', 'taxes', 'discounts', 'company', 'organization', 'client','installments')->where('slug', $request->slug)->first();
+          DB::beginTransaction();
 
-        foreach ($estimate->items as $item) {
-            // dd($item);
-            InvoiceItem::create([
-                'invoice_id' => $invoice->id,
-                'name' => $item->name,
-                'quantity' => $item->quantity,
-                'price' => $item->price,
-                'unit' => $item->unit,
-                'total_price' => $item->total_price,
-            ]);
+            $slug = self::generateInvoiceNumber();
+            $invoice = new Invoice();
+            $invoice->invoice_number = $slug;
+            $invoice->slug = $slug;
+            $invoice->client_id = $estimate->client_id;
+            $invoice->company_id = $estimate->company_id;
+            $invoice->created_by = $estimate->created_by;
+            $invoice->estimate_id = $estimate->id;
+            $invoice->issue_date = now();
+            $invoice->due_date = now()->addDays(15);
+            $invoice->subtotal = $estimate->subtotal;
+            $invoice->total = $estimate->total;
+            $invoice->note = $estimate->note;
+            $invoice->terms = $estimate->terms;
+            $invoice->contract_id = $contract->id;
+            $invoice->status = 'unpaid';
+            $invoice->save();
+            
 
-            ContractItem::create([
-                'contract_id' => $contract->id,
-                'name' => $item->name,
-                'quantity' => $item->quantity,
-                'unit' => $item->unit,
-                'price' => $item->price,
-                'total_price' => $item->total_price,
-                'invoice_id' => $invoice->id,
-                'accepted_by_client' => 1,
-            ]);
-        }
+            if(!$estimate->installments){
+                $plan = \App\Models\InstallmentPlan::create([
+                    'invoice_id' => $invoice->id,
+                    'total_amount' => $estimate->total,
+                    'installment_count' => $estimate->installments->count(),
+                    'start_date' => $estimate->installments->first()->installment_date,
+                    'estimate_id' => $estimate->id
+                ]);
 
-        foreach ($estimate->taxes as $tax) {
-            InvoiceTax::create([
-                'invoice_id' => $invoice->id,
-                'name' => $tax->name,
-                'percent' => $tax->percent,
-            ]);
+                foreach ($estimate->installments as $index => $installment) {
+                    \App\Models\InstallmentPayment::create([
+                        'installment_plan_id' => $plan->id,
+                        'installment_number' => $index + 1,
+                        'invoice_id' => $invoice->id,
+                        'estimate_id' => $estimate->id,
+                        'contract_id' => $contract->id,
+                        'due_date' => $installment->installment_date,
+                        'amount' => $installment->amount,
+                        'is_paid' => false,
+                    ]);   
+                }
 
-            ContractTaxes::create([
-                'contract_id' => $contract->id,
-                'name' => $tax->name,
-                'percent' => $tax->percent,
-                'invoice_id' => $invoice->id,
-            ]);
-        }
 
-        foreach ($estimate->discounts as $discount) {
-            InvoiceDiscount::create([
-                'invoice_id' => $invoice->id,
-                'name' => $discount->name,
-                'value' => $discount->value,
-            ]);
+            }   
 
-            ContractDiscountItem::create([
-                'contract_id' => $contract->id,
-                'name' => $discount->name,
-                'value' => $discount->value,
-                'invoice_id' => $invoice->id,
-            ]);
-        }
+
+            foreach ($estimate->items as $item) {
+                // dd($item);
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'name' => $item->name,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'unit' => $item->unit,
+                    'total_price' => $item->total_price,
+                ]);
+                ContractItem::create([
+                    'contract_id' => $contract->id,
+                    'name' => $item->name,
+                    'quantity' => $item->quantity,
+                    'unit' => $item->unit,
+                    'price' => $item->price,
+                    'total_price' => $item->total_price,
+                    'taxes' => $item->tax,
+                    'product_price' => $item->product_price,
+                    'gratuity' => $item->gratuity,
+                    'accepted_by_client' => 1,
+                    'invoice_id' => $invoice->id,
+                ]);
+            }
+
+            foreach ($estimate->taxes as $tax) {
+                InvoiceTax::create([
+                    'invoice_id' => $invoice->id,
+                    'name' => $tax->name,
+                    'percent' => $tax->percent,
+                ]);
+
+                ContractTaxes::create([
+                    'contract_id' => $contract->id,
+                    'name' => $tax->name,
+                    'percent' => $tax->percent,
+                    'invoice_id' => $invoice->id,
+                ]);
+            }
+
+            foreach ($estimate->discounts as $discount) {
+                InvoiceDiscount::create([
+                    'invoice_id' => $invoice->id,
+                    'name' => $discount->name,
+                    'value' => $discount->value,
+                ]);
+
+                ContractDiscountItem::create([
+                    'contract_id' => $contract->id,
+                    'name' => $discount->name,
+                    'value' => $discount->value,
+                    'invoice_id' => $invoice->id,
+                ]);
+            }
+        
+        DB::commit();
         return $invoice;
     }
 

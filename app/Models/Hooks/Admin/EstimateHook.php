@@ -2,7 +2,7 @@
 
 namespace App\Models\Hooks\Admin;
 
-use App\Models\{CompanyUser, Estimate, EstimateItem, Client, Contract, Invoice};
+use App\Models\{CompanyUser, Estimate, EstimateItem, Client, Contract, Invoice,EstimateInstallment};
 use Auth;
 use DB;
 use Illuminate\Foundation\Console\ObserverMakeCommand;
@@ -103,6 +103,7 @@ class EstimateHook
             'taxes' => DB::table('user_estimate_taxes')->where('estimate_id', $record->id)->get()->toArray(),
             'discounts' => DB::table('user_estimate_discounts')->where('estimate_id', $record->id)->get()->toArray(),
         ];
+    
 
         $record->logActivity(
             'Estimate created by ' . Auth::user()->name,
@@ -130,6 +131,12 @@ class EstimateHook
         DB::table('user_estimate_taxes')->where('estimate_id', $estimate->id)->delete();
         DB::table('user_estimate_discounts')->where('estimate_id', $estimate->id)->delete();
 
+          if(!empty($request->installments)){
+            $postData['is_installment'] = '1';
+          }else{
+            $postData['is_installment'] = '0';
+          }
+
         if (!empty($request->products)) {
             foreach ($request->products as $product) {
                 // dd($product);
@@ -146,6 +153,17 @@ class EstimateHook
                         'unit' => 'each',
                     ]);
                 }
+            }
+        }
+
+        if(!empty($request->installments)){
+            EstimateInstallment::where('estimate_id', $estimate->id)->forceDelete();
+            foreach ($request->installments as $installment) {
+                EstimateInstallment::create([
+                    'estimate_id' => $estimate->id,
+                    'amount' => $installment['amount'],
+                    'installment_date' => $installment['date'],
+                ]);
             }
         }
 

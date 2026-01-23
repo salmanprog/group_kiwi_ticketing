@@ -30,7 +30,8 @@ class Contract extends Model
         'terms',
         'notes',
         'event_date',
-        'is_accept'
+        'is_accept',
+        'terms_and_condition',
     ];
 
     public static function generateUniqueSlug()

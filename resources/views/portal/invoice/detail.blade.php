@@ -678,23 +678,24 @@
                         @if ($invoice->status === 'unpaid')
                             <div class="action-buttons">
                                 {{-- Full Payment --}}
-                                @if (!$invoice->installmentPlan)
+                                <!-- @if (!$invoice->installmentPlan)
                                     <a href="{{ route('invoice.pay', $invoice->slug) }}" class="btn btn-success">
                                         <i class="fas fa-credit-card me-2"></i>Fully Paid
                                     </a>
-                                @endif
+                                @endif -->
+                                
 
                                 {{-- Convert to Installments --}}
-                                @if (!$invoice->installmentPlan)
-                                    <a href="{{ route('invoice.convert-to-installment', $invoice->id) }}"
+                                <!-- @if (!$invoice->installmentPlan) -->
+                                    <!-- <a href="{{ route('invoice.convert-to-installment', $invoice->id) }}"
                                         class="btn btn-primary">
                                         <i class="fas fa-calendar-alt me-2"></i>Convert to Installment Plan
-                                    </a>
-                                @else
+                                    </a> -->
+                                <!-- @else -->
                                     <p class="text-muted mt-2">
                                         <i class="fas fa-info-circle me-2"></i>Installment plan already created.
                                     </p>
-                                @endif
+                                <!-- @endif -->
                             </div>
                         @endif
                     @endif
@@ -758,6 +759,12 @@
                                 </tbody>
                             </table>
                         </div>
+                    @else
+                        @if (!$invoice->installmentPlan)
+                            <a href="{{ route('invoice.pay', $invoice->slug) }}" class="btn btn-success">
+                                <i class="fas fa-credit-card me-2"></i>Fully Paid
+                            </a>
+                        @endif
                     @endif
 
                 </div>

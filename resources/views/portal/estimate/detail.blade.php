@@ -758,11 +758,39 @@
                             @endif
                         </div>
                     @endif
+                    @if ($estimate->installments && $estimate->installments->count() > 0)
+                        <div class="installments-section mt-4">
+                            <h3 class="text-lg font-semibold mb-2">Payment Schedule</h3>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Installment</th>
+                                            <th>Due Date</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($estimate->installments as $index => $installment)
+                                            <tr>
+                                                <td>#{{ $index + 1 }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($installment->installment_date)->format('M d, Y') }}</td>
+                                                <td class="font-weight-bold">
+                                                    {{ number_format($installment->amount, 2) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endif
 
                 </div>
             </div>
         </div>
 
+        @if(Auth::user()->user_type !== 'client')
         <div class="activity-section">
             <div class="section-header">
                 <i class="fas fa-history me-2"></i>Recent Activity
@@ -825,6 +853,7 @@
             </div>
 
         </div>
+        @endif
 
     </section>
     <script>
