@@ -861,6 +861,37 @@
                                 </div>
                             </div>
 
+                             <div class="form-row mt-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Terms & Conditions
+                                    </h5>
+                                    <div class="forref">
+                                        <textarea name="terms_and_condition" class="form-control" rows="4">{{ $record->terms_and_condition }}</textarea>
+                                        <div class="print-value">
+                                            <strong>Terms & Conditions:</strong>
+                                            {{ $record->terms_and_condition }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                             <div class="form-row mt-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Note
+                                    </h5>
+                                    <div class="forref">
+                                        <textarea name="note" class="form-control" rows="4">{{ $record->note }}</textarea>
+                                        <div class="print-value">
+                                            <strong>Note:</strong>
+                                            {{ $record->note }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             {{-- Product Table --}}
                             <div class="form-row mt-4">
                                 <div class="col-12">
@@ -967,7 +998,6 @@
                                                     <i class="fas fa-paper-plane me-1"></i>Send
                                                 </button> -->
                                         @endif
-
                                         <button type="button" class="btn btn-outline-secondary no-print cust-bd"
                                             onclick="window.print()">
                                             <i class="fas fa-print me-1"></i>Print
@@ -975,6 +1005,50 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- <div class="form-row mt-4">
+                                @if ($record->status != 'approved')
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="installmentCheck">
+                                        <label class="form-check-label" for="installmentCheck">
+                                            Is Installment?
+                                        </label>
+                                    </div>
+                                @endif
+                            </div> -->
+
+                            <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="installmentCheck">
+                                    <label class="form-check-label" for="installmentCheck">Is Installment?</label>
+                                </div>
+
+                                <div id="installmentSection" class="border p-3 rounded d-none bg-light">
+                                    <h6>Installment Schedule</h6>
+                                    <div id="dynamicInputsContainer"></div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Remaining Total:</strong>
+                                        <span id="remainingTotal">$1,000.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="installmentModal" tabindex="-1" data-bs-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header"><h5 class="modal-title">Number of Payments</h5></div>
+                                    <div class="modal-body">
+                                        <input type="number" id="numInstallments" class="form-control" placeholder="Enter number of installments (e.g. 3)">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="cancelModal">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="generateFields">Generate</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         </form>
 
                         {{-- Hidden form for Send action --}}
@@ -1765,5 +1839,73 @@
             renderDiscounts();
             calculateTotals();
         };
+
+
+
+        //installment logic 
+
+
+        let totalAmount = document.getElementById('totalInput').value; // Your provided total amount
+const checkbox = document.getElementById('installmentCheck');
+const modal = new bootstrap.Modal(document.getElementById('installmentModal'));
+const container = document.getElementById('dynamicInputsContainer');
+const section = document.getElementById('installmentSection');
+
+// 1. Show modal on check
+checkbox.addEventListener('change', function() {
+    if (this.checked) {
+        modal.show();
+    } else {
+        section.classList.add('d-none');
+        container.innerHTML = '';
+    }
+});
+
+// 2. Generate Inputs
+document.getElementById('generateFields').addEventListener('click', function() {
+    const count = document.getElementById('numInstallments').value;
+    if (count <= 0) return alert("Enter a valid number");
+
+    container.innerHTML = ''; // Clear previous
+    section.classList.remove('d-none');
+
+    for (let i = 1; i <= count; i++) {
+        const row = `
+            <div class="row mb-2">
+                <div class="col">
+                    <input type="number" class="form-control inst-amount" placeholder="Amount ${i}" oninput="calculateBalance()">
+                </div>
+                <div class="col">
+                    <input type="date" class="form-control inst-date">
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', row);
+    }
+    modal.hide();
+});
+
+// 3. Calculate Balance
+function calculateBalance() {
+    let paidSoFar = 0;
+    const amounts = document.querySelectorAll('.inst-amount');
+    
+    amounts.forEach(input => {
+        paidSoFar += Number(input.value) || 0;
+    });
+
+    const remaining = totalAmount - paidSoFar;
+    document.getElementById('remainingTotal').innerText = `$${remaining.toFixed(2)}`;
+    
+    // Optional: Turn text red if they exceed the total
+    document.getElementById('remainingTotal').style.color = remaining < 0 ? 'red' : 'black';
+}
+
+// Cancel handler
+document.getElementById('cancelModal').addEventListener('click', () => {
+    checkbox.checked = false;
+    modal.hide();
+});
+
+
     </script>
 @endsection

@@ -746,15 +746,15 @@
                     </table>
 
                     {{-- Notes and Terms --}}
-                    @if ($estimate->note || $estimate->terms)
+                    @if ($estimate->terms_and_condition || $estimate->note)
                         <div class="notes-section">
-                            @if ($estimate->note)
-                                <h5><i class="fas fa-sticky-note me-2"></i>Note</h5>
-                                <p>{{ $estimate->note }}</p>
+                            @if ($estimate->terms_and_condition)
+                                <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
+                                <p>{{ $estimate->terms_and_condition }}</p>
                             @endif
-                            @if ($estimate->terms)
-                                <h5><i class="fas fa-file-contract me-2"></i>Terms</h5>
-                                <p>{{ $estimate->terms }}</p>
+                            @if ($estimate->note)
+                                <h5><i class="fas fa-file-contract me-2"></i>Note</h5>
+                                <p>{{ $estimate->note }}</p>
                             @endif
                         </div>
                     @endif
