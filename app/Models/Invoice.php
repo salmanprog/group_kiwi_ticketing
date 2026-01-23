@@ -155,8 +155,7 @@ class Invoice extends Model
             $invoice->status = 'unpaid';
             $invoice->save();
             
-
-            if(!$estimate->installments){
+            if($estimate->is_installment == "1"){
                 $plan = \App\Models\InstallmentPlan::create([
                     'invoice_id' => $invoice->id,
                     'total_amount' => $estimate->total,

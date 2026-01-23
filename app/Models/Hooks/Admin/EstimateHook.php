@@ -244,12 +244,12 @@ class EstimateHook
                         $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
                         $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
                        
-                        sendMail(
-                            $user->email,
-                            'estimate',
-                            'New Estimate',
-                            $mail_params
-                        );
+                        // sendMail(
+                        //     $user->email,
+                        //     'estimate',
+                        //     'New Estimate',
+                        //     $mail_params
+                        // );
                     }
                     // dd($mail_params['link']);
 

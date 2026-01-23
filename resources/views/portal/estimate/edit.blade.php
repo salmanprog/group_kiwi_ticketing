@@ -1917,6 +1917,7 @@ function createRowHtml(amount = "",date = "") {
             <div class="col-md-5">
                 <input type="date" 
                        name="installments[${installmentIndex}][date]" 
+                       value="${date}"
                        class="form-control inst-date" 
                        required>
             </div>
