@@ -274,6 +274,7 @@ class Invoice extends Model
         $invoice->status = 'unpaid';
         $invoice->save();
 
+        dd($invoice);
         foreach ($getContractItems as $item) {
 
             InvoiceItem::create([

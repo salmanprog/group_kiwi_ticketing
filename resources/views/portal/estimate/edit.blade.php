@@ -861,20 +861,7 @@
                                 </div>
                             </div>
 
-                             <div class="form-row mt-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Terms & Conditions
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea name="terms_and_condition" class="form-control" rows="4">{{ $record->terms_and_condition }}</textarea>
-                                        <div class="print-value">
-                                            <strong>Terms & Conditions:</strong>
-                                            {{ $record->terms_and_condition }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                          
 
                             
                              <div class="form-row mt-4">
@@ -971,6 +958,73 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                              <div class="row">
+                            <div class="col-md-6">
+                                 @if ($record->status != 'approved')
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="installmentCheck">
+                                    <label class="form-check-label" for="installmentCheck">Is Installment?</label>
+                                </div>
+                                @endif
+
+                                <div id="installmentSection" class="border p-3 rounded d-none bg-light">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0">Installment Schedule</h6>
+                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
+                                        </div>
+                                    <div id="dynamicInputsContainer"></div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Remaining Total:</strong>
+                                        <span id="remainingTotal">$1,000.00</span>
+                                        <input type="hidden" name="remaining_total" id="remainingTotalInput">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="installmentModal" tabindex="-1" data-bs-backdrop="static">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header"><h5 class="modal-title">Number of Payments</h5></div>
+                                    <div class="modal-body">
+                                        <input type="number" id="numInstallments" class="form-control" placeholder="Enter number of installments (e.g. 3)">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" id="cancelModal" onclick="cancelModalNumberOfPayments()">
+                                            Cancel
+                                        </button>                                       
+                                        
+                                        <button type="button" class="btn btn-primary" id="generateFields">Generate</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="form-row mt-4">
+    <div class="col-12">
+        <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+            Terms & Conditions
+        </h5>
+        <div class="forref">
+            <textarea name="terms_and_condition" class="form-control editor" rows="4">
+                {!! $record->terms_and_condition ?? $default_terms_and_condition->content !!}</textarea>
+            
+            <div class="print-value mt-3">
+                <strong>Terms & Conditions (Preview):</strong>
+                <div class="preview-content">
+                    @if (!empty($record->terms_and_condition))
+                        {!! $record->terms_and_condition !!}
+                    @else
+                        {!! $default_terms_and_condition->content !!}
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
                             {{-- Action Buttons --}}
                             <div class="form-row mt-4">
@@ -1016,47 +1070,7 @@
                                 @endif
                             </div> -->
 
-                       <div class="row">
-                            <div class="col-md-6">
-                                                                        @if ($record->status != 'approved')
-
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="installmentCheck">
-                                    <label class="form-check-label" for="installmentCheck">Is Installment?</label>
-                                </div>
-                                @endif
-
-                                <div id="installmentSection" class="border p-3 rounded d-none bg-light">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0">Installment Schedule</h6>
-                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
-                                        </div>
-                                    <div id="dynamicInputsContainer"></div>
-                                    <hr>
-                                    <div class="d-flex justify-content-between">
-                                        <strong>Remaining Total:</strong>
-                                        <span id="remainingTotal">$1,000.00</span>
-                                        <input type="hidden" name="remaining_total" id="remainingTotalInput">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="installmentModal" tabindex="-1" data-bs-backdrop="static">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header"><h5 class="modal-title">Number of Payments</h5></div>
-                                    <div class="modal-body">
-                                        <input type="number" id="numInstallments" class="form-control" placeholder="Enter number of installments (e.g. 3)">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" id="cancelModal">Cancel</button>
-                                        <button type="button" class="btn btn-primary" id="generateFields">Generate</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                     
 
 
                         </form>
@@ -1091,9 +1105,6 @@
                                             <th>Select</th>
                                             <th>Product Name</th>
                                             <th>Product Price</th>
-                                            <th>Tax</th>
-                                            <th>Gratuity</th>
-                                            <th>Total Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1101,16 +1112,10 @@
                                             <tr>
                                                 <td><input type="checkbox" class="product-checkbox"
                                                         data-name="{{ $product->name }}"
-                                                        data-price="{{ $product->price }}"
-                                                        data-producttax="{{ $product->tax }}"
-                                                        data-gratuity="{{ $product->gratuity }}"
-                                                        data-producttotalprice="{{ $product->total_price }}">
+                                                        data-price="{{ $product->price }}">
                                                 </td>
                                                 <td>{{ $product->name }}</td>
                                                 <td>${{ number_format($product->price, 2) }}</td>
-                                                <td>${{ number_format($product->tax, 2) }}</td>
-                                                <td>${{ number_format($product->gratuity, 2) }}</td>
-                                                <td>${{ number_format($product->total_price, 2) }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -1616,42 +1621,59 @@
             calculateTotals();
         }
 
-        function updateTotal(input) {
+       function updateTotal(input) {
             const row = input.closest("tr");
+
+            // 1. Get all values from the row
             const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
-            const price = parseFloat(row.querySelector('input[name*="[product_total_price]"]').value) || 0;
-            row.querySelector(".total-cell").innerText = `$${(qty * price).toFixed(2)}`;
+            const basePrice = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
+            const tax = parseFloat(row.querySelector('input[name*="[tax]"]').value) || 0;
+            const gratuity = parseFloat(row.querySelector('input[name*="[gratuity]"]').value) || 0;
+
+            // 2. Calculate the total for this row
+            // Formula: (Quantity * Base Price) + Tax + Gratuity
+            const rowTotal = (qty * basePrice) + tax + gratuity;
+
+            // 3. Update the Hidden/Readonly Total Input (for form submission)
+            row.querySelector('input[name*="[product_total_price]"]').value = rowTotal.toFixed(2);
+
+            // 4. Update the Visual Display Cell
+            row.querySelector(".total-cell").innerText = `$${rowTotal.toFixed(2)}`;
+
+            // 5. Update the Grand Totals at the bottom of the page
             calculateTotals();
         }
 
-        function addSelectedProducts() {
+     function addSelectedProducts() {
             const table = document.querySelector("#productTable tbody");
             const checkboxes = document.querySelectorAll(".product-checkbox:checked");
 
             checkboxes.forEach((checkbox) => {
                 const name = checkbox.dataset.name;
                 const price = parseFloat(checkbox.dataset.price).toFixed(2);
-                const tax = parseFloat(checkbox.dataset.producttax).toFixed(2);
-                const gratuity = parseFloat(checkbox.dataset.gratuity).toFixed(2);
-                const product_total_price = parseFloat(checkbox.dataset.producttotalprice).toFixed(2);
+                
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
-                <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
-                <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax}" readonly step="0.01" min="0"></td>
-                <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity}" readonly step="0.01" min="0"></td>
-                <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${product_total_price}" readonly step="0.01" min="0"></td>
-                <td class="total-cell">$${product_total_price}</td>
-                <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
-            `;
+                    <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
+                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
+                    <td class="total-cell">$${price}</td>
+                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+                `;
                 table.appendChild(row);
                 productIndex++;
                 checkbox.checked = false;
             });
 
+            // Close modal and cleanup
             $('#productModal').modal('hide');
-            calculateTotals();
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+
+            calculateTotals(); 
         }
 
         function addTax() {
@@ -2085,11 +2107,79 @@ estimateForm.addEventListener('keydown', function(e) {
     }
 });
 
+function cancelModalNumberOfPayments() {
+    // 1. Uncheck the "Installment" checkbox
+    const checkbox = document.getElementById('installmentCheck');
+    if (checkbox) {
+        checkbox.checked = false;
+    }
+
+    // 2. Clear the input inside the modal
+    const input = document.getElementById('numInstallments');
+    if (input) {
+        input.value = '';
+    }
+
+    // 3. Hide the Modal and Clean up the Backdrop
+    // We use the "Force" method since the standard .modal('hide') was failing
+    $('#installmentModal').modal('hide');
+    
+    // Force removal of the dark overlay and restore scrolling
+    $('body').removeClass('modal-open');
+    $('.modal-backdrop').remove();
+    $('body').css('padding-right', '0'); 
+}
     </script>
 
 
 
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Target all textareas with the 'editor' class
+        const allEditors = document.querySelectorAll('.editor');
+        
+        allEditors.forEach(textarea => {
+            ClassicEditor
+                .create(textarea, {
+                    toolbar: {
+                        items: [
+                            'heading', '|',
+                            'bold', 'italic', 'strikethrough', 'link', '|',
+                            'bulletedList', 'numberedList', '|',
+                            'undo', 'redo'
+                        ]
+                    }
+                })
+                .catch(error => {
+                    console.error('CKEditor initialization failed:', error);
+                });
+        });
+    });
+</script>
+
+<style>
+    /* Adjusts the height of the editor box */
+    .ck-editor__editable_inline {
+        min-height: 200px;
+        background-color: white !important;
+    }
+
+    /* Ensures the editor matches Bootstrap's border style */
+    .ck.ck-editor__main>.ck-editor__editable {
+        border-color: #dee2e6 !important;
+        box-shadow: none !important;
+    }
+
+    /* Style for the preview area */
+    .preview-content {
+        padding: 10px;
+        border: 1px dashed #ccc;
+        background: #f9f9f9;
+        margin-top: 10px;
+    }
+</style>
 
 
 

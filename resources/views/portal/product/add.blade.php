@@ -58,26 +58,26 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="form-label">Tax (%)</label>
-                                            <input type="number" step="0.01" name="tax" id="tax_input" class="form-control" placeholder="0.00" value="{{ old('tax', 0) }}">
+                                            <input type="hidden" step="0.01" name="tax" id="tax_input" class="form-control" placeholder="0.00" value="{{ old('tax', 0) }}">
                                         </div>
-                                    </div>
+                                    </div> -->
 
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="form-label">Gratuity (%)</label>
-                                            <input type="number" step="0.01" name="gratuity" id="gratuity_input" class="form-control" placeholder="0.00" value="{{ old('gratuity', 0) }}">
+                                            <input type="hidden"  step="0.01" name="gratuity" id="gratuity_input" class="form-control" placeholder="0.00" value="{{ old('gratuity', 0) }}">
                                         </div>
-                                    </div>
+                                    </div> -->
 
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="form-label">Total Product Price</label>
                                             <input type="number" step="0.01" name="total_price" id="total_price" class="form-control" style="background-color: #f9fafb; font-weight: bold;" readonly value="{{ old('total_price', 0) }}">
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="col-md-12">
                                         <div class="form-group">

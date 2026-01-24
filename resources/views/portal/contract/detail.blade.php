@@ -1233,23 +1233,31 @@
                                 <option value="" data-price="0">Choose...</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}" 
-                                            data-price="{{ $product->price }}" 
-                                            data-name="{{ $product->name }}">
+                                            data-price="{{ $product->total_price }}" 
+                                            data-name="{{ $product->name }}"
+                                            data-tax="{{ $product->tax }}"
+                                            data-gratuity="{{ $product->gratuity }}"
+                                            data-product_price="{{ $product->price }}"
+                                            >
                                         {{ $product->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
+                         <div class="col-md-2">
+                            <label class="form-label">Tax</label>
+                            <input type="number" id="tempTax" class="form-control" step="0.01" readonly>
+                        </div>
                         <div class="col-md-2">
                             <label class="form-label">Price</label>
-                            <input type="number" id="tempPrice" class="form-control" step="0.01">
+                            <input type="number" id="tempPrice" class="form-control" step="0.01" readonly>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Qty</label>
                             <input type="number" id="tempQty" class="form-control" value="1" min="1">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Line Total</label>
+                            <label class="form-label">Total</label>
                             <input type="text" id="tempTotal" class="form-control bg-light" readonly value="0.00">
                         </div>
                         <div class="col-md-3">

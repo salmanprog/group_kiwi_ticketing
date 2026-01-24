@@ -639,8 +639,6 @@
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Unit</th>
-                                        <th>Tax</th>
-                                        <th>Gratuity</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

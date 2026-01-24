@@ -264,6 +264,29 @@ class CompanyAdminController extends CRUDCrontroller
         return $this->__cbAdminView('cms_users.stripe-key',$data);
     }
 
+    public function termsAndConditions(Request $request)
+    {
+
+        $data['page_title'] = 'Terms & Conditions';
+        $getCompany = \App\Models\CompanyUser::getCompany(Auth::user()->id);
+        $terms_and_conditions = \App\Models\TermsAndCondition::where('company_id', $getCompany->id)->first();
+
+        $data['record'] = $terms_and_conditions;
+        return $this->__cbAdminView('cms_users.terms-and-conditions',$data);
+    }
+
+    public function updateTermsAndConditions(Request $request)
+    {   
+        $getCompany = \App\Models\CompanyUser::getCompany(Auth::user()->id);
+        $terms_and_conditions = \App\Models\TermsAndCondition::firstOrCreate(
+                                ['company_id' => $getCompany->id], [
+                                    'user_id' => Auth::user()->id,
+                                    'content' => $request->content 
+                                ]
+                            );
+        return redirect()->back()->with('success','Terms & Conditions has been updated successfully');
+    }
+
     /**
      * This function is used to submit profile data
      * @param Request $request

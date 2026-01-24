@@ -750,7 +750,7 @@
                         <div class="notes-section">
                             @if ($estimate->terms_and_condition)
                                 <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
-                                <p>{{ $estimate->terms_and_condition }}</p>
+                                <p>{!! $estimate->terms_and_condition !!}</p>
                             @endif
                             @if ($estimate->note)
                                 <h5><i class="fas fa-file-contract me-2"></i>Note</h5>

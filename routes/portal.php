@@ -46,6 +46,9 @@ Route::middleware(['custom_auth:web'])->group(function () {
 
     Route::match(['get', 'post'], 'user-profile', [CompanyAdminController::class, 'profile'])->name('admin.profile');
     Route::match(['get', 'post'], 'update-stripe-key', [CompanyAdminController::class, 'stripeKey'])->name('portal.update-stripe-key');
+    Route::get('terms-and-conditions', [CompanyAdminController::class, 'termsAndConditions'])->name('portal.terms-and-conditions');
+    Route::post('update-terms-and-conditions', [CompanyAdminController::class, 'updateTermsAndConditions'])->name('portal.update-terms-and-conditions');
+
     Route::match(['get', 'post'], 'change-password', [CompanyAdminController::class, 'changePassword'])->name('admin.change-password');
     Route::get('logout', [CompanyAdminController::class, 'logout'])->name('admin.logout');
 

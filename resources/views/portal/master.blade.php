@@ -483,6 +483,14 @@
                                                     class="icon-key"></i> Update Stripe Key</a>
                                         </li>
                                     @endif
+
+                                    @if (Auth::user()->user_type == 'company')
+                                        <li>
+                                            <a class="dropdown-item"
+                                                href="{{ route('portal.terms-and-conditions') }}"><i
+                                                    class="icon-key"></i> Terms & Conditions</a>
+                                        </li>
+                                    @endif
                                     <li class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item" href="{{ route('admin.logout') }}"><i

@@ -155,6 +155,7 @@ class EstimateController extends CRUDCrontroller
         $this->__data['clients'] = Client::where('company_id', $company->id)->get();
         $this->__data['products'] = Product::where('company_id', $company->id)->get();
         $this->__data['installments'] = EstimateInstallment::where('estimate_id', $estimate->id)->get();
+        $this->__data['default_terms_and_condition'] = \App\Models\TermsAndCondition::where('company_id', $company->id)->first();
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
             ->join('users', 'users.id', '=', 'user_activity_logs.user_id')
             ->where('module', 'estimate')->where('module_id', $estimate->id)

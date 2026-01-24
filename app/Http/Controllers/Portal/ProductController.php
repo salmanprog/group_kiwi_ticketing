@@ -77,8 +77,6 @@ class ProductController extends CRUDCrontroller
             $record->name,
             $record->price,
             $record->unit,
-            $record->tax,
-            $record->gratuity,
             $options
         ];
     }

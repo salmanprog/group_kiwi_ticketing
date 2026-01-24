@@ -57,7 +57,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="form-label">Tax (%)</label>
                                             <input type="number" step="0.01" name="tax" id="tax_input" class="form-control" value="{{ old('tax', $record->tax ?? 0) }}">
@@ -78,7 +78,7 @@
                                                 value="{{ old('total_price', $record->total_price ?? 0) }}"
                                                 class="form-control" style="background-color: #f1f3f5; font-weight: bold;" readonly>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="col-md-12">
                                         <div class="form-check form-switch mb-3">
