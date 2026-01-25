@@ -994,10 +994,10 @@
                                         Note
                                     </h5>
                                     <div class="forref">
-                                        <textarea name="note" class="form-control" rows="4">{{ $record->note }}</textarea>
+                                        <textarea name="note" class="form-control editor" rows="4">{{ $record->note }}</textarea>
                                         <div class="print-value">
                                             <strong>Note:</strong>
-                                            {{ $record->note }}
+                                            {!! $record->note !!}
                                         </div>
                                     </div>
                                 </div>
@@ -1009,8 +1009,8 @@
                                         Terms & Conditions
                                     </h5>
                                     <div class="forref">
-                                        <textarea name="terms_and_condition" class="form-control editor" rows="4">
-                                            {!! $record->terms_and_condition ?? ($default_terms_and_condition->content ?? 'No terms and conditions available') !!}</textarea>
+                                        <textarea name="terms_and_condition" class="form-control editor" rows="4" placeholder="Enter terms and conditions">
+                                            {!! $record->terms_and_condition ?? ($default_terms_and_condition->content ?? '') !!}</textarea>
                                         
                                         <div class="print-value mt-3">
                                             <strong>Terms & Conditions (Preview):</strong>
@@ -1018,7 +1018,7 @@
                                                 @if (!empty($record->terms_and_condition))
                                                     {!! $record->terms_and_condition !!}
                                                 @else
-                                                    {!! $default_terms_and_condition->content ?? 'No terms and conditions available' !!}
+                                                    {!! $default_terms_and_condition->content ?? '' !!}
                                                 @endif
                                             </div>
                                         </div>
@@ -1948,6 +1948,7 @@ function createRowHtml(amount = "",date = "") {
                        name="installments[${installmentIndex}][date]" 
                        value="${date}"
                        class="form-control inst-date" 
+                       min="<?= date('Y-m-d') ?>"
                        required>
             </div>
             <div class="col-md-2">

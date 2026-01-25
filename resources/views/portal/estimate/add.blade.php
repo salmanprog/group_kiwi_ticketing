@@ -34,6 +34,7 @@
 
                             <div class="row">
                                 @if(empty($client_id))
+                                
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">
@@ -43,10 +44,11 @@
                                         </label>
                                         <select name="client_id" class="form-control select2" required>
                                             <option value="">-- Select Client --</option>
+                                            
                                             @foreach ($clients as $client)
                                             <option value="{{ $client->client_id }}" {{ old('client_id')==$client->
                                                 client_id ? 'selected' : '' }}>
-                                                {{ $client->first_name }} {{ $client->last_name }}
+                                                {{ $client->first_name }} {{ $client->last_name }} ({{ $client->client_id }})
                                             </option>
                                             @endforeach
                                         </select>
@@ -481,6 +483,7 @@
 
                                 <div class="row">
                                     @if(empty($client_id))
+                                    
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label">
@@ -492,7 +495,7 @@
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->client_id }}"
                                                                 {{ old('client_id') == $client->client_id ? 'selected' : '' }}>
-                                                                {{ $client->first_name }} {{ $client->last_name }}
+                                                                {{ $client->first_name }} {{ $client->last_name }} ({{ $client->organization_name }})
                                                             </option>
                                                         @endforeach
                                                     </select>

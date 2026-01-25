@@ -106,7 +106,7 @@ class EstimateHook
     
 
         $record->logActivity(
-            'Estimate created by ' . Auth::user()->name,
+           'This estimate was created by ' . Auth::user()->name,
             [],
             $newData
         );
