@@ -82,7 +82,7 @@ class OrganizationController extends CRUDCrontroller
         if (Auth::user()->user_type == 'company' || Auth::user()->user_type == 'salesman' || Auth::user()->user_type == 'manager') {
             $options = '<a href="' . route('organization.edit', ['organization' => $record->slug]) . '" title="Edit" class="btn btn-xs btn-primary"><i class="fa fa-pencil"></i></a>';
             $options .= '<a href="' . route('organization.show', ['organization' => $record->slug]) . '" title="View" class="btn btn-xs btn-success"><i class="fa fa-eye"></i></a>';
-            $options .= '<a title="Delete" class="btn btn-xs btn-danger _delete_record" data-slug="' . $record->slug . '"><i class="fa fa-trash"></i></a>';
+            //$options .= '<a title="Delete" class="btn btn-xs btn-danger _delete_record" data-slug="' . $record->slug . '"><i class="fa fa-trash"></i></a>';
             
             return [
                 '<a href="' . route('organization.show', ['organization' => $record->slug]) . '" 

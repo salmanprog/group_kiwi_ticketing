@@ -134,7 +134,7 @@ class EstimateController extends CRUDCrontroller
         $this->__data['clients'] = Client::where('organization_users.company_id', $company->id)
             ->select('organization_users.*', 'organizations.name as organization_name')
             ->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')
-            ->where('organizations.deleted_at', null)
+            ->where('organizations.status', '1')->where('organizations.deleted_at', null)
             ->get();
         $this->__data['products'] = Product::where('company_id', $company->id)->get();
     }

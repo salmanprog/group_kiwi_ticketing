@@ -195,7 +195,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Phone</label>
-                                                    <input required type="text" name="mobile_no" class="form-control"
+                                                    <input required type="text" name="mobile_no" class="form-control phone_us"
                                                         value="{{ old('mobile_no') }}">
                                                 </div>
                                             </div>
@@ -657,5 +657,10 @@ $(document).ready(function () {
     });
 
 });
+(function( $ ) {
+            $(function() {
+                $('.phone_us').mask('(000) 000-0000');
+            });
+        })(jQuery);
 </script>
 @endpush

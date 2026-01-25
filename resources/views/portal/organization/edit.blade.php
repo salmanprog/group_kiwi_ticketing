@@ -38,7 +38,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Contact <span class="required">*</span></label>
+                                            <label class="form-label">Contact Name<span class="required">*</span></label>
                                             <input required type="text" name="contact" class="form-control"
                                                 value="{{ $record->contact }}">
                                         </div>
@@ -135,7 +135,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Phone</label>
-                                            <input type="text" name="phone" class="form-control"
+                                            <input type="text" name="phone" class="form-control phone_us"
                                                 value="{{ $record->phone }}">
                                         </div>
                                     </div>
@@ -281,7 +281,15 @@
         </div>
         @include('portal.footer')
     </section>
-
+        @push('scripts')
+    <script>
+        (function( $ ) {
+            $(function() {
+                $('.phone_us').mask('(000) 000-0000');
+            });
+        })(jQuery);
+    </script>
+    @endpush
     <style>
         /* Clean White Theme */
         .main-content {

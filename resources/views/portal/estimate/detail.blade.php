@@ -2,582 +2,309 @@
 @section('content')
 
     <style>
-        /* Enhanced Mobile Responsive CSS */
-        :root {
-            --primary-color: #A0C242;
-            --primary-dark: #8AA835;
-            --primary-light: #E8F4D3;
-            --secondary-color: #2C3E50;
-            --light-bg: #F8F9FA;
-            --border-color: #E0E0E0;
-            --text-color: #333333;
-            --text-light: #6C757D;
-        }
-
-        .estimate-wrapper {
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            margin-top: 20px;
-            border: 1px solid var(--border-color);
-            width: 100%;
-            overflow-x: hidden;
-        }
+        /* ===============================
+        ESTIMATE PROFESSIONAL THEME
+        =============================== */
 
         body {
-            font-family: "Poppins", sans-serif !important;
-            background-color: #f5f7fa;
-            color: var(--text-color);
-            font-size: 14px !important;
-            line-height: 1.4;
+            background: #f3f4f6;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #1f2937;
         }
 
+        /* Main Wrapper */
+        .estimate-wrapper {
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            margin-bottom: 40px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons .btn {
+            font-weight: 500;
+            padding: 8px 16px;
+        }
+
+        /* Header */
         .estimate-header {
-            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
             padding-bottom: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
 
         .estimate-title {
-            font-size: 18px;
+            font-size: 26px;
             font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 10px;
-            line-height: 1.2;
+            color: #111827;
         }
 
         .estimate-meta {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            font-size: 16px;
-            flex-wrap: wrap;
-            flex-direction: column;
+            text-align: right;
+            font-size: 14px;
         }
 
         .estimate-number {
-            background: var(--primary-light);
-            padding: 6px 12px;
-            border-radius: 20px;
             font-weight: 600;
-            color: var(--secondary-color);
-            display: inline-block;
-            font-size: 14px;
-            text-transform: capitalize;
+            display: block;
+            margin-bottom: 6px;
         }
 
-        .text-muted {
-            font-size: 14px;
-        }
-
+        /* Status Pills */
         .status {
             display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
             font-weight: 600;
-            color: #fff;
             text-transform: uppercase;
-            font-size: 14px;
-            margin: 5px 0;
+            margin-bottom: 8px;
         }
 
-        .status.sent {
-            background: #36a3f7;
+        .status.sent { background: #e0f2fe; color: #0369a1; }
+        .status.accepted { background: #dcfce7; color: #166534; }
+        .status.rejected { background: #fee2e2; color: #991b1b; }
+        .status.revised { background: #fef3c7; color: #92400e; }
+
+        /* Edit link */
+        .edit-link {
+            display: inline-block;
+            margin-top: 6px;
+            color: #2563eb;
+            font-weight: 500;
+            text-decoration: none;
         }
 
-        .status.approved {
-            background: #28a745;
+        .edit-link:hover {
+            text-decoration: underline;
         }
 
-        .status.rejected {
-            background: #dc3545;
-        }
-
-        .status.revised {
-            background: #ffc107;
-            color: #212529;
-        }
-
-        .status.draft {
-            background: var(--primary-color);
-        }
-
+        /* Address Section */
         .address-section {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .address-box {
-            width: 100%;
-            padding: 20px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #e5e7eb;
             border-radius: 10px;
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            box-sizing: border-box;
+            padding: 16px;
+            background: #fafafa;
         }
 
         .address-box h4 {
-            color: #1f2937;
-            margin-bottom: 15px;
+            font-size: 15px;
             font-weight: 600;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 8px;
-            font-size: 18px;
+            margin-bottom: 8px;
+            color: #374151;
         }
 
-        table.product-table {
+        .address-box p {
+            font-size: 14px;
+            margin-bottom: 0;
+            line-height: 1.6;
+        }
+
+        /* Product Table */
+        .product-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
+            margin-bottom: 24px;
+        }
+
+        .product-table thead {
+            background: #f9fafb;
         }
 
         .product-table th {
-            background: #F7FAFC;
-            color: var(--secondary-color);
-            font-weight: 600;
-            padding: 12px 10px;
-            text-align: left;
-            border: none;
-            font-size: 14px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #6b7280;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .product-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 12px;
             font-size: 14px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .product-table tr:hover {
-            background-color: var(--light-bg);
+        .product-table tbody tr:last-child td {
+            border-bottom: none;
         }
 
+        /* Summary Table */
         .summary-table {
-            width: 100%;
+            width: 320px;
+            margin-left: auto;
             border-collapse: collapse;
-            margin-top: 30px;
-            background: var(--light-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            display: block;
-            overflow-x: auto;
+            margin-bottom: 24px;
         }
 
         .summary-table th,
         .summary-table td {
-            padding: 12px 10px;
+            padding: 8px 12px;
             font-size: 14px;
-            border-bottom: 1px solid var(--border-color);
         }
 
         .summary-table th {
-            color: var(--secondary-color);
-            font-weight: 600;
-            text-align: left;
+            color: #374151;
+            font-weight: 500;
         }
 
         .summary-table td {
             text-align: right;
-            font-weight: 500;
         }
 
         .summary-table tr:last-child {
-            background: var(--primary-color);
-            color: white;
-            font-weight: 700;
+            border-top: 2px solid #111827;
         }
 
+        .summary-table tr:last-child th,
         .summary-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .font-weight-bold {
+            font-size: 16px;
             font-weight: 700;
         }
 
-        .text-danger {
-            color: #dc3545;
-        }
-
-        .text-success {
-            color: #ffffff !important;
-        }
-
-        .text-muted {
-            color: var(--text-light);
-        }
-
-        .btn {
-            border-radius: 8px;
-            font-weight: 600;
-            padding: 12px 20px;
-            transition: all 0.3s ease;
-            border: none;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            width: 100%;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            color: white;
-        }
-
-        .btn-outline-danger {
-            background: transparent;
-            border: 2px solid #dc3545;
-            color: #dc3545;
-        }
-
-        .btn-outline-danger:hover {
-            background: #dc3545;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--light-bg);
-            border-radius: 10px;
-            border-left: 4px solid var(--primary-color);
-        }
-
+        /* Notes Section */
         .notes-section {
-            background: var(--light-bg);
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
-            border-left: 4px solid var(--primary-color);
+            border-top: 1px solid #e5e7eb;
+            padding-top: 20px;
+            margin-top: 20px;
         }
 
         .notes-section h5 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
+            font-size: 15px;
             font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        /* Installments */
+        .installments-section h3 {
             font-size: 18px;
-        }
-
-        .edit-link {
-            color: var(--primary-color);
-            text-decoration: none;
             font-weight: 600;
-            transition: color 0.3s ease;
-            display: inline-block;
-            margin-top: 10px;
+            margin-bottom: 12px;
         }
 
-        .edit-link:hover {
-            color: var(--primary-dark);
+        .installments-section table th {
+            background: #f9fafb;
+            font-size: 13px;
         }
 
+        /* Activity Section */
         .activity-section {
-            background: white;
+            background: #ffffff;
             border-radius: 12px;
-            padding: 20px;
-            margin-top: 30px;
-            border: 1px solid #E0E0E0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            box-sizing: border-box;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
         }
 
         .section-header {
-            color: #1f2937;
-            font-weight: 600;
             font-size: 18px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #E8F4D3;
-        }
-
-        .activity-table-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #E0E0E0;
-            border-radius: 8px;
-            display: block;
-            overflow-x: auto;
-        }
-
-        /* Scrollbar Styling */
-        .activity-table-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .activity-table-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .activity-table-container::-webkit-scrollbar-thumb {
-            background: #A0C242;
-            border-radius: 10px;
-        }
-
-        .activity-table-container::-webkit-scrollbar-thumb:hover {
-            background: #8AA835;
-        }
-
-        .activity-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 14px;
-            min-width: 600px;
-        }
-
-        .activity-table th {
-            background: #F7FAFC;
-            color: #2C3E50;
             font-weight: 600;
-            padding: 12px 10px;
-            text-align: left;
-            border-bottom: 0;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            margin-bottom: 16px;
         }
 
-        .activity-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #f0f0f0;
-            color: #555;
+        .estimate-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fafafa;
         }
 
-        .activity-table tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .activity-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Badge Styles */
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
+        .info-item label {
+            font-size: 12px;
             text-transform: uppercase;
-            color: white;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            margin-bottom: 4px;
+            display: block;
         }
 
-        .badge-update {
-            background: #36a3f7;
-        }
-
-        .badge-create {
-            background: #28a745;
-        }
-
-        .badge-edit {
-            background: #A0C242;
-        }
-
-        .badge-delete {
-            background: #dc3545;
-        }
-
-        .badge-view {
-            background: #6c757d;
-        }
-
-        .theme-bg {
-            background-color: #A0C242 !important;
-        }
-
-        .theme-text {
-            color: #A0C242 !important;
-        }
-
-        .theme-border {
-            border-color: #A0C242 !important;
-        }
-
-        .theme-table thead {
-            background-color: #A0C242;
-            color: white;
-        }
-
-        .theme-table {
-            border: 1px solid #A0C242;
-        }
-
-        .modal-title {
-            color: var(--secondary-color);
+        .info-value {
+            font-size: 14px;
             font-weight: 600;
+            color: #111827;
         }
 
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-light), #f0f7e4);
-            border-bottom: 2px solid var(--primary-color);
+        .note-box {
+            background: #f9fafb;
+            border-left: 4px solid #2563eb;
+            padding: 16px 18px;
+            border-radius: 8px;
+            margin-top: 24px;
         }
 
-        .modal-header {
-            background-color: #A0C242;
-            color: white;
-            border-bottom: none;
-        }
-
-        .modal-title {
+        .note-title {
+            font-size: 14px;
             font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
         }
 
-        .modal-header .btn-close {
-            color: #000;
+        .note-content {
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.65;
         }
 
-        .modal-header .btn-close:hover {
-            opacity: 1;
+        .note-content p {
+            margin-bottom: 8px;
         }
 
-        .table-bordered {
-            border: 1px solid #A0C242;
+        .note-content p:last-child {
+            margin-bottom: 0;
         }
 
-        .table-bordered th,
-        .table-bordered td {
-            border: 1px solid #dee2e6;
-        }
-
-        .theme-badge {
-            background-color: #A0C242;
-            color: white;
-        }
-
-        /* Tablet and Desktop Styles */
-        @media (min-width: 768px) {
-            .estimate-wrapper {
-                padding: 30px;
-            }
-
-            .estimate-title {
-                font-size: 18px;
-            }
-
-            .estimate-meta {
-                flex-direction: row;
-                align-items: center;
-            }
-
-            .address-section {
-                flex-direction: row;
-            }
-
-            .address-box {
-                flex: 1;
-                min-width: 280px;
-            }
-
-            .action-buttons {
-                flex-direction: row;
-            }
-
-            .btn {
-                width: auto;
-                margin-bottom: 0;
-            }
-
-            table.product-table {
-                display: table;
-                overflow-x: visible;
-                white-space: normal;
-            }
-
-            .summary-table {
-                display: table;
-                overflow-x: visible;
-            }
-
-            .activity-table {
-                min-width: auto;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .estimate-info {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
-        /* Large Desktop Styles */
-        @media (min-width: 1200px) {
-            .activity-section {
-                max-width: 1330.5px;
-                margin-inline: auto;
-            }
-        }
-
-        /* Small Mobile Styles */
         @media (max-width: 480px) {
-            .estimate-wrapper {
-                padding: 15px;
-            }
-
-            .estimate-title {
-                font-size: 18px;
-            }
-
-            .address-box {
-                padding: 15px;
-            }
-
-            .action-buttons {
-                padding: 15px;
-            }
-
-            .notes-section {
-                padding: 15px;
-            }
-
-            .activity-section {
-                padding: 15px;
-            }
-
-            .activity-table th,
-            .activity-table td {
-                padding: 8px 6px;
-            }
-
-            .badge {
-                font-size: 10px;
-                padding: 3px 6px;
-            }
-
-            .product-table th,
-            .product-table td {
-                padding: 8px 6px;
-                font-size: 12px;
-            }
-
-            .summary-table th,
-            .summary-table td {
-                padding: 10px 8px;
-                font-size: 13px;
+            .estimate-info {
+                grid-template-columns: 1fr;
             }
         }
+
+        /* Print Friendly */
+        @media print {
+            body {
+                background: #ffffff;
+            }
+            .action-buttons,
+            .activity-section {
+                display: none;
+            }
+            .estimate-wrapper {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+
     </style>
 
     <section class="main-content">
@@ -676,9 +403,34 @@
                             </p>
                         </div>
                     </div>
+                    <div class="estimate-info">
+                        <div class="info-item">
+                            <label>Client</label>
+                            <div class="info-value">{{ $estimate->client->name ?? '-' }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <label>Estimate Date</label>
+                            <div class="info-value">{{ $estimate->issue_date ?? '-' }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <label>Event Date</label>
+                            <div class="info-value">{{ $estimate->event_date ?? '-' }}</div>
+                        </div>
+
+                        <div class="info-item">
+                            <label>Expiry Date</label>
+                            <div class="info-value">{{ $estimate->valid_until ?? '-' }}</div>
+                        </div>
+                    </div>
+
 
                     {{-- Product Table --}}
                     <div>
+                        <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Product Details
+                                    </h5>
                         <table class="product-table">
                             <thead>
                                 <tr>
@@ -744,18 +496,16 @@
                                 </tr> -->
                         </tbody>
                     </table>
-
-                    {{-- Notes and Terms --}}
-                    @if ($estimate->terms_and_condition || $estimate->note)
-                        <div class="notes-section">
-                            @if ($estimate->terms_and_condition)
-                                <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
-                                <p>{!! $estimate->terms_and_condition !!}</p>
-                            @endif
-                            @if ($estimate->note)
-                                <h5><i class="fas fa-file-contract me-2"></i>Note</h5>
-                                <p>{{ $estimate->note }}</p>
-                            @endif
+                    {{-- Notes--}}
+                   @if ($estimate->note)
+                        <div class="notes-section note-box">
+                            <h5 class="note-title">
+                                <i class="fas fa-file-contract me-2"></i>
+                                Note
+                            </h5>
+                            <div class="note-content">
+                                {!! $estimate->note !!}
+                            </div>
                         </div>
                     @endif
                     @if ($estimate->installments && $estimate->installments->count() > 0)
@@ -785,6 +535,16 @@
                             </div>
                         </div>
                     @endif
+                    {{-- Notes and Terms --}}
+                    @if ($estimate->terms_and_condition)
+                        <div class="notes-section">
+                            @if ($estimate->terms_and_condition)
+                                <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
+                                <p>{!! $estimate->terms_and_condition !!}</p>
+                            @endif
+                        </div>
+                    @endif
+                    
 
                 </div>
             </div>
@@ -857,132 +617,6 @@
 
     </section>
     <script>
-        // document.querySelectorAll('.view-details').forEach(button => {
-        //     button.addEventListener('click', function() {
-        //         const description = this.dataset.description || 'No description';
-        //         const allData = this.dataset.alldata || '{}';
-        //         document.getElementById('modalDescription').innerText = description;
-
-        //         const container = document.getElementById('estimateData');
-        //         container.innerHTML = ''; // Clear previous data
-
-        //         try {
-        //             let data = JSON.parse(allData);
-        //             if (typeof data === 'string') {
-        //                 data = JSON.parse(data); // handle double encoding
-        //             }
-        //             console.log(data)
-        //             const estimate = data.estimate || {};
-        //             const items = data.items || [];
-        //             const taxes = data.taxes || [];
-        //             const discounts = data.discounts || [];
-
-        //             let html = `
-    //         <div class="mb-4">
-    //             <h5 class="text-primary">Estimate Details</h5>
-    //             <table class="table table-bordered table-sm">
-    //                 <tbody>
-    //                     <tr><th>ID</th><td>${estimate.id ?? '-'}</td></tr>
-    //                     <tr><th>Estimate #</th><td>${estimate.estimate_number ?? '-'}</td></tr>
-    //                     <tr><th>Status</th><td>${estimate.status ?? '-'}</td></tr>
-    //                     <tr><th>Total</th><td>${estimate.total ?? '-'}</td></tr>
-    //                     <tr><th>Issue Date</th><td>${estimate.issue_date ?? '-'}</td></tr>
-    //                     <tr><th>Valid Until</th><td>${estimate.valid_until ?? '-'}</td></tr>
-    //                     <tr><th>Created At</th><td>${estimate.created_at ?? '-'}</td></tr>
-    //                 </tbody>
-    //             </table>
-    //         </div>
-    //     `;
-
-        //             if (items.length > 0) {
-        //                 html += `
-    //             <div class="mb-4">
-    //                 <h5 class="text-success">Items</h5>
-    //                 <table class="table table-bordered table-sm">
-    //                     <thead>
-    //                         <tr>
-    //                             <th>Name</th>
-    //                             <th>Qty</th>
-    //                             <th>Unit</th>
-    //                             <th>Price</th>
-    //                             <th>Total</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         ${items.map(item => `
-        //                                 <tr>
-        //                                     <td>${item.name}</td>
-        //                                     <td>${item.quantity}</td>
-        //                                     <td>${item.unit}</td>
-        //                                     <td>${item.price}</td>
-        //                                     <td>${item.total_price}</td>
-        //                                 </tr>`).join('')}
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         `;
-        //             }
-
-        //             if (taxes.length > 0) {
-        //                 html += `
-    //             <div class="mb-4">
-    //                 <h5 class="text-warning">Taxes</h5>
-    //                 <table class="table table-bordered table-sm">
-    //                     <thead>
-    //                         <tr>
-    //                             <th>Name</th>
-    //                             <th>Percent</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         ${taxes.map(tax => `
-        //                                 <tr>
-        //                                     <td>${tax.name}</td>
-        //                                     <td>${tax.percent}%</td>
-        //                                 </tr>`).join('')}
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         `;
-        //             }
-
-        //             if (discounts.length > 0) {
-        //                 html += `
-    //             <div class="mb-4">
-    //                 <h5 class="text-danger">Discounts</h5>
-    //                 <table class="table table-bordered table-sm">
-    //                     <thead>
-    //                         <tr>
-    //                             <th>Name</th>
-    //                             <th>Value</th>
-    //                             <th>Type</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         ${discounts.map(discount => `
-        //                                 <tr>
-        //                                     <td>${discount.name}</td>
-        //                                     <td>${discount.value}</td>
-        //                                     <td>${discount.type}</td>
-        //                                 </tr>`).join('')}
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         `;
-        //             }
-
-        //             // Fallback if no data
-        //             if (!items.length && !taxes.length && !discounts.length) {
-        //                 html += `<p class="text-muted">No related data found.</p>`;
-        //             }
-
-        //             container.innerHTML = html;
-
-        //         } catch (e) {
-        //             container.innerHTML = `<p class="text-danger">Invalid JSON format</p>`;
-        //         }
-        //     });
-        // });
         document.querySelectorAll('.view-details').forEach(button => {
             button.addEventListener('click', function() {
                 const description = this.dataset.description || 'No description available';

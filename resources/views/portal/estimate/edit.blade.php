@@ -945,20 +945,26 @@
                             </div>
                             
                               <div class="row">
-                            <div class="col-md-12">
-                                 @if ($record->status != 'approved')
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="installmentCheck">
-                                    <label class="form-check-label" for="installmentCheck">Is Installment?</label>
-                                </div>
-                                @endif
+                                <div class="col-md-12">
+                                    @if ($record->status != 'approved')
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Payment Schdule
+                                    </h5>
+                                    <div class="form-check mb-3" style="display:none">
+                                        <input class="form-check-input" type="checkbox" id="installmentCheck">
+                                        <label class="form-check-label" for="installmentCheck">Is Installment?</label>
+                                    </div>
+                                    @endif
 
-                                <div id="installmentSection" class="border p-3 rounded d-none bg-light">
+                                <div id="installmentSection" class="border p-3 rounded bg-light">
                                    
                                     <div id="dynamicInputsContainer"></div>
                                     <hr>
                                      <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h6 class="mb-0">Installment Schedule</h6>
+                                            <div id="installmentError" class="text-danger mt-2" style="display:none;">
+                                                Please add product before adding installment.
+                                            </div>
                                             <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
                                         </div>
                                     <div class="d-flex justify-content-between">
@@ -1030,6 +1036,12 @@
                             {{-- Action Buttons --}}
                             <div class="form-row mt-4">
                                 <div class="col-12">
+                                    <div id="installmentValidationError"
+                                        class="text-danger mt-2"
+                                        style="display:none;">
+                                        Please schedule a payment first.
+                                    </div>
+
                                     <div class="action-buttons">
                                         @if ($record->status != 'approved')
                                             <button type="submit" class="btn btn-primary">
@@ -1662,7 +1674,7 @@
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
-                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
                     <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
                     <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
                     <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
@@ -1836,6 +1848,8 @@
             document.getElementById("discountTotalInput").value = totalDiscountAmount.toFixed(2);
             document.getElementById("totalInput").value = total.toFixed(2);
             document.getElementById("remainingTotalInput").value = total.toFixed(2);
+            const container = document.getElementById('dynamicInputsContainer');
+            container.innerHTML = '';
         }
 
         document.querySelector("#productTable tbody").addEventListener('input', function(e) {
@@ -1995,17 +2009,31 @@ document.getElementById('generateFields').addEventListener('click', function() {
 });
 
 // 3. Add Single Row (Auto-fills with remaining balance)
-document.getElementById('addRowBtn').addEventListener('click', function() {
+document.getElementById('addRowBtn').addEventListener('click', function () {
+
     let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
+    let errorBox = document.getElementById('installmentError');
+
+    // 🚫 Validation
+    if (totalAmount === 0) {
+        errorBox.style.display = 'block';
+        return;
+    } else {
+        errorBox.style.display = 'none';
+    }
+
     let paidSoFar = 0;
-    document.querySelectorAll('.inst-amount').forEach(el => paidSoFar += parseFloat(el.value) || 0);
-    
+    document.querySelectorAll('.inst-amount').forEach(el => {
+        paidSoFar += parseFloat(el.value) || 0;
+    });
+
     let remaining = totalAmount - paidSoFar;
     let fillValue = remaining > 0 ? remaining.toFixed(2) : "";
-    
+
     container.insertAdjacentHTML('beforeend', createRowHtml(fillValue));
     calculateBalance();
 });
+
 
 // 4. Remove Row
 container.addEventListener('click', function(e) {
@@ -2072,38 +2100,50 @@ document.getElementById('cancelModal').addEventListener('click', () => {
 const estimateForm = document.getElementById('update-estimate-form');
 
 estimateForm.addEventListener('submit', function (e) {
-    // 2. Only run this check if the "Is Installment" checkbox is checked
+
     const isInstallment = document.getElementById('installmentCheck').checked;
-    
+    const errorBox = document.getElementById('installmentValidationError');
+
+    // Always reset error UI
+    errorBox.style.display = 'none';
+
     if (isInstallment) {
         const totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
         let paidSoFar = 0;
-        
-        // Sum up all dynamic installment fields
+
         const amounts = document.querySelectorAll('.inst-amount');
         amounts.forEach(input => {
             paidSoFar += parseFloat(input.value) || 0;
         });
-
-        // 3. Validation: Check if balance is zero (using a small margin for decimals)
-        const difference = Math.abs(totalAmount - paidSoFar);
-        
-        if (difference > 0.01) {
-            // STOP the form submission
+        if (amounts.length === 0) {
             e.preventDefault();
             e.stopPropagation();
 
-            // 4. Visual Feedback
+            errorBox.innerText = 'Please schedule a payment first.';
+            errorBox.style.display = 'block';
+
+            document.getElementById('installmentSection')
+                .scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+        const difference = Math.abs(totalAmount - paidSoFar);
+
+        if (difference > 0.01) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            errorBox.innerText = 'Installment total must match the estimate total.';
+            errorBox.style.display = 'block';
+
             const remainingDisplay = document.getElementById('remainingTotal');
-            remainingDisplay.style.color = 'red';
-            
-            alert(`Validation Error: The installment total ($${paidSoFar.toFixed(2)}) must match the estimate total ($${totalAmount.toFixed(2)}). \n\nRemaining to allocate: $${(totalAmount - paidSoFar).toFixed(2)}`);
-            
-            // Optional: Scroll to the installment section so they see the error
-            document.getElementById('installmentSection').scrollIntoView({ behavior: 'smooth' });
+            if (remainingDisplay) remainingDisplay.style.color = 'red';
+
+            document.getElementById('installmentSection')
+                .scrollIntoView({ behavior: 'smooth' });
         }
     }
 });
+
 
 estimateForm.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
