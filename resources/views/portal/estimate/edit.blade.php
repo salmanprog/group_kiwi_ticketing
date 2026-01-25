@@ -1010,7 +1010,7 @@
                                     </h5>
                                     <div class="forref">
                                         <textarea name="terms_and_condition" class="form-control editor" rows="4">
-                                            {!! $record->terms_and_condition ?? $default_terms_and_condition->content !!}</textarea>
+                                            {!! $record->terms_and_condition ?? ($default_terms_and_condition->content ?? 'No terms and conditions available') !!}</textarea>
                                         
                                         <div class="print-value mt-3">
                                             <strong>Terms & Conditions (Preview):</strong>
@@ -1018,7 +1018,7 @@
                                                 @if (!empty($record->terms_and_condition))
                                                     {!! $record->terms_and_condition !!}
                                                 @else
-                                                    {!! $default_terms_and_condition->content !!}
+                                                    {!! $default_terms_and_condition->content ?? 'No terms and conditions available' !!}
                                                 @endif
                                             </div>
                                         </div>
