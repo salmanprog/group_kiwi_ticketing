@@ -50,7 +50,7 @@ class UserController extends RestController
                     'mobile_no'     => [
                         'required',
                         Rule::unique('users'),
-                        'regex:/^(\+?\d{1,3}[-])\d{9,11}$/'
+                        'regex:/^(\+1|1)?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'
                     ],
                     'password'      => ['required','regex:/^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,150}$/'],
                     'confirm_password' => 'required|same:password',

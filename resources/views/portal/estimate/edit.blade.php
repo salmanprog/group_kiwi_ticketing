@@ -863,21 +863,6 @@
 
                           
 
-                            
-                             <div class="form-row mt-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Note
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea name="note" class="form-control" rows="4">{{ $record->note }}</textarea>
-                                        <div class="print-value">
-                                            <strong>Note:</strong>
-                                            {{ $record->note }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             {{-- Product Table --}}
                             <div class="form-row mt-4">
@@ -892,8 +877,8 @@
                                                     <th>Product</th>
                                                     <th>Quantity</th>
                                                     <th>Unit Price</th>
-                                                    <th>Tax</th>
-                                                    <th>Gratuity</th>
+                                                    <th>Tax (%)</th>
+                                                    <th>Gratuity (%)</th>
                                                     <th>Product Price (Tax + Gratuity)</th>
                                                     <th>Total</th>
                                                     <th class="no-print">Action</th>
@@ -960,7 +945,7 @@
                             </div>
                             
                               <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                  @if ($record->status != 'approved')
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="installmentCheck">
@@ -969,12 +954,13 @@
                                 @endif
 
                                 <div id="installmentSection" class="border p-3 rounded d-none bg-light">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                   
+                                    <div id="dynamicInputsContainer"></div>
+                                    <hr>
+                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h6 class="mb-0">Installment Schedule</h6>
                                             <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
                                         </div>
-                                    <div id="dynamicInputsContainer"></div>
-                                    <hr>
                                     <div class="d-flex justify-content-between">
                                         <strong>Remaining Total:</strong>
                                         <span id="remainingTotal">$1,000.00</span>
@@ -1002,28 +988,43 @@
                             </div>
                         </div>
 
+                          <div class="form-row mt-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Note
+                                    </h5>
+                                    <div class="forref">
+                                        <textarea name="note" class="form-control" rows="4">{{ $record->note }}</textarea>
+                                        <div class="print-value">
+                                            <strong>Note:</strong>
+                                            {{ $record->note }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                          <div class="form-row mt-4">
-    <div class="col-12">
-        <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-            Terms & Conditions
-        </h5>
-        <div class="forref">
-            <textarea name="terms_and_condition" class="form-control editor" rows="4">
-                {!! $record->terms_and_condition ?? $default_terms_and_condition->content !!}</textarea>
-            
-            <div class="print-value mt-3">
-                <strong>Terms & Conditions (Preview):</strong>
-                <div class="preview-content">
-                    @if (!empty($record->terms_and_condition))
-                        {!! $record->terms_and_condition !!}
-                    @else
-                        {!! $default_terms_and_condition->content !!}
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                                <div class="col-12">
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Terms & Conditions
+                                    </h5>
+                                    <div class="forref">
+                                        <textarea name="terms_and_condition" class="form-control editor" rows="4">
+                                            {!! $record->terms_and_condition ?? $default_terms_and_condition->content !!}</textarea>
+                                        
+                                        <div class="print-value mt-3">
+                                            <strong>Terms & Conditions (Preview):</strong>
+                                            <div class="preview-content">
+                                                @if (!empty($record->terms_and_condition))
+                                                    {!! $record->terms_and_condition !!}
+                                                @else
+                                                    {!! $default_terms_and_condition->content !!}
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
 
                             {{-- Action Buttons --}}
@@ -1621,26 +1622,32 @@
             calculateTotals();
         }
 
-       function updateTotal(input) {
+     function updateTotal(input) {
             const row = input.closest("tr");
 
-            // 1. Get all values from the row
+            // 1. Get values from the row
             const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
             const basePrice = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
-            const tax = parseFloat(row.querySelector('input[name*="[tax]"]').value) || 0;
-            const gratuity = parseFloat(row.querySelector('input[name*="[gratuity]"]').value) || 0;
+            
+            // Treating these inputs as percentage values (e.g., 10 for 10%)
+            const taxPercent = parseFloat(row.querySelector('input[name*="[tax]"]').value) || 0;
+            const gratuityPercent = parseFloat(row.querySelector('input[name*="[gratuity]"]').value) || 0;
 
-            // 2. Calculate the total for this row
-            // Formula: (Quantity * Base Price) + Tax + Gratuity
-            const rowTotal = (qty * basePrice) + tax + gratuity;
+            // 2. Calculate percentages based on Base Price
+            const taxAmount = basePrice * (taxPercent / 100);
+            const gratuityAmount = basePrice * (gratuityPercent / 100);
 
-            // 3. Update the Hidden/Readonly Total Input (for form submission)
+            // 3. Formula: (Base Price + Tax + Gratuity) * Quantity
+            const unitPriceWithFees = basePrice + taxAmount + gratuityAmount;
+            const rowTotal = unitPriceWithFees * qty;
+
+            // 4. Update the Hidden/Readonly Total Input
             row.querySelector('input[name*="[product_total_price]"]').value = rowTotal.toFixed(2);
 
-            // 4. Update the Visual Display Cell
+            // 5. Update the Visual Display Cell
             row.querySelector(".total-cell").innerText = `$${rowTotal.toFixed(2)}`;
 
-            // 5. Update the Grand Totals at the bottom of the page
+            // 6. Update the Grand Totals
             calculateTotals();
         }
 
@@ -1656,7 +1663,7 @@
                 row.innerHTML = `
                     <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
                     <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
                     <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
                     <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
                     <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
@@ -1669,9 +1676,9 @@
             });
 
             // Close modal and cleanup
-            $('#productModal').modal('hide');
-            $('body').removeClass('modal-open');
-            $('.modal-backdrop').remove();
+          $('#productModal').modal('hide');
+    
+    $('[data-dismiss="modal"]').first().click();
 
             calculateTotals(); 
         }
@@ -1849,15 +1856,15 @@
                 const total = qty * productPrice;
 
                 const row = document.createElement("tr");
-                row.innerHTML = `
-                <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
-                <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" step="0.01" oninput="updateTotal(this)" min="0"></td>
-                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" step="0.01" oninput="updateTotal(this)" min="0" readonly></td>
-                <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" step="0.01" min="0" readonly></td>
-                <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity.toFixed(2)}" step="0.01" min="0" readonly></td>
-                <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" step="0.01" min="0" readonly></td>
-                <td class="total-cell">$${total.toFixed(2)}</td>
-                <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+                row.innerHTML = `   
+                  <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
+                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" readonly step="0.01" min="0"></td>
+                    <td class="total-cell">$${total.toFixed(2)}</td>
+                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
             `;
                 table.appendChild(row);
                 productIndex++;

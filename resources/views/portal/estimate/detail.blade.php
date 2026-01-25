@@ -685,8 +685,8 @@
                                     <th>Description</th>
                                     <th>Qty</th>
                                     <th>Product Price</th>
-                                    <th>Tax</th>
-                                    <th>Gratuity</th>
+                                    <th>Tax (%)</th>
+                                    <th>Gratuity (%)</th>
                                     <th>Price (Tax + Gratuity)</th>
                                     <th>Total</th>
                                 </tr>

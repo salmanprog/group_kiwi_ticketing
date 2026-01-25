@@ -131,7 +131,11 @@ class EstimateController extends CRUDCrontroller
         $this->__data['contract_slug'] = (isset($this->__request->contract)) ? decrypt($this->__request->contract) : '';
         $this->__data['client_id'] = (isset($this->__request->contract)) ? Contract::where('slug', decrypt($this->__request->contract))->value('client_id') : '';
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $this->__data['clients'] = Client::where('company_id', $company->id)->get();
+        $this->__data['clients'] = Client::where('organization_users.company_id', $company->id)
+            ->select('organization_users.*', 'organizations.name as organization_name')
+            ->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')
+            ->where('organizations.deleted_at', null)
+            ->get();
         $this->__data['products'] = Product::where('company_id', $company->id)->get();
     }
 

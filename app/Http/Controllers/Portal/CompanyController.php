@@ -50,7 +50,7 @@ class CompanyController extends CRUDCrontroller
                     'mobile_no'        => [
                         'required',
                         'unique:users,mobile_no,NULL,deleted_at',
-                        'regex:/^(\+?\d{1,3}[-])\d{9,11}$/'
+                        'regex:/^(\+1|1)?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'
                     ],
                     'password'         => [
                         'required',
@@ -60,7 +60,7 @@ class CompanyController extends CRUDCrontroller
                     'company_name'            => 'required|min:2|max:50',
                     'company_image_url'       => 'image',
                     'company_address'         => 'required|min:2|max:250',
-                    'company_mobile_no'       => 'required|regex:/^(\+?\d{1,3}[-])\d{9,11}$/|unique:company,mobile_no',
+                    'company_mobile_no'       => 'required|regex:/^(\+1|1)?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/|unique:company,mobile_no',
                     'company_email'           => [
                         'required',
                         'email',

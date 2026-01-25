@@ -44,7 +44,7 @@ class ManagerController extends CRUDCrontroller
                     'mobile_no'        => [
                         'required',
                         'unique:users,mobile_no,NULL,deleted_at',
-                        'regex:/^(\+?\d{1,3}[-])\d{9,11}$/'
+                        'regex:/^(\+1|1)?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/'
                     ],
                     'password'         => [
                         'required',
