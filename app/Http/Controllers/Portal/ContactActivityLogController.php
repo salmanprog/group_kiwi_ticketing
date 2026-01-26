@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\{CompanyAdmin,Company};
+use Carbon\Carbon;
 
 class ContactActivityLogController extends CRUDCrontroller
 {
@@ -157,7 +158,7 @@ class ContactActivityLogController extends CRUDCrontroller
                 return [
                     'id'          => $log->id,
                     'notesTextarea' => $log->notesTextarea,
-                    'created_at'  => $log->created_at->format('d M Y, h:i A'),
+                    'created_at'  => TimeWithAgo($log->created_at->format('d M Y, h:i A')),
                     'createdBy'    => $log->createdBy,
                 ];
             });

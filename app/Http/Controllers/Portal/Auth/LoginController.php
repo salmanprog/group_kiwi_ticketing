@@ -14,6 +14,9 @@ class LoginController extends Controller
     {
         // if( $request['auth_token'] != config('constants.ADMIN_AUTH_TOKEN') )
         //     return abort(404);
+        if(Auth::check()){
+            return "Already logged in";
+        }
 
         if( $request->isMethod('post') )
             return self::_login($request);

@@ -155,7 +155,7 @@ class ClientController extends CRUDCrontroller
         ])->where('status', 1)->where('id', $record->organization_id)->first();
 
         $activityLog = ContactActivityLog::with('createdBy')->where('client_id',$record->client_id)->where('organization_id',$record->organization_id)->get();
-
+            // dd($activityLog);
         // Flatten invoices from all estimates
           $invoices = $organizations->estimate
             ->flatMap(fn($e) => $e->estimateinvoices ?? collect())

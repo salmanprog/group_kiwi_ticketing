@@ -488,7 +488,7 @@
                                         <li>
                                             <a class="dropdown-item"
                                                 href="{{ route('portal.terms-and-conditions') }}"><i
-                                                    class="icon-key"></i> Terms & Conditions</a>
+                                                    class="fa-solid fa-file-signature"></i> Terms & Conditions</a>
                                         </li>
                                     @endif
                                     <li class="dropdown-divider"></li>

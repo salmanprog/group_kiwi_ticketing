@@ -340,9 +340,9 @@
 
                         </div>
                         <div>
-                            <h1 class="brand-heading">Internal Management Dashboard</h1>
+                            <h1 class="brand-heading">Business Operations System</h1>
                             <p class="brand-subtitle">
-                                Manage users, roles, companies and permissions securely and efficiently.
+                                Manage groups, estimates, contracts, invoices, and related operational workflows in one centralized platform.
                             </p>
                         </div>
                     </div>

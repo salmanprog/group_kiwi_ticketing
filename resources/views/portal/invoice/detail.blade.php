@@ -664,11 +664,11 @@
                         <div class="notes-section">
                             @if ($invoice->note)
                                 <h5><i class="fas fa-sticky-note me-2"></i>Note</h5>
-                                <p>{{ $invoice->note }}</p>
+                                <p>{!! $invoice->note !!}</p>
                             @endif
                             @if ($invoice->terms)
                                 <h5><i class="fas fa-file-contract me-2"></i>Terms</h5>
-                                <p>{{ $invoice->terms }}</p>
+                                <p>{!!$invoice->terms!!}</p>
                             @endif
                         </div>
                     @endif

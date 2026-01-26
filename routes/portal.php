@@ -33,14 +33,14 @@ use App\Http\Controllers\Portal\ContactActivityLogController;
 |
 */
 
-Route::middleware(['guest:web'])->group(function () {
+// Route::middleware(['guest:web'])->group(function () {
 
     Route::match(['get', 'post'], 'login', [LoginController::class, 'login'])->name('admin.login');
     Route::match(['get', 'post'], 'forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('admin.forgot-password');
     Route::match(['get', 'post'], 'reset-password/{any}', [ResetPasswordController::class, 'resetPassword'])->name('admin.reset-password');
     Route::match(['get', 'post'], 'create-password/{any}', [ResetPasswordController::class, 'createPassword'])->name('admin.create-password');
 
-});
+// });
 
 Route::middleware(['custom_auth:web'])->group(function () {
 

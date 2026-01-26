@@ -1089,10 +1089,10 @@
                         </div>
                         <div class="card-body">
                             <h5 class="fw-bold theme-text mb-3">Terms</h5>
-                            <p class="mb-4">{{ $record->terms_and_condition ?: 'No terms specified.' }}</p>
+                            <p class="mb-4">{!! $record->terms_and_condition ?: 'No terms specified.' !!}</p>
 
                             <h5 class="fw-bold theme-text mb-3">Notes</h5>
-                            <p>{{ $record->notes ?: 'No notes available.' }}</p>
+                            <p>{!! $record->notes ?: 'No notes available.' !!}</p>
                         </div>
                     </div>
 
