@@ -89,7 +89,18 @@ Route::middleware(['custom_auth:web'])->group(function () {
     Route::get('product-category/ajax-listing', [ProductCategoryController::class, 'ajaxListing'])->name('product-category.ajax-listing');
     Route::resource('product-category', ProductCategoryController::class);
 
-    Route::get('product/ajax-listing', [ProductController::class, 'ajaxListing'])->name('product.ajax-listing');
+    Route::get('product/ajax-listing', [ProductController::class, 'ajaxListing'])
+    ->name('product.ajax-listing');
+
+    Route::get('product/api/create', [ProductController::class, 'createApi'])->name('product.api.create');
+    Route::post('product/api/store', [ProductController::class, 'storeApi'])->name('product.api.store');
+
+    Route::get('product/api/{id}/edit', [ProductController::class, 'editApi'])
+        ->name('product.api.edit');
+
+    Route::post('product/api/{id}', [ProductController::class, 'updateApi'])
+        ->name('product.api.update');
+
     Route::resource('product', ProductController::class);
 
 

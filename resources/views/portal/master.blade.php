@@ -832,12 +832,12 @@
                                                             </li>
                                                         @endif
                                                         @if ($cmsProductCategoryPermission->is_view == '1')
-                                                            <li class="nav-item">
+                                                            <!-- <li class="nav-item">
                                                                 <a class="nav-link"
                                                                     href="{{ route('product-category.index') }}">
                                                                     Product category
                                                                 </a>
-                                                            </li>
+                                                            </li> -->
                                                         @endif
                                                     </ul>
                                                 </li>

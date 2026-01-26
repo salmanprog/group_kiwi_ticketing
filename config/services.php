@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'third_party' => [
+        'api_base_url' => env('THIRD_PARTY_API_BASE_URL'),
+        'auth_code'  => env('THIRD_PARTY_AUOTH_CODE'),
+    ],
+
 ];
