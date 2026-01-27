@@ -803,7 +803,7 @@
 
                     {{-- Form Start --}}
                     <div class="form-section">
-                        <form method="POST" action="{{ route('estimate.update', ['estimate' => $record->slug]) }}" id="update-estimate-form">
+                        <form method="POST" action="{{ route('estimate.update', ['estimate' => $record->slug]) }}">
                             @csrf
                             @method('PUT')
 
@@ -861,9 +861,6 @@
                                 </div>
                             </div>
 
-                          
-
-
                             {{-- Product Table --}}
                             <div class="form-row mt-4">
                                 <div class="col-12">
@@ -877,8 +874,6 @@
                                                     <th>Product</th>
                                                     <th>Quantity</th>
                                                     <th>Unit Price</th>
-                                                    <th>Tax</th>
-                                                    <th>Total Product</th>
                                                     <th>Total</th>
                                                     <th class="no-print">Action</th>
                                                 </tr>
@@ -896,9 +891,6 @@
                                         <tr>
                                             <th>Taxes</th>
                                             <td id="taxCell">$0.00</td>
-                                            <td id="taxCell"> <div id="taxList" class="mt-3">
-                                                    <!-- Dynamically added taxes with hidden inputs will appear here -->
-                                                </div></td>
                                         </tr>
                                         <tr id="discountRow" style="display: none;">
                                             <th>Discount</th>
@@ -917,9 +909,9 @@
                                     <input type="hidden" name="total" id="totalInput" value="0">
 
                                     <div class="action-buttons">
-                                        <!-- <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
+                                        <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
                                             <i class="fas fa-plus me-1"></i>Add Field
-                                        </button> -->
+                                        </button>
                                         <button type="button" class="btn btn-primary btn-sm no-print"
                                             data-toggle="modal" data-target="#productModal">
                                             <i class="fas fa-cube me-1"></i>Add Product
@@ -935,7 +927,9 @@
                                     </div>
 
                                     {{-- Tax list container --}}
-                                   
+                                    <div id="taxList" class="mt-3">
+                                        <!-- Dynamically added taxes with hidden inputs will appear here -->
+                                    </div>
 
                                     {{-- Discount list container --}}
                                     <div id="discountDisplay" class="mt-2">
@@ -943,105 +937,10 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                              <div class="row">
-                                <div class="col-md-12">
-                                    @if ($record->status != 'approved')
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Payment Schdule
-                                    </h5>
-                                    <div class="form-check mb-3" style="display:none">
-                                        <input class="form-check-input" type="checkbox" id="installmentCheck">
-                                        <label class="form-check-label" for="installmentCheck">Is Installment?</label>
-                                    </div>
-                                    @endif
-
-                                <div id="installmentSection" class="border p-3 rounded bg-light">
-                                   
-                                    <div id="dynamicInputsContainer"></div>
-                                    <hr>
-                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0">Installment Schedule</h6>
-                                            <div id="installmentError" class="text-danger mt-2" style="display:none;">
-                                                Please add product before adding installment.
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
-                                        </div>
-                                    <div class="d-flex justify-content-between">
-                                        <strong>Remaining Total:</strong>
-                                        <span id="remainingTotal">$1,000.00</span>
-                                        <input type="hidden" name="remaining_total" id="remainingTotalInput">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="installmentModal" tabindex="-1" data-bs-backdrop="static">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header"><h5 class="modal-title">Number of Payments</h5></div>
-                                    <div class="modal-body">
-                                        <input type="number" id="numInstallments" class="form-control" placeholder="Enter number of installments (e.g. 3)">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" id="cancelModal" onclick="cancelModalNumberOfPayments()">
-                                            Cancel
-                                        </button>                                       
-                                        
-                                        <button type="button" class="btn btn-primary" id="generateFields">Generate</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                          <div class="form-row mt-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Note
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea name="note" class="form-control editor" rows="4">{{ $record->note }}</textarea>
-                                        <div class="print-value">
-                                            <strong>Note:</strong>
-                                            {!! $record->note !!}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                         <div class="form-row mt-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Terms & Conditions
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea name="terms_and_condition" class="form-control editor" rows="4" placeholder="Enter terms and conditions">
-                                            {!! $record->terms_and_condition ?? ($default_terms_and_condition->content ?? '') !!}</textarea>
-                                        
-                                        <div class="print-value mt-3">
-                                            <strong>Terms & Conditions (Preview):</strong>
-                                            <div class="preview-content">
-                                                @if (!empty($record->terms_and_condition))
-                                                    {!! $record->terms_and_condition !!}
-                                                @else
-                                                    {!! $default_terms_and_condition->content ?? '' !!}
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
 
                             {{-- Action Buttons --}}
                             <div class="form-row mt-4">
                                 <div class="col-12">
-                                    <div id="installmentValidationError"
-                                        class="text-danger mt-2"
-                                        style="display:none;">
-                                        Please schedule a payment first.
-                                    </div>
-
                                     <div class="action-buttons">
                                         @if ($record->status != 'approved')
                                             <button type="submit" class="btn btn-primary">
@@ -1065,6 +964,7 @@
                                                     <i class="fas fa-paper-plane me-1"></i>Send
                                                 </button> -->
                                         @endif
+
                                         <button type="button" class="btn btn-outline-secondary no-print cust-bd"
                                             onclick="window.print()">
                                             <i class="fas fa-print me-1"></i>Print
@@ -1072,20 +972,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="form-row mt-4">
-                                @if ($record->status != 'approved')
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="installmentCheck">
-                                        <label class="form-check-label" for="installmentCheck">
-                                            Is Installment?
-                                        </label>
-                                    </div>
-                                @endif
-                            </div> -->
-
-                     
-
-
                         </form>
 
                         {{-- Hidden form for Send action --}}
@@ -1117,7 +1003,7 @@
                                         <tr>
                                             <th>Select</th>
                                             <th>Product Name</th>
-                                            <th>Product Price</th>
+                                            <th>Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1158,7 +1044,6 @@
                                         aria-label="Close">&times;</button>
                                 </div>
                                 <div class="modal-body">
-                                    <input type="hidden" id="taxModalActiveUid" value="">
                                     <div class="form-group">
                                         <label for="taxName">Tax Name</label>
                                         <input type="text" id="taxName" class="form-control" placeholder="e.g. VAT"
@@ -1169,75 +1054,11 @@
                                         <input type="number" id="taxPercent" class="form-control" placeholder="e.g. 10"
                                             min="0" step="0.01" required>
                                     </div>
-
-                                    <hr>
-                                    <h6>Apply to Selected Products:</h6>
-                                    <div id="taxProductList" class="mt-2" style="max-height: 200px; overflow-y: auto;">
-                                        <p class="text-muted small">No products selected yet.</p>
-                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary btn-sm"
                                         data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary btn-sm" id="taxSubmitBtn">Add Tax</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade" id="taxDetailsModal" tabindex="-1" role="dialog" aria-labelledby="taxDetailsModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <form id="taxDetailsForm" onsubmit="event.preventDefault();">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="taxDetailsModalLabel">
-                                        <i class="fas fa-percentage me-2"></i>Tax Details
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal"
-                                        aria-label="Close">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="hidden" id="activeTaxUid" value="">
-
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="taxDetailsName">Tax Name</label>
-                                            <input type="text" id="taxDetailsName" class="form-control" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="taxDetailsPercent">Tax Percent (%)</label>
-                                            <input type="number" id="taxDetailsPercent" class="form-control" min="0" step="0.01" required>
-                                        </div>
-                                    </div>
-
-                                    <hr>
-
-                                    <h6>Applied Products</h6>
-                                    <div id="taxDetailsProductList" class="mt-2" style="max-height: 200px; overflow-y: auto;">
-                                        <p class="text-muted small">No products selected.</p>
-                                    </div>
-
-                                    <div class="forref mt-3" id="taxDetailsTableWrapper" style="display:none;">
-                                        <table class="table product-table" id="taxDetailsTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th>Unit Price</th>
-                                                    <th>Quantity</th>
-                                                    <th>Tax %</th>
-                                                    <th>Tax Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="taxDetailsTableBody">
-                                                <!-- Dynamically added applied products will appear here -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Add Tax</button>
                                 </div>
                             </form>
                         </div>
@@ -1425,7 +1246,6 @@
                                                                 <td>${item.quantity || '0'}</td>
                                                                 <td>${item.unit || '-'}</td>
                                                                 <td>${item.price || '0.00'}</td>
-                                                                <td>${item.tax || '0.00'}</td>
                                                                 <td><strong>${item.total_price || '0.00'}</strong></td>
                                                             </tr>
                                                         `).join('')}
@@ -1515,7 +1335,132 @@
                 }
             });
         });
-    
+        // document.querySelectorAll('.view-details').forEach(button => {
+        //     button.addEventListener('click', function() {
+        //         const description = this.dataset.description || 'No description';
+        //         const allData = this.dataset.alldata || '{}';
+        //         document.getElementById('modalDescription').innerText = description;
+
+        //         const container = document.getElementById('estimateData');
+        //         container.innerHTML = ''; // Clear previous data
+
+        //         try {
+        //             let data = JSON.parse(allData);
+        //             if (typeof data === 'string') {
+        //                 data = JSON.parse(data); // handle double encoding
+        //             }
+        //             console.log(data)
+        //             const estimate = data.estimate || {};
+        //             const items = data.items || [];
+        //             const taxes = data.taxes || [];
+        //             const discounts = data.discounts || [];
+
+        //             let html = `
+    //         <div class="mb-4">
+    //             <h5 class="text-primary">Estimate Details</h5>
+    //             <table class="table table-bordered table-sm">
+    //                 <tbody>
+    //                     <tr><th>ID</th><td>${estimate.id ?? '-'}</td></tr>
+    //                     <tr><th>Estimate #</th><td>${estimate.estimate_number ?? '-'}</td></tr>
+    //                     <tr><th>Status</th><td>${estimate.status ?? '-'}</td></tr>
+    //                     <tr><th>Total</th><td>${estimate.total ?? '-'}</td></tr>
+    //                     <tr><th>Issue Date</th><td>${estimate.issue_date ?? '-'}</td></tr>
+    //                     <tr><th>Valid Until</th><td>${estimate.valid_until ?? '-'}</td></tr>
+    //                     <tr><th>Created At</th><td>${estimate.created_at ?? '-'}</td></tr>
+    //                 </tbody>
+    //             </table>
+    //         </div>
+    //     `;
+
+        //             if (items.length > 0) {
+        //                 html += `
+    //             <div class="mb-4">
+    //                 <h5 class="text-success">Items</h5>
+    //                 <table class="table table-bordered table-sm">
+    //                     <thead>
+    //                         <tr>
+    //                             <th>Name</th>
+    //                             <th>Qty</th>
+    //                             <th>Unit</th>
+    //                             <th>Price</th>
+    //                             <th>Total</th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody>
+    //                         ${items.map(item => `
+        //                                 <tr>
+        //                                     <td>${item.name}</td>
+        //                                     <td>${item.quantity}</td>
+        //                                     <td>${item.unit}</td>
+        //                                     <td>${item.price}</td>
+        //                                     <td>${item.total_price}</td>
+        //                                 </tr>`).join('')}
+    //                     </tbody>
+    //                 </table>
+    //             </div>
+    //         `;
+        //             }
+
+        //             if (taxes.length > 0) {
+        //                 html += `
+    //             <div class="mb-4">
+    //                 <h5 class="text-warning">Taxes</h5>
+    //                 <table class="table table-bordered table-sm">
+    //                     <thead>
+    //                         <tr>
+    //                             <th>Name</th>
+    //                             <th>Percent</th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody>
+    //                         ${taxes.map(tax => `
+        //                                 <tr>
+        //                                     <td>${tax.name}</td>
+        //                                     <td>${tax.percent}%</td>
+        //                                 </tr>`).join('')}
+    //                     </tbody>
+    //                 </table>
+    //             </div>
+    //         `;
+        //             }
+
+        //             if (discounts.length > 0) {
+        //                 html += `
+    //             <div class="mb-4">
+    //                 <h5 class="text-danger">Discounts</h5>
+    //                 <table class="table table-bordered table-sm">
+    //                     <thead>
+    //                         <tr>
+    //                             <th>Name</th>
+    //                             <th>Value</th>
+    //                             <th>Type</th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody>
+    //                         ${discounts.map(discount => `
+        //                                 <tr>
+        //                                     <td>${discount.name}</td>
+        //                                     <td>${discount.value}</td>
+        //                                     <td>${discount.type}</td>
+        //                                 </tr>`).join('')}
+    //                     </tbody>
+    //                 </table>
+    //             </div>
+    //         `;
+        //             }
+
+        //             // Fallback if no data
+        //             if (!items.length && !taxes.length && !discounts.length) {
+        //                 html += `<p class="text-muted">No related data found.</p>`;
+        //             }
+
+        //             container.innerHTML = html;
+
+        //         } catch (e) {
+        //             container.innerHTML = `<p class="text-danger">Invalid JSON format</p>`;
+        //         }
+        //     });
+        // });
     </script>
 
 
@@ -1527,21 +1472,16 @@
         const existingEstimateItems = @json($record->items ?? []);
         const existingEstimateTaxes = @json($record->taxes ?? []);
         const existingEstimateDiscounts = @json($record->discounts ?? []);
-        const existingEstimateInstallments = @json($record->installments ?? []);
 
         let productIndex = 1;
         let taxes = [];
-        let taxUidCounter = 0;
         let discounts = [];
-        let taxModalPendingOpenUid = null;
 
         // Load taxes from server-side (Laravel)
         if (Array.isArray(existingEstimateTaxes)) {
             taxes = existingEstimateTaxes.map(tax => ({
-                uid: createTaxUid(),
                 name: tax.name,
-                percent: parseFloat(tax.percent) || 0,
-                appliedProducts: []
+                percent: parseFloat(tax.percent) || 0
             }));
         }
 
@@ -1557,424 +1497,97 @@
             const table = document.querySelector("#productTable tbody");
             const row = document.createElement("tr");
 
-            const currentIndex = productIndex;
-
             row.innerHTML = `
-            <td><input type="text" name="products[${currentIndex}][name]" class="form-control"></td>
-            <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
-            <td><input type="number" name="products[${currentIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
-            <td><input type="number" name="products[${currentIndex}][tax]" class="form-control" value="0" step="0.01" min="0" readonly></td>
-            <td><input type="number" name="products[${currentIndex}][product_total_price]" class="form-control" value="0" step="0.01" min="0" readonly></td>
+            <td><input type="text" name="products[${productIndex}][name]" class="form-control"></td>
+            <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
             <td class="total-cell">$0.00</td>
             <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
         `;
             table.appendChild(row);
             productIndex++;
-            syncTaxProductList();
-            refreshTaxesUIAndTotals();
         }
 
         function removeRow(button) {
             const row = button.closest("tr");
-            const index = getProductIndexFromRow(row);
-            if (index !== null) {
-                taxes.forEach(t => {
-                    t.appliedProducts = (t.appliedProducts || []).filter(pid => String(pid) !== String(index));
-                });
-                taxes = taxes.filter(t => (t.appliedProducts || []).length > 0);
-            }
             row.remove();
-            syncTaxProductList();
-            refreshTaxesUIAndTotals();
+            calculateTotals();
         }
 
-     function updateTotal(input) {
+        function updateTotal(input) {
             const row = input.closest("tr");
-
-            const index = getProductIndexFromRow(row);
-
-            // 1. Get values from the row
             const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
-            const basePrice = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
-            
-            // 3. Formula: (Base Price + Tax + Gratuity) * Quantity
-            const unitPriceWithFees = basePrice;
-            const rowTotal = unitPriceWithFees * qty;
-
-            // 4. Update the Hidden/Readonly Total Input
-            row.querySelector('input[name*="[product_total_price]"]').value = unitPriceWithFees.toFixed(2);
-
-            // 5. Update the Visual Display Cell
-            row.querySelector(".total-cell").innerText = `$${rowTotal.toFixed(2)}`;
-
-            // 6. Update the Grand Totals
-            if (index !== null) {
-                syncProductTaxInput(index);
-            }
-            refreshTaxesUIAndTotals();
+            const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
+            row.querySelector(".total-cell").innerText = `$${(qty * price).toFixed(2)}`;
+            calculateTotals();
         }
 
-     function addSelectedProducts() {
+        function addSelectedProducts() {
             const table = document.querySelector("#productTable tbody");
             const checkboxes = document.querySelectorAll(".product-checkbox:checked");
 
             checkboxes.forEach((checkbox) => {
                 const name = checkbox.dataset.name;
                 const price = parseFloat(checkbox.dataset.price).toFixed(2);
-                const id = checkbox.value; // Assuming value is the product ID
 
-                const currentIndex = productIndex;
-
-                // --- 1. Your existing Table Row Logic ---
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td><input type="text" name="products[${currentIndex}][name]" class="form-control" value="${name}" readonly></td>
-                    <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
-                    <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${currentIndex}][tax]" class="form-control tax-input" value="0.00" oninput="updateTotal(this)" step="0.01" min="0" readonly></td>
-                    <td><input type="number" name="products[${currentIndex}][product_total_price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
-                    <td class="total-cell">$${parseFloat(price).toFixed(2)}</td>
-                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
-                `;
+                <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
+                <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                <td class="total-cell">$${price}</td>
+                <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+            `;
                 table.appendChild(row);
-
                 productIndex++;
                 checkbox.checked = false;
             });
 
-            syncTaxProductList();
-            refreshTaxesUIAndTotals();
+            $('#productModal').modal('hide');
+            calculateTotals();
         }
 
-      function addTax() {
+        function addTax() {
             const name = document.getElementById('taxName').value.trim();
             const percent = parseFloat(document.getElementById('taxPercent').value);
-
-            // Get all checked products from the list inside the modal
-            const selectedProductCheckboxes = document.querySelectorAll(".apply-tax-check:checked");
-
-            const activeUid = document.getElementById('taxModalActiveUid').value;
 
             if (!name || isNaN(percent) || percent < 0) {
                 alert('Please enter a valid tax name and percent.');
                 return;
             }
 
-            if (selectedProductCheckboxes.length === 0) {
-                alert('Please select at least one product to apply this tax to.');
-                return;
-            }
-
-            const appliedProducts = Array.from(selectedProductCheckboxes)
-                .map(cb => parseInt(cb.value, 10))
-                .filter(v => Number.isFinite(v));
-
-            if (activeUid) {
-                const tax = taxes.find(t => String(t.uid) === String(activeUid));
-                if (tax) {
-                    tax.name = name;
-                    tax.percent = percent;
-                    tax.appliedProducts = appliedProducts;
-                }
-            } else {
-                const taxUid = createTaxUid();
-                taxes.push({
-                    uid: taxUid,
-                    name,
-                    percent,
-                    appliedProducts
-                });
-            }
-
-            // Reset and Close
+            taxes.push({
+                name,
+                percent
+            });
             document.getElementById('taxName').value = '';
             document.getElementById('taxPercent').value = '';
-            document.getElementById('taxModalActiveUid').value = '';
-            const submitBtn = document.getElementById('taxSubmitBtn');
-            if (submitBtn) submitBtn.innerText = 'Add Tax';
             $('#taxModal').modal('hide');
 
-            refreshTaxesUIAndTotals();
-
-        }
-
-        function createTaxUid() {
-            taxUidCounter += 1;
-            return `t_${Date.now()}_${taxUidCounter}`;
-        }
-
-        function getProductIndexFromRow(row) {
-            const input = row ? row.querySelector('input[name^="products["]') : null;
-            if (!input) return null;
-            const match = input.name.match(/^products\[(\d+)\]/);
-            return match ? parseInt(match[1], 10) : null;
-        }
-
-        function getProductNameByIndex(index) {
-            const input = document.querySelector(`input[name="products[${index}][name]"]`);
-            return input ? input.value : '';
-        }
-
-        function getProductQtyByIndex(index) {
-            const input = document.querySelector(`input[name="products[${index}][quantity]"]`);
-            return input ? (parseFloat(input.value) || 0) : 0;
-        }
-
-        function getProductUnitPriceByIndex(index) {
-            const input = document.querySelector(`input[name="products[${index}][price]"]`);
-            return input ? (parseFloat(input.value) || 0) : 0;
-        }
-
-        function computeTaxAmountForProduct(index, percent) {
-            const price = getProductUnitPriceByIndex(index);
-            const qty = getProductQtyByIndex(index);
-            return (price * (percent / 100)) * qty;
-        }
-
-        function computeTotalTaxForProduct(index) {
-            return taxes.reduce((sum, t) => {
-                const applied = (t.appliedProducts || []).map(String);
-                if (applied.includes(String(index))) {
-                    return sum + computeTaxAmountForProduct(index, parseFloat(t.percent) || 0);
-                }
-                return sum;
-            }, 0);
-        }
-
-        function computeTotalTaxForTax(tax) {
-            const applied = (tax.appliedProducts || []).map(String);
-            return applied.reduce((sum, pid) => sum + computeTaxAmountForProduct(parseInt(pid, 10), parseFloat(tax.percent) || 0), 0);
-        }
-
-        function syncProductTaxInput(index) {
-            const taxInput = document.querySelector(`input[name="products[${index}][tax]"]`);
-            if (!taxInput) return;
-            const totalTax = computeTotalTaxForProduct(index);
-            taxInput.value = totalTax.toFixed(2);
-        }
-
-        function syncAllProductTaxInputs() {
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            rows.forEach(row => {
-                const index = getProductIndexFromRow(row);
-                if (index !== null) {
-                    syncProductTaxInput(index);
-                }
-            });
-        }
-
-        function syncTaxProductList() {
-            const taxProductList = document.getElementById("taxProductList");
-            if (!taxProductList) return;
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            taxProductList.innerHTML = "";
-
-            if (!rows.length) {
-                taxProductList.innerHTML = '<p class="text-muted small">No products selected yet.</p>';
-                return;
-            }
-
-            renderTaxModalAppliedProducts();
-        }
-
-        function renderTaxModalAppliedProducts() {
-            const taxProductList = document.getElementById("taxProductList");
-            if (!taxProductList) return;
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            const productIndexes = [];
-            rows.forEach(r => {
-                const idx = getProductIndexFromRow(r);
-                if (idx !== null) productIndexes.push(idx);
-            });
-
-            if (!productIndexes.length) {
-                taxProductList.innerHTML = '<p class="text-muted small">No products selected yet.</p>';
-                return;
-            }
-
-            const activeUid = document.getElementById('taxModalActiveUid') ? document.getElementById('taxModalActiveUid').value : '';
-            const activeTax = activeUid ? taxes.find(t => String(t.uid) === String(activeUid)) : null;
-
-            const percentInput = document.getElementById('taxPercent');
-            const percent = percentInput ? (parseFloat(percentInput.value) || 0) : (activeTax ? (parseFloat(activeTax.percent) || 0) : 0);
-
-            const appliedSet = activeTax ? new Set((activeTax.appliedProducts || []).map(String)) : null;
-
-            let html = '<div class="table-responsive">';
-            html += '<table class="table table-sm table-bordered">';
-            html += '<thead><tr>';
-            html += '<th>Apply</th><th>Product</th><th>Unit Price</th><th>Qty</th><th>Tax %</th><th>Tax Amount</th>';
-            html += '</tr></thead><tbody>';
-
-            productIndexes.forEach(idx => {
-                const checked = appliedSet ? (appliedSet.has(String(idx)) ? 'checked' : '') : 'checked';
-                const name = getProductNameByIndex(idx);
-                const unitPrice = getProductUnitPriceByIndex(idx);
-                const qty = getProductQtyByIndex(idx);
-                const amount = computeTaxAmountForProduct(idx, percent);
-                html += `<tr>`;
-                html += `<td><input class="apply-tax-check" type="checkbox" value="${idx}" id="tax_check_${idx}" ${checked}></td>`;
-                html += `<td><label class="small" for="tax_check_${idx}" style="cursor:pointer;">${name}</label></td>`;
-                html += `<td>$${unitPrice.toFixed(2)}</td>`;
-                html += `<td>${qty}</td>`;
-                html += `<td>${percent.toFixed(2)}%</td>`;
-                html += `<td>$${amount.toFixed(2)}</td>`;
-                html += `</tr>`;
-            });
-
-            html += '</tbody></table></div>';
-            taxProductList.innerHTML = html;
+            renderTaxes();
+            calculateTotals();
         }
 
         function renderTaxes() {
             const container = document.getElementById('taxList');
-            if (!container) return;
-
             container.innerHTML = '';
-
-            if (!taxes.length) {
-                return;
-            }
-
             taxes.forEach((tax, index) => {
                 const div = document.createElement('div');
                 div.classList.add('tax-row', 'mb-2');
-                const amount = computeTotalTaxForTax(tax);
                 div.innerHTML = `
-                    <span class="badge badge-success" style="cursor:pointer;" data-tax-uid="${tax.uid}">
-                        ${tax.name} ${tax.percent}% ($${amount.toFixed(2)})
-                    </span>
-                    <button type="button" class="btn btn-danger btn-sm ml-2 remove-tax" data-tax-uid="${tax.uid}">×</button>
-                    <input type="hidden" name="taxes[${index}][name]" value="${tax.name}">
-                    <input type="hidden" name="taxes[${index}][percent]" value="${tax.percent}">
-                `;
+                <strong>${tax.name}:</strong> ${tax.percent}% 
+                <button type="button" class="btn btn-danger btn-sm ml-2" onclick="removeTax(${index})">Remove</button>
+                <input type="hidden" name="taxes[${index}][name]" value="${tax.name}">
+                <input type="hidden" name="taxes[${index}][percent]" value="${tax.percent}">
+            `;
                 container.appendChild(div);
             });
         }
 
-        function refreshTaxesUIAndTotals() {
-            syncAllProductTaxInputs();
+        function removeTax(index) {
+            taxes.splice(index, 1);
             renderTaxes();
             calculateTotals();
-            refreshTaxModalIfOpen();
-        }
-
-        function refreshTaxModalIfOpen() {
-            const modal = document.getElementById('taxModal');
-            if (!modal) return;
-            const isOpen = modal.classList.contains('show');
-            if (!isOpen) return;
-            renderTaxModalAppliedProducts();
-        }
-
-        function openTaxModalForTax(taxUid) {
-            const tax = taxes.find(t => String(t.uid) === String(taxUid));
-            if (!tax) return;
-            const title = document.getElementById('taxModalLabel');
-            if (title) title.innerHTML = '<i class="fas fa-percentage me-2"></i>Edit Tax';
-
-            document.getElementById('taxModalActiveUid').value = tax.uid;
-            document.getElementById('taxName').value = tax.name;
-            document.getElementById('taxPercent').value = tax.percent;
-
-            const submitBtn = document.getElementById('taxSubmitBtn');
-            if (submitBtn) submitBtn.innerText = 'Update Tax';
-
-            renderTaxModalAppliedProducts();
-            $('#taxModal').modal('show');
-        }
-
-        function resetTaxModalForNewTax() {
-            const title = document.getElementById('taxModalLabel');
-            if (title) title.innerHTML = '<i class="fas fa-percentage me-2"></i>Add Tax';
-            document.getElementById('taxModalActiveUid').value = '';
-            document.getElementById('taxName').value = '';
-            document.getElementById('taxPercent').value = '';
-            const submitBtn = document.getElementById('taxSubmitBtn');
-            if (submitBtn) submitBtn.innerText = 'Add Tax';
-            renderTaxModalAppliedProducts();
-        }
-
-        function openTaxDetailsModal(taxUid) {
-            const tax = taxes.find(t => String(t.uid) === String(taxUid));
-            if (!tax) return;
-
-            document.getElementById('activeTaxUid').value = tax.uid;
-            document.getElementById('taxDetailsName').value = tax.name;
-            document.getElementById('taxDetailsPercent').value = tax.percent;
-
-            refreshTaxDetailsModal();
-            $('#taxDetailsModal').modal('show');
-        }
-
-        function refreshTaxDetailsModal() {
-            const modal = document.getElementById('taxDetailsModal');
-            if (!modal) return;
-
-            const isOpen = modal.classList.contains('show');
-            if (!isOpen) return;
-
-            const taxUid = document.getElementById('activeTaxUid').value;
-            const tax = taxes.find(t => String(t.uid) === String(taxUid));
-            if (!tax) {
-                $('#taxDetailsModal').modal('hide');
-                return;
-            }
-
-            const productList = document.getElementById('taxDetailsProductList');
-            const tableWrapper = document.getElementById('taxDetailsTableWrapper');
-            const tbody = document.getElementById('taxDetailsTableBody');
-            if (!productList || !tableWrapper || !tbody) return;
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            const currentProducts = [];
-            rows.forEach(r => {
-                const idx = getProductIndexFromRow(r);
-                if (idx !== null) currentProducts.push(idx);
-            });
-
-            const appliedSet = new Set((tax.appliedProducts || []).map(String));
-
-            productList.innerHTML = '';
-            if (!currentProducts.length) {
-                productList.innerHTML = '<p class="text-muted small">No products selected.</p>';
-            } else {
-                currentProducts.forEach(idx => {
-                    const name = getProductNameByIndex(idx);
-                    const checked = appliedSet.has(String(idx)) ? 'checked' : '';
-                    const div = document.createElement('div');
-                    div.className = 'form-check';
-                    div.innerHTML = `
-                        <input class="form-check-input tax-details-apply" type="checkbox" value="${idx}" id="tax_details_apply_${idx}" ${checked}>
-                        <label class="form-check-label small" for="tax_details_apply_${idx}">${name}</label>
-                    `;
-                    productList.appendChild(div);
-                });
-            }
-
-            tbody.innerHTML = '';
-            const appliedProducts = currentProducts.filter(idx => appliedSet.has(String(idx)));
-            if (!appliedProducts.length) {
-                tableWrapper.style.display = 'none';
-            } else {
-                tableWrapper.style.display = '';
-                appliedProducts.forEach(idx => {
-                    const unitPrice = getProductUnitPriceByIndex(idx);
-                    const qty = getProductQtyByIndex(idx);
-                    const amount = computeTaxAmountForProduct(idx, parseFloat(tax.percent) || 0);
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${getProductNameByIndex(idx)}</td>
-                        <td>$${unitPrice.toFixed(2)}</td>
-                        <td>${qty}</td>
-                        <td>${(parseFloat(tax.percent) || 0).toFixed(2)}%</td>
-                        <td>$${amount.toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
         }
 
         function addDiscount() {
@@ -2031,16 +1644,13 @@
 
             rows.forEach(row => {
                 const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
-                const price = parseFloat(row.querySelector('input[name*="[product_total_price]"]').value) || 0;
+                const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
                 subtotal += qty * price;
             });
 
             let totalTaxAmount = 0;
-            rows.forEach(row => {
-                const index = getProductIndexFromRow(row);
-                if (index !== null) {
-                    totalTaxAmount += computeTotalTaxForProduct(index);
-                }
+            taxes.forEach(tax => {
+                totalTaxAmount += subtotal * (tax.percent / 100);
             });
 
             let totalDiscountAmount = 0;
@@ -2062,7 +1672,15 @@
             document.getElementById("subtotalCell").innerText = `$${subtotal.toFixed(2)}`;
 
             const taxCell = document.getElementById("taxCell");
-            taxCell.innerText = `$${totalTaxAmount.toFixed(2)}`;
+            if (taxes.length > 0) {
+                const taxDetails = taxes.map(tax => {
+                    const amount = subtotal * (tax.percent / 100);
+                    return `${tax.name}: $${amount.toFixed(2)}`;
+                }).join('<br>');
+                taxCell.innerHTML = taxDetails;
+            } else {
+                taxCell.innerText = '$0.00';
+            }
 
             const discountRow = document.getElementById("discountRow");
             const discountCell = document.getElementById("discountCell");
@@ -2076,48 +1694,10 @@
             }
 
             document.getElementById("totalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
-            document.getElementById("remainingTotal").innerText = `$${total.toFixed(2)}`;
             document.getElementById("subtotalInput").value = subtotal.toFixed(2);
             document.getElementById("taxTotalInput").value = totalTaxAmount.toFixed(2);
             document.getElementById("discountTotalInput").value = totalDiscountAmount.toFixed(2);
             document.getElementById("totalInput").value = total.toFixed(2);
-            document.getElementById("remainingTotalInput").value = total.toFixed(2);
-            const container = document.getElementById('dynamicInputsContainer');
-            const installmentCheck = document.getElementById('installmentCheck');
-            if (container && (!installmentCheck || !installmentCheck.checked)) {
-                container.innerHTML = '';
-            }
-        }
-
-        function refreshChargesUIAndTotals() {
-            syncAllProductChargeInputs();
-            renderChargesBadgesAndHiddenInputs();
-            calculateTotals();
-
-            const installmentCheck = document.getElementById('installmentCheck');
-            if (installmentCheck && installmentCheck.checked) {
-                updateInstallmentsAfterTotalChange();
-                calculateBalance();
-            }
-
-            refreshChargeModalPreviewIfOpen();
-        }
-
-        function refreshChargeModalPreviewIfOpen() {
-            const modalEl = document.getElementById('chargeModal');
-            if (!modalEl) return;
-            const isOpen = modalEl.classList.contains('show');
-            if (!isOpen) return;
-
-            const productIndex = parseInt(document.getElementById('chargeProduct').value, 10);
-            const percent = parseFloat(document.getElementById('chargePercent').value) || 0;
-            const preview = document.getElementById('chargeModalPreview');
-            if (!preview || !Number.isFinite(productIndex)) return;
-
-            const unitPrice = getProductUnitPriceByIndex(productIndex);
-            const qty = getProductQtyByIndex(productIndex);
-            const amount = computeChargeAmountForProduct(productIndex, percent);
-            preview.innerText = `Unit: $${unitPrice.toFixed(2)} | Qty: ${qty} | Percent: ${percent.toFixed(2)}% | Amount: $${amount.toFixed(2)}`;
         }
 
         document.querySelector("#productTable tbody").addEventListener('input', function(e) {
@@ -2130,57 +1710,21 @@
             const table = document.querySelector("#productTable tbody");
 
             existingEstimateItems.forEach(item => {
-                const currentIndex = productIndex;
-
                 const qty = parseFloat(item.quantity) || 1;
                 const price = parseFloat(item.price) || 0;
-                const productPrice = parseFloat(item.product_price) || 0;
-                const tax = parseFloat(item.tax) || 0;
-                const total = qty * productPrice;
+                const total = qty * price;
 
                 const row = document.createElement("tr");
-                row.innerHTML = `   
-                  <td><input type="text" name="products[${currentIndex}][name]" class="form-control" value="${item.name}" readonly></td>
-                    <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${currentIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0" readonly></td>
-                    <td><input type="number" name="products[${currentIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" readonly step="0.01" min="0"></td>
-                    <td class="total-cell">$${total.toFixed(2)}</td>
-                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+                row.innerHTML = `
+                <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
+                <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" step="0.01" oninput="updateTotal(this)" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" step="0.01" oninput="updateTotal(this)" min="0"></td>
+                <td class="total-cell">$${total.toFixed(2)}</td>
+                <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
             `;
                 table.appendChild(row);
                 productIndex++;
             });
-        }
-
-        function loadExistingInstallments() {
-            // Check if there is actually data to load
-            if (existingEstimateInstallments.length > 0) {
-                // 1. Ensure the checkbox is checked and UI is visible
-                const checkbox = document.getElementById('installmentCheck'); // Replace with your actual ID
-                const section = document.getElementById('installmentSection');   // Replace with your actual ID
-                const container = document.getElementById('dynamicInputsContainer'); // The div where rows go
-                
-                if (checkbox) checkbox.checked = true;
-                if (section) section.classList.remove('d-none');
-
-                // 2. Clear container to prevent duplicates
-                container.innerHTML = '';
-
-                // 3. Loop through existing installments
-                existingEstimateInstallments.forEach(item => {
-                    const amount = parseFloat(item.amount) || 0;
-                    const date = item.installment_date || "";
-
-                    // We reuse your createRowHtml logic
-                    // Note: installmentIndex++ happens inside createRowHtml
-                    const rowHtml = createRowHtml(amount.toFixed(2), date);
-                    container.insertAdjacentHTML('beforeend', rowHtml);
-                });
-
-                // 4. Recalculate the remaining balance UI
-                calculateBalance();
-            }
         }
 
         function submitSentForm() {
@@ -2189,443 +1733,9 @@
 
         window.onload = function() {
             loadExistingItems();
-            syncTaxProductList();
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            const indices = [];
-            rows.forEach(row => {
-                const index = getProductIndexFromRow(row);
-                if (index !== null) indices.push(index);
-            });
-            taxes.forEach(t => {
-                if (!Array.isArray(t.appliedProducts) || t.appliedProducts.length === 0) {
-                    t.appliedProducts = indices.slice();
-                }
-            });
-
+            renderTaxes();
             renderDiscounts();
-            refreshTaxesUIAndTotals();
-            loadExistingInstallments();
+            calculateTotals();
         };
-
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('remove-tax')) {
-                const taxUid = e.target.dataset.taxUid;
-                taxes = taxes.filter(t => String(t.uid) !== String(taxUid));
-                const activeUid = document.getElementById('taxModalActiveUid') ? document.getElementById('taxModalActiveUid').value : '';
-                if (activeUid && String(activeUid) === String(taxUid)) {
-                    $('#taxModal').modal('hide');
-                }
-                refreshTaxesUIAndTotals();
-                return;
-            }
-
-            const badge = e.target && e.target.classList && e.target.classList.contains('badge') ? e.target : null;
-            if (badge && badge.dataset && badge.dataset.taxUid) {
-                openTaxModalForTax(badge.dataset.taxUid);
-            }
-        });
-
-        $('#taxModal').on('show.bs.modal', function() {
-            if (taxModalPendingOpenUid) {
-                const uid = taxModalPendingOpenUid;
-                taxModalPendingOpenUid = null;
-                openTaxModalForTax(uid);
-                return;
-            }
-            resetTaxModalForNewTax();
-        });
-
-        document.getElementById('taxPercent').addEventListener('input', function() {
-            const activeUid = document.getElementById('taxModalActiveUid').value;
-            const tax = activeUid ? taxes.find(t => String(t.uid) === String(activeUid)) : null;
-            if (tax) {
-                tax.percent = parseFloat(this.value) || 0;
-            }
-            renderTaxModalAppliedProducts();
-            refreshTaxesUIAndTotals();
-        });
-
-        document.getElementById('taxName').addEventListener('input', function() {
-            const activeUid = document.getElementById('taxModalActiveUid').value;
-            const tax = activeUid ? taxes.find(t => String(t.uid) === String(activeUid)) : null;
-            if (tax) {
-                tax.name = this.value;
-            }
-            refreshTaxesUIAndTotals();
-        });
-
-        document.addEventListener('change', function(e) {
-            if (e.target && e.target.classList && e.target.classList.contains('apply-tax-check')) {
-                const activeUid = document.getElementById('taxModalActiveUid') ? document.getElementById('taxModalActiveUid').value : '';
-                if (!activeUid) {
-                    renderTaxModalAppliedProducts();
-                    return;
-                }
-                const tax = taxes.find(t => String(t.uid) === String(activeUid));
-                if (!tax) return;
-                const pid = parseInt(e.target.value, 10);
-                if (!Number.isFinite(pid)) return;
-                const set = new Set((tax.appliedProducts || []).map(String));
-                if (e.target.checked) {
-                    set.add(String(pid));
-                } else {
-                    set.delete(String(pid));
-                }
-                tax.appliedProducts = Array.from(set).map(v => parseInt(v, 10)).filter(v => Number.isFinite(v));
-                if (!tax.appliedProducts.length) {
-                    taxes = taxes.filter(t => String(t.uid) !== String(activeUid));
-                    $('#taxModal').modal('hide');
-                }
-                renderTaxModalAppliedProducts();
-                refreshTaxesUIAndTotals();
-            }
-        });
-
-        document.getElementById('taxDetailsName').addEventListener('input', function() {
-            const uid = document.getElementById('activeTaxUid').value;
-            const tax = taxes.find(t => String(t.uid) === String(uid));
-            if (!tax) return;
-            tax.name = this.value;
-            refreshTaxesUIAndTotals();
-        });
-
-        document.getElementById('taxDetailsPercent').addEventListener('input', function() {
-            const uid = document.getElementById('activeTaxUid').value;
-            const tax = taxes.find(t => String(t.uid) === String(uid));
-            if (!tax) return;
-            tax.percent = parseFloat(this.value) || 0;
-            refreshTaxesUIAndTotals();
-        });
-
-        document.addEventListener('change', function(e) {
-            if (e.target && e.target.classList && e.target.classList.contains('tax-details-apply')) {
-                const uid = document.getElementById('activeTaxUid').value;
-                const tax = taxes.find(t => String(t.uid) === String(uid));
-                if (!tax) return;
-
-                const pid = parseInt(e.target.value, 10);
-                if (!Number.isFinite(pid)) return;
-
-                const appliedSet = new Set((tax.appliedProducts || []).map(String));
-                if (e.target.checked) {
-                    appliedSet.add(String(pid));
-                } else {
-                    appliedSet.delete(String(pid));
-                }
-                tax.appliedProducts = Array.from(appliedSet).map(v => parseInt(v, 10)).filter(v => Number.isFinite(v));
-
-                if (!tax.appliedProducts.length) {
-                    taxes = taxes.filter(t => String(t.uid) !== String(uid));
-                    $('#taxDetailsModal').modal('hide');
-                }
-                refreshTaxesUIAndTotals();
-            }
-        });
-
-
-
-        //installment logic 
-
-
-   const checkbox = document.getElementById('installmentCheck');
-const modalElement = document.getElementById('installmentModal');
-const modal = new bootstrap.Modal(modalElement);
-const container = document.getElementById('dynamicInputsContainer');
-const section = document.getElementById('installmentSection');
-
-// Template for a new row
-
-// Add a simple counter or use a timestamp for the key
-let installmentIndex = 0; 
-
-function createRowHtml(amount = "",date = "") {
-    installmentIndex++; // Increment to give each row a unique "ID"
-    
-    return `
-        <div class="row mb-2 installment-row">
-            <div class="col-md-5">
-                <input type="number" 
-                       name="installments[${installmentIndex}][amount]" 
-                       class="form-control inst-amount" 
-                       placeholder="Amount" 
-                       value="${amount}" 
-                       oninput="calculateBalance()" 
-                       step="0.01" min="0" required>
-            </div>
-            <div class="col-md-5">
-                <input type="date" 
-                       name="installments[${installmentIndex}][date]" 
-                       value="${date}"
-                       class="form-control inst-date" 
-                       min="<?= date('Y-m-d') ?>"
-                       required>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-danger w-100 btn-remove">×</button>
-            </div>
-        </div>`;
-}
-
-// 1. Checkbox Toggle
-checkbox.addEventListener('change', function() {
-    if (this.checked) {
-        modal.show();
-    } else {
-        section.classList.add('d-none');
-        container.innerHTML = '';
-        calculateBalance();
-    }
-});
-
-// 2. Initial Generation from Modal
-document.getElementById('generateFields').addEventListener('click', function() {
-    const count = parseInt(document.getElementById('numInstallments').value);
-    if (!count || count <= 0) return alert("Please enter a valid number");
-
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    container.innerHTML = '';
-    section.classList.remove('d-none');
-
-    // Logic: Split total by number of installments for the user
-    let splitAmount = (totalAmount / count).toFixed(2);
-
-    for (let i = 0; i < count; i++) {
-        // Last row gets the remainder to avoid rounding errors
-        if (i === count - 1) {
-            let currentSum = splitAmount * (count - 1);
-            let lastPart = totalAmount - currentSum;
-            container.insertAdjacentHTML('beforeend', createRowHtml(lastPart.toFixed(2),""));
-        } else {
-            container.insertAdjacentHTML('beforeend', createRowHtml(splitAmount));
-        }
-    }
-    modal.hide();
-    calculateBalance();
-});
-
-// 3. Add Single Row (Auto-fills with remaining balance)
-document.getElementById('addRowBtn').addEventListener('click', function () {
-
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    let errorBox = document.getElementById('installmentError');
-
-    // 🚫 Validation
-    if (totalAmount === 0) {
-        errorBox.style.display = 'block';
-        return;
-    } else {
-        errorBox.style.display = 'none';
-    }
-
-    let paidSoFar = 0;
-    document.querySelectorAll('.inst-amount').forEach(el => {
-        paidSoFar += parseFloat(el.value) || 0;
-    });
-
-    let remaining = totalAmount - paidSoFar;
-    let fillValue = remaining > 0 ? remaining.toFixed(2) : "";
-
-    container.insertAdjacentHTML('beforeend', createRowHtml(fillValue));
-    calculateBalance();
-});
-
-
-// 4. Remove Row
-container.addEventListener('click', function(e) {
-    if (e.target.classList.contains('btn-remove')) {
-        e.target.closest('.installment-row').remove();
-        calculateBalance();
-    }
-});
-
-// 5. Calculation Logic (Prevents Negative & Checks Completion)
-function calculateBalance() {
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    let runningTotal = 0;
-    const amounts = document.querySelectorAll('.inst-amount');
-
-    amounts.forEach(input => {
-        let val = parseFloat(input.value) || 0;
-
-        // Condition: If this input makes the total go over, cap it
-        if (runningTotal + val > totalAmount) {
-            val = totalAmount - runningTotal;
-            input.value = val > 0 ? val.toFixed(2) : 0;
-        }
-        runningTotal += val;
-    });
-
-    let remaining = totalAmount - runningTotal;
-    const display = document.getElementById('remainingTotal');
-    
-    display.innerText = `$${remaining.toFixed(2)}`;
-    
-    // UI Feedback
-    if (remaining > 0) {
-        display.className = "fw-bold text-warning"; // Still needs more
-    } else {
-        display.className = "fw-bold text-success"; // Perfect balance
-    }
-}
-
-// 6. Final Form Validation
-document.getElementById('paymentForm').addEventListener('submit', function(e) {
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    let currentTotal = 0;
-    document.querySelectorAll('.inst-amount').forEach(el => currentTotal += parseFloat(el.value) || 0);
-
-    // Using a small margin for decimal floating point math
-    if (Math.abs(totalAmount - currentTotal) > 0.01) {
-        e.preventDefault();
-        alert(`Validation Error: The total of all installments ($${currentTotal.toFixed(2)}) must equal the total amount ($${totalAmount.toFixed(2)}).`);
-    }
-});
-
-// Cancel Modal
-document.getElementById('cancelModal').addEventListener('click', () => {
-    checkbox.checked = false;
-    modal.hide();
-});
-
     </script>
-
-    <script>
-        
-// 1. Target your specific form ID
-const estimateForm = document.getElementById('update-estimate-form');
-
-estimateForm.addEventListener('submit', function (e) {
-
-    const isInstallment = document.getElementById('installmentCheck').checked;
-    const errorBox = document.getElementById('installmentValidationError');
-
-    // Always reset error UI
-    errorBox.style.display = 'none';
-
-    if (isInstallment) {
-        const totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-        let paidSoFar = 0;
-
-        const amounts = document.querySelectorAll('.inst-amount');
-        amounts.forEach(input => {
-            paidSoFar += parseFloat(input.value) || 0;
-        });
-        if (amounts.length === 0) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            errorBox.innerText = 'Please schedule a payment first.';
-            errorBox.style.display = 'block';
-
-            document.getElementById('installmentSection')
-                .scrollIntoView({ behavior: 'smooth' });
-            return;
-        }
-        const difference = Math.abs(totalAmount - paidSoFar);
-
-        if (difference > 0.01) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            errorBox.innerText = 'Installment total must match the estimate total.';
-            errorBox.style.display = 'block';
-
-            const remainingDisplay = document.getElementById('remainingTotal');
-            if (remainingDisplay) remainingDisplay.style.color = 'red';
-
-            document.getElementById('installmentSection')
-                .scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-});
-
-
-estimateForm.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        // If the user is NOT in a textarea, prevent the default submit action
-        if (e.target.tagName !== 'TEXTAREA') {
-            e.preventDefault();
-            return false;
-        }
-    }
-});
-
-function cancelModalNumberOfPayments() {
-    // 1. Uncheck the "Installment" checkbox
-    const checkbox = document.getElementById('installmentCheck');
-    if (checkbox) {
-        checkbox.checked = false;
-    }
-
-    // 2. Clear the input inside the modal
-    const input = document.getElementById('numInstallments');
-    if (input) {
-        input.value = '';
-    }
-
-    // 3. Hide the Modal and Clean up the Backdrop
-    // We use the "Force" method since the standard .modal('hide') was failing
-    $('#installmentModal').modal('hide');
-    
-    // Force removal of the dark overlay and restore scrolling
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('body').css('padding-right', '0'); 
-}
-    </script>
-
-
-
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Target all textareas with the 'editor' class
-        const allEditors = document.querySelectorAll('.editor');
-        
-        allEditors.forEach(textarea => {
-            ClassicEditor
-                .create(textarea, {
-                    toolbar: {
-                        items: [
-                            'heading', '|',
-                            'bold', 'italic', 'strikethrough', 'link', '|',
-                            'bulletedList', 'numberedList', '|',
-                            'undo', 'redo'
-                        ]
-                    }
-                })
-                .catch(error => {
-                    console.error('CKEditor initialization failed:', error);
-                });
-        });
-    });
-</script>
-
-<style>
-    /* Adjusts the height of the editor box */
-    .ck-editor__editable_inline {
-        min-height: 200px;
-        background-color: white !important;
-    }
-
-    /* Ensures the editor matches Bootstrap's border style */
-    .ck.ck-editor__main>.ck-editor__editable {
-        border-color: #dee2e6 !important;
-        box-shadow: none !important;
-    }
-
-    /* Style for the preview area */
-    .preview-content {
-        padding: 10px;
-        border: 1px dashed #ccc;
-        background: #f9f9f9;
-        margin-top: 10px;
-    }
-</style>
-
-
-
-    
 @endsection
