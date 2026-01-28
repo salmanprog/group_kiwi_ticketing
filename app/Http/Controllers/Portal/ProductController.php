@@ -150,61 +150,80 @@ class ProductController extends CRUDCrontroller
     // Show Create Form
     public function createApi()
     {
-        return view('portal.product.api-create');
+        $response = $this->apiService->getTicketPricingRecord();
+
+        $tickets = [];
+
+        if ($response->successful()) {
+            $tickets = collect($response->json()['data'] ?? [])
+                ->unique('ticketName')
+                ->values();
+        }
+
+        return view('portal.product.api-create', compact('tickets'));
     }
 
     // Store New Ticket
     public function storeApi(Request $request)
     {
-        // Validate request
         $validated = $request->validate([
-            'ticketName'  => 'required|string',
-            'ticketPrice' => 'required|numeric',
-            'ticketType'  => 'required|string',
-            'saleChannel' => 'required|string',
+            'ticketName'     => 'required',
+            'ticketPrice'    => 'required|numeric',
+            'ticketType'     => 'required|string',
+            'saleChannel'    => 'required|string',
+            'ticketId'       => 'required|integer',
         ]);
 
+        $isNewTicket = $request->ticketName === '__new__';
+        $ticketName = $isNewTicket ? $request->newTicketName : $request->ticketName;
+        $ticketId   = $request->ticketId;
+
+        if (Product::where('name', $ticketName)->exists()) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Ticket name already exists. Please choose a different name.');
+        }
+
         $company = CompanyUser::getCompany(Auth::user()->id);
+        $product = Product::create([
+            'company_id'                  => $company->id,
+            'company_product_category_id' => 0,
+            'name'        => $ticketName,
+            'description' => $ticketName,
+            'price'       => $validated['ticketPrice'],
+            'unit'        => 'Ticket',
+            'status'      => '1',
+            'slug'        => strtolower(str_replace(' ', '-', $ticketName)),
+        ]);
 
-        // Prepare DB data
-        $dbData = [
-            'company_id' => $company->id,
-            'company_product_category_id' => 0, // or choose default
-            'name'       => $validated['ticketName'],
-            'description'=> $validated['ticketName'],
-            'price'      => $validated['ticketPrice'],
-            'unit'       => 'Ticket',
-            'status'     => '1',
-            'slug'       => strtolower(str_replace(' ', '-', $validated['ticketName'])),
-        ];
-
-        $product = Product::create($dbData);
-
-        // Sync to API
         $apiParams = [
-            'TicketName'  => $validated['ticketName'],
+            'TicketName'  => $ticketName,
             'TicketPrice' => $validated['ticketPrice'],
             'TicketType'  => $validated['ticketType'],
             'SaleChannel' => $validated['saleChannel'],
-            'UserId'      => 'dev', // dynamic if needed
-            'TicketId'    => 0,     // 0 means new
+            'UserId'      => 'dev',
+            'TicketId'    => $ticketId,
         ];
 
         $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams);
 
         if ($apiResponse->failed()) {
-            return redirect()->back()->with('error', 'Ticket created locally, but failed to sync API.');
+            return redirect()->back()->with('error', 'Ticket saved locally, but API sync failed.');
         }
 
         $apiData = $apiResponse->json();
-        if (isset($apiData['data']['ticketSlug'])) {
-            $product->update([
-                'slug' => $apiData['data']['ticketSlug']
-            ]);
+
+        if (!empty($apiData['data']['ticketSlug'])) {
+            $product->update(['slug' => $apiData['data']['ticketSlug']]);
         }
 
-        return redirect()->route('product.index')->with('success', 'Ticket created and synced with API.');
+        return redirect()->route('product.index')
+            ->with('success', $isNewTicket
+                ? 'New ticket created and synced with API.'
+                : 'Existing ticket synced successfully.'
+            );
     }
+
 
 
     public function editApi($slug)

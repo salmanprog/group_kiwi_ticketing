@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "auth0/login": "^7.20",
         "bepsvpt/blurhash": "^3.0",
         "braintree/braintree_php": "6.16.0",
         "firebase/php-jwt": "^6.0",

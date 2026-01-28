@@ -24,6 +24,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Portal\ContractController;
 use App\Http\Controllers\Portal\ReportingController;
 use App\Http\Controllers\Portal\ContactActivityLogController;
+use Auth0\Laravel\Facade\Auth0;
 
 
 /*
@@ -35,14 +36,28 @@ use App\Http\Controllers\Portal\ContactActivityLogController;
 
 // Route::middleware(['guest:web'])->group(function () {
 
-    Route::match(['get', 'post'], 'login', [LoginController::class, 'login'])->name('admin.login');
+    //Route::match(['get', 'post'], 'login', [LoginController::class, 'login'])->name('admin.login');
+    Route::get('login', function () {
+            return Auth0::login();
+        })->name('admin.login');
+
+        Route::get('callback', function () {
+            return redirect()->route('admin.dashboard');
+        });
+
+        Route::get('logout', function () {
+            Auth0::logout();
+            return redirect('/');
+        })->name('admin.logout');
     Route::match(['get', 'post'], 'forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('admin.forgot-password');
     Route::match(['get', 'post'], 'reset-password/{any}', [ResetPasswordController::class, 'resetPassword'])->name('admin.reset-password');
     Route::match(['get', 'post'], 'create-password/{any}', [ResetPasswordController::class, 'createPassword'])->name('admin.create-password');
 
 // });
 
-Route::middleware(['custom_auth:web'])->group(function () {
+//Route::middleware(['custom_auth:web'])->group(function () {
+
+Route::middleware(['auth'])->group(function () {
 
     Route::match(['get', 'post'], 'user-profile', [CompanyAdminController::class, 'profile'])->name('admin.profile');
     Route::match(['get', 'post'], 'update-stripe-key', [CompanyAdminController::class, 'stripeKey'])->name('portal.update-stripe-key');
@@ -50,7 +65,7 @@ Route::middleware(['custom_auth:web'])->group(function () {
     Route::post('update-terms-and-conditions', [CompanyAdminController::class, 'updateTermsAndConditions'])->name('portal.update-terms-and-conditions');
 
     Route::match(['get', 'post'], 'change-password', [CompanyAdminController::class, 'changePassword'])->name('admin.change-password');
-    Route::get('logout', [CompanyAdminController::class, 'logout'])->name('admin.logout');
+    //Route::get('logout', [CompanyAdminController::class, 'logout'])->name('admin.logout');
 
     Route::get('dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
     Route::get('company/dashboard', [DashboardController::class, 'companyIndex'])->name('company.dashboard');

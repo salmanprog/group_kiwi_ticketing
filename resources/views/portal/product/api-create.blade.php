@@ -14,27 +14,52 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('product.api.store') }}">
                         @csrf
-
+                        <input type="hidden" name="ticketId" id="ticketId" value="0">
+                        <input type="hidden" name="ticketType" id="ticketTypeHidden" value="Tickets">
+                        <input type="hidden" name="saleChannel" id="saleChannelHidden" value="Groups">
                         <div class="form-section">
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label">Ticket Name</label>
-                                    <input type="text" name="ticketName" class="form-control" required>
+
+                                    <select name="ticketName" id="ticketNameSelect" class="form-control" required>
+                                        <option value="">Select Ticket Name</option>
+
+                                        @foreach($tickets as $ticket)
+                                            <option 
+                                                value="{{ $ticket['ticketName'] }}"
+                                                data-id="{{ $ticket['id'] }}" 
+                                                data-price="{{ $ticket['ticketPrice'] }}"
+                                                data-type="{{ $ticket['ticketType'] }}"
+                                                data-channel="{{ $ticket['saleChannel'] }}"
+                                            >
+                                                {{ $ticket['ticketName'] }}
+                                            </option>
+                                        @endforeach
+
+                                        <option value="__new__">➕ Add New Ticket</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 d-none" id="newTicketWrapper">
+                                    <label class="form-label">New Ticket Name</label>
+                                    <input type="text" name="newTicketName" class="form-control"
+                                            placeholder="Enter new ticket name">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Ticket Type</label>
-                                    <input type="text" name="ticketType" class="form-control" value="Tickets" required>
+                                    <input type="text" name="ticketType" id="ticketType" class="form-control" value="Tickets" disabled>
                                 </div>
 
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Sale Channel</label>
-                                    <input type="text" name="saleChannel" class="form-control" value="Groups" required>
+                                    <input type="text" name="saleChannel" id="saleChannel" class="form-control" value="Groups" disabled>
                                 </div>
 
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Price</label>
-                                    <input type="number" step="0.01" name="ticketPrice" class="form-control" required>
+                                    <input type="number" step="0.01" name="ticketPrice" id="ticketPrice" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -51,4 +76,49 @@
 
     @include('portal.footer')
 </section>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const select = document.getElementById('ticketNameSelect');
+    const newWrapper = document.getElementById('newTicketWrapper');
+    const ticketIdInput = document.getElementById('ticketId');
+
+    select.addEventListener('change', function () {
+
+        // Add New Ticket selected
+        if (this.value === '__new__') {
+            newWrapper.classList.remove('d-none');
+            ticketIdInput.value = 0;
+            document.getElementById('ticketType').value = 'Tickets';
+            document.getElementById('saleChannel').value = 'Groups';
+            document.getElementById('ticketTypeHidden').value = 'Tickets';
+            document.getElementById('saleChannelHidden').value = 'Groups';
+            document.getElementById('ticketPrice').value = '';
+            return;
+        }
+
+        newWrapper.classList.add('d-none');
+
+        const option = this.options[this.selectedIndex];
+        ticketIdInput.value = option.getAttribute('data-id');
+        document.getElementById('ticketType').value =
+            option.getAttribute('data-type') ?? '';
+
+        document.getElementById('saleChannel').value =
+            option.getAttribute('data-channel') ?? '';
+        
+        document.getElementById('ticketTypeHidden').value =
+            option.getAttribute('data-type') ?? '';
+
+        document.getElementById('saleChannelHidden').value =
+            option.getAttribute('data-channel') ?? '';
+
+        document.getElementById('ticketPrice').value =
+            option.getAttribute('data-price') ?? '';
+    });
+
+});
+</script>
+
+
 @endsection
