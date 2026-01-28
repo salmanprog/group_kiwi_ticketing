@@ -46,22 +46,26 @@ return Configuration::VERSION_2 + [
         ],
 
         'web' => [
-            Configuration::CONFIG_STRATEGY => SdkConfiguration::STRATEGY_REGULAR,
-            Configuration::CONFIG_COOKIE_SECRET => Configuration::get(Configuration::CONFIG_COOKIE_SECRET, env('APP_KEY')),
-            Configuration::CONFIG_REDIRECT_URI => Configuration::get(Configuration::CONFIG_REDIRECT_URI, env('APP_URL') . '/callback'),
-            Configuration::CONFIG_SESSION_STORAGE => Configuration::get(Configuration::CONFIG_SESSION_STORAGE),
-            Configuration::CONFIG_SESSION_STORAGE_ID => Configuration::get(Configuration::CONFIG_SESSION_STORAGE_ID),
-            Configuration::CONFIG_TRANSIENT_STORAGE => Configuration::get(Configuration::CONFIG_TRANSIENT_STORAGE),
-            Configuration::CONFIG_TRANSIENT_STORAGE_ID => Configuration::get(Configuration::CONFIG_TRANSIENT_STORAGE_ID),
+            Configuration::CONFIG_STRATEGY      => SdkConfiguration::STRATEGY_REGULAR,
+            Configuration::CONFIG_DOMAIN        => env('AUTH0_DOMAIN'),
+            Configuration::CONFIG_CLIENT_ID     => env('AUTH0_CLIENT_ID'),
+            Configuration::CONFIG_CLIENT_SECRET => env('AUTH0_CLIENT_SECRET'),
+            Configuration::CONFIG_REDIRECT_URI  => env('AUTH0_REDIRECT_URI', env('APP_URL') . '/portal/callback'),
+            Configuration::CONFIG_AUDIENCE => [env('AUTH0_AUDIENCE')], 
+            
+            // CHANGE THIS LINE: Wrap the env call in Configuration::stringToArray()
+            Configuration::CONFIG_SCOPE => Configuration::stringToArray(env('AUTH0_SCOPE', 'openid profile email')),
+            
+            Configuration::CONFIG_COOKIE_SECRET => env('APP_KEY'),
         ],
     ],
 
     'routes' => [
-        Configuration::CONFIG_ROUTE_INDEX => Configuration::get(Configuration::CONFIG_ROUTE_INDEX, '/'),
-        Configuration::CONFIG_ROUTE_CALLBACK => Configuration::get(Configuration::CONFIG_ROUTE_CALLBACK, '/callback'),
-        Configuration::CONFIG_ROUTE_LOGIN => Configuration::get(Configuration::CONFIG_ROUTE_LOGIN, '/login'),
-        Configuration::CONFIG_ROUTE_AFTER_LOGIN => Configuration::get(Configuration::CONFIG_ROUTE_AFTER_LOGIN, '/'),
-        Configuration::CONFIG_ROUTE_LOGOUT => Configuration::get(Configuration::CONFIG_ROUTE_LOGOUT, '/logout'),
-        Configuration::CONFIG_ROUTE_AFTER_LOGOUT => Configuration::get(Configuration::CONFIG_ROUTE_AFTER_LOGOUT, '/'),
+        Configuration::CONFIG_ROUTE_INDEX => '/',
+        Configuration::CONFIG_ROUTE_CALLBACK => '/portal/callback',
+        Configuration::CONFIG_ROUTE_LOGIN => '/portal/login',
+        Configuration::CONFIG_ROUTE_AFTER_LOGIN => '/portal/dashboard',
+        Configuration::CONFIG_ROUTE_LOGOUT => '/portal/logout',
+        Configuration::CONFIG_ROUTE_AFTER_LOGOUT => '/portal/login',
     ],
 ];

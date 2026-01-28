@@ -4,6 +4,7 @@ use App\Http\Controllers\Portal\SalesmanController;
 use App\Http\Controllers\Portal\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Portal\Auth\LoginController;
+use App\Http\Controllers\Portal\Auth\Auth0LoginController;
 use App\Http\Controllers\Portal\Auth\ForgotPasswordController;
 use App\Http\Controllers\Portal\Auth\ResetPasswordController;
 use App\Http\Controllers\Portal\DashboardController;
@@ -37,18 +38,54 @@ use Auth0\Laravel\Facade\Auth0;
 // Route::middleware(['guest:web'])->group(function () {
 
     //Route::match(['get', 'post'], 'login', [LoginController::class, 'login'])->name('admin.login');
-    Route::get('login', function () {
-            return Auth0::login();
-        })->name('admin.login');
+//     Route::get('/portal/login', function () {
+//     $query = http_build_query([
+//         'client_id' => env('AUTH0_CLIENT_ID'),
+//         'redirect_uri' => env('AUTH0_REDIRECT_URI'),
+//         'response_type' => 'code',
+//         'scope' => 'openid profile email',
+//     ]);
+//     return redirect('https://' . env('AUTH0_DOMAIN') . '/authorize?' . $query);
+// })->name('admin.login');
+// Route::get('/portal/login', function () {
+//     return redirect('/auth0/login');
+// })->name('admin.login');
+// Route::get('/portal/callback', function () {
+//     // Handle the Auth0 callback
 
-        Route::get('callback', function () {
-            return redirect()->route('admin.dashboard');
-        });
+//     dd([
+//         'domain' => env('AUTH0_DOMAIN'),
+//         'client_id' => env('AUTH0_CLIENT_ID'),
+//         'client_secret' => env('AUTH0_CLIENT_SECRET'),
+//         'redirect_uri' => env('AUTH0_REDIRECT_URI'),
+//     ]);
 
-        Route::get('logout', function () {
-            Auth0::logout();
-            return redirect('/');
-        })->name('admin.logout');
+//     $user = Auth0::getUser();
+
+//     dd($user);
+
+//     // if (!$user) {
+//     //     return redirect()->route('admin.login')->with('error', 'Login failed.');
+//     // }
+
+//     // // Log in the user locally (optional)
+//     // auth()->loginUsingId($user['sub']); // or map $user['email'] to local DB
+
+//     // return redirect()->intended('/portal/dashboard'); 
+// });
+
+// Route::get('/portal/logout', function () {
+//     auth()->logout();
+//     return redirect('https://' . env('AUTH0_DOMAIN') . '/v2/logout?' . http_build_query([
+//         'client_id' => env('AUTH0_CLIENT_ID'),
+//         'returnTo' => url('/portal/login'),
+//     ]));
+// });
+
+    Route::get('/portal/login', [Auth0LoginController::class, 'login'])->name('admin.login');
+    Route::get('/portal/callback', [Auth0LoginController::class, 'callback']);
+    Route::get('/portal/logout', [Auth0LoginController::class, 'logout']);
+
     Route::match(['get', 'post'], 'forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('admin.forgot-password');
     Route::match(['get', 'post'], 'reset-password/{any}', [ResetPasswordController::class, 'resetPassword'])->name('admin.reset-password');
     Route::match(['get', 'post'], 'create-password/{any}', [ResetPasswordController::class, 'createPassword'])->name('admin.create-password');
