@@ -724,86 +724,86 @@
         }
     </style>
 
-<section class="main-content">
-<div class="row">
-    <div class="col-md-10 offset-md-1">
-        @include('portal.flash-message')
+    <section class="main-content">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                @include('portal.flash-message')
 
-        <div class="estimate-wrapper">
-            {{-- Header --}}
-            <div class="estimate-header">
-                <div class="estimate-title">
-                    <i class="fas fa-file-invoice-dollar me-2"></i>Estimate
-                </div>
-                @if ($record->organization_deleted_at)
-                    <div class="deleted-alert">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Deleted:</strong> Organization has been deleted.
+                <div class="estimate-wrapper">
+                    {{-- Header --}}
+                    <div class="estimate-header">
+                        <div class="estimate-title">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>Estimate
+                        </div>
+                        @if ($record->organization_deleted_at)
+                            <div class="deleted-alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Deleted:</strong> Organization has been deleted.
+                            </div>
+                        @endif
+
+                        <div class="estimate-meta">
+                            <span class="estimate-number">#{{ ucfirst($record->slug) }}</span>
+                            @switch($record->status)
+                                @case('draft')
+                                    <span class="status draft">
+                                        <i class="fas fa-edit me-1"></i>Draft
+                                    </span>
+                                @break
+
+                                @case('sent')
+                                    <span class="status sent">
+                                        <i class="fas fa-paper-plane me-1"></i>Sent
+                                    </span>
+                                @break
+
+                                @case('approved')
+                                    <span class="status approved">
+                                        <i class="fas fa-check-circle me-1"></i>Approved
+                                    </span>
+                                @break
+
+                                @case('rejected')
+                                    <span class="status rejected">
+                                        <i class="fas fa-times-circle me-1"></i>Rejected
+                                    </span>
+                                @break
+
+                                @case('revised')
+                                    <span class="status revised">
+                                        <i class="fas fa-redo me-1"></i>Revised
+                                    </span>
+                                @break
+                            @endswitch
+                        </div>
                     </div>
-                @endif
-
-                <div class="estimate-meta">
-                    <span class="estimate-number">#{{ ucfirst($record->slug) }}</span>
-                    @switch($record->status)
-                        @case('draft')
-                            <span class="status draft">
-                                <i class="fas fa-edit me-1"></i>Draft
-                            </span>
-                        @break
-
-                        @case('sent')
-                            <span class="status sent">
-                                <i class="fas fa-paper-plane me-1"></i>Sent
-                            </span>
-                        @break
-
-                        @case('approved')
-                            <span class="status approved">
-                                <i class="fas fa-check-circle me-1"></i>Approved
-                            </span>
-                        @break
-
-                        @case('rejected')
-                            <span class="status rejected">
-                                <i class="fas fa-times-circle me-1"></i>Rejected
-                            </span>
-                        @break
-
-                        @case('revised')
-                            <span class="status revised">
-                                <i class="fas fa-redo me-1"></i>Revised
-                            </span>
-                        @break
-                    @endswitch
-                </div>
-            </div>
-            {{-- Address Section --}}
-            <div class="address-section">
-                <div class="address-box">
-                    <h4><i class="fas fa-building me-2"></i>From</h4>
-                    <p>
-                        <strong>{{ $record->company->name }}</strong><br>
-                        <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
-                        <br>
-                        <strong>Email:</strong> {{ $record->company->email }}
-                    </p>
-                </div>
-                <div class="address-box">
-                    <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
-                    <p>
-                        <strong>{{ $record->organization_name }}</strong><br>
-                        {{ $record->organization_address_one }}
-                        <br>
-                        <strong>Email:</strong> {{ $record->organization_email }}
-                        <br>
-                        <strong>Phone:</strong> {{ $record->organization_phone }}
-                    </p>
-                </div>
-            </div>
+                    {{-- Address Section --}}
+                    <div class="address-section">
+                        <div class="address-box">
+                            <h4><i class="fas fa-building me-2"></i>From</h4>
+                            <p>
+                                <strong>{{ $record->company->name }}</strong><br>
+                                <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
+                                <br>
+                                <strong>Email:</strong> {{ $record->company->email }}
+                            </p>
+                        </div>
+                        <div class="address-box">
+                            <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
+                            <p>
+                                <strong>{{ $record->organization_name }}</strong><br>
+                                {{ $record->organization_address_one }}
+                                <br>
+                                <strong>Email:</strong> {{ $record->organization_email }}
+                                <br>
+                                <strong>Phone:</strong> {{ $record->organization_phone }}
+                            </p>
+                        </div>
+                    </div>
 
                     {{-- Form Start --}}
                     <div class="form-section">
-                        <form method="POST" action="{{ route('estimate.update', ['estimate' => $record->slug]) }}" id="update-estimate-form">
+                        <form method="POST" action="{{ route('estimate.update', ['estimate' => $record->slug]) }}">
                             @csrf
                             @method('PUT')
 
@@ -861,9 +861,6 @@
                                 </div>
                             </div>
 
-                          
-
-
                             {{-- Product Table --}}
                             <div class="form-row mt-4">
                                 <div class="col-12">
@@ -877,9 +874,6 @@
                                                     <th>Product</th>
                                                     <th>Quantity</th>
                                                     <th>Unit Price</th>
-                                                    <th>Tax (%)</th>
-                                                    <th>Gratuity (%)</th>
-                                                    <th>Product Price (Tax + Gratuity)</th>
                                                     <th>Total</th>
                                                     <th class="no-print">Action</th>
                                                 </tr>
@@ -915,9 +909,9 @@
                                     <input type="hidden" name="total" id="totalInput" value="0">
 
                                     <div class="action-buttons">
-                                        <!-- <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
+                                        <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
                                             <i class="fas fa-plus me-1"></i>Add Field
-                                        </button> -->
+                                        </button>
                                         <button type="button" class="btn btn-primary btn-sm no-print"
                                             data-toggle="modal" data-target="#productModal">
                                             <i class="fas fa-cube me-1"></i>Add Product
@@ -943,105 +937,10 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                              <div class="row">
-                                <div class="col-md-12">
-                                    @if ($record->status != 'approved')
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Payment Schdule
-                                    </h5>
-                                    <div class="form-check mb-3" style="display:none">
-                                        <input class="form-check-input" type="checkbox" id="installmentCheck">
-                                        <label class="form-check-label" for="installmentCheck">Is Installment?</label>
-                                    </div>
-                                    @endif
-
-                                <div id="installmentSection" class="border p-3 rounded bg-light">
-                                   
-                                    <div id="dynamicInputsContainer"></div>
-                                    <hr>
-                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0">Installment Schedule</h6>
-                                            <div id="installmentError" class="text-danger mt-2" style="display:none;">
-                                                Please add product before adding installment.
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
-                                        </div>
-                                    <div class="d-flex justify-content-between">
-                                        <strong>Remaining Total:</strong>
-                                        <span id="remainingTotal">$1,000.00</span>
-                                        <input type="hidden" name="remaining_total" id="remainingTotalInput">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="installmentModal" tabindex="-1" data-bs-backdrop="static">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header"><h5 class="modal-title">Number of Payments</h5></div>
-                                    <div class="modal-body">
-                                        <input type="number" id="numInstallments" class="form-control" placeholder="Enter number of installments (e.g. 3)">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" id="cancelModal" onclick="cancelModalNumberOfPayments()">
-                                            Cancel
-                                        </button>                                       
-                                        
-                                        <button type="button" class="btn btn-primary" id="generateFields">Generate</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                          <div class="form-row mt-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Note
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea name="note" class="form-control editor" rows="4">{{ $record->note }}</textarea>
-                                        <div class="print-value">
-                                            <strong>Note:</strong>
-                                            {!! $record->note !!}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                         <div class="form-row mt-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Terms & Conditions
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea name="terms_and_condition" class="form-control editor" rows="4" placeholder="Enter terms and conditions">
-                                            {!! $record->terms_and_condition ?? ($default_terms_and_condition->content ?? '') !!}</textarea>
-                                        
-                                        <div class="print-value mt-3">
-                                            <strong>Terms & Conditions (Preview):</strong>
-                                            <div class="preview-content">
-                                                @if (!empty($record->terms_and_condition))
-                                                    {!! $record->terms_and_condition !!}
-                                                @else
-                                                    {!! $default_terms_and_condition->content ?? '' !!}
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
 
                             {{-- Action Buttons --}}
                             <div class="form-row mt-4">
                                 <div class="col-12">
-                                    <div id="installmentValidationError"
-                                        class="text-danger mt-2"
-                                        style="display:none;">
-                                        Please schedule a payment first.
-                                    </div>
-
                                     <div class="action-buttons">
                                         @if ($record->status != 'approved')
                                             <button type="submit" class="btn btn-primary">
@@ -1065,6 +964,7 @@
                                                     <i class="fas fa-paper-plane me-1"></i>Send
                                                 </button> -->
                                         @endif
+
                                         <button type="button" class="btn btn-outline-secondary no-print cust-bd"
                                             onclick="window.print()">
                                             <i class="fas fa-print me-1"></i>Print
@@ -1072,20 +972,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="form-row mt-4">
-                                @if ($record->status != 'approved')
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="installmentCheck">
-                                        <label class="form-check-label" for="installmentCheck">
-                                            Is Installment?
-                                        </label>
-                                    </div>
-                                @endif
-                            </div> -->
-
-                     
-
-
                         </form>
 
                         {{-- Hidden form for Send action --}}
@@ -1117,7 +1003,7 @@
                                         <tr>
                                             <th>Select</th>
                                             <th>Product Name</th>
-                                            <th>Product Price</th>
+                                            <th>Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1360,8 +1246,6 @@
                                                                 <td>${item.quantity || '0'}</td>
                                                                 <td>${item.unit || '-'}</td>
                                                                 <td>${item.price || '0.00'}</td>
-                                                                <td>${item.tax || '0.00'}</td>
-                                                                <td>${item.gratuity || '0.00'}</td>
                                                                 <td><strong>${item.total_price || '0.00'}</strong></td>
                                                             </tr>
                                                         `).join('')}
@@ -1588,7 +1472,6 @@
         const existingEstimateItems = @json($record->items ?? []);
         const existingEstimateTaxes = @json($record->taxes ?? []);
         const existingEstimateDiscounts = @json($record->discounts ?? []);
-        const existingEstimateInstallments = @json($record->installments ?? []);
 
         let productIndex = 1;
         let taxes = [];
@@ -1618,9 +1501,6 @@
             <td><input type="text" name="products[${productIndex}][name]" class="form-control"></td>
             <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
             <td><input type="number" name="products[${productIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
-            <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0" step="0.01" min="0"></td>
-            <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0" step="0.01" min="0"></td>
-            <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="0" step="0.01" min="0"></td>
             <td class="total-cell">$0.00</td>
             <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
         `;
@@ -1634,65 +1514,37 @@
             calculateTotals();
         }
 
-     function updateTotal(input) {
+        function updateTotal(input) {
             const row = input.closest("tr");
-
-            // 1. Get values from the row
             const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
-            const basePrice = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
-            
-            // Treating these inputs as percentage values (e.g., 10 for 10%)
-            const taxPercent = parseFloat(row.querySelector('input[name*="[tax]"]').value) || 0;
-            const gratuityPercent = parseFloat(row.querySelector('input[name*="[gratuity]"]').value) || 0;
-
-            // 2. Calculate percentages based on Base Price
-            const taxAmount = basePrice * (taxPercent / 100);
-            const gratuityAmount = basePrice * (gratuityPercent / 100);
-
-            // 3. Formula: (Base Price + Tax + Gratuity) * Quantity
-            const unitPriceWithFees = basePrice + taxAmount + gratuityAmount;
-            const rowTotal = unitPriceWithFees * qty;
-
-            // 4. Update the Hidden/Readonly Total Input
-            row.querySelector('input[name*="[product_total_price]"]').value = rowTotal.toFixed(2);
-
-            // 5. Update the Visual Display Cell
-            row.querySelector(".total-cell").innerText = `$${rowTotal.toFixed(2)}`;
-
-            // 6. Update the Grand Totals
+            const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
+            row.querySelector(".total-cell").innerText = `$${(qty * price).toFixed(2)}`;
             calculateTotals();
         }
 
-     function addSelectedProducts() {
+        function addSelectedProducts() {
             const table = document.querySelector("#productTable tbody");
             const checkboxes = document.querySelectorAll(".product-checkbox:checked");
 
             checkboxes.forEach((checkbox) => {
                 const name = checkbox.dataset.name;
                 const price = parseFloat(checkbox.dataset.price).toFixed(2);
-                
+
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
-                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
-                    <td class="total-cell">$${price}</td>
-                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
-                `;
+                <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
+                <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                <td class="total-cell">$${price}</td>
+                <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+            `;
                 table.appendChild(row);
                 productIndex++;
                 checkbox.checked = false;
             });
 
-            // Close modal and cleanup
-          $('#productModal').modal('hide');
-    
-    $('[data-dismiss="modal"]').first().click();
-
-            calculateTotals(); 
+            $('#productModal').modal('hide');
+            calculateTotals();
         }
 
         function addTax() {
@@ -1792,7 +1644,7 @@
 
             rows.forEach(row => {
                 const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
-                const price = parseFloat(row.querySelector('input[name*="[product_total_price]"]').value) || 0;
+                const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
                 subtotal += qty * price;
             });
 
@@ -1842,14 +1694,10 @@
             }
 
             document.getElementById("totalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
-            document.getElementById("remainingTotal").innerText = `$${total.toFixed(2)}`;
             document.getElementById("subtotalInput").value = subtotal.toFixed(2);
             document.getElementById("taxTotalInput").value = totalTaxAmount.toFixed(2);
             document.getElementById("discountTotalInput").value = totalDiscountAmount.toFixed(2);
             document.getElementById("totalInput").value = total.toFixed(2);
-            document.getElementById("remainingTotalInput").value = total.toFixed(2);
-            const container = document.getElementById('dynamicInputsContainer');
-            container.innerHTML = '';
         }
 
         document.querySelector("#productTable tbody").addEventListener('input', function(e) {
@@ -1864,55 +1712,19 @@
             existingEstimateItems.forEach(item => {
                 const qty = parseFloat(item.quantity) || 1;
                 const price = parseFloat(item.price) || 0;
-                const productPrice = parseFloat(item.product_price) || 0;
-                const tax = parseFloat(item.tax) || 0;
-                const gratuity = parseFloat(item.gratuity) || 0;
-                const total = qty * productPrice;
+                const total = qty * price;
 
                 const row = document.createElement("tr");
-                row.innerHTML = `   
-                  <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
-                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" readonly step="0.01" min="0"></td>
-                    <td class="total-cell">$${total.toFixed(2)}</td>
-                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+                row.innerHTML = `
+                <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
+                <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" step="0.01" oninput="updateTotal(this)" min="0"></td>
+                <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" step="0.01" oninput="updateTotal(this)" min="0"></td>
+                <td class="total-cell">$${total.toFixed(2)}</td>
+                <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
             `;
                 table.appendChild(row);
                 productIndex++;
             });
-        }
-
-        function loadExistingInstallments() {
-            // Check if there is actually data to load
-            if (existingEstimateInstallments.length > 0) {
-                // 1. Ensure the checkbox is checked and UI is visible
-                const checkbox = document.getElementById('installmentCheck'); // Replace with your actual ID
-                const section = document.getElementById('installmentSection');   // Replace with your actual ID
-                const container = document.getElementById('dynamicInputsContainer'); // The div where rows go
-                
-                if (checkbox) checkbox.checked = true;
-                if (section) section.classList.remove('d-none');
-
-                // 2. Clear container to prevent duplicates
-                container.innerHTML = '';
-
-                // 3. Loop through existing installments
-                existingEstimateInstallments.forEach(item => {
-                    const amount = parseFloat(item.amount) || 0;
-                    const date = item.installment_date || "";
-
-                    // We reuse your createRowHtml logic
-                    // Note: installmentIndex++ happens inside createRowHtml
-                    const rowHtml = createRowHtml(amount.toFixed(2), date);
-                    container.insertAdjacentHTML('beforeend', rowHtml);
-                });
-
-                // 4. Recalculate the remaining balance UI
-                calculateBalance();
-            }
         }
 
         function submitSentForm() {
@@ -1924,312 +1736,6 @@
             renderTaxes();
             renderDiscounts();
             calculateTotals();
-            loadExistingInstallments();
         };
-
-
-
-        //installment logic 
-
-
-   const checkbox = document.getElementById('installmentCheck');
-const modalElement = document.getElementById('installmentModal');
-const modal = new bootstrap.Modal(modalElement);
-const container = document.getElementById('dynamicInputsContainer');
-const section = document.getElementById('installmentSection');
-
-// Template for a new row
-
-// Add a simple counter or use a timestamp for the key
-let installmentIndex = 0; 
-
-function createRowHtml(amount = "",date = "") {
-    installmentIndex++; // Increment to give each row a unique "ID"
-    
-    return `
-        <div class="row mb-2 installment-row">
-            <div class="col-md-5">
-                <input type="number" 
-                       name="installments[${installmentIndex}][amount]" 
-                       class="form-control inst-amount" 
-                       placeholder="Amount" 
-                       value="${amount}" 
-                       oninput="calculateBalance()" 
-                       step="0.01" min="0" required>
-            </div>
-            <div class="col-md-5">
-                <input type="date" 
-                       name="installments[${installmentIndex}][date]" 
-                       value="${date}"
-                       class="form-control inst-date" 
-                       min="<?= date('Y-m-d') ?>"
-                       required>
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-danger w-100 btn-remove">×</button>
-            </div>
-        </div>`;
-}
-
-// 1. Checkbox Toggle
-checkbox.addEventListener('change', function() {
-    if (this.checked) {
-        modal.show();
-    } else {
-        section.classList.add('d-none');
-        container.innerHTML = '';
-        calculateBalance();
-    }
-});
-
-// 2. Initial Generation from Modal
-document.getElementById('generateFields').addEventListener('click', function() {
-    const count = parseInt(document.getElementById('numInstallments').value);
-    if (!count || count <= 0) return alert("Please enter a valid number");
-
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    container.innerHTML = '';
-    section.classList.remove('d-none');
-
-    // Logic: Split total by number of installments for the user
-    let splitAmount = (totalAmount / count).toFixed(2);
-
-    for (let i = 0; i < count; i++) {
-        // Last row gets the remainder to avoid rounding errors
-        if (i === count - 1) {
-            let currentSum = splitAmount * (count - 1);
-            let lastPart = totalAmount - currentSum;
-            container.insertAdjacentHTML('beforeend', createRowHtml(lastPart.toFixed(2),""));
-        } else {
-            container.insertAdjacentHTML('beforeend', createRowHtml(splitAmount));
-        }
-    }
-    modal.hide();
-    calculateBalance();
-});
-
-// 3. Add Single Row (Auto-fills with remaining balance)
-document.getElementById('addRowBtn').addEventListener('click', function () {
-
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    let errorBox = document.getElementById('installmentError');
-
-    // 🚫 Validation
-    if (totalAmount === 0) {
-        errorBox.style.display = 'block';
-        return;
-    } else {
-        errorBox.style.display = 'none';
-    }
-
-    let paidSoFar = 0;
-    document.querySelectorAll('.inst-amount').forEach(el => {
-        paidSoFar += parseFloat(el.value) || 0;
-    });
-
-    let remaining = totalAmount - paidSoFar;
-    let fillValue = remaining > 0 ? remaining.toFixed(2) : "";
-
-    container.insertAdjacentHTML('beforeend', createRowHtml(fillValue));
-    calculateBalance();
-});
-
-
-// 4. Remove Row
-container.addEventListener('click', function(e) {
-    if (e.target.classList.contains('btn-remove')) {
-        e.target.closest('.installment-row').remove();
-        calculateBalance();
-    }
-});
-
-// 5. Calculation Logic (Prevents Negative & Checks Completion)
-function calculateBalance() {
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    let runningTotal = 0;
-    const amounts = document.querySelectorAll('.inst-amount');
-
-    amounts.forEach(input => {
-        let val = parseFloat(input.value) || 0;
-
-        // Condition: If this input makes the total go over, cap it
-        if (runningTotal + val > totalAmount) {
-            val = totalAmount - runningTotal;
-            input.value = val > 0 ? val.toFixed(2) : 0;
-        }
-        runningTotal += val;
-    });
-
-    let remaining = totalAmount - runningTotal;
-    const display = document.getElementById('remainingTotal');
-    
-    display.innerText = `$${remaining.toFixed(2)}`;
-    
-    // UI Feedback
-    if (remaining > 0) {
-        display.className = "fw-bold text-warning"; // Still needs more
-    } else {
-        display.className = "fw-bold text-success"; // Perfect balance
-    }
-}
-
-// 6. Final Form Validation
-document.getElementById('paymentForm').addEventListener('submit', function(e) {
-    let totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-    let currentTotal = 0;
-    document.querySelectorAll('.inst-amount').forEach(el => currentTotal += parseFloat(el.value) || 0);
-
-    // Using a small margin for decimal floating point math
-    if (Math.abs(totalAmount - currentTotal) > 0.01) {
-        e.preventDefault();
-        alert(`Validation Error: The total of all installments ($${currentTotal.toFixed(2)}) must equal the total amount ($${totalAmount.toFixed(2)}).`);
-    }
-});
-
-// Cancel Modal
-document.getElementById('cancelModal').addEventListener('click', () => {
-    checkbox.checked = false;
-    modal.hide();
-});
-
     </script>
-
-    <script>
-        
-// 1. Target your specific form ID
-const estimateForm = document.getElementById('update-estimate-form');
-
-estimateForm.addEventListener('submit', function (e) {
-
-    const isInstallment = document.getElementById('installmentCheck').checked;
-    const errorBox = document.getElementById('installmentValidationError');
-
-    // Always reset error UI
-    errorBox.style.display = 'none';
-
-    if (isInstallment) {
-        const totalAmount = parseFloat(document.getElementById('totalInput').value) || 0;
-        let paidSoFar = 0;
-
-        const amounts = document.querySelectorAll('.inst-amount');
-        amounts.forEach(input => {
-            paidSoFar += parseFloat(input.value) || 0;
-        });
-        if (amounts.length === 0) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            errorBox.innerText = 'Please schedule a payment first.';
-            errorBox.style.display = 'block';
-
-            document.getElementById('installmentSection')
-                .scrollIntoView({ behavior: 'smooth' });
-            return;
-        }
-        const difference = Math.abs(totalAmount - paidSoFar);
-
-        if (difference > 0.01) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            errorBox.innerText = 'Installment total must match the estimate total.';
-            errorBox.style.display = 'block';
-
-            const remainingDisplay = document.getElementById('remainingTotal');
-            if (remainingDisplay) remainingDisplay.style.color = 'red';
-
-            document.getElementById('installmentSection')
-                .scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-});
-
-
-estimateForm.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        // If the user is NOT in a textarea, prevent the default submit action
-        if (e.target.tagName !== 'TEXTAREA') {
-            e.preventDefault();
-            return false;
-        }
-    }
-});
-
-function cancelModalNumberOfPayments() {
-    // 1. Uncheck the "Installment" checkbox
-    const checkbox = document.getElementById('installmentCheck');
-    if (checkbox) {
-        checkbox.checked = false;
-    }
-
-    // 2. Clear the input inside the modal
-    const input = document.getElementById('numInstallments');
-    if (input) {
-        input.value = '';
-    }
-
-    // 3. Hide the Modal and Clean up the Backdrop
-    // We use the "Force" method since the standard .modal('hide') was failing
-    $('#installmentModal').modal('hide');
-    
-    // Force removal of the dark overlay and restore scrolling
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-    $('body').css('padding-right', '0'); 
-}
-    </script>
-
-
-
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Target all textareas with the 'editor' class
-        const allEditors = document.querySelectorAll('.editor');
-        
-        allEditors.forEach(textarea => {
-            ClassicEditor
-                .create(textarea, {
-                    toolbar: {
-                        items: [
-                            'heading', '|',
-                            'bold', 'italic', 'strikethrough', 'link', '|',
-                            'bulletedList', 'numberedList', '|',
-                            'undo', 'redo'
-                        ]
-                    }
-                })
-                .catch(error => {
-                    console.error('CKEditor initialization failed:', error);
-                });
-        });
-    });
-</script>
-
-<style>
-    /* Adjusts the height of the editor box */
-    .ck-editor__editable_inline {
-        min-height: 200px;
-        background-color: white !important;
-    }
-
-    /* Ensures the editor matches Bootstrap's border style */
-    .ck.ck-editor__main>.ck-editor__editable {
-        border-color: #dee2e6 !important;
-        box-shadow: none !important;
-    }
-
-    /* Style for the preview area */
-    .preview-content {
-        padding: 10px;
-        border: 1px dashed #ccc;
-        background: #f9f9f9;
-        margin-top: 10px;
-    }
-</style>
-
-
-
-    
 @endsection
