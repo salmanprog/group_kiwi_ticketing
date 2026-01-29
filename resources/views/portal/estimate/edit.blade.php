@@ -906,7 +906,7 @@
                                         </tr>
                                         <tr>
                                             <th><strong>Total</strong></th>
-                                            <td id="totalCell"><strong>$0.00</strong></td>
+                                            <td id="grandtotalCell"><strong>$0.00</strong></td>
                                         </tr>
                                     </table>
 
@@ -914,7 +914,7 @@
                                     <input type="hidden" name="subtotal" id="subtotalInput" value="0">
                                     <input type="hidden" name="tax_total" id="taxTotalInput" value="0">
                                     <input type="hidden" name="discount_total" id="discountTotalInput" value="0">
-                                    <input type="hidden" name="total" id="totalInput" value="0">
+                                    <input type="hidden" name="total" id="grandtotalInput" value="0">
 
                                     <div class="action-buttons">
                                         <!-- <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
@@ -1151,7 +1151,7 @@
                     aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
-                            <form id="taxForm" onsubmit="event.preventDefault(); addTax();">
+                            <form id="taxForm" onsubmit="event.preventDefault(); addOrUpdateTax();">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="taxModalLabel">
                                         <i class="fas fa-percentage me-2"></i>Add Tax
@@ -1518,132 +1518,7 @@
                 }
             });
         });
-        // document.querySelectorAll('.view-details').forEach(button => {
-        //     button.addEventListener('click', function() {
-        //         const description = this.dataset.description || 'No description';
-        //         const allData = this.dataset.alldata || '{}';
-        //         document.getElementById('modalDescription').innerText = description;
-
-        //         const container = document.getElementById('estimateData');
-        //         container.innerHTML = ''; // Clear previous data
-
-        //         try {
-        //             let data = JSON.parse(allData);
-        //             if (typeof data === 'string') {
-        //                 data = JSON.parse(data); // handle double encoding
-        //             }
-        //             console.log(data)
-        //             const estimate = data.estimate || {};
-        //             const items = data.items || [];
-        //             const taxes = data.taxes || [];
-        //             const discounts = data.discounts || [];
-
-        //             let html = `
-    //         <div class="mb-4">
-    //             <h5 class="text-primary">Estimate Details</h5>
-    //             <table class="table table-bordered table-sm">
-    //                 <tbody>
-    //                     <tr><th>ID</th><td>${estimate.id ?? '-'}</td></tr>
-    //                     <tr><th>Estimate #</th><td>${estimate.estimate_number ?? '-'}</td></tr>
-    //                     <tr><th>Status</th><td>${estimate.status ?? '-'}</td></tr>
-    //                     <tr><th>Total</th><td>${estimate.total ?? '-'}</td></tr>
-    //                     <tr><th>Issue Date</th><td>${estimate.issue_date ?? '-'}</td></tr>
-    //                     <tr><th>Valid Until</th><td>${estimate.valid_until ?? '-'}</td></tr>
-    //                     <tr><th>Created At</th><td>${estimate.created_at ?? '-'}</td></tr>
-    //                 </tbody>
-    //             </table>
-    //         </div>
-    //     `;
-
-        //             if (items.length > 0) {
-        //                 html += `
-    //             <div class="mb-4">
-    //                 <h5 class="text-success">Items</h5>
-    //                 <table class="table table-bordered table-sm">
-    //                     <thead>
-    //                         <tr>
-    //                             <th>Name</th>
-    //                             <th>Qty</th>
-    //                             <th>Unit</th>
-    //                             <th>Price</th>
-    //                             <th>Total</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         ${items.map(item => `
-        //                                 <tr>
-        //                                     <td>${item.name}</td>
-        //                                     <td>${item.quantity}</td>
-        //                                     <td>${item.unit}</td>
-        //                                     <td>${item.price}</td>
-        //                                     <td>${item.total_price}</td>
-        //                                 </tr>`).join('')}
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         `;
-        //             }
-
-        //             if (taxes.length > 0) {
-        //                 html += `
-    //             <div class="mb-4">
-    //                 <h5 class="text-warning">Taxes</h5>
-    //                 <table class="table table-bordered table-sm">
-    //                     <thead>
-    //                         <tr>
-    //                             <th>Name</th>
-    //                             <th>Percent</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         ${taxes.map(tax => `
-        //                                 <tr>
-        //                                     <td>${tax.name}</td>
-        //                                     <td>${tax.percent}%</td>
-        //                                 </tr>`).join('')}
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         `;
-        //             }
-
-        //             if (discounts.length > 0) {
-        //                 html += `
-    //             <div class="mb-4">
-    //                 <h5 class="text-danger">Discounts</h5>
-    //                 <table class="table table-bordered table-sm">
-    //                     <thead>
-    //                         <tr>
-    //                             <th>Name</th>
-    //                             <th>Value</th>
-    //                             <th>Type</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         ${discounts.map(discount => `
-        //                                 <tr>
-        //                                     <td>${discount.name}</td>
-        //                                     <td>${discount.value}</td>
-        //                                     <td>${discount.type}</td>
-        //                                 </tr>`).join('')}
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         `;
-        //             }
-
-        //             // Fallback if no data
-        //             if (!items.length && !taxes.length && !discounts.length) {
-        //                 html += `<p class="text-muted">No related data found.</p>`;
-        //             }
-
-        //             container.innerHTML = html;
-
-        //         } catch (e) {
-        //             container.innerHTML = `<p class="text-danger">Invalid JSON format</p>`;
-        //         }
-        //     });
-        // });
+       
     </script>
 
 
@@ -1693,6 +1568,7 @@
                 <input type="hidden" name="products[${currentIndex}][tax]" value="0">
                 <input type="hidden" name="products[${currentIndex}][gratuity]" value="0">
                 <input type="hidden" name="products[${currentIndex}][product_total_price]" value="0">
+                    <input type="hidden" name="products[${currentIndex}][appliedTaxes]" class="applied-taxes" value="">
             </td>
             <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
             <td><input type="number" name="products[${currentIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
@@ -1764,6 +1640,7 @@
                         <input type="hidden" name="products[${currentIndex}][tax]" value="0.00">
                         <input type="hidden" name="products[${currentIndex}][gratuity]" value="0.00">
                         <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${price}">
+                        <input type="hidden" name="products[${currentIndex}][appliedTaxes]" class="applied-taxes" value="">
                     </td>
                     <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
                     <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
@@ -1780,58 +1657,121 @@
             refreshTaxesUIAndTotals();
         }
 
-      function addTax() {
-            const name = document.getElementById('taxName').value.trim();
-            const percent = parseFloat(document.getElementById('taxPercent').value);
+function addOrUpdateTax() {
+    const name = document.getElementById('taxName').value.trim();
+    const percent = parseFloat(document.getElementById('taxPercent').value);
+    const activeUid = document.getElementById('taxModalActiveUid').value; // UID for editing
 
-            // Get all checked products from the list inside the modal
-            const selectedProductCheckboxes = document.querySelectorAll(".apply-tax-check:checked");
+    if (!name || isNaN(percent) || percent < 0) {
+        alert('Please enter a valid tax name and percent.');
+        return;
+    }
 
-            const activeUid = document.getElementById('taxModalActiveUid').value;
+    // Get all product rows
+    const allRows = document.querySelectorAll("#productTable tbody tr");
 
-            if (!name || isNaN(percent) || percent < 0) {
-                alert('Please enter a valid tax name and percent.');
-                return;
-            }
+    // Get selected products from modal
+    const selectedProductCheckboxes = document.querySelectorAll(".apply-tax-check:checked");
+    const selectedProductIndexes = Array.from(selectedProductCheckboxes)
+        .map(cb => parseInt(cb.value, 10))
+        .filter(Number.isFinite);
 
-            if (selectedProductCheckboxes.length === 0) {
-                alert('Please select at least one product to apply this tax to.');
-                return;
-            }
+    // Determine UID: use activeUid if editing, otherwise create new
+    const taxUid = activeUid || createTaxUid();
 
-            const appliedProducts = Array.from(selectedProductCheckboxes)
-                .map(cb => parseInt(cb.value, 10))
-                .filter(v => Number.isFinite(v));
+    // --- Update global taxes array ---
+    let tax = taxes.find(t => String(t.uid) === String(taxUid));
+    if (tax) {
+        // Update existing tax
+        tax.name = name;
+        tax.percent = percent;
+        tax.appliedProducts = selectedProductIndexes;
+    } else {
+        // Add new tax
+        taxes.push({
+            uid: taxUid,
+            name,
+            percent,
+            appliedProducts: selectedProductIndexes
+        });
+    }
 
-                console.log(selectedProductCheckboxes);
+    // --- Update appliedTaxes for each product row ---
+    allRows.forEach((row) => {
+        const appliedTaxesInput = row.querySelector('.applied-taxes');
+        if (!appliedTaxesInput) return;
 
-            if (activeUid) {
-                const tax = taxes.find(t => String(t.uid) === String(activeUid));
-                if (tax) {
-                    tax.name = name;
-                    tax.percent = percent;
-                    tax.appliedProducts = appliedProducts;
-                }
+        // Get product index from row
+        const productIndex = getProductIndexFromRow(row);
+        if (productIndex === null) return;
+
+        let appliedTaxes = appliedTaxesInput.value ? JSON.parse(appliedTaxesInput.value) : [];
+        const taxIndex = appliedTaxes.findIndex(t => t.uid === taxUid);
+
+        if (selectedProductIndexes.includes(productIndex)) {
+            // Product is selected in modal
+            if (taxIndex >= 0) {
+                // Update existing tax
+                appliedTaxes[taxIndex].name = name;
+                appliedTaxes[taxIndex].percent = percent;
             } else {
-                const taxUid = createTaxUid();
-                taxes.push({
-                    uid: taxUid,
-                    name,
-                    percent,
-                    appliedProducts
-                });
+                // Add new tax
+                appliedTaxes.push({ uid: taxUid, name, percent });
             }
-
-            // Reset and Close
-            document.getElementById('taxName').value = '';
-            document.getElementById('taxPercent').value = '';
-            document.getElementById('taxModalActiveUid').value = '';    
-            const submitBtn = document.getElementById('taxSubmitBtn');
-            if (submitBtn) submitBtn.innerText = 'Add Tax';
-            $('#taxModal').modal('hide');
-
-            refreshTaxesUIAndTotals();
+        } else {
+            // Product is unchecked in modal → remove tax
+            if (taxIndex >= 0) appliedTaxes.splice(taxIndex, 1);
         }
+
+        appliedTaxesInput.value = JSON.stringify(appliedTaxes);
+
+        // Update total for this product
+        const unitPrice = parseFloat(getProductUnitPriceByIndex(productIndex));
+        const qty = parseFloat(getProductQtyByIndex(productIndex));
+        const totalTaxAmount = appliedTaxes.reduce((sum, t) => sum + (unitPrice * qty * t.percent / 100), 0);
+        row.querySelector('td.total-cell').textContent = `$${(unitPrice * qty + totalTaxAmount).toFixed(2)}`;
+    });
+
+    // --- Reset modal ---
+    document.getElementById('taxName').value = '';
+    document.getElementById('taxPercent').value = '';
+    document.getElementById('taxModalActiveUid').value = '';
+    const submitBtn = document.getElementById('taxSubmitBtn');
+    if (submitBtn) submitBtn.innerText = 'Add Tax';
+    $('#taxModal').modal('hide');
+
+    // Refresh UI & totals
+    refreshTaxesUIAndTotals();
+}
+
+
+function deleteTax(taxUid) {
+    // Remove from global taxes array
+    taxes = taxes.filter(t => String(t.uid) !== String(taxUid));
+
+    // Remove from all product rows
+    const allRows = document.querySelectorAll("#productTable tbody tr");
+    allRows.forEach((row, idx) => {
+        const appliedTaxesInput = row.querySelector('.applied-taxes');
+        if (!appliedTaxesInput) return;
+
+        let appliedTaxes = appliedTaxesInput.value ? JSON.parse(appliedTaxesInput.value) : [];
+        appliedTaxes = appliedTaxes.filter(t => t.uid !== taxUid);
+        appliedTaxesInput.value = JSON.stringify(appliedTaxes);
+
+        // Update total
+        const unitPrice = parseFloat(getProductUnitPriceByIndex(idx));
+        const qty = parseFloat(getProductQtyByIndex(idx));
+        const totalTaxAmount = appliedTaxes.reduce((sum, t) => sum + (unitPrice * qty * t.percent / 100), 0);
+        row.querySelector('td.total-cell').textContent = `$${(unitPrice * qty + totalTaxAmount).toFixed(2)}`;
+    });
+
+    refreshTaxesUIAndTotals();
+}
+
+
+
+
 
         function createTaxUid() {
             taxUidCounter += 1;
@@ -2279,6 +2219,8 @@
             const total = subtotal + totalTaxAmount - totalDiscountAmount;
 
             document.getElementById("subtotalCell").innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById("grandtotalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
+
 
             const taxCell = document.getElementById("taxCell");
             taxCell.innerText = `$${totalTaxAmount.toFixed(2)}`;
@@ -2293,13 +2235,13 @@
                 discountRow.style.display = 'none';
                 discountCell.innerHTML = '';
             }
-
-            document.getElementById("totalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
+            alert(total.toFixed(2));
+            document.getElementById("grandtotalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
             document.getElementById("remainingTotal").innerText = `$${total.toFixed(2)}`;
             document.getElementById("subtotalInput").value = subtotal.toFixed(2);
             document.getElementById("taxTotalInput").value = totalTaxAmount.toFixed(2);
             document.getElementById("discountTotalInput").value = totalDiscountAmount.toFixed(2);
-            document.getElementById("totalInput").value = total.toFixed(2);
+            document.getElementById("grandtotalInput").value = total.toFixed(2);
             document.getElementById("remainingTotalInput").value = total.toFixed(2);
             const container = document.getElementById('dynamicInputsContainer');
             const installmentCheck = document.getElementById('installmentCheck');
@@ -2365,6 +2307,7 @@
                         <input type="hidden" name="products[${currentIndex}][tax]" value="${tax.toFixed(2)}">
                         <input type="hidden" name="products[${currentIndex}][gratuity]" value="${gratuity.toFixed(2)}">
                         <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${productPrice.toFixed(2)}">
+                        <input type="hidden" name="products[${currentIndex}][appliedTaxes]" class="applied-taxes" value="">
                   </td>
                     <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
                     <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
