@@ -123,7 +123,6 @@ class EstimateHook
     */
     public function hook_before_edit($request, $slug, &$postData)
     {
-        dd($request->all());
         $estimate = Estimate::where('slug', $slug)->first();
         $postData['issue_date'] = $postData['estimate_date'];
         $postData['valid_until'] = $postData['expiration_date'];
@@ -132,30 +131,80 @@ class EstimateHook
         DB::table('user_estimate_taxes')->where('estimate_id', $estimate->id)->delete();
         DB::table('user_estimate_discounts')->where('estimate_id', $estimate->id)->delete();
 
+        // dd($request->all());
+
           if(!empty($request->installments)){
             $postData['is_installment'] = '1';
           }else{
             $postData['is_installment'] = '0';
           }
+          if($request->estimateItemDeleteIds)
+          {
+            EstimateItem::whereIn('id', $request->estimateItemDeleteIds)->delete();
+          }
 
         if (!empty($request->products)) {
-            foreach ($request->products as $product) {
-                // dd($product);
-                if (!empty($product['name']) && !empty($product['quantity']) && !empty($product['price'])) {
-                    EstimateItem::create([
-                        'user_estimate_id' => $estimate->id,
-                        'name' => $product['name'],
-                        'quantity' => $product['quantity'],
-                        'price' => $product['price'],
-                        'product_price'=> $product['product_total_price'],
-                        'tax'=> $product['tax'],
-                        'gratuity'=> $product['gratuity'],
-                        'total_price' => ($product['product_total_price'] * $product['quantity']),
-                        'unit' => 'each',
-                    ]);
+
+                foreach ($request->products as $product) {
+
+                    $taxAmount = 0;
+
+                    // ---- Handle taxes ----
+                    if (!empty($request->taxes)) {
+
+                        foreach ($request->taxes as $taxData) {
+
+
+                            // Find existing item tax
+                            $itemTax = \App\Models\UserEstimateItemTax::where(
+                                'user_estimate_item_id',
+                                $product['id']
+                            )->first();
+                            if ($itemTax && $itemTax->estimate_tax_id == $taxData['id']) {
+
+                                // Update pivot/item tax
+                                $itemTax->update([
+                                    'estimate_tax_id' => $taxData['id'],
+                                    'name'            => $taxData['name'],
+                                    'percent'         => $taxData['percent'],
+                                ]);
+
+                                // Calculate tax for this product
+                                $taxAmountForThisProduct =
+                                    (($product['price'] * $taxData['percent']) / 100)
+                                    * $product['quantity'];
+
+                                // Update main tax record
+                                $tax = \App\Models\EstimateTax::find($taxData['id']);
+                                $tax->update(['estimate_id' => $estimate->id]);
+                                if ($tax) {
+                                    $tax->increment('amount', $taxAmountForThisProduct);
+                                    $tax->update(['percent' => $taxData['percent']]);
+                                }
+
+                                $taxAmount += $taxAmountForThisProduct;
+                            }
+                        }
+                    }
+
+                    // ---- Update or create estimate item ----
+                    EstimateItem::updateOrCreate(
+                        ['id' => $product['id']],
+                        [
+                            'user_estimate_id' => $estimate->id,
+                            'name'             => $product['name'],
+                            'quantity'         => $product['quantity'],
+                            'price'            => $product['price'],
+                            'tax'              => $taxAmount,
+                            'applied_tax'      => $product['appliedTaxes'],
+                            'total_price'      => $product['quantity'] * $product['price'],
+                            'unit'             => 'each',
+                        ]
+                    );
                 }
             }
-        }
+
+
 
         if(!empty($request->installments)){
             EstimateInstallment::where('estimate_id', $estimate->id)->forceDelete();
@@ -168,15 +217,7 @@ class EstimateHook
             }
         }
 
-        if (!empty($request->taxes)) {
-            foreach ($request->taxes as $tax) {
-                DB::table('user_estimate_taxes')->insert([
-                    'estimate_id' => $estimate->id,
-                    'name' => $tax['name'],
-                    'percent' => $tax['percent'],
-                ]);
-            }
-        }
+      
 
         if (!empty($request->discounts)) {
             foreach ($request->discounts as $discount) {

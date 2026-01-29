@@ -24,6 +24,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Portal\ContractController;
 use App\Http\Controllers\Portal\ReportingController;
 use App\Http\Controllers\Portal\ContactActivityLogController;
+use App\Http\Controllers\Portal\UserEstimateItemController;
 
 
 /*
@@ -144,5 +145,8 @@ Route::middleware(['custom_auth:web'])->group(function () {
     Route::get('company/ajax-listing', [ReportingController::class, 'ajaxListing'])->name('company.ajax-listing');
     Route::post('/organization/notes/save', [ContactActivityLogController::class, 'saveNotes'])
         ->name('organization.notes.save');
+    Route::resource('user-estimate-items', UserEstimateItemController::class);
+ Route::post('/store/estimate/taxes', [UserEstimateItemController::class, 'storeEstimateTaxes'])
+        ->name('store.estimate.taxes');
 
 });

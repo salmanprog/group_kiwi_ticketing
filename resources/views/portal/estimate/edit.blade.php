@@ -959,20 +959,22 @@
                                     @endif
 
                                 <div id="installmentSection" class="border p-3 rounded bg-light">
-                                   
+                                <div id="dynamicInputsContainer"></div>
+                                <hr>
+                               <div id="installmentSection" class="border p-3 rounded bg-light">
                                     <div id="dynamicInputsContainer"></div>
                                     <hr>
-                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0">Installment Schedule</h6>
-                                            <div id="installmentError" class="text-danger mt-2" style="display:none;">
-                                                Please add product before adding installment.
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">Installment Schedule</h6>
+                                        <div id="installmentError" class="text-danger mt-2" style="display:none;">
+                                            Please add product before adding installment.
                                         </div>
+                                        <button type="button" class="btn btn-sm btn-success" id="addRowBtninstallment">+</button>
+                                    </div>
                                     <div class="d-flex justify-content-between">
                                         <strong>Remaining Total:</strong>
-                                        <span id="remainingTotal">$1,000.00</span>
-                                        <input type="hidden" name="remaining_total" id="remainingTotalInput">
+                                        <span id="remainingTotal">$0.00</span>
+                                        <input type="hidden" name="remaining_total" id="remainingTotalInput" value="0">
                                     </div>
                                 </div>
                             </div>
@@ -1127,6 +1129,7 @@
                                             <tr>
                                                 <td><input type="checkbox" class="product-checkbox"
                                                         data-name="{{ $product->name }}"
+                                                        data-id="{{ $product->id }}"
                                                         data-price="{{ $product->price }}">
                                                 </td>
                                                 <td>{{ $product->name }}</td>
@@ -1139,9 +1142,12 @@
 
                             <div class="modal-footer">
                                 <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
-                                <button class="btn btn-primary btn-sm" onclick="addSelectedProducts()">
-                                    <i class="fas fa-plus me-1"></i>Add Selected
+                              <button id="addProductsBtn" class="btn btn-primary btn-sm" onclick="addSelectedProducts()">
+                                    <i class="fas fa-plus me-1"></i>
+                                    <span class="btn-text">Add Selected</span>
+                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -1581,8 +1587,33 @@
             refreshTaxesUIAndTotals();
         }
 
-        function removeRow(button) {
+       function removeRow(button) {
             const row = button.closest("tr");
+
+            // Get the product ID from the row (from your hidden input)
+            const inputId = row.querySelector("input[name*='[id]']");
+            const productId = inputId ? inputId.value : null;
+
+            // Add deleted ID to hidden input field (as an array)
+            let deleteInputContainer = document.querySelector("#estimateItemDeleteIdsContainer");
+
+            if (!deleteInputContainer) {
+                // Create a container div to hold multiple hidden inputs
+                deleteInputContainer = document.createElement("div");
+                deleteInputContainer.id = "estimateItemDeleteIdsContainer";
+                row.closest("form").appendChild(deleteInputContainer);
+            }
+
+            if (productId) {
+                // Create a new hidden input for each deleted ID
+                const hiddenInput = document.createElement("input");
+                hiddenInput.type = "hidden";
+                hiddenInput.name = "estimateItemDeleteIds[]"; // array format
+                hiddenInput.value = productId;
+                deleteInputContainer.appendChild(hiddenInput);
+            }
+
+            // Remove product from taxes if needed
             const index = getProductIndexFromRow(row);
             if (index !== null) {
                 taxes.forEach(t => {
@@ -1590,10 +1621,15 @@
                 });
                 taxes = taxes.filter(t => (t.appliedProducts || []).length > 0);
             }
+
+            // Remove row from table
             row.remove();
+
+            // Refresh totals and taxes
             syncTaxProductList();
             refreshTaxesUIAndTotals();
         }
+
 
      function updateTotal(input) {
             const row = input.closest("tr");
@@ -1621,41 +1657,96 @@
             refreshTaxesUIAndTotals();
         }
 
-     function addSelectedProducts() {
-            const table = document.querySelector("#productTable tbody");
-            const checkboxes = document.querySelectorAll(".product-checkbox:checked");
+       
+function addSelectedProducts() {
+    const button = $("#addProductsBtn"); // select button itself
+    const spinner = button.find(".spinner-border");
+    const btnText = button.find(".btn-text");
 
-            checkboxes.forEach((checkbox) => {
-                const name = checkbox.dataset.name;
-                const price = parseFloat(checkbox.dataset.price).toFixed(2);
-                const id = checkbox.value; // Assuming value is the product ID
+    const table = $("#productTable tbody");
+    const checkboxes = $(".product-checkbox:checked");
+    const ids = checkboxes.map(function () { return $(this).data("id"); }).get();
 
-                const currentIndex = productIndex;
+    if (ids.length === 0) return;
 
-                // --- 1. Your existing Table Row Logic ---
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>
-                        <input type="text" name="products[${currentIndex}][name]" class="form-control" value="${name}" readonly>
-                        <input type="hidden" name="products[${currentIndex}][tax]" value="0.00">
-                        <input type="hidden" name="products[${currentIndex}][gratuity]" value="0.00">
-                        <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${price}">
-                        <input type="hidden" name="products[${currentIndex}][appliedTaxes]" class="applied-taxes" value="">
-                    </td>
-                    <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
-                    <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td class="total-cell">$${parseFloat(price).toFixed(2)}</td>
-                    <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+    // Show loading
+    btnText.text("Adding...");
+    spinner.removeClass("d-none");
+    button.prop("disabled", true); // disable the button
+
+    $.ajax({
+        url: "{{ route('user-estimate-items.store') }}",
+        method: "POST",
+        dataType: "json",
+        data: {
+            ids: ids,
+            _token: "{{ csrf_token() }}"
+        },
+        success: function (response) {
+            if (!response.success) return;
+
+            response.data.forEach(product => {
+                const currentIndex = productIndex++;
+                const name = product.name;
+                const price = parseFloat(product.price).toFixed(2);
+
+                const row = `
+                    <tr>
+                        <td>
+                            <input type="hidden" name="products[${currentIndex}][id]" value="${product.id}">
+                            <input type="text" name="products[${currentIndex}][name]" class="form-control" value="${name}" readonly>
+                            <input type="hidden" name="products[${currentIndex}][tax]" value="0.00">
+                            <input type="hidden" name="products[${currentIndex}][gratuity]" value="0.00">
+                            <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${price}">
+                            <input type="hidden" name="products[${currentIndex}][appliedTaxes]" class="applied-taxes" value="">
+                        </td>
+                        <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
+                        <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                        <td class="total-cell">$${price}</td>
+                        <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+                    </tr>
                 `;
-                table.appendChild(row);
-
-                productIndex++;
-                checkbox.checked = false;
+                table.append(row);
             });
 
+            // Uncheck all checkboxes
+            checkboxes.prop("checked", false);
+
+             spinner.addClass("d-none");      // hide spinner
+                btnText.text("Add Selected");    // restore text
+                button.prop("disabled", false);  // enable button
+                button.removeClass("disabled"); 
+
+            // Force hide modal
+            forceHideModal("#productModal");
+            // Update totals and taxes
             syncTaxProductList();
             refreshTaxesUIAndTotals();
+
+        },
+        error: function (xhr, status, error) {
+            console.error("Error adding products:", error);
+        },
+        complete: function () {
+            // Restore button
+            spinner.addClass("d-none");
+            btnText.text("Add Selected");
+            button.prop("disabled", false); // re-enable
         }
+    });
+}
+
+
+
+
+function forceHideModal(modalId) {
+    const modal = $(modalId);
+    modal.modal('hide');
+    modal.removeClass('show').css('display', 'none');
+    $('.modal-backdrop').remove();
+    $('body').removeClass('modal-open');
+}
+
 
 function addOrUpdateTax() {
     const name = document.getElementById('taxName').value.trim();
@@ -1667,41 +1758,43 @@ function addOrUpdateTax() {
         return;
     }
 
-    // Get all product rows
     const allRows = document.querySelectorAll("#productTable tbody tr");
 
-    // Get selected products from modal
-    const selectedProductCheckboxes = document.querySelectorAll(".apply-tax-check:checked");
-    const selectedProductIndexes = Array.from(selectedProductCheckboxes)
-        .map(cb => parseInt(cb.value, 10))
-        .filter(Number.isFinite);
+    // Get selected products
+    const selectedProducts = Array.from(document.querySelectorAll(".apply-tax-check:checked"))
+        .map(cb => ({ idx: parseInt(cb.value, 10), id: cb.dataset.id }))
+        .filter(p => !isNaN(p.idx) && p.id);
 
-    // Determine UID: use activeUid if editing, otherwise create new
+    const selectedProductIndexes = selectedProducts.map(p => p.idx);
+    const selectedProductIds = selectedProducts.map(p => p.id);
+
+    // Temporary UID before API returns
     const taxUid = activeUid || createTaxUid();
 
-    // --- Update global taxes array ---
+    // --- Update global taxes array for frontend UI ---
     let tax = taxes.find(t => String(t.uid) === String(taxUid));
+
     if (tax) {
-        // Update existing tax
+        tax.id = tax.id || null;
         tax.name = name;
         tax.percent = percent;
         tax.appliedProducts = selectedProductIndexes;
     } else {
-        // Add new tax
-        taxes.push({
+        tax = {                       // 👈 IMPORTANT
             uid: taxUid,
             name,
             percent,
             appliedProducts: selectedProductIndexes
-        });
+        };
+        taxes.push(tax);              // 👈 push the SAME object
     }
 
-    // --- Update appliedTaxes for each product row ---
+
+    // --- Update appliedTaxes JSON in table rows ---
     allRows.forEach((row) => {
         const appliedTaxesInput = row.querySelector('.applied-taxes');
         if (!appliedTaxesInput) return;
 
-        // Get product index from row
         const productIndex = getProductIndexFromRow(row);
         if (productIndex === null) return;
 
@@ -1709,28 +1802,46 @@ function addOrUpdateTax() {
         const taxIndex = appliedTaxes.findIndex(t => t.uid === taxUid);
 
         if (selectedProductIndexes.includes(productIndex)) {
-            // Product is selected in modal
             if (taxIndex >= 0) {
-                // Update existing tax
                 appliedTaxes[taxIndex].name = name;
                 appliedTaxes[taxIndex].percent = percent;
             } else {
-                // Add new tax
                 appliedTaxes.push({ uid: taxUid, name, percent });
             }
         } else {
-            // Product is unchecked in modal → remove tax
             if (taxIndex >= 0) appliedTaxes.splice(taxIndex, 1);
         }
 
         appliedTaxesInput.value = JSON.stringify(appliedTaxes);
-
-        // Update total for this product
-        const unitPrice = parseFloat(getProductUnitPriceByIndex(productIndex));
-        const qty = parseFloat(getProductQtyByIndex(productIndex));
-        const totalTaxAmount = appliedTaxes.reduce((sum, t) => sum + (unitPrice * qty * t.percent / 100), 0);
-        row.querySelector('td.total-cell').textContent = `$${(unitPrice * qty + totalTaxAmount).toFixed(2)}`;
     });
+
+    // --- Call backend API to create/update tax ---
+    $.ajax({
+        url: "{{ route('store.estimate.taxes') }}", // always POST
+        method: "POST",
+        dataType: "json",
+        data: {
+            id: activeUid || '',     
+            name: name,
+            percent: percent,
+            product_ids: selectedProductIds,
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+
+            // Replace temporary UID with real ID returned from API
+            if (!activeUid && response.data && response.data.id) {
+                tax.uid = response.data.id;   // ✅ no crash now
+            }
+            refreshTaxesUIAndTotals();
+            console.log("Tax saved successfully:", response);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error saving tax:", error);
+            alert("Failed to save tax. Please try again.");
+        }
+    });
+
 
     // --- Reset modal ---
     document.getElementById('taxName').value = '';
@@ -1739,10 +1850,11 @@ function addOrUpdateTax() {
     const submitBtn = document.getElementById('taxSubmitBtn');
     if (submitBtn) submitBtn.innerText = 'Add Tax';
     $('#taxModal').modal('hide');
-
-    // Refresh UI & totals
-    refreshTaxesUIAndTotals();
 }
+
+
+
+
 
 
 function deleteTax(taxUid) {
@@ -1859,10 +1971,18 @@ function deleteTax(taxUid) {
 
             const rows = document.querySelectorAll("#productTable tbody tr");
             const productIndexes = [];
-            rows.forEach(r => {
-                const idx = getProductIndexFromRow(r);
-                if (idx !== null) productIndexes.push(idx);
-            });
+
+             rows.forEach(row => {
+                    const idx = getProductIndexFromRow(row);
+                    if (idx === null) return;
+
+                    const productIdInput = row.querySelector("input[name*='[id]']");
+                    const productId = productIdInput ? productIdInput.value : '';
+
+                    productIndexes.push({ idx, productId });
+
+                    console.log("Row index:", idx, "Product ID:", productId);
+                });
 
             if (!productIndexes.length) {
                 taxProductList.innerHTML = '<p class="text-muted small">No products selected yet.</p>';
@@ -1883,17 +2003,19 @@ function deleteTax(taxUid) {
             html += '<th>Apply</th><th>Product</th><th>Unit Price</th><th>Qty</th><th>Tax %</th><th>Tax Amount</th>';
             html += '</tr></thead><tbody>';
 
-            productIndexes.forEach(idx => {
-                const checked = appliedSet ? (appliedSet.has(String(idx)) ? 'checked' : '') : 'checked';
-                const name = getProductNameByIndex(idx);
-                const unitPrice = getProductUnitPriceByIndex(idx);
-                const qty = getProductQtyByIndex(idx);
-                const amount = computeTaxAmountForProduct(idx, percent);
+            productIndexes.forEach(value => {
+                console.log('idx ------------->>',value.idx)
+                const checked = appliedSet ? (appliedSet.has(String(value.idx)) ? 'checked' : '') : 'checked';
+                const name = getProductNameByIndex(value.idx);
+                const unitPrice = getProductUnitPriceByIndex(value.idx);
+                const qty = getProductQtyByIndex(value.idx);
+                const amount = computeTaxAmountForProduct(value.idx, percent);
+             
 
                 const appliedTaxLabels = (taxes || [])
                     .filter(t => {
                         const applied = (t && Array.isArray(t.appliedProducts) ? t.appliedProducts : []).map(String);
-                        return applied.includes(String(idx));
+                        return applied.includes(String(value.idx));
                     })
                     .map(t => {
                         const taxName = (t && t.name ? String(t.name) : '').trim();
@@ -1907,8 +2029,8 @@ function deleteTax(taxUid) {
                 const appliedTaxDisplay = appliedTaxLabels || '-';
 
                 html += `<tr>`;
-                html += `<td><input class="apply-tax-check" type="checkbox" value="${idx}" id="tax_check_${idx}" ${checked}></td>`;
-                html += `<td><label class="small" for="tax_check_${idx}" style="cursor:pointer;">${name}</label></td>`;
+                html += `<td><input class="apply-tax-check" type="checkbox" value="${value.idx}" data-id="${value.productId}" id="tax_check_${value.idx}" ${checked}></td>`;
+                html += `<td><label class="small" for="tax_check_${value.idx}" style="cursor:pointer;">${name}</label></td>`;
                 html += `<td>$${unitPrice.toFixed(2)}</td>`;
                 html += `<td>${qty}</td>`;
                 html += `<td>${percent.toFixed(2)}%</td>`;
@@ -1939,6 +2061,7 @@ function deleteTax(taxUid) {
                         ${tax.name} ${tax.percent}% ($${amount.toFixed(2)})
                     </span>
                     <button type="button" class="btn btn-danger btn-sm ml-2 remove-tax" data-tax-uid="${tax.uid}">×</button>
+                    <input type="hidden" name="taxes[${index}][id]" value="${tax.uid}">
                     <input type="hidden" name="taxes[${index}][name]" value="${tax.name}">
                     <input type="hidden" name="taxes[${index}][percent]" value="${tax.percent}">
                 `;
@@ -2219,8 +2342,11 @@ function deleteTax(taxUid) {
             const total = subtotal + totalTaxAmount - totalDiscountAmount;
 
             document.getElementById("subtotalCell").innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById("subtotalInput").value = subtotal.toFixed(2);
             document.getElementById("grandtotalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
-
+            document.getElementById("grandtotalInput").value = total.toFixed(2);
+            document.getElementById("remainingTotal").innerText = `$${total.toFixed(2)}`;
+            document.getElementById("remainingTotalInput").value = total.toFixed(2);
 
             const taxCell = document.getElementById("taxCell");
             taxCell.innerText = `$${totalTaxAmount.toFixed(2)}`;
@@ -2235,19 +2361,18 @@ function deleteTax(taxUid) {
                 discountRow.style.display = 'none';
                 discountCell.innerHTML = '';
             }
-            alert(total.toFixed(2));
             document.getElementById("grandtotalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
             document.getElementById("remainingTotal").innerText = `$${total.toFixed(2)}`;
             document.getElementById("subtotalInput").value = subtotal.toFixed(2);
             document.getElementById("taxTotalInput").value = totalTaxAmount.toFixed(2);
             document.getElementById("discountTotalInput").value = totalDiscountAmount.toFixed(2);
             document.getElementById("grandtotalInput").value = total.toFixed(2);
+            document.getElementById("remainingTotal").innerText = `$${total.toFixed(2)}`;
             document.getElementById("remainingTotalInput").value = total.toFixed(2);
-            const container = document.getElementById('dynamicInputsContainer');
-            const installmentCheck = document.getElementById('installmentCheck');
-            if (container && (!installmentCheck || !installmentCheck.checked)) {
-                container.innerHTML = '';
-            }
+           // --- SIMPLE RESET INSTALLMENTS ---
+          
+            totalAmount = total;
+            resetInstallments(total);   
         }
 
         function refreshChargesUIAndTotals() {
@@ -2287,7 +2412,7 @@ function deleteTax(taxUid) {
             }
         });
 
-        function loadExistingItems() {
+      function loadExistingItems() {
             const table = document.querySelector("#productTable tbody");
 
             existingEstimateItems.forEach(item => {
@@ -2298,26 +2423,28 @@ function deleteTax(taxUid) {
                 const productPrice = parseFloat(item.product_price) || 0;
                 const tax = parseFloat(item.tax) || 0;
                 const gratuity = parseFloat(item.gratuity) || 0;
-                const total = qty * productPrice;
 
                 const row = document.createElement("tr");
-                row.innerHTML = `   
-                  <td>
+                row.innerHTML = `
+                    <td>
+                        <input type="hidden" name="products[${currentIndex}][id]" value="${item.id}">
                         <input type="text" name="products[${currentIndex}][name]" class="form-control" value="${item.name}" readonly>
                         <input type="hidden" name="products[${currentIndex}][tax]" value="${tax.toFixed(2)}">
                         <input type="hidden" name="products[${currentIndex}][gratuity]" value="${gratuity.toFixed(2)}">
                         <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${productPrice.toFixed(2)}">
                         <input type="hidden" name="products[${currentIndex}][appliedTaxes]" class="applied-taxes" value="">
-                  </td>
-                    <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    </td>
+                    <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="1" min="0"></td>
                     <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td class="total-cell">$${total.toFixed(2)}</td>
+                    <td class="total-cell">$${(qty * price).toFixed(2)}</td>
                     <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
-            `;
+                `;
+
                 table.appendChild(row);
                 productIndex++;
             });
         }
+
 
         function loadExistingInstallments() {
             // Check if there is actually data to load
@@ -2356,7 +2483,9 @@ function deleteTax(taxUid) {
         window.onload = function() {
             loadExistingItems();
             syncTaxProductList();
-
+            renderDiscounts();
+            refreshTaxesUIAndTotals();
+            loadExistingInstallments();
             const rows = document.querySelectorAll("#productTable tbody tr");
             const indices = [];
             rows.forEach(row => {
@@ -2369,9 +2498,8 @@ function deleteTax(taxUid) {
                 }
             });
 
-            renderDiscounts();
-            refreshTaxesUIAndTotals();
-            loadExistingInstallments();
+
+
         };
 
         document.addEventListener('click', function(e) {
@@ -2521,7 +2649,7 @@ const section = document.getElementById('installmentSection');
 // Template for a new row
 
 // Add a simple counter or use a timestamp for the key
-let installmentIndex = 0; 
+// let installmentIndex = 0; 
 
 function createRowHtml(amount = "",date = "") {
     installmentIndex++; // Increment to give each row a unique "ID"
@@ -2808,6 +2936,99 @@ function cancelModalNumberOfPayments() {
         margin-top: 10px;
     }
 </style>
+
+
+
+
+<script>
+
+
+let installmentIndex = 0;
+let totalAmount = 0; // from products
+let remaining = 0;
+
+// --- Reset installments and update total ---
+function resetInstallments(newTotal) {
+    totalAmount = parseFloat(newTotal) || 0;
+    remaining = totalAmount;
+
+    // Clear all existing installment rows
+    const container = document.getElementById('dynamicInputsContainer');
+    container.innerHTML = '';
+
+    installmentIndex = 0;
+
+    // Update remaining total display
+    document.getElementById('remainingTotal').textContent = `$${remaining.toFixed(2)}`;
+    document.getElementById('remainingTotalInput').value = remaining.toFixed(2);
+
+    // Hide any previous errors
+    const errorDiv = document.getElementById('installmentError');
+    errorDiv.style.display = 'none';
+}
+
+// --- Add new installment row ---
+document.getElementById('addRowBtninstallment').addEventListener('click', () => {
+    // Use global totalAmount
+    if (totalAmount <= 0) {
+        const errorDiv = document.getElementById('installmentError');
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Please add product before adding installment.';
+        return;
+    }
+
+    const container = document.getElementById('dynamicInputsContainer');
+    const row = document.createElement('div');
+    row.className = 'd-flex gap-2 mb-2';
+    row.innerHTML = `
+        <input type="number" name="installments[${installmentIndex}][amount]" class="form-control installment-input" placeholder="Amount" min="0" value="0">
+        <input type="date" name="installments[${installmentIndex}][date]" class="form-control">
+        <button type="button" class="btn btn-danger btn-sm remove-row">X</button>
+    `;
+    container.appendChild(row);
+
+    // Remove row
+    row.querySelector('.remove-row').addEventListener('click', () => {
+        container.removeChild(row);
+        calculateRemaining();
+    });
+
+    // Update remaining when amount changes
+    row.querySelector('.installment-input').addEventListener('input', calculateRemaining);
+
+    installmentIndex++;
+    calculateRemaining();
+});
+
+// --- Calculate remaining ---
+function calculateRemaining() {
+    const inputs = document.querySelectorAll('.installment-input');
+    let sum = 0;
+    inputs.forEach(input => {
+        sum += parseFloat(input.value) || 0;
+    });
+
+    remaining = totalAmount - sum;
+    document.getElementById('remainingTotal').textContent = `$${remaining.toFixed(2)}`;
+    document.getElementById('remainingTotalInput').value = remaining.toFixed(2);
+
+    const errorDiv = document.getElementById('installmentError');
+    if (sum > totalAmount) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Installments exceed total amount!';
+    } else {
+        errorDiv.style.display = 'none';
+    }
+}
+
+// --- Example: Call this whenever your grand total updates ---
+function updateTotalFromGrandTotal() {
+    const grandTotal = parseFloat(document.getElementById('grandtotalInput').value) || 0;
+    resetInstallments(grandTotal);
+}
+
+</script>
+
 
 
 

@@ -437,9 +437,6 @@
                                     <th>Description</th>
                                     <th>Qty</th>
                                     <th>Product Price</th>
-                                    <th>Tax (%)</th>
-                                    <th>Gratuity (%)</th>
-                                    <th>Price (Tax + Gratuity)</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
@@ -449,10 +446,7 @@
                                         <td>{{ $item->name ?? 'Item' }}</td>
                                         <td>{{ $item->quantity }}</td>
                                         <td>${{ number_format($item->price, 2) }}</td>
-                                        <td>${{ number_format($item->tax, 2) }}</td>
-                                        <td>${{ number_format($item->gratuity, 2) }}</td>
-                                        <td>${{ number_format($item->product_price,2) }}</td>
-                                        <td>${{ number_format($item->total_price, 2) }}</td>
+                                        <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -471,7 +465,7 @@
                             @foreach ($estimate->taxes as $tax)
                                 <tr>
                                     <th>{{ $tax->name }} ({{ $tax->percent }}%)</th>
-                                    <td>${{ number_format(($tax->percent / 100) * $estimate->subtotal, 2) }}</td>
+                                    <td>${{ number_format($tax->amount, 2) }}</td>
                                 </tr>
                             @endforeach
 

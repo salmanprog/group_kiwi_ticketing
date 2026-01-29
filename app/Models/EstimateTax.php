@@ -31,6 +31,7 @@ class EstimateTax extends Model
         'estimate_id',
         'name',
         'percent',
+        'amount',
         'created_at',
         'updated_at',
     ];
