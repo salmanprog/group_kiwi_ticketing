@@ -1803,6 +1803,8 @@
                 .map(cb => parseInt(cb.value, 10))
                 .filter(v => Number.isFinite(v));
 
+                console.log(selectedProductCheckboxes);
+
             if (activeUid) {
                 const tax = taxes.find(t => String(t.uid) === String(activeUid));
                 if (tax) {
@@ -1947,6 +1949,23 @@
                 const unitPrice = getProductUnitPriceByIndex(idx);
                 const qty = getProductQtyByIndex(idx);
                 const amount = computeTaxAmountForProduct(idx, percent);
+
+                const appliedTaxLabels = (taxes || [])
+                    .filter(t => {
+                        const applied = (t && Array.isArray(t.appliedProducts) ? t.appliedProducts : []).map(String);
+                        return applied.includes(String(idx));
+                    })
+                    .map(t => {
+                        const taxName = (t && t.name ? String(t.name) : '').trim();
+                        const taxPercent = parseFloat(t && t.percent) || 0;
+                        if (!taxName) return '';
+                        return `${taxName} (${taxPercent.toFixed(2)}%)`;
+                    })
+                    .filter(Boolean)
+                    .join(', ');
+
+                const appliedTaxDisplay = appliedTaxLabels || '-';
+
                 html += `<tr>`;
                 html += `<td><input class="apply-tax-check" type="checkbox" value="${idx}" id="tax_check_${idx}" ${checked}></td>`;
                 html += `<td><label class="small" for="tax_check_${idx}" style="cursor:pointer;">${name}</label></td>`;
@@ -2006,12 +2025,12 @@
                         subtotal: 0
                     };
                 }
-
                 const applied = (tax && Array.isArray(tax.appliedProducts) ? tax.appliedProducts : []).map(String);
                 applied.forEach(pidStr => {
                     const pid = parseInt(pidStr, 10);
                     if (!Number.isFinite(pid)) return;
                     const amount = computeTaxAmountForProduct(pid, percent);
+                    
                     groups[key].items[pid] = (groups[key].items[pid] || 0) + amount;
                     groups[key].subtotal += amount;
                 });
