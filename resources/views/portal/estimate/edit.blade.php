@@ -892,13 +892,13 @@
                                             <td id="subtotalCell">$0.00</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2">
-                                                <div id="taxBreakdown"></div>
-                                            </td>
-                                        </tr>
-                                        <tr>
                                             <th>Taxes</th>
-                                            <td id="taxCell">$0.00</td>
+                                            <!-- <td id="taxCell">$0.00  -->
+                                                 <td id="taxBreakdown">
+                                                    $0.00
+                                                    <!-- Tax breakdown will render here -->
+                                                </td>
+                                            <!-- </td> -->
                                         </tr>
                                         <tr id="discountRow" style="display: none;">
                                             <th>Discount</th>
@@ -2006,80 +2006,71 @@
             });
         }
 
-        function renderTaxBreakdown() {
-            const container = document.getElementById('taxBreakdown');
-            if (!container) return;
+     function renderTaxBreakdown() {
+    const container = document.getElementById('taxBreakdown');
+    if (!container) return;
 
-            const groups = {};
+    const groups = {};
 
-            (taxes || []).forEach(tax => {
-                const name = (tax && tax.name ? String(tax.name) : '').trim();
-                const percent = parseFloat(tax && tax.percent) || 0;
-                const key = `${name}||${percent.toFixed(4)}`;
+    (taxes || []).forEach(tax => {
+        const name = (tax && tax.name ? String(tax.name) : '').trim();
+        const percent = parseFloat(tax && tax.percent) || 0;
+        const key = `${name}||${percent.toFixed(4)}`;
 
-                if (!groups[key]) {
-                    groups[key] = {
-                        name,
-                        percent,
-                        items: {},
-                        subtotal: 0
-                    };
-                }
-                const applied = (tax && Array.isArray(tax.appliedProducts) ? tax.appliedProducts : []).map(String);
-                applied.forEach(pidStr => {
-                    const pid = parseInt(pidStr, 10);
-                    if (!Number.isFinite(pid)) return;
-                    const amount = computeTaxAmountForProduct(pid, percent);
-                    
-                    groups[key].items[pid] = (groups[key].items[pid] || 0) + amount;
-                    groups[key].subtotal += amount;
-                });
-            });
-
-            const groupList = Object.values(groups).filter(g => (g.subtotal || 0) > 0);
-            if (!groupList.length) {
-                container.innerHTML = '';
-                return;
-            }
-
-            let totalTax = 0;
-            groupList.forEach(g => {
-                totalTax += (parseFloat(g.subtotal) || 0);
-            });
-
-            let html = '';
-            groupList.forEach(group => {
-                const percentLabel = `${(parseFloat(group.percent) || 0).toFixed(2)}%`;
-                const itemEntries = Object.entries(group.items || {});
-                const productNames = itemEntries
-                    .map(([pidStr]) => {
-                        const pid = parseInt(pidStr, 10);
-                        if (!Number.isFinite(pid)) return '';
-                        return String(getProductNameByIndex(pid) || '').trim();
-                    })
-                    .filter(Boolean);
-
-                html += `<div class="border rounded p-2 mb-2" style="background:#fff;">`;
-                html += `  <div class="d-flex justify-content-between align-items-start">`;
-                html += `    <div style="min-width:0;">`;
-                html += `      <div><strong>${group.name || 'Tax'}</strong> <span class="text-muted">(${percentLabel})</span></div>`;
-                html += `      <div class="text-muted small" style="word-break:break-word;">${productNames.join(', ') || 'No products.'}</div>`;
-                html += `    </div>`;
-                html += `    <div class="text-end" style="white-space:nowrap;">`;
-                html += `      <div class="text-muted small"><strong>Subtax</strong></div>`;
-                html += `      <div><strong>$${(parseFloat(group.subtotal) || 0).toFixed(2)}</strong></div>`;
-                html += `    </div>`;
-                html += `  </div>`;
-                html += `</div>`;
-            });
-
-            html += `<div class="border rounded p-2 d-flex justify-content-between align-items-center" style="background: var(--primary-light);">`;
-            html += `  <div><strong>Total Tax</strong></div>`;
-            html += `  <div><strong>$${(parseFloat(totalTax) || 0).toFixed(2)}</strong></div>`;
-            html += `</div>`;
-
-            container.innerHTML = html;
+        if (!groups[key]) {
+            groups[key] = {
+                name,
+                percent,
+                items: {},
+                subtotal: 0
+            };
         }
+
+        const applied = (tax && Array.isArray(tax.appliedProducts) ? tax.appliedProducts : []).map(String);
+        applied.forEach(pidStr => {
+            const pid = parseInt(pidStr, 10);
+            if (!Number.isFinite(pid)) return;
+            const amount = computeTaxAmountForProduct(pid, percent);
+
+            groups[key].items[pid] = (groups[key].items[pid] || 0) + amount;
+            groups[key].subtotal += amount;
+        });
+    });
+
+    const groupList = Object.values(groups).filter(g => (g.subtotal || 0) > 0);
+
+    if (!groupList.length) {
+        container.innerHTML = '$0.00';
+        return;
+    }
+
+    // Calculate total tax
+    let totalTax = 0;
+    groupList.forEach(g => totalTax += (parseFloat(g.subtotal) || 0));
+
+    // Build HTML inside the single td
+    let html = `<div><strong>$${totalTax.toFixed(2)}</strong></div>`; // total tax on top
+
+    groupList.forEach(group => {
+        const percentLabel = `${(parseFloat(group.percent) || 0).toFixed(2)}%`;
+        const productNames = Object.keys(group.items || {})
+            .map(pidStr => {
+                const pid = parseInt(pidStr, 10);
+                if (!Number.isFinite(pid)) return '';
+                return String(getProductNameByIndex(pid) || '').trim();
+            })
+            .filter(Boolean);
+
+        html += `<div style="margin-top:4px;">`;
+        html += `<strong>${group.name || 'Tax'}</strong> (${percentLabel})<br>`;
+        html += `<small style="color:#555;">${productNames.join(', ') || 'No products.'}</small>`;
+        html += `</div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+
 
         function refreshTaxesUIAndTotals() {
             syncAllProductTaxInputs();
