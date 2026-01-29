@@ -73,13 +73,17 @@ class Contract extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'contract_id')
-            ->join('user_estimate as estimates', 'estimates.id', '=', 'user_invoices.estimate_id')
-            ->select('user_invoices.*', 'estimates.slug as estimate_slug')
+            ->select('user_invoices.*')
             ->orderby('user_invoices.created_at', 'desc');
     }
 
     public function items()
     {
         return $this->hasMany(ContractItem::class, 'contract_id');
+    }
+
+    public function modifications()
+    {
+        return $this->hasMany(ContractModified::class, 'contract_id')->orderBy('id', 'desc');
     }
 }

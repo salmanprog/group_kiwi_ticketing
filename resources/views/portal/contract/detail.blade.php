@@ -596,6 +596,14 @@
                         <i class="fas fa-file-contract me-2"></i>Contract
                     </div>
 
+                      @if (Auth::user()->user_type == 'company')
+                           <div class="mt-3 text-end">
+                               <a href="{{ route('contract.get-modify',encrypt($record->id)) }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Modify Contract
+                                </a>
+                            </div>
+                        @endif
+
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show">
                             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
@@ -725,19 +733,55 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        @if (Auth::user()->user_type == 'company')
-                           <div class="mt-3 text-end">
-                                <button type="button" 
-                                        class="btn btn-primary" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#modifyContractModal">
-                                    <i class="fas fa-plus me-1"></i>Modify Contract
-                                </button>
-                            </div>
-                        @endif
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>List of modification
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Modification #</th>
+                                        <th>Issue Date</th>
+                                        <th>Client Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if ($record->modifications && $record->modifications->count())
+                                        @foreach ($record->modifications as $modification)
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ route('contract.get-show-modification', encrypt($modification->id)) }}"
+                                                        class="text-decoration-none theme-text fw-bold">
+                                                        <i class="fas fa-external-link-alt me-1"></i>
+                                                        {{ strtoupper($modification->slug) }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($modification->created_at)->format('F j, Y') }}
+                                                </td>
+                                                <td>{{ $modification->is_client_approved ? 'Approved' : 'Not Approved' }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">
+                                                <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                                <em>No modifications linked to this contract.</em>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
 
                     <!-- Linked Estimates -->
                 <div class="card">
@@ -806,7 +850,6 @@
                                 <thead>
                                     <tr>
                                         <th>Invoice #</th>
-                                        <th>Estimate Ref</th>
                                         <th>Issue Date</th>
                                         <th>Status</th>
                                         <th>Total</th>
@@ -824,12 +867,6 @@
                                                     class="fw-bold text-decoration-none theme-text">
                                                     <i class="fas fa-external-link-alt me-1"></i>
                                                     {{ strtoupper($invoice->slug) }}
-                                                </a>
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('estimate.show', $invoice->estimate_slug) }}"
-                                                    class="text-muted text-decoration-none">
-                                                    {{ strtoupper($invoice->estimate_slug) }}
                                                 </a>
                                             </td>
                                             <td>{{ \Carbon\Carbon::parse($invoice->issue_date)->format('F j, Y') }}</td>
@@ -1155,14 +1192,14 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3">
+                                  <div class="mb-3">
                                         <label class="form-label fw-bold">Terms</label>
-                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
+                                        <textarea name="terms" class="form-control editor" rows="4" placeholder="Enter terms and conditions">{!! $record->terms_and_condition ?? '' !!}</textarea>
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Notes</label>
-                                        <textarea name="notes" rows="3" class="form-control" placeholder="Enter any additional notes...">{{ $record->notes }}</textarea>
+                                        <textarea name="notes" rows="3" class="form-control editor" placeholder="Enter any additional notes...">{!! $record->notes ?? '' !!}</textarea>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary">
@@ -1320,7 +1357,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
    
    <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -1415,6 +1452,62 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const allEditors = document.querySelectorAll('.editor');
+        
+        allEditors.forEach(textarea => {
+            ClassicEditor
+                .create(textarea, {
+                    toolbar: {
+                        items: [
+                            'heading', '|',
+                            'bold', 'italic', 'strikethrough', 'link', '|',
+                            'bulletedList', 'numberedList', '|',
+                            'undo', 'redo'
+                        ]
+                    }
+                })
+                .then(editor => {
+                    // Critical: Update the hidden textarea when the editor content changes
+                    editor.model.document.on('change:data', () => {
+                        textarea.value = editor.getData();
+                    });
+                })
+                .catch(error => {
+                    console.error('CKEditor initialization failed:', error);
+                });
+        });
+    });
+</script>
+
+<style>
+    /* Adjusts the height of the editor box */
+    .ck-editor__editable_inline {
+        min-height: 200px;
+        background-color: white !important;
+    }
+
+    /* Ensures the editor matches Bootstrap's border style */
+    .ck.ck-editor__main>.ck-editor__editable {
+        border-color: #dee2e6 !important;
+        box-shadow: none !important;
+    }
+
+    /* Style for the preview area */
+    .preview-content {
+        padding: 10px;
+        border: 1px dashed #ccc;
+        background: #f9f9f9;
+        margin-top: 10px;
+    }
+    .ck-focused {
+    border-color: #86b7fe !important;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+</style>
 
     @endsection
 

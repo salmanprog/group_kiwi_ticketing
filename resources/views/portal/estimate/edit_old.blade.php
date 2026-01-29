@@ -877,6 +877,9 @@
                                                     <th>Product</th>
                                                     <th>Quantity</th>
                                                     <th>Unit Price</th>
+                                                    <th>Tax</th>
+                                                    <th>Gratuity</th>
+                                                    <th>Total Product</th>
                                                     <th>Total</th>
                                                     <th class="no-print">Action</th>
                                                 </tr>
@@ -890,11 +893,6 @@
                                         <tr>
                                             <th>Subtotal</th>
                                             <td id="subtotalCell">$0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                                <div id="taxBreakdown"></div>
-                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Taxes</th>
@@ -1688,14 +1686,12 @@
             const currentIndex = productIndex;
 
             row.innerHTML = `
-            <td>
-                <input type="text" name="products[${currentIndex}][name]" class="form-control">
-                <input type="hidden" name="products[${currentIndex}][tax]" value="0">
-                <input type="hidden" name="products[${currentIndex}][gratuity]" value="0">
-                <input type="hidden" name="products[${currentIndex}][product_total_price]" value="0">
-            </td>
+            <td><input type="text" name="products[${currentIndex}][name]" class="form-control"></td>
             <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
             <td><input type="number" name="products[${currentIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${currentIndex}][tax]" class="form-control" value="0" step="0.01" min="0" readonly></td>
+            <td><input type="number" name="products[${currentIndex}][gratuity]" class="form-control" value="0" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${currentIndex}][product_total_price]" class="form-control" value="0" step="0.01" min="0" readonly></td>
             <td class="total-cell">$0.00</td>
             <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
         `;
@@ -1759,14 +1755,12 @@
                 // --- 1. Your existing Table Row Logic ---
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>
-                        <input type="text" name="products[${currentIndex}][name]" class="form-control" value="${name}" readonly>
-                        <input type="hidden" name="products[${currentIndex}][tax]" value="0.00">
-                        <input type="hidden" name="products[${currentIndex}][gratuity]" value="0.00">
-                        <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${price}">
-                    </td>
+                    <td><input type="text" name="products[${currentIndex}][name]" class="form-control" value="${name}" readonly></td>
                     <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
                     <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${currentIndex}][tax]" class="form-control tax-input" value="0.00" oninput="updateTotal(this)" step="0.01" min="0" readonly></td>
+                    <td><input type="number" name="products[${currentIndex}][gratuity]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${currentIndex}][product_total_price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
                     <td class="total-cell">$${parseFloat(price).toFixed(2)}</td>
                     <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
                 `;
@@ -1823,7 +1817,7 @@
             // Reset and Close
             document.getElementById('taxName').value = '';
             document.getElementById('taxPercent').value = '';
-            document.getElementById('taxModalActiveUid').value = '';    
+            document.getElementById('taxModalActiveUid').value = '';
             const submitBtn = document.getElementById('taxSubmitBtn');
             if (submitBtn) submitBtn.innerText = 'Add Tax';
             $('#taxModal').modal('hide');
@@ -1987,85 +1981,9 @@
             });
         }
 
-        function renderTaxBreakdown() {
-            const container = document.getElementById('taxBreakdown');
-            if (!container) return;
-
-            const groups = {};
-
-            (taxes || []).forEach(tax => {
-                const name = (tax && tax.name ? String(tax.name) : '').trim();
-                const percent = parseFloat(tax && tax.percent) || 0;
-                const key = `${name}||${percent.toFixed(4)}`;
-
-                if (!groups[key]) {
-                    groups[key] = {
-                        name,
-                        percent,
-                        items: {},
-                        subtotal: 0
-                    };
-                }
-
-                const applied = (tax && Array.isArray(tax.appliedProducts) ? tax.appliedProducts : []).map(String);
-                applied.forEach(pidStr => {
-                    const pid = parseInt(pidStr, 10);
-                    if (!Number.isFinite(pid)) return;
-                    const amount = computeTaxAmountForProduct(pid, percent);
-                    groups[key].items[pid] = (groups[key].items[pid] || 0) + amount;
-                    groups[key].subtotal += amount;
-                });
-            });
-
-            const groupList = Object.values(groups).filter(g => (g.subtotal || 0) > 0);
-            if (!groupList.length) {
-                container.innerHTML = '';
-                return;
-            }
-
-            let totalTax = 0;
-            groupList.forEach(g => {
-                totalTax += (parseFloat(g.subtotal) || 0);
-            });
-
-            let html = '';
-            groupList.forEach(group => {
-                const percentLabel = `${(parseFloat(group.percent) || 0).toFixed(2)}%`;
-                const itemEntries = Object.entries(group.items || {});
-                const productNames = itemEntries
-                    .map(([pidStr]) => {
-                        const pid = parseInt(pidStr, 10);
-                        if (!Number.isFinite(pid)) return '';
-                        return String(getProductNameByIndex(pid) || '').trim();
-                    })
-                    .filter(Boolean);
-
-                html += `<div class="border rounded p-2 mb-2" style="background:#fff;">`;
-                html += `  <div class="d-flex justify-content-between align-items-start">`;
-                html += `    <div style="min-width:0;">`;
-                html += `      <div><strong>${group.name || 'Tax'}</strong> <span class="text-muted">(${percentLabel})</span></div>`;
-                html += `      <div class="text-muted small" style="word-break:break-word;">${productNames.join(', ') || 'No products.'}</div>`;
-                html += `    </div>`;
-                html += `    <div class="text-end" style="white-space:nowrap;">`;
-                html += `      <div class="text-muted small"><strong>Subtax</strong></div>`;
-                html += `      <div><strong>$${(parseFloat(group.subtotal) || 0).toFixed(2)}</strong></div>`;
-                html += `    </div>`;
-                html += `  </div>`;
-                html += `</div>`;
-            });
-
-            html += `<div class="border rounded p-2 d-flex justify-content-between align-items-center" style="background: var(--primary-light);">`;
-            html += `  <div><strong>Total Tax</strong></div>`;
-            html += `  <div><strong>$${(parseFloat(totalTax) || 0).toFixed(2)}</strong></div>`;
-            html += `</div>`;
-
-            container.innerHTML = html;
-        }
-
         function refreshTaxesUIAndTotals() {
             syncAllProductTaxInputs();
             renderTaxes();
-            renderTaxBreakdown();
             calculateTotals();
             refreshTaxModalIfOpen();
         }
@@ -2350,14 +2268,12 @@
 
                 const row = document.createElement("tr");
                 row.innerHTML = `   
-                  <td>
-                        <input type="text" name="products[${currentIndex}][name]" class="form-control" value="${item.name}" readonly>
-                        <input type="hidden" name="products[${currentIndex}][tax]" value="${tax.toFixed(2)}">
-                        <input type="hidden" name="products[${currentIndex}][gratuity]" value="${gratuity.toFixed(2)}">
-                        <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${productPrice.toFixed(2)}">
-                  </td>
+                  <td><input type="text" name="products[${currentIndex}][name]" class="form-control" value="${item.name}" readonly></td>
                     <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
                     <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${currentIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0" readonly></td>
+                    <td><input type="number" name="products[${currentIndex}][gratuity]" class="form-control" value="${gratuity.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${currentIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" readonly step="0.01" min="0"></td>
                     <td class="total-cell">$${total.toFixed(2)}</td>
                     <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
             `;
@@ -2447,24 +2363,6 @@
                 return;
             }
             resetTaxModalForNewTax();
-        });
-
-        document.addEventListener('change', function(e) {
-            if (!e.target || !e.target.classList || !e.target.classList.contains('apply-tax-check')) return;
-
-            const activeUidEl = document.getElementById('taxModalActiveUid');
-            const activeUid = activeUidEl ? activeUidEl.value : '';
-            if (!activeUid) return;
-
-            const tax = taxes.find(t => String(t.uid) === String(activeUid));
-            if (!tax) return;
-
-            const selectedProductCheckboxes = document.querySelectorAll('.apply-tax-check:checked');
-            tax.appliedProducts = Array.from(selectedProductCheckboxes)
-                .map(cb => parseInt(cb.value, 10))
-                .filter(v => Number.isFinite(v));
-
-            refreshTaxesUIAndTotals();
         });
 
         document.getElementById('taxPercent').addEventListener('input', function() {

@@ -194,14 +194,14 @@ class Invoice extends Model
                 ContractItem::create([
                     'contract_id' => $contract->id,
                     'name' => $item->name,
-                    'quantity' => $item->quantity,
+                    'quantity' => $item->quantity, 
                     'unit' => $item->unit,
                     'price' => $item->price,
                     'total_price' => $item->total_price,
                     'taxes' => $item->tax,
                     'product_price' => $item->product_price,
                     'gratuity' => $item->gratuity,
-                    'accepted_by_client' => 1,
+                    'is_accepted_by_client' => '1',
                     'invoice_id' => $invoice->id,
                 ]);
             }
@@ -246,6 +246,7 @@ class Invoice extends Model
 
         $getContractItems = \App\Models\ContractModifiedItem::where('contract_modified_id', $contractModified->id)->get();
         $contract = \App\Models\Contract::where('id', $contractModified->contract_id)->first();
+        $getInstallments = \App\Models\ContractModifiedInstallment::where('contract_modified_id', $contractModified->id)->get();
 
         $subTotal = (float) 0;
         $total = (float) 0;
@@ -274,7 +275,7 @@ class Invoice extends Model
         $invoice->status = 'unpaid';
         $invoice->save();
 
-        dd($invoice);
+
         foreach ($getContractItems as $item) {
 
             InvoiceItem::create([
@@ -299,6 +300,31 @@ class Invoice extends Model
                 'is_accepted_by_client' => '1',
             ]);
         }
+        
+        if($contractModified->is_installment == "1"){
+                $plan = \App\Models\InstallmentPlan::create([
+                    'invoice_id' => $invoice->id,
+                    'total_amount' => $total,
+                    'installment_count' => $getInstallments->count(),
+                    'start_date' => $getInstallments->first()->installment_date,
+                    'estimate_id' => 0
+                ]);
+
+                foreach ($getInstallments as $index => $installment) {
+                    \App\Models\InstallmentPayment::create([
+                        'installment_plan_id' => $plan->id,
+                        'installment_number' => $index + 1,
+                        'invoice_id' => $invoice->id,
+                        'estimate_id' => 0,
+                        'contract_id' => $contract->id,
+                        'due_date' => $installment->installment_date,
+                        'amount' => $installment->amount,
+                        'is_paid' => false,
+                    ]);   
+                }
+
+
+            }   
 
         return $invoice;
     }

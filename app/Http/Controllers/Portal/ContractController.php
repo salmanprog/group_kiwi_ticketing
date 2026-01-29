@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Organization, CompanyUser, Contract, Invoice, CreditNote, Estimate};
+use App\Models\{Organization, CompanyUser, Contract, Invoice, CreditNote, Estimate,Company,Product};
 use Auth;
 
 class ContractController extends CRUDCrontroller
@@ -144,7 +144,8 @@ class ContractController extends CRUDCrontroller
             'estimates',
             'invoices.installmentPlan.payments',
             'invoices.creditNotes',
-            'items'
+            'items',
+            'modifications'
         ])
             ->where('slug', $slug)
             ->first();
@@ -253,10 +254,32 @@ class ContractController extends CRUDCrontroller
         return redirect()->route('contract.show', $contract->slug)->with('success', 'Credit note added successfully');
     }
 
+    public function modifyContractPage($id)
+    {
+        $id = decrypt($id);
+
+        $this->__data['contract'] = Contract::find($id);
+        $company = CompanyUser::getCompany(Auth::user()->id);
+        $this->__data['products'] = Product::where('company_id', $company->id)->get();
+        
+        return $this->__cbAdminView('contract.modify', $this->__data);
+
+    }
+
+    public function showModificationPage($id)
+    {
+        $id = decrypt($id);
+
+        $this->__data['record'] = \App\Models\ContractModified::where('id', $id)->with('contract_modified_items')->first();
+        
+        return $this->__cbAdminView('contract.modify-show', $this->__data);
+
+    }
+
+
     public function modifyContract(Request $request)
     {
         $contract = Contract::where('id', $request->contract_id)->first();
-
         $getContractModified = \App\Models\ContractModified::where('contract_id', $contract->id)->count();
         $slug = $contract->slug . '-' . $getContractModified + 1;
 
@@ -264,33 +287,48 @@ class ContractController extends CRUDCrontroller
             'contract_id' => $contract->id,
             'created_by' => Auth::id(),
             'slug' => $slug,
+            'is_installment' => ($request->installments) ? "1" : "0",
+            'is_client_approved' => ($request->confirmed_with_client == "no") ? "1" : "0"
         ]);
 
+        if($request->installments) {
+            foreach ($request->installments as $key => $installment) {
+                \App\Models\ContractModifiedInstallment::create([
+                    'contract_modified_id' => $ContractModified->id,
+                    'contract_id' => $contract->id,
+                    'amount' => $installment['amount'],
+                    'installment_date' => $installment['date'],
+                ]);
+            }
+        }
+
         foreach ($request->products as $key => $product) {
-            $productget = \App\Models\Product::where('id', $product['product_id'])->first();
+            $productget = \App\Models\Product::where('id', $product['id'])->first();
             // dd($product);
             \App\Models\ContractModifiedItem::create([
                 'contract_modified_id' => $ContractModified->id,
                 'contract_id' => $contract->id,
                 'created_by' => Auth::id(),
                 'name' => $productget->name,
-                'quantity' => $product['qty'],
+                'quantity' => $product['quantity'],
                 'unit' => $productget->unit,
-                'price' => $product['unit_price'],
-                'total_price' => $product['qty'] * $product['unit_price'],
+                'price' => $product['price'],
+                'total_price' => $product['quantity'] * $product['price'],
             ]);
         }
 
 
-
-        if ($request->confirmed_with_client == 'yes') {
+        // dd($request->confirmed_with_client);
+        if ($request->confirmed_with_client == 'no') {
 
             $invoice = Invoice::generateInvoiceForContract($ContractModified->slug);
 
         } else {
 
 
-            dd($contract);
+            // dd($contract);
+
+            // send here mail
         }
 
         return redirect()->route('contract.show', $contract->slug)->with('success', 'Contract modified successfully');

@@ -877,6 +877,9 @@
                                                     <th>Product</th>
                                                     <th>Quantity</th>
                                                     <th>Unit Price</th>
+                                                    <th>Tax (%)</th>
+                                                    <th>Gratuity (%)</th>
+                                                    <th>Product Price (Tax + Gratuity)</th>
                                                     <th>Total</th>
                                                     <th class="no-print">Action</th>
                                                 </tr>
@@ -890,11 +893,6 @@
                                         <tr>
                                             <th>Subtotal</th>
                                             <td id="subtotalCell">$0.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                                <div id="taxBreakdown"></div>
-                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Taxes</th>
@@ -1160,7 +1158,6 @@
                                         aria-label="Close">&times;</button>
                                 </div>
                                 <div class="modal-body">
-                                    <input type="hidden" id="taxModalActiveUid" value="">
                                     <div class="form-group">
                                         <label for="taxName">Tax Name</label>
                                         <input type="text" id="taxName" class="form-control" placeholder="e.g. VAT"
@@ -1171,75 +1168,11 @@
                                         <input type="number" id="taxPercent" class="form-control" placeholder="e.g. 10"
                                             min="0" step="0.01" required>
                                     </div>
-
-                                    <hr>
-                                    <h6>Apply to Selected Products:</h6>
-                                    <div id="taxProductList" class="mt-2" style="max-height: 200px; overflow-y: auto;">
-                                        <p class="text-muted small">No products selected yet.</p>
-                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary btn-sm"
                                         data-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-primary btn-sm" id="taxSubmitBtn">Add Tax</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade" id="taxDetailsModal" tabindex="-1" role="dialog" aria-labelledby="taxDetailsModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <form id="taxDetailsForm" onsubmit="event.preventDefault();">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="taxDetailsModalLabel">
-                                        <i class="fas fa-percentage me-2"></i>Tax Details
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal"
-                                        aria-label="Close">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="hidden" id="activeTaxUid" value="">
-
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="taxDetailsName">Tax Name</label>
-                                            <input type="text" id="taxDetailsName" class="form-control" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="taxDetailsPercent">Tax Percent (%)</label>
-                                            <input type="number" id="taxDetailsPercent" class="form-control" min="0" step="0.01" required>
-                                        </div>
-                                    </div>
-
-                                    <hr>
-
-                                    <h6>Applied Products</h6>
-                                    <div id="taxDetailsProductList" class="mt-2" style="max-height: 200px; overflow-y: auto;">
-                                        <p class="text-muted small">No products selected.</p>
-                                    </div>
-
-                                    <div class="forref mt-3" id="taxDetailsTableWrapper" style="display:none;">
-                                        <table class="table product-table" id="taxDetailsTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product</th>
-                                                    <th>Unit Price</th>
-                                                    <th>Quantity</th>
-                                                    <th>Tax %</th>
-                                                    <th>Tax Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="taxDetailsTableBody">
-                                                <!-- Dynamically added applied products will appear here -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Add Tax</button>
                                 </div>
                             </form>
                         </div>
@@ -1659,17 +1592,13 @@
 
         let productIndex = 1;
         let taxes = [];
-        let taxUidCounter = 0;
         let discounts = [];
-        let taxModalPendingOpenUid = null;
 
         // Load taxes from server-side (Laravel)
         if (Array.isArray(existingEstimateTaxes)) {
             taxes = existingEstimateTaxes.map(tax => ({
-                uid: createTaxUid(),
                 name: tax.name,
-                percent: parseFloat(tax.percent) || 0,
-                appliedProducts: []
+                percent: parseFloat(tax.percent) || 0
             }));
         }
 
@@ -1685,64 +1614,53 @@
             const table = document.querySelector("#productTable tbody");
             const row = document.createElement("tr");
 
-            const currentIndex = productIndex;
-
             row.innerHTML = `
-            <td>
-                <input type="text" name="products[${currentIndex}][name]" class="form-control">
-                <input type="hidden" name="products[${currentIndex}][tax]" value="0">
-                <input type="hidden" name="products[${currentIndex}][gratuity]" value="0">
-                <input type="hidden" name="products[${currentIndex}][product_total_price]" value="0">
-            </td>
-            <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
-            <td><input type="number" name="products[${currentIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
+            <td><input type="text" name="products[${productIndex}][name]" class="form-control"></td>
+            <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][price]" class="form-control" oninput="updateTotal(this)" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0" step="0.01" min="0"></td>
+            <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="0" step="0.01" min="0"></td>
             <td class="total-cell">$0.00</td>
             <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
         `;
             table.appendChild(row);
             productIndex++;
-            syncTaxProductList();
-            refreshTaxesUIAndTotals();
         }
 
         function removeRow(button) {
             const row = button.closest("tr");
-            const index = getProductIndexFromRow(row);
-            if (index !== null) {
-                taxes.forEach(t => {
-                    t.appliedProducts = (t.appliedProducts || []).filter(pid => String(pid) !== String(index));
-                });
-                taxes = taxes.filter(t => (t.appliedProducts || []).length > 0);
-            }
             row.remove();
-            syncTaxProductList();
-            refreshTaxesUIAndTotals();
+            calculateTotals();
         }
 
      function updateTotal(input) {
             const row = input.closest("tr");
 
-            const index = getProductIndexFromRow(row);
-
             // 1. Get values from the row
             const qty = parseFloat(row.querySelector('input[name*="[quantity]"]').value) || 0;
             const basePrice = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
             
+            // Treating these inputs as percentage values (e.g., 10 for 10%)
+            const taxPercent = parseFloat(row.querySelector('input[name*="[tax]"]').value) || 0;
+            const gratuityPercent = parseFloat(row.querySelector('input[name*="[gratuity]"]').value) || 0;
+
+            // 2. Calculate percentages based on Base Price
+            const taxAmount = basePrice * (taxPercent / 100);
+            const gratuityAmount = basePrice * (gratuityPercent / 100);
+
             // 3. Formula: (Base Price + Tax + Gratuity) * Quantity
-            const unitPriceWithFees = basePrice;
+            const unitPriceWithFees = basePrice + taxAmount + gratuityAmount;
             const rowTotal = unitPriceWithFees * qty;
 
             // 4. Update the Hidden/Readonly Total Input
-            row.querySelector('input[name*="[product_total_price]"]').value = unitPriceWithFees.toFixed(2);
+            row.querySelector('input[name*="[product_total_price]"]').value = rowTotal.toFixed(2);
 
             // 5. Update the Visual Display Cell
             row.querySelector(".total-cell").innerText = `$${rowTotal.toFixed(2)}`;
 
             // 6. Update the Grand Totals
-            if (index !== null) {
-                syncProductTaxInput(index);
-            }
-            refreshTaxesUIAndTotals();
+            calculateTotals();
         }
 
      function addSelectedProducts() {
@@ -1752,438 +1670,81 @@
             checkboxes.forEach((checkbox) => {
                 const name = checkbox.dataset.name;
                 const price = parseFloat(checkbox.dataset.price).toFixed(2);
-                const id = checkbox.value; // Assuming value is the product ID
-
-                const currentIndex = productIndex;
-
-                // --- 1. Your existing Table Row Logic ---
+                
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>
-                        <input type="text" name="products[${currentIndex}][name]" class="form-control" value="${name}" readonly>
-                        <input type="hidden" name="products[${currentIndex}][tax]" value="0.00">
-                        <input type="hidden" name="products[${currentIndex}][gratuity]" value="0.00">
-                        <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${price}">
-                    </td>
-                    <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
-                    <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td class="total-cell">$${parseFloat(price).toFixed(2)}</td>
+                    <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${name}" readonly></td>
+                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="1" oninput="updateTotal(this)" step="1" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="0.00" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${price}" readonly step="0.01" min="0"></td>
+                    <td class="total-cell">$${price}</td>
                     <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
                 `;
                 table.appendChild(row);
-
                 productIndex++;
                 checkbox.checked = false;
             });
 
-            syncTaxProductList();
-            refreshTaxesUIAndTotals();
+            // Close modal and cleanup
+          $('#productModal').modal('hide');
+    
+          $('[data-dismiss="modal"]').first().click();
+
+            calculateTotals(); 
         }
 
-      function addTax() {
+        function addTax() {
             const name = document.getElementById('taxName').value.trim();
             const percent = parseFloat(document.getElementById('taxPercent').value);
-
-            // Get all checked products from the list inside the modal
-            const selectedProductCheckboxes = document.querySelectorAll(".apply-tax-check:checked");
-
-            const activeUid = document.getElementById('taxModalActiveUid').value;
 
             if (!name || isNaN(percent) || percent < 0) {
                 alert('Please enter a valid tax name and percent.');
                 return;
             }
 
-            if (selectedProductCheckboxes.length === 0) {
-                alert('Please select at least one product to apply this tax to.');
-                return;
-            }
-
-            const appliedProducts = Array.from(selectedProductCheckboxes)
-                .map(cb => parseInt(cb.value, 10))
-                .filter(v => Number.isFinite(v));
-
-            if (activeUid) {
-                const tax = taxes.find(t => String(t.uid) === String(activeUid));
-                if (tax) {
-                    tax.name = name;
-                    tax.percent = percent;
-                    tax.appliedProducts = appliedProducts;
-                }
-            } else {
-                const taxUid = createTaxUid();
-                taxes.push({
-                    uid: taxUid,
-                    name,
-                    percent,
-                    appliedProducts
-                });
-            }
-
-            // Reset and Close
+            taxes.push({
+                name,
+                percent
+            });
             document.getElementById('taxName').value = '';
             document.getElementById('taxPercent').value = '';
-            document.getElementById('taxModalActiveUid').value = '';    
-            const submitBtn = document.getElementById('taxSubmitBtn');
-            if (submitBtn) submitBtn.innerText = 'Add Tax';
-            $('#taxModal').modal('hide');
+           
+           
+            $('#taxModal').removeClass('show');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+            $('#taxModal').hide();
 
-            refreshTaxesUIAndTotals();
-        }
 
-        function createTaxUid() {
-            taxUidCounter += 1;
-            return `t_${Date.now()}_${taxUidCounter}`;
-        }
 
-        function getProductIndexFromRow(row) {
-            const input = row ? row.querySelector('input[name^="products["]') : null;
-            if (!input) return null;
-            const match = input.name.match(/^products\[(\d+)\]/);
-            return match ? parseInt(match[1], 10) : null;
-        }
+            renderTaxes();
+            calculateTotals();
 
-        function getProductNameByIndex(index) {
-            const input = document.querySelector(`input[name="products[${index}][name]"]`);
-            return input ? input.value : '';
-        }
 
-        function getProductQtyByIndex(index) {
-            const input = document.querySelector(`input[name="products[${index}][quantity]"]`);
-            return input ? (parseFloat(input.value) || 0) : 0;
-        }
-
-        function getProductUnitPriceByIndex(index) {
-            const input = document.querySelector(`input[name="products[${index}][price]"]`);
-            return input ? (parseFloat(input.value) || 0) : 0;
-        }
-
-        function computeTaxAmountForProduct(index, percent) {
-            const price = getProductUnitPriceByIndex(index);
-            const qty = getProductQtyByIndex(index);
-            return (price * (percent / 100)) * qty;
-        }
-
-        function computeTotalTaxForProduct(index) {
-            return taxes.reduce((sum, t) => {
-                const applied = (t.appliedProducts || []).map(String);
-                if (applied.includes(String(index))) {
-                    return sum + computeTaxAmountForProduct(index, parseFloat(t.percent) || 0);
-                }
-                return sum;
-            }, 0);
-        }
-
-        function computeTotalTaxForTax(tax) {
-            const applied = (tax.appliedProducts || []).map(String);
-            return applied.reduce((sum, pid) => sum + computeTaxAmountForProduct(parseInt(pid, 10), parseFloat(tax.percent) || 0), 0);
-        }
-
-        function syncProductTaxInput(index) {
-            const taxInput = document.querySelector(`input[name="products[${index}][tax]"]`);
-            if (!taxInput) return;
-            const totalTax = computeTotalTaxForProduct(index);
-            taxInput.value = totalTax.toFixed(2);
-        }
-
-        function syncAllProductTaxInputs() {
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            rows.forEach(row => {
-                const index = getProductIndexFromRow(row);
-                if (index !== null) {
-                    syncProductTaxInput(index);
-                }
-            });
-        }
-
-        function syncTaxProductList() {
-            const taxProductList = document.getElementById("taxProductList");
-            if (!taxProductList) return;
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            taxProductList.innerHTML = "";
-
-            if (!rows.length) {
-                taxProductList.innerHTML = '<p class="text-muted small">No products selected yet.</p>';
-                return;
-            }
-
-            renderTaxModalAppliedProducts();
-        }
-
-        function renderTaxModalAppliedProducts() {
-            const taxProductList = document.getElementById("taxProductList");
-            if (!taxProductList) return;
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            const productIndexes = [];
-            rows.forEach(r => {
-                const idx = getProductIndexFromRow(r);
-                if (idx !== null) productIndexes.push(idx);
-            });
-
-            if (!productIndexes.length) {
-                taxProductList.innerHTML = '<p class="text-muted small">No products selected yet.</p>';
-                return;
-            }
-
-            const activeUid = document.getElementById('taxModalActiveUid') ? document.getElementById('taxModalActiveUid').value : '';
-            const activeTax = activeUid ? taxes.find(t => String(t.uid) === String(activeUid)) : null;
-
-            const percentInput = document.getElementById('taxPercent');
-            const percent = percentInput ? (parseFloat(percentInput.value) || 0) : (activeTax ? (parseFloat(activeTax.percent) || 0) : 0);
-
-            const appliedSet = activeTax ? new Set((activeTax.appliedProducts || []).map(String)) : null;
-
-            let html = '<div class="table-responsive">';
-            html += '<table class="table table-sm table-bordered">';
-            html += '<thead><tr>';
-            html += '<th>Apply</th><th>Product</th><th>Unit Price</th><th>Qty</th><th>Tax %</th><th>Tax Amount</th>';
-            html += '</tr></thead><tbody>';
-
-            productIndexes.forEach(idx => {
-                const checked = appliedSet ? (appliedSet.has(String(idx)) ? 'checked' : '') : 'checked';
-                const name = getProductNameByIndex(idx);
-                const unitPrice = getProductUnitPriceByIndex(idx);
-                const qty = getProductQtyByIndex(idx);
-                const amount = computeTaxAmountForProduct(idx, percent);
-                html += `<tr>`;
-                html += `<td><input class="apply-tax-check" type="checkbox" value="${idx}" id="tax_check_${idx}" ${checked}></td>`;
-                html += `<td><label class="small" for="tax_check_${idx}" style="cursor:pointer;">${name}</label></td>`;
-                html += `<td>$${unitPrice.toFixed(2)}</td>`;
-                html += `<td>${qty}</td>`;
-                html += `<td>${percent.toFixed(2)}%</td>`;
-                html += `<td>$${amount.toFixed(2)}</td>`;
-                html += `</tr>`;
-            });
-
-            html += '</tbody></table></div>';
-            taxProductList.innerHTML = html;
         }
 
         function renderTaxes() {
             const container = document.getElementById('taxList');
-            if (!container) return;
-
             container.innerHTML = '';
-
-            if (!taxes.length) {
-                return;
-            }
-
             taxes.forEach((tax, index) => {
                 const div = document.createElement('div');
                 div.classList.add('tax-row', 'mb-2');
-                const amount = computeTotalTaxForTax(tax);
                 div.innerHTML = `
-                    <span class="badge badge-success" style="cursor:pointer;" data-tax-uid="${tax.uid}">
-                        ${tax.name} ${tax.percent}% ($${amount.toFixed(2)})
-                    </span>
-                    <button type="button" class="btn btn-danger btn-sm ml-2 remove-tax" data-tax-uid="${tax.uid}">×</button>
-                    <input type="hidden" name="taxes[${index}][name]" value="${tax.name}">
-                    <input type="hidden" name="taxes[${index}][percent]" value="${tax.percent}">
-                `;
+                <strong>${tax.name}:</strong> ${tax.percent}% 
+                <button type="button" class="btn btn-danger btn-sm ml-2" onclick="removeTax(${index})">Remove</button>
+                <input type="hidden" name="taxes[${index}][name]" value="${tax.name}">
+                <input type="hidden" name="taxes[${index}][percent]" value="${tax.percent}">
+            `;
                 container.appendChild(div);
             });
         }
 
-        function renderTaxBreakdown() {
-            const container = document.getElementById('taxBreakdown');
-            if (!container) return;
-
-            const groups = {};
-
-            (taxes || []).forEach(tax => {
-                const name = (tax && tax.name ? String(tax.name) : '').trim();
-                const percent = parseFloat(tax && tax.percent) || 0;
-                const key = `${name}||${percent.toFixed(4)}`;
-
-                if (!groups[key]) {
-                    groups[key] = {
-                        name,
-                        percent,
-                        items: {},
-                        subtotal: 0
-                    };
-                }
-
-                const applied = (tax && Array.isArray(tax.appliedProducts) ? tax.appliedProducts : []).map(String);
-                applied.forEach(pidStr => {
-                    const pid = parseInt(pidStr, 10);
-                    if (!Number.isFinite(pid)) return;
-                    const amount = computeTaxAmountForProduct(pid, percent);
-                    groups[key].items[pid] = (groups[key].items[pid] || 0) + amount;
-                    groups[key].subtotal += amount;
-                });
-            });
-
-            const groupList = Object.values(groups).filter(g => (g.subtotal || 0) > 0);
-            if (!groupList.length) {
-                container.innerHTML = '';
-                return;
-            }
-
-            let totalTax = 0;
-            groupList.forEach(g => {
-                totalTax += (parseFloat(g.subtotal) || 0);
-            });
-
-            let html = '';
-            groupList.forEach(group => {
-                const percentLabel = `${(parseFloat(group.percent) || 0).toFixed(2)}%`;
-                const itemEntries = Object.entries(group.items || {});
-                const productNames = itemEntries
-                    .map(([pidStr]) => {
-                        const pid = parseInt(pidStr, 10);
-                        if (!Number.isFinite(pid)) return '';
-                        return String(getProductNameByIndex(pid) || '').trim();
-                    })
-                    .filter(Boolean);
-
-                html += `<div class="border rounded p-2 mb-2" style="background:#fff;">`;
-                html += `  <div class="d-flex justify-content-between align-items-start">`;
-                html += `    <div style="min-width:0;">`;
-                html += `      <div><strong>${group.name || 'Tax'}</strong> <span class="text-muted">(${percentLabel})</span></div>`;
-                html += `      <div class="text-muted small" style="word-break:break-word;">${productNames.join(', ') || 'No products.'}</div>`;
-                html += `    </div>`;
-                html += `    <div class="text-end" style="white-space:nowrap;">`;
-                html += `      <div class="text-muted small"><strong>Subtax</strong></div>`;
-                html += `      <div><strong>$${(parseFloat(group.subtotal) || 0).toFixed(2)}</strong></div>`;
-                html += `    </div>`;
-                html += `  </div>`;
-                html += `</div>`;
-            });
-
-            html += `<div class="border rounded p-2 d-flex justify-content-between align-items-center" style="background: var(--primary-light);">`;
-            html += `  <div><strong>Total Tax</strong></div>`;
-            html += `  <div><strong>$${(parseFloat(totalTax) || 0).toFixed(2)}</strong></div>`;
-            html += `</div>`;
-
-            container.innerHTML = html;
-        }
-
-        function refreshTaxesUIAndTotals() {
-            syncAllProductTaxInputs();
+        function removeTax(index) {
+            taxes.splice(index, 1);
             renderTaxes();
-            renderTaxBreakdown();
             calculateTotals();
-            refreshTaxModalIfOpen();
-        }
-
-        function refreshTaxModalIfOpen() {
-            const modal = document.getElementById('taxModal');
-            if (!modal) return;
-            const isOpen = modal.classList.contains('show');
-            if (!isOpen) return;
-            renderTaxModalAppliedProducts();
-        }
-
-        function openTaxModalForTax(taxUid) {
-            const tax = taxes.find(t => String(t.uid) === String(taxUid));
-            if (!tax) return;
-            const title = document.getElementById('taxModalLabel');
-            if (title) title.innerHTML = '<i class="fas fa-percentage me-2"></i>Edit Tax';
-
-            document.getElementById('taxModalActiveUid').value = tax.uid;
-            document.getElementById('taxName').value = tax.name;
-            document.getElementById('taxPercent').value = tax.percent;
-
-            const submitBtn = document.getElementById('taxSubmitBtn');
-            if (submitBtn) submitBtn.innerText = 'Update Tax';
-
-            renderTaxModalAppliedProducts();
-            $('#taxModal').modal('show');
-        }
-
-        function resetTaxModalForNewTax() {
-            const title = document.getElementById('taxModalLabel');
-            if (title) title.innerHTML = '<i class="fas fa-percentage me-2"></i>Add Tax';
-            document.getElementById('taxModalActiveUid').value = '';
-            document.getElementById('taxName').value = '';
-            document.getElementById('taxPercent').value = '';
-            const submitBtn = document.getElementById('taxSubmitBtn');
-            if (submitBtn) submitBtn.innerText = 'Add Tax';
-            renderTaxModalAppliedProducts();
-        }
-
-        function openTaxDetailsModal(taxUid) {
-            const tax = taxes.find(t => String(t.uid) === String(taxUid));
-            if (!tax) return;
-
-            document.getElementById('activeTaxUid').value = tax.uid;
-            document.getElementById('taxDetailsName').value = tax.name;
-            document.getElementById('taxDetailsPercent').value = tax.percent;
-
-            refreshTaxDetailsModal();
-            $('#taxDetailsModal').modal('show');
-        }
-
-        function refreshTaxDetailsModal() {
-            const modal = document.getElementById('taxDetailsModal');
-            if (!modal) return;
-
-            const isOpen = modal.classList.contains('show');
-            if (!isOpen) return;
-
-            const taxUid = document.getElementById('activeTaxUid').value;
-            const tax = taxes.find(t => String(t.uid) === String(taxUid));
-            if (!tax) {
-                $('#taxDetailsModal').modal('hide');
-                return;
-            }
-
-            const productList = document.getElementById('taxDetailsProductList');
-            const tableWrapper = document.getElementById('taxDetailsTableWrapper');
-            const tbody = document.getElementById('taxDetailsTableBody');
-            if (!productList || !tableWrapper || !tbody) return;
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            const currentProducts = [];
-            rows.forEach(r => {
-                const idx = getProductIndexFromRow(r);
-                if (idx !== null) currentProducts.push(idx);
-            });
-
-            const appliedSet = new Set((tax.appliedProducts || []).map(String));
-
-            productList.innerHTML = '';
-            if (!currentProducts.length) {
-                productList.innerHTML = '<p class="text-muted small">No products selected.</p>';
-            } else {
-                currentProducts.forEach(idx => {
-                    const name = getProductNameByIndex(idx);
-                    const checked = appliedSet.has(String(idx)) ? 'checked' : '';
-                    const div = document.createElement('div');
-                    div.className = 'form-check';
-                    div.innerHTML = `
-                        <input class="form-check-input tax-details-apply" type="checkbox" value="${idx}" id="tax_details_apply_${idx}" ${checked}>
-                        <label class="form-check-label small" for="tax_details_apply_${idx}">${name}</label>
-                    `;
-                    productList.appendChild(div);
-                });
-            }
-
-            tbody.innerHTML = '';
-            const appliedProducts = currentProducts.filter(idx => appliedSet.has(String(idx)));
-            if (!appliedProducts.length) {
-                tableWrapper.style.display = 'none';
-            } else {
-                tableWrapper.style.display = '';
-                appliedProducts.forEach(idx => {
-                    const unitPrice = getProductUnitPriceByIndex(idx);
-                    const qty = getProductQtyByIndex(idx);
-                    const amount = computeTaxAmountForProduct(idx, parseFloat(tax.percent) || 0);
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${getProductNameByIndex(idx)}</td>
-                        <td>$${unitPrice.toFixed(2)}</td>
-                        <td>${qty}</td>
-                        <td>${(parseFloat(tax.percent) || 0).toFixed(2)}%</td>
-                        <td>$${amount.toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
         }
 
         function addDiscount() {
@@ -2204,7 +1765,12 @@
             document.getElementById('discountName').value = '';
             document.getElementById('discountValue').value = '';
             document.getElementById('discountType').value = 'percent';
-            $('#discountModal').modal('hide');
+            
+            
+            $('#discountModal').removeClass('show');
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
+            $('#discountModal').hide();
 
             renderDiscounts();
             calculateTotals();
@@ -2245,11 +1811,8 @@
             });
 
             let totalTaxAmount = 0;
-            rows.forEach(row => {
-                const index = getProductIndexFromRow(row);
-                if (index !== null) {
-                    totalTaxAmount += computeTotalTaxForProduct(index);
-                }
+            taxes.forEach(tax => {
+                totalTaxAmount += subtotal * (tax.percent / 100);
             });
 
             let totalDiscountAmount = 0;
@@ -2271,7 +1834,15 @@
             document.getElementById("subtotalCell").innerText = `$${subtotal.toFixed(2)}`;
 
             const taxCell = document.getElementById("taxCell");
-            taxCell.innerText = `$${totalTaxAmount.toFixed(2)}`;
+            if (taxes.length > 0) {
+                const taxDetails = taxes.map(tax => {
+                    const amount = subtotal * (tax.percent / 100);
+                    return `${tax.name}: $${amount.toFixed(2)}`;
+                }).join('<br>');
+                taxCell.innerHTML = taxDetails;
+            } else {
+                taxCell.innerText = '$0.00';
+            }
 
             const discountRow = document.getElementById("discountRow");
             const discountCell = document.getElementById("discountCell");
@@ -2292,41 +1863,7 @@
             document.getElementById("totalInput").value = total.toFixed(2);
             document.getElementById("remainingTotalInput").value = total.toFixed(2);
             const container = document.getElementById('dynamicInputsContainer');
-            const installmentCheck = document.getElementById('installmentCheck');
-            if (container && (!installmentCheck || !installmentCheck.checked)) {
-                container.innerHTML = '';
-            }
-        }
-
-        function refreshChargesUIAndTotals() {
-            syncAllProductChargeInputs();
-            renderChargesBadgesAndHiddenInputs();
-            calculateTotals();
-
-            const installmentCheck = document.getElementById('installmentCheck');
-            if (installmentCheck && installmentCheck.checked) {
-                updateInstallmentsAfterTotalChange();
-                calculateBalance();
-            }
-
-            refreshChargeModalPreviewIfOpen();
-        }
-
-        function refreshChargeModalPreviewIfOpen() {
-            const modalEl = document.getElementById('chargeModal');
-            if (!modalEl) return;
-            const isOpen = modalEl.classList.contains('show');
-            if (!isOpen) return;
-
-            const productIndex = parseInt(document.getElementById('chargeProduct').value, 10);
-            const percent = parseFloat(document.getElementById('chargePercent').value) || 0;
-            const preview = document.getElementById('chargeModalPreview');
-            if (!preview || !Number.isFinite(productIndex)) return;
-
-            const unitPrice = getProductUnitPriceByIndex(productIndex);
-            const qty = getProductQtyByIndex(productIndex);
-            const amount = computeChargeAmountForProduct(productIndex, percent);
-            preview.innerText = `Unit: $${unitPrice.toFixed(2)} | Qty: ${qty} | Percent: ${percent.toFixed(2)}% | Amount: $${amount.toFixed(2)}`;
+            container.innerHTML = '';
         }
 
         document.querySelector("#productTable tbody").addEventListener('input', function(e) {
@@ -2339,8 +1876,6 @@
             const table = document.querySelector("#productTable tbody");
 
             existingEstimateItems.forEach(item => {
-                const currentIndex = productIndex;
-
                 const qty = parseFloat(item.quantity) || 1;
                 const price = parseFloat(item.price) || 0;
                 const productPrice = parseFloat(item.product_price) || 0;
@@ -2350,14 +1885,12 @@
 
                 const row = document.createElement("tr");
                 row.innerHTML = `   
-                  <td>
-                        <input type="text" name="products[${currentIndex}][name]" class="form-control" value="${item.name}" readonly>
-                        <input type="hidden" name="products[${currentIndex}][tax]" value="${tax.toFixed(2)}">
-                        <input type="hidden" name="products[${currentIndex}][gratuity]" value="${gratuity.toFixed(2)}">
-                        <input type="hidden" name="products[${currentIndex}][product_total_price]" value="${productPrice.toFixed(2)}">
-                  </td>
-                    <td><input type="number" name="products[${currentIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
-                    <td><input type="number" name="products[${currentIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                  <td><input type="text" name="products[${productIndex}][name]" class="form-control" value="${item.name}" readonly></td>
+                    <td><input type="number" name="products[${productIndex}][quantity]" class="form-control" value="${qty}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][price]" class="form-control" value="${price.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][tax]" class="form-control" value="${tax.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][gratuity]" class="form-control" value="${gratuity.toFixed(2)}" oninput="updateTotal(this)" step="0.01" min="0"></td>
+                    <td><input type="number" name="products[${productIndex}][product_total_price]" class="form-control" value="${productPrice.toFixed(2)}" readonly step="0.01" min="0"></td>
                     <td class="total-cell">$${total.toFixed(2)}</td>
                     <td class="no-print"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
             `;
@@ -2402,157 +1935,11 @@
 
         window.onload = function() {
             loadExistingItems();
-            syncTaxProductList();
-
-            const rows = document.querySelectorAll("#productTable tbody tr");
-            const indices = [];
-            rows.forEach(row => {
-                const index = getProductIndexFromRow(row);
-                if (index !== null) indices.push(index);
-            });
-            taxes.forEach(t => {
-                if (!Array.isArray(t.appliedProducts) || t.appliedProducts.length === 0) {
-                    t.appliedProducts = indices.slice();
-                }
-            });
-
+            renderTaxes();
             renderDiscounts();
-            refreshTaxesUIAndTotals();
+            calculateTotals();
             loadExistingInstallments();
         };
-
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('remove-tax')) {
-                const taxUid = e.target.dataset.taxUid;
-                taxes = taxes.filter(t => String(t.uid) !== String(taxUid));
-                const activeUid = document.getElementById('taxModalActiveUid') ? document.getElementById('taxModalActiveUid').value : '';
-                if (activeUid && String(activeUid) === String(taxUid)) {
-                    $('#taxModal').modal('hide');
-                }
-                refreshTaxesUIAndTotals();
-                return;
-            }
-
-            const badge = e.target && e.target.classList && e.target.classList.contains('badge') ? e.target : null;
-            if (badge && badge.dataset && badge.dataset.taxUid) {
-                openTaxModalForTax(badge.dataset.taxUid);
-            }
-        });
-
-        $('#taxModal').on('show.bs.modal', function() {
-            if (taxModalPendingOpenUid) {
-                const uid = taxModalPendingOpenUid;
-                taxModalPendingOpenUid = null;
-                openTaxModalForTax(uid);
-                return;
-            }
-            resetTaxModalForNewTax();
-        });
-
-        document.addEventListener('change', function(e) {
-            if (!e.target || !e.target.classList || !e.target.classList.contains('apply-tax-check')) return;
-
-            const activeUidEl = document.getElementById('taxModalActiveUid');
-            const activeUid = activeUidEl ? activeUidEl.value : '';
-            if (!activeUid) return;
-
-            const tax = taxes.find(t => String(t.uid) === String(activeUid));
-            if (!tax) return;
-
-            const selectedProductCheckboxes = document.querySelectorAll('.apply-tax-check:checked');
-            tax.appliedProducts = Array.from(selectedProductCheckboxes)
-                .map(cb => parseInt(cb.value, 10))
-                .filter(v => Number.isFinite(v));
-
-            refreshTaxesUIAndTotals();
-        });
-
-        document.getElementById('taxPercent').addEventListener('input', function() {
-            const activeUid = document.getElementById('taxModalActiveUid').value;
-            const tax = activeUid ? taxes.find(t => String(t.uid) === String(activeUid)) : null;
-            if (tax) {
-                tax.percent = parseFloat(this.value) || 0;
-            }
-            renderTaxModalAppliedProducts();
-            refreshTaxesUIAndTotals();
-        });
-
-        document.getElementById('taxName').addEventListener('input', function() {
-            const activeUid = document.getElementById('taxModalActiveUid').value;
-            const tax = activeUid ? taxes.find(t => String(t.uid) === String(activeUid)) : null;
-            if (tax) {
-                tax.name = this.value;
-            }
-            refreshTaxesUIAndTotals();
-        });
-
-        document.addEventListener('change', function(e) {
-            if (e.target && e.target.classList && e.target.classList.contains('apply-tax-check')) {
-                const activeUid = document.getElementById('taxModalActiveUid') ? document.getElementById('taxModalActiveUid').value : '';
-                if (!activeUid) {
-                    renderTaxModalAppliedProducts();
-                    return;
-                }
-                const tax = taxes.find(t => String(t.uid) === String(activeUid));
-                if (!tax) return;
-                const pid = parseInt(e.target.value, 10);
-                if (!Number.isFinite(pid)) return;
-                const set = new Set((tax.appliedProducts || []).map(String));
-                if (e.target.checked) {
-                    set.add(String(pid));
-                } else {
-                    set.delete(String(pid));
-                }
-                tax.appliedProducts = Array.from(set).map(v => parseInt(v, 10)).filter(v => Number.isFinite(v));
-                if (!tax.appliedProducts.length) {
-                    taxes = taxes.filter(t => String(t.uid) !== String(activeUid));
-                    $('#taxModal').modal('hide');
-                }
-                renderTaxModalAppliedProducts();
-                refreshTaxesUIAndTotals();
-            }
-        });
-
-        document.getElementById('taxDetailsName').addEventListener('input', function() {
-            const uid = document.getElementById('activeTaxUid').value;
-            const tax = taxes.find(t => String(t.uid) === String(uid));
-            if (!tax) return;
-            tax.name = this.value;
-            refreshTaxesUIAndTotals();
-        });
-
-        document.getElementById('taxDetailsPercent').addEventListener('input', function() {
-            const uid = document.getElementById('activeTaxUid').value;
-            const tax = taxes.find(t => String(t.uid) === String(uid));
-            if (!tax) return;
-            tax.percent = parseFloat(this.value) || 0;
-            refreshTaxesUIAndTotals();
-        });
-
-        document.addEventListener('change', function(e) {
-            if (e.target && e.target.classList && e.target.classList.contains('tax-details-apply')) {
-                const uid = document.getElementById('activeTaxUid').value;
-                const tax = taxes.find(t => String(t.uid) === String(uid));
-                if (!tax) return;
-
-                const pid = parseInt(e.target.value, 10);
-                if (!Number.isFinite(pid)) return;
-
-                const appliedSet = new Set((tax.appliedProducts || []).map(String));
-                if (e.target.checked) {
-                    appliedSet.add(String(pid));
-                } else {
-                    appliedSet.delete(String(pid));
-                }
-                tax.appliedProducts = Array.from(appliedSet).map(v => parseInt(v, 10)).filter(v => Number.isFinite(v));
-
-                if (!tax.appliedProducts.length) {
-                    taxes = taxes.filter(t => String(t.uid) !== String(uid));
-                    $('#taxDetailsModal').modal('hide');
-                }
-                refreshTaxesUIAndTotals();
-            }
-        });
 
 
 

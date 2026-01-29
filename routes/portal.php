@@ -128,7 +128,9 @@ Route::middleware(['custom_auth:web'])->group(function () {
     Route::post('contract-accept/{slug}', [ContractController::class, 'acceptContract'])->name('contract.accept');
     Route::post('contract-reject/{slug}', [ContractController::class, 'rejectContract'])->name('contract.reject');
     Route::post('contract-update/{slug}', [ContractController::class, 'updateContract'])->name('contract.update-contract');
+    Route::get('contracts/modify/{any}', [ContractController::class, 'modifyContractPage'])->name('contract.get-modify');
     Route::post('contract-modify', [ContractController::class, 'modifyContract'])->name('contract.modify');
+    Route::get('contracts/show-modification/{any}', [ContractController::class, 'showModificationPage'])->name('contract.get-show-modification');
 
 
     Route::get('event-calander', [ContractController::class, 'eventCalander'])->name('event-calander');
