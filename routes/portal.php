@@ -83,8 +83,8 @@ use Auth0\Laravel\Facade\Auth0;
 // });
 
     Route::get('/portal/login', [Auth0LoginController::class, 'login'])->name('admin.login');
-    Route::get('/portal/callback', [Auth0LoginController::class, 'callback']);
-    Route::get('/portal/logout', [Auth0LoginController::class, 'logout']);
+    Route::get('/portal/callback', [Auth0LoginController::class, 'callback'])->name('portal.callback');
+    Route::get('/portal/logout', [Auth0LoginController::class, 'logout'])->name('portal.logout');
 
     Route::match(['get', 'post'], 'forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('admin.forgot-password');
     Route::match(['get', 'post'], 'reset-password/{any}', [ResetPasswordController::class, 'resetPassword'])->name('admin.reset-password');

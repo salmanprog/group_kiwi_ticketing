@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Libraries\VideoStream\VideoStream;
+use App\Http\Controllers\Portal\Auth\Auth0LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,10 @@ Route::get('/', function(){
     return redirect()->route('admin.login');
     // return view('welcome');
 })->name('home');
+
+Route::get('/portal/login', [Auth0LoginController::class, 'login'])->name('admin.login');
+    Route::get('/portal/callback', [Auth0LoginController::class, 'callback'])->name('portal.callback');
+    Route::get('/portal/logout', [Auth0LoginController::class, 'logout'])->name('portal.logout');
 
 Route::get('/cache-clear', function(){
 
