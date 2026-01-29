@@ -26,33 +26,26 @@ class Auth0LoginController extends Controller
 
     public function callback()
     {
+        // Initialize the SDK as you already have
         $auth0 = new Auth0([
-        'domain'        => env('AUTH0_DOMAIN'),
-        'clientId'      => env('AUTH0_CLIENT_ID'),
-        'clientSecret'  => env('AUTH0_CLIENT_SECRET'),
-        'redirectUri'   => env('AUTH0_REDIRECT_URI'),
-        'cookieSecret'  => substr(base64_decode(str_replace('base64:', '', env('APP_KEY'))), 0, 32),
-        'scope'         => explode(' ', env('AUTH0_SCOPE', 'openid profile email')),
-        'strategy'      => 'webapp',
-    ]);
+            'domain'        => env('AUTH0_DOMAIN'),
+            'clientId'      => env('AUTH0_CLIENT_ID'),
+            'clientSecret'  => env('AUTH0_CLIENT_SECRET'),
+            'redirectUri'   => env('AUTH0_REDIRECT_URI'),
+            'cookieSecret'  => substr(base64_decode(str_replace('base64:', '', env('APP_KEY'))), 0, 32),
+            'strategy'      => 'webapp',
+        ]);
 
-    $user = $auth0->getUser();
+        try {
+            $auth0->exchange();
+            $user = $auth0->getUser();
+            // Optional: Get full credentials (tokens + user)
+            // $credentials = $auth0->getCredentials();
 
-    print_r($user);
-    die();
-
-    if (!$user) {
-        return redirect('/portal/login')->with('error', 'Login failed.');
-    }
-
-    $localUser = \App\Models\User::firstOrCreate(
-        ['auth0_id' => $user['sub']],
-        ['name' => $user['name'] ?? '', 'email' => $user['email'] ?? '']
-    );
-
-    auth()->login($localUser);
-
-    return redirect()->intended('/portal/dashboard');
+            dd($user); 
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 
     public function logout()
