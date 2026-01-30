@@ -146,7 +146,9 @@ Route::middleware(['custom_auth:web'])->group(function () {
     Route::post('/organization/notes/save', [ContactActivityLogController::class, 'saveNotes'])
         ->name('organization.notes.save');
     Route::resource('user-estimate-items', UserEstimateItemController::class);
- Route::post('/store/estimate/taxes', [UserEstimateItemController::class, 'storeEstimateTaxes'])
+    Route::post('/store/estimate/taxes', [UserEstimateItemController::class, 'storeEstimateTaxes'])
         ->name('store.estimate.taxes');
+    Route::post('/remove/estimate/taxes', [UserEstimateItemController::class, 'removeTax'])
+        ->name('remove.estimate.taxes');
 
 });

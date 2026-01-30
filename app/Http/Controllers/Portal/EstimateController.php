@@ -156,6 +156,7 @@ class EstimateController extends CRUDCrontroller
     {
         $company = CompanyUser::getCompany(Auth::user()->id);
         $estimate = Estimate::where('slug', $slug)->first();
+        
         $this->__data['clients'] = Client::where('company_id', $company->id)->get();
         $this->__data['products'] = Product::where('company_id', $company->id)->get();
         $this->__data['installments'] = EstimateInstallment::where('estimate_id', $estimate->id)->get();
@@ -164,6 +165,8 @@ class EstimateController extends CRUDCrontroller
             ->join('users', 'users.id', '=', 'user_activity_logs.user_id')
             ->where('module', 'estimate')->where('module_id', $estimate->id)
             ->orderBy('created_at', 'desc')->get();
+
+        $this->__data['taxes'] = EstimateInstallment::where('estimate_id', $estimate->id)->get();
     }
 
     /**
@@ -204,7 +207,6 @@ class EstimateController extends CRUDCrontroller
         ])
             ->where('slug', $slug)
             ->first();
-
         $this->__data['estimate'] = $record;
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
             ->join('users', 'users.id', '=', 'user_activity_logs.user_id')

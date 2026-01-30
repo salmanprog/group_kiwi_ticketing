@@ -201,5 +201,32 @@ class UserEstimateItemController extends CRUDCrontroller
     }
 
 
+    public function removeTax(Request $request)
+    {
+        $request->validate([
+            'tax_uid' => 'required|integer'
+        ]);
+
+        $tax = \App\Models\EstimateTax::find($request->tax_uid);
+
+        if ($tax) {
+
+            \App\Models\UserEstimateItemTax::where(
+                'estimate_tax_id',
+                $tax->id
+            )->delete();
+
+            $tax->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tax removed successfully!',
+            'data' => $request->tax_uid
+        ]);
+    }
+
+
+
 
 }

@@ -889,7 +889,7 @@
                                     <table class="table summary-table cust-main-table">
                                         <tr>
                                             <th>Subtotal</th>
-                                            <td id="subtotalCell">$0.00</td>
+                                            <td id="subtotalCell">${{$record->subtotal ?? 0}}</td>
                                         </tr>
                                         <tr>
                                             <th>Taxes</th>
@@ -1779,16 +1779,17 @@ function addOrUpdateTax() {
         tax.name = name;
         tax.percent = percent;
         tax.appliedProducts = selectedProductIndexes;
+        tax.productIds = selectedProductIds;
     } else {
         tax = {                       // 👈 IMPORTANT
             uid: taxUid,
             name,
             percent,
-            appliedProducts: selectedProductIndexes
+            appliedProducts: selectedProductIndexes,
+            productIds: selectedProductIds
         };
         taxes.push(tax);              // 👈 push the SAME object
     }
-
 
     // --- Update appliedTaxes JSON in table rows ---
     allRows.forEach((row) => {
@@ -2051,7 +2052,6 @@ function deleteTax(taxUid) {
             if (!taxes.length) {
                 return;
             }
-
             taxes.forEach((tax, index) => {
                 const div = document.createElement('div');
                 div.classList.add('tax-row', 'mb-2');
@@ -2060,7 +2060,12 @@ function deleteTax(taxUid) {
                     <span class="badge badge-success" style="cursor:pointer;" data-tax-uid="${tax.uid}">
                         ${tax.name} ${tax.percent}% ($${amount.toFixed(2)})
                     </span>
-                    <button type="button" class="btn btn-danger btn-sm ml-2 remove-tax" data-tax-uid="${tax.uid}">×</button>
+                    <button 
+                            type="button" 
+                            class="btn btn-danger btn-sm ml-2"
+                            onclick="removeTax('${tax.uid}', this)">
+                            ×
+                        </button>
                     <input type="hidden" name="taxes[${index}][id]" value="${tax.uid}">
                     <input type="hidden" name="taxes[${index}][name]" value="${tax.name}">
                     <input type="hidden" name="taxes[${index}][percent]" value="${tax.percent}">
@@ -2068,6 +2073,47 @@ function deleteTax(taxUid) {
                 container.appendChild(div);
             });
         }
+
+    function removeTax(taxUid, btn) {
+
+            if (!confirm('Are you sure you want to remove this tax?')) return;
+
+            $.ajax({
+                url: `{{ route('remove.estimate.taxes') }}`,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    tax_uid: taxUid
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+
+                    if (response.success) {
+
+                        // 🔹 Remove from UI
+                       const taxWrapper = $(btn).closest('.tax-item');
+                            taxWrapper.remove();
+
+                            taxes = taxes.filter(t => String(t.uid) !== String(taxUid));
+
+                            console.log('Updated taxes:', taxes);
+
+                            refreshTaxesUIAndTotals();
+
+                    } else {
+                        alert('Failed to remove tax');
+                    }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    alert('Something went wrong');
+                }
+            });
+        }
+
+
 
      function renderTaxBreakdown() {
     const container = document.getElementById('taxBreakdown');
@@ -2088,6 +2134,8 @@ function deleteTax(taxUid) {
                 subtotal: 0
             };
         }
+
+        console.log('groups ------------------->>>',groups)
 
         const applied = (tax && Array.isArray(tax.appliedProducts) ? tax.appliedProducts : []).map(String);
         applied.forEach(pidStr => {
@@ -2317,6 +2365,7 @@ function deleteTax(taxUid) {
                 subtotal += qty * price;
             });
 
+            console.log(rows)
             let totalTaxAmount = 0;
             rows.forEach(row => {
                 const index = getProductIndexFromRow(row);
@@ -2340,7 +2389,7 @@ function deleteTax(taxUid) {
             if (totalDiscountAmount > subtotal) totalDiscountAmount = subtotal;
 
             const total = subtotal + totalTaxAmount - totalDiscountAmount;
-
+            
             document.getElementById("subtotalCell").innerText = `$${subtotal.toFixed(2)}`;
             document.getElementById("subtotalInput").value = subtotal.toFixed(2);
             document.getElementById("grandtotalCell").innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
