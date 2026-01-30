@@ -130,6 +130,7 @@ class UserEstimateItemController extends CRUDCrontroller
     {
         $request = $this->__request;
         $ids = $request->input('ids', []); // array of selected product IDs
+        $userEstimateId = $request->input('user_estimate_id');
 
         if (empty($ids)) {
             return response()->json([
@@ -143,13 +144,15 @@ class UserEstimateItemController extends CRUDCrontroller
 
         foreach ($products as $product) {
             $productItem = \App\Models\EstimateItem::create([
-                'user_estimate_id' => 0, // adjust as needed
+                'user_estimate_id' => $userEstimateId, // adjust as needed
                 'name' => $product->name,
                 'quantity' => 1,
                 'unit' => 'each',
+                'product_price' => $product->price,
                 'price' => $product->price,
                 'total_price' => 0, // you can calculate later
-                'tax' => 0
+                'tax' => 0,
+                'gratuity' => 0
             ]);
 
             $createdItems[] = $productItem;
@@ -166,12 +169,13 @@ class UserEstimateItemController extends CRUDCrontroller
 
     public function storeEstimateTaxes(Request $request)
     {
-
+        $request = $this->__request;
+        $estimateId = $request->input('estimate_id');
         $tax = \App\Models\EstimateTax::updateOrCreate(
             ['id' => $request['id'] ?? null],
             [
                 'name' => $request['name'],
-                'estimate_id'=>0,
+                'estimate_id'=>$estimateId,
                 'percent' => $request['percent'],
                 'amount'=>0
             ]

@@ -806,7 +806,7 @@
                         <form method="POST" action="{{ route('estimate.update', ['estimate' => $record->slug]) }}" id="update-estimate-form">
                             @csrf
                             @method('PUT')
-
+                                <input type="hidden" id="user_estimate_id" value="{{ $record->id }}">
                             <div class="form-row">
                                 @if ($record->contract_id == null)
                                     <div class="form-group">
@@ -1666,6 +1666,7 @@ function addSelectedProducts() {
     const table = $("#productTable tbody");
     const checkboxes = $(".product-checkbox:checked");
     const ids = checkboxes.map(function () { return $(this).data("id"); }).get();
+    const userEstimateId = $("#user_estimate_id").val();
 
     if (ids.length === 0) return;
 
@@ -1680,6 +1681,7 @@ function addSelectedProducts() {
         dataType: "json",
         data: {
             ids: ids,
+            user_estimate_id: userEstimateId,
             _token: "{{ csrf_token() }}"
         },
         success: function (response) {
@@ -1817,6 +1819,7 @@ function addOrUpdateTax() {
     });
 
     // --- Call backend API to create/update tax ---
+    const estimateId = $("#user_estimate_id").val();
     $.ajax({
         url: "{{ route('store.estimate.taxes') }}", // always POST
         method: "POST",
@@ -1826,6 +1829,7 @@ function addOrUpdateTax() {
             name: name,
             percent: percent,
             product_ids: selectedProductIds,
+            estimate_id: estimateId,
             _token: "{{ csrf_token() }}"
         },
         success: function(response) {

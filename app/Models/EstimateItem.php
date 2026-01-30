@@ -32,9 +32,11 @@ class EstimateItem extends Model
         'name',
         'quantity',
         'unit',
+        'product_price',
         'price',
         'total_price',
         'tax',
+        'gratuity',
         'created_at',
         'updated_at',
     ];
