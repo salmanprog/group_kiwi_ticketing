@@ -1709,7 +1709,7 @@ function addSelectedProducts() {
                 table.append(row);
             });
 
-            // Uncheck all checkboxes
+            // Uncheck all checkboxessss
             checkboxes.prop("checked", false);
 
              spinner.addClass("d-none");      // hide spinner
