@@ -45,7 +45,7 @@ Route::get('/', function(){
 
 Route::get('/portal/login', [Auth0LoginController::class, 'login'])->name('admin.login');
     Route::get('/portal/callback', [Auth0LoginController::class, 'callback'])->name('portal.callback');
-    Route::get('/portal/logout', [Auth0LoginController::class, 'logout'])->name('portal.logout');
+    Route::get('/portal/logout', [Auth0LoginController::class, 'logout'])->name('admin.logout');
 
 Route::get('/cache-clear', function(){
 
