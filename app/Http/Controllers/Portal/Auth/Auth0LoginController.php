@@ -59,13 +59,14 @@ class Auth0LoginController extends Controller
         try {
             $auth0->exchange();
             $auth0User = $auth0->getUser();
+            
             // Optional: Get full credentials (tokens + user)
             // $credentials = $auth0->getCredentials();
             if (!$auth0User || empty($auth0User['email'])) {
                 return redirect()->route('login')->with('error', 'Unable to fetch user email');
             }
 
-            $user = User::where('email', $auth0User['email'])->first();
+            $user = User::where('email', $auth0User['email'])->where('auth0_id', $auth0User['sub'])->first();
 
             if (!$user) {
                 // Create company
@@ -84,6 +85,7 @@ class Auth0LoginController extends Controller
                 $username = CompanyAdmin::generateUniqueUserName($auth0User['name']);
                 $companyAdmin = new CompanyAdmin();
                 $companyAdmin->user_group_id = 2;
+                $companyAdmin->auth0_id = $auth0User['sub'];
                 $companyAdmin->user_type = 'company';
                 $companyAdmin->slug = $username;
                 $companyAdmin->username = $username;
@@ -135,14 +137,30 @@ class Auth0LoginController extends Controller
 
     public function logout()
     {
-        // Log out Laravel user
+        // Logout locally
         auth()->logout();
 
+        // Create Auth0 instance
+        $auth0 = new Auth0([
+            'domain'        => env('AUTH0_DOMAIN'),
+            'clientId'      => env('AUTH0_CLIENT_ID'),
+            'clientSecret'  => env('AUTH0_CLIENT_SECRET'),
+            'redirectUri'   => env('AUTH0_REDIRECT_URI'),
+            'cookieSecret'  => substr(
+                base64_decode(str_replace('base64:', '', env('APP_KEY'))),
+                0,
+                32
+            ),
+            'strategy'      => 'webapp',
+        ]);
+         
         // Redirect to Auth0 logout
-        return Auth0::logout(
-            returnTo: route('portal.login')
-        );
+        return redirect(
+        $auth0->logout('http://127.0.0.1:8000/portal/login')
+    );
     }
+
+
 
     protected function redirectByRole($user)
     {
