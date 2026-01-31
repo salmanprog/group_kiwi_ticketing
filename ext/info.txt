@@ -6,4 +6,5 @@ RewriteRule (.*) /public/$1 [L]
 
 
 ==============================htaccess end------------------------------------
-ALTER TABLE `organizations` ADD `description` LONGTEXT NULL DEFAULT NULL AFTER `department`;
+ALTER TABLE `users` ADD `auth0_id` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `user_group_id`;
+ALTER TABLE `user_estimate_items` ADD `product_id` INT(11) NOT NULL DEFAULT '0' AFTER `user_estimate_id`;

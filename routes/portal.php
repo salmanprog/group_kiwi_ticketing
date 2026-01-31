@@ -25,6 +25,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Portal\ContractController;
 use App\Http\Controllers\Portal\ReportingController;
 use App\Http\Controllers\Portal\ContactActivityLogController;
+use App\Http\Controllers\Portal\EstimateItemController;
 use Auth0\Laravel\Facade\Auth0;
 
 
@@ -194,5 +195,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('company/ajax-listing', [ReportingController::class, 'ajaxListing'])->name('company.ajax-listing');
     Route::post('/organization/notes/save', [ContactActivityLogController::class, 'saveNotes'])
         ->name('organization.notes.save');
+
+
+    Route::post('/estimate-products/add', [EstimateItemController::class, 'productAdd'])
+    ->name('estimate.products.add');
+    Route::post('/estimate-products/update', [EstimateItemController::class, 'updateItem'])
+    ->name('estimate.products.update');
+    Route::post('/estimate-products/delete', [EstimateItemController::class, 'deleteItem'])
+    ->name('estimate.products.delete');
 
 });

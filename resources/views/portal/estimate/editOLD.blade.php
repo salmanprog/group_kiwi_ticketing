@@ -724,82 +724,82 @@
         }
     </style>
 
-    <section class="main-content">
-        <div class="row">
-            <div class="col-md-10 offset-md-1">
-                @include('portal.flash-message')
+<section class="main-content">
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        @include('portal.flash-message')
 
-                <div class="estimate-wrapper">
-                    {{-- Header --}}
-                    <div class="estimate-header">
-                        <div class="estimate-title">
-                            <i class="fas fa-file-invoice-dollar me-2"></i>Estimate
-                        </div>
-                        @if ($record->organization_deleted_at)
-                            <div class="deleted-alert">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <strong>Deleted:</strong> Organization has been deleted.
-                            </div>
-                        @endif
-
-                        <div class="estimate-meta">
-                            <span class="estimate-number">#{{ ucfirst($record->slug) }}</span>
-                            @switch($record->status)
-                                @case('draft')
-                                    <span class="status draft">
-                                        <i class="fas fa-edit me-1"></i>Draft
-                                    </span>
-                                @break
-
-                                @case('sent')
-                                    <span class="status sent">
-                                        <i class="fas fa-paper-plane me-1"></i>Sent
-                                    </span>
-                                @break
-
-                                @case('approved')
-                                    <span class="status approved">
-                                        <i class="fas fa-check-circle me-1"></i>Approved
-                                    </span>
-                                @break
-
-                                @case('rejected')
-                                    <span class="status rejected">
-                                        <i class="fas fa-times-circle me-1"></i>Rejected
-                                    </span>
-                                @break
-
-                                @case('revised')
-                                    <span class="status revised">
-                                        <i class="fas fa-redo me-1"></i>Revised
-                                    </span>
-                                @break
-                            @endswitch
-                        </div>
+        <div class="estimate-wrapper">
+            {{-- Header --}}
+            <div class="estimate-header">
+                <div class="estimate-title">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>Estimate
+                </div>
+                @if ($record->organization_deleted_at)
+                    <div class="deleted-alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Deleted:</strong> Organization has been deleted.
                     </div>
-                    {{-- Address Section --}}
-                    <div class="address-section">
-                        <div class="address-box">
-                            <h4><i class="fas fa-building me-2"></i>From</h4>
-                            <p>
-                                <strong>{{ $record->company->name }}</strong><br>
-                                <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
-                                <br>
-                                <strong>Email:</strong> {{ $record->company->email }}
-                            </p>
-                        </div>
-                        <div class="address-box">
-                            <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
-                            <p>
-                                <strong>{{ $record->organization_name }}</strong><br>
-                                {{ $record->organization_address_one }}
-                                <br>
-                                <strong>Email:</strong> {{ $record->organization_email }}
-                                <br>
-                                <strong>Phone:</strong> {{ $record->organization_phone }}
-                            </p>
-                        </div>
-                    </div>
+                @endif
+
+                <div class="estimate-meta">
+                    <span class="estimate-number">#{{ ucfirst($record->slug) }}</span>
+                    @switch($record->status)
+                        @case('draft')
+                            <span class="status draft">
+                                <i class="fas fa-edit me-1"></i>Draft
+                            </span>
+                        @break
+
+                        @case('sent')
+                            <span class="status sent">
+                                <i class="fas fa-paper-plane me-1"></i>Sent
+                            </span>
+                        @break
+
+                        @case('approved')
+                            <span class="status approved">
+                                <i class="fas fa-check-circle me-1"></i>Approved
+                            </span>
+                        @break
+
+                        @case('rejected')
+                            <span class="status rejected">
+                                <i class="fas fa-times-circle me-1"></i>Rejected
+                            </span>
+                        @break
+
+                        @case('revised')
+                            <span class="status revised">
+                                <i class="fas fa-redo me-1"></i>Revised
+                            </span>
+                        @break
+                    @endswitch
+                </div>
+            </div>
+            {{-- Address Section --}}
+            <div class="address-section">
+                <div class="address-box">
+                    <h4><i class="fas fa-building me-2"></i>From</h4>
+                    <p>
+                        <strong>{{ $record->company->name }}</strong><br>
+                        <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
+                        <br>
+                        <strong>Email:</strong> {{ $record->company->email }}
+                    </p>
+                </div>
+                <div class="address-box">
+                    <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
+                    <p>
+                        <strong>{{ $record->organization_name }}</strong><br>
+                        {{ $record->organization_address_one }}
+                        <br>
+                        <strong>Email:</strong> {{ $record->organization_email }}
+                        <br>
+                        <strong>Phone:</strong> {{ $record->organization_phone }}
+                    </p>
+                </div>
+            </div>
 
                     {{-- Form Start --}}
                     <div class="form-section">
