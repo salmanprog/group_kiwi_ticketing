@@ -167,36 +167,39 @@ class Auth0LoginController extends Controller
             $idToken = $credentials->idToken;        // for external API
             $accessToken = $credentials->accessToken; // if needed for other API calls
 
+            
             if (!$auth0User || empty($auth0User['email'])) {
                 redirect($auth0->login());
             }
 
+            // print_r($auth0User);
+            // die();
              
-            $apiUrl = 'https://dev.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
+            // $apiUrl = 'https://dev.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
 
-            // Build query parameters
-            $queryParams = [
-                'userTokenId' => $idToken,
-                'domain' => env('AUTH0_DOMAIN'),
-            ];
+            // // Build query parameters
+            // $queryParams = [
+            //     'userTokenId' => $idToken,
+            //     'domain' => env('AUTH0_DOMAIN'),
+            // ];
 
-            // Send POST request with query string
-            $externalApiResponse = Http::timeout(60)
-                ->withHeaders([
-                    'Accept' => '*/*',
-                ])
-                ->post($apiUrl . '?' . http_build_query($queryParams));
+            // // Send POST request with query string
+            // $externalApiResponse = Http::timeout(60)
+            //     ->withHeaders([
+            //         'Accept' => '*/*',
+            //     ])
+            //     ->post($apiUrl . '?' . http_build_query($queryParams));
                 
-            if (!$externalApiResponse->successful()) {
-                logger()->error('External API call failed', [
-                    'status' => $externalApiResponse->status(),
-                    'body' => $externalApiResponse->body(),
-                ]);
+            // if (!$externalApiResponse->successful()) {
+            //     logger()->error('External API call failed', [
+            //         'status' => $externalApiResponse->status(),
+            //         'body' => $externalApiResponse->body(),
+            //     ]);
 
-                redirect($auth0->login());
-            }
+            //     redirect($auth0->login());
+            // }
 
-            $externalData = $externalApiResponse->json(); // store or use if needed
+            // $externalData = $externalApiResponse->json(); // store or use if needed
            
             // 5️⃣ Find or create local user
             $user = User::where('email', $auth0User['email'])
@@ -273,6 +276,8 @@ class Auth0LoginController extends Controller
                     return redirect()->route('client.dashboard');
             }
         } catch (\Throwable $e) {
+            print_r($e->getMessage());
+            die();
             logger()->error('Auth0 Callback Error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

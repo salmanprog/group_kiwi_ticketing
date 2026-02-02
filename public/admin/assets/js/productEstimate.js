@@ -52,48 +52,65 @@ $('.modal').on('hidden.bs.modal', function () {
 function updateTotals() {
     let subtotal = 0;
     let totalTax = 0;
-    let gratuityRate = 0;
+    let gratuityRate = 0; // update if you add gratuity input
     let total = 0;
 
-    // 1️⃣ Subtotal & Tax
+    /* -----------------------------
+       1️⃣ Subtotal (from products)
+    ------------------------------ */
     $('#productTable tbody tr').each(function () {
-        const rowText = $(this).find('.item-total').text().replace('$','').replace(',','').trim();
+        const rowText = $(this)
+            .find('.item-total')
+            .text()
+            .replace('$', '')
+            .replace(/,/g, '')
+            .trim();
+
         const rowTotal = parseFloat(rowText) || 0;
         subtotal += rowTotal;
-
-        // Tax
-        let rowTax = 0;
-        const taxDiv = $(this).find('small.text-muted');
-        if (taxDiv.length) {
-            const taxMatches = taxDiv.text().match(/\(([\d.]+)%\)/g);
-            if (taxMatches) {
-                taxMatches.forEach(t => {
-                    const percent = parseFloat(t.replace('(', '').replace('%)','')) || 0;
-                    rowTax += rowTotal * (percent/100);
-                });
-            }
-        }
-        totalTax += rowTax;
     });
 
-    // 2️⃣ Discount (percent only)
+    /* -----------------------------
+       2️⃣ Tax (from tfoot)
+       supports multiple taxes
+    ------------------------------ */
+    $('#productTable tfoot small.fw-semibold').each(function () {
+        const match = $(this).text().match(/([\d.]+)\s*%/);
+        if (match) {
+            const percent = parseFloat(match[1]) || 0;
+            totalTax += subtotal * (percent / 100);
+        }
+    });
+
+    /* -----------------------------
+       3️⃣ Discount (percent only)
+    ------------------------------ */
     const discountCell = $('.discount_percent').first();
     const discountPercent = discountCell.length
-        ? parseFloat(discountCell.text().replace('%','').trim()) || 0
+        ? parseFloat(discountCell.text().replace('%', '').trim()) || 0
         : 0;
+
     const discountAmount = subtotal * (discountPercent / 100);
 
-    // 3️⃣ Gratuity
+    /* -----------------------------
+       4️⃣ Gratuity (optional)
+    ------------------------------ */
     const gratuityAmount = subtotal * gratuityRate;
 
-    // 4️⃣ Total
+    /* -----------------------------
+       5️⃣ Total
+    ------------------------------ */
     total = subtotal - discountAmount + totalTax + gratuityAmount;
 
-    // 5️⃣ Remaining total (if paid input exists)
+    /* -----------------------------
+       6️⃣ Remaining amount
+    ------------------------------ */
     const paidAmount = parseFloat($('#paidAmount').val()) || 0;
     const remainingTotal = total - paidAmount;
 
-    // 6️⃣ Update UI
+    /* -----------------------------
+       7️⃣ Update UI
+    ------------------------------ */
     $('#subtotal').text('$' + subtotal.toFixed(2));
     $('#tax_amount').text('$' + totalTax.toFixed(2));
     $('#discount_amount').text('-$' + discountAmount.toFixed(2));
@@ -101,8 +118,9 @@ function updateTotals() {
     $('#total').text('$' + total.toFixed(2));
     $('#remainingTotal').text('$' + remainingTotal.toFixed(2));
     $('#remainingTotalInput').val(remainingTotal.toFixed(2));
-    $('#total_amount').val(remainingTotal.toFixed(2)); 
+    $('#total_amount').val(remainingTotal.toFixed(2));
 }
+
 
 // Add products dynamically
 $('#addProductsBtn').on('click', function (e) {
@@ -276,6 +294,47 @@ $(document).on('click', '.remove-item', function(){
         }
     });
 });
+
+
+$(document).on('click', '.save-note', function () {
+
+    const btn = $(this);
+    const url = btn.data('url');
+    const csrf = btn.data('csrf');
+    const estimateId = btn.data('estimateid');
+
+    const note = $('#estimate_note').val();
+    const terms_and_condition = $('#terms_and_condition').val();
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+            _token: csrf,
+            estimate_id: estimateId,
+            note: note,
+            terms_and_condition:terms_and_condition
+        },
+        success: function (res) {
+            $('#formMessage')
+                .removeClass('text-danger text-success')
+                .addClass(res.status ? 'text-success' : 'text-danger')
+                .text(res.message)
+                .fadeIn();
+
+            // Optional: update print preview instantly
+            $('.print-value').html('<strong>Note:</strong> ' + note);
+        },
+        error: function () {
+            $('#formMessage')
+                .removeClass('text-success')
+                .addClass('text-danger')
+                .text('Failed to save note')
+                .fadeIn();
+        }
+    });
+});
+
 
 // Initialize totals on page load
 $(document).ready(updateTotals);

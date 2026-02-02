@@ -1092,6 +1092,110 @@
 
                                 </div>
                             </div>
+
+                            <div class="form-row mt-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Note
+                                    </h5>
+                                    <div class="forref">
+                                        <textarea id="estimate_note" name="note" class="form-control editor" rows="4">{{ $estimate->note }}</textarea>
+                                        <div class="print-value">
+                                            <strong>Note:</strong>
+                                            {!! $estimate->note !!}
+                                        </div>
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm no-print save-note"
+                                                data-url="{{ route('estimate.note.save') }}"
+                                                data-csrf="{{ csrf_token() }}"
+                                                data-estimateid="{{ $estimate->id }}">
+                                            <i class="fas fa-save me-1"></i> Save Note
+                                        </button>
+
+                                        <div id="formMessage" class="mt-2" style="display:none;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row mt-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Terms & Conditions
+                                    </h5>
+                                    <div class="forref">
+                                        <textarea id="terms_and_condition" name="terms_and_condition" class="form-control editor" rows="4" placeholder="Enter terms and conditions">
+                                            {!! $estimate->terms ?? ($default_terms_and_condition->content ?? '') !!}</textarea>
+                                        
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm no-print save-note"
+                                                data-url="{{ route('estimate.note.save') }}"
+                                                data-csrf="{{ csrf_token() }}"
+                                                data-estimateid="{{ $estimate->id }}">
+                                            <i class="fas fa-save me-1"></i> Save Term and Condition
+                                        </button>
+                                        <div class="print-value mt-3">
+                                            <strong>Terms & Conditions (Preview):</strong>
+                                            <div class="preview-content">
+                                                @if (!empty($estimate->terms_and_condition))
+                                                    {!! $estimate->terms_and_condition !!}
+                                                @else
+                                                    {!! $default_terms_and_condition->content ?? '' !!}
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                                                        {{-- Action Buttons --}}
+                            <div class="form-row mt-4">
+                                <div class="col-12">
+                                    <div id="installmentValidationError"
+                                        class="text-danger mt-2"
+                                        style="display:none;">
+                                        Please schedule a payment first.
+                                    </div>
+
+                                    <div class="action-buttons">
+                                        @if ($estimate->status != 'approved')
+                                            <!-- <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-1"></i>Save
+                                            </button> -->
+                                        @endif
+
+                                        @if ($estimate->status == 'approved')
+                                            <input type="hidden" name="adjust" value="1">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-edit me-1"></i>Adjust
+                                            </button>
+                                        @endif
+
+                                        @if ($estimate->status != 'approved')
+                                            <input type="hidden" name="mail_send" value="1">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-paper-plane me-1"></i>Send to Client
+                                            </button>
+                                            <!-- <button type="button" class="btn btn-success" onclick="submitSentForm()">
+                                                    <i class="fas fa-paper-plane me-1"></i>Send
+                                                </button> -->
+                                        @endif
+                                        <!-- <button type="button" class="btn btn-outline-secondary no-print cust-bd"
+                                            onclick="window.print()">
+                                            <i class="fas fa-print me-1"></i>Print
+                                        </button> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Hidden form for Send action --}}
+                        @if ($record->status != 'approved')
+                            <form id="sentForm" method="POST" action="{{ route('estimate.save') }}"
+                                style="display: none;">
+                                @csrf
+                                <input type="hidden" name="slug" value="{{ $record->slug }}">
+                            </form>
+                        @endif
+                    </div>
                             
 
                     </div>
@@ -1401,7 +1505,38 @@
 
 
 
-
-
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet">
+@push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
+<script>
+$(document).ready(function () {
     
+    $('#estimate_note').summernote({
+        height: 180,
+        placeholder: 'Write note here...',
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline']],
+            ['para', ['ul', 'ol']],
+            ['insert', ['link']],
+            ['view', ['codeview']]
+        ]
+    });
+
+    $('#terms_and_condition').summernote({
+        height: 180,
+        placeholder: 'Write note here...',
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline']],
+            ['para', ['ul', 'ol']],
+            ['insert', ['link']],
+            ['view', ['codeview']]
+        ]
+    });
+});
+
+</script>
+ @endpush
 @endsection
+

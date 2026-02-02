@@ -56,7 +56,7 @@ $(document).ready(function() {
     // Submit form via AJAX
     $('#paymentScheduleForm').on('submit', function(e) {
         e.preventDefault();
-        const totalAmount = parseFloat($('#total_amount').val()) || 0;
+        const totalAmount = parseFloat($('#remaining_total').val()) || 0;
         if ($container.find('.inst-amount').length === 0) {
             $errorBox.text("Please add at least one installment.").show();
             return;
@@ -98,7 +98,7 @@ $(document).ready(function() {
 
         const remaining = totalAmount - paid;
         $('#remainingTotal').text('$' + (remaining > 0 ? remaining.toFixed(2) : '0.00'));
-        $('#remainingTotalInput').val(remaining > 0 ? remaining.toFixed(2) : '0.00');
+        $('#remaining_total').val(remaining > 0 ? remaining.toFixed(2) : '0.00');
     }
 
     // Generate new row HTML

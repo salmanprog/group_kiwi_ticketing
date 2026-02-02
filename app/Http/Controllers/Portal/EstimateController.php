@@ -380,4 +380,28 @@ class EstimateController extends CRUDCrontroller
             ->back()
             ->with('success', 'The estimate has been rejected');
     }
+
+    public function saveNote(Request $request)
+    {
+        $request->validate([
+            'estimate_id' => 'required',
+            'note' => 'nullable|string',
+        ]);
+        
+        if($request->note != ""){
+        Estimate::where('id', $request->estimate_id)
+            ->update(['note' => $request->note]);
+        }
+
+        if($request->terms_and_condition != ""){
+        Estimate::where('id', $request->estimate_id)
+            ->update(['terms' => $request->terms_and_condition]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Note saved successfully'
+        ]);
+    }
+
 }
