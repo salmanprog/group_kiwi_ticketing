@@ -219,8 +219,6 @@ class Auth0LoginController extends Controller
 
                 // Create company admin
                 $username = CompanyAdmin::generateUniqueUserName($auth0User['name']);
-                print_r($auth0User['sub']);
-                die();
                 $companyAdmin = CompanyAdmin::create([
                     'user_group_id' => 2,
                     'auth0_id' => $auth0User['sub'],
