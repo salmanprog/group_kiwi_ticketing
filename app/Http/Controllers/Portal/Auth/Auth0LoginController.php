@@ -172,7 +172,7 @@ class Auth0LoginController extends Controller
                 redirect($auth0->login());
             }
 
-            print_r($auth0User);
+            print_r($auth0User['sub']);
             die();
            
              
