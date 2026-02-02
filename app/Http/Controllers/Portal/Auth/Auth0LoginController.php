@@ -252,8 +252,6 @@ class Auth0LoginController extends Controller
 
             // 7️⃣ Redirect based on role
             $company = CompanyUser::getCompany($user->id);
-            print_r($company);
-            die();
             switch ($user->user_type) {
                 case 'admin':
                     return redirect()->route('admin.dashboard');
