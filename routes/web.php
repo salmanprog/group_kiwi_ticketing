@@ -47,7 +47,7 @@ Route::get('/portal/login', [Auth0LoginController::class, 'login'])->name('admin
     Route::get('/portal/callback', [Auth0LoginController::class, 'callback'])->name('portal.callback');
     Route::get('/portal/logout', [Auth0LoginController::class, 'logout'])->name('admin.logout');
 
-    Route::get('/login', [Auth0LoginController::class, 'redirectToAuth0'])->name('login');
+    
 Route::get('/cache-clear', function(){
 
     Artisan::call('cache:clear');
