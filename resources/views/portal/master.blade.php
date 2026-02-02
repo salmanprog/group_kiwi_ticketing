@@ -329,6 +329,82 @@
             color: #9FC23F;
             background: #ffffff;
         } */
+
+        /* platforms menue css */
+
+        .menu-platform {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+
+        }
+
+        .menu-platform:hover {
+            background-color: #9fc23f0d;
+        }
+
+        .icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            transition: transform 0.3s ease;
+        }
+
+        .group:hover .icon-box {
+            transform: scale(1.1);
+        }
+
+        .icon-box img {
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+
+        .platform-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .platform-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.3s ease;
+            line-height: 16px;
+        }
+
+        .group:hover .platform-title {
+            color: #3b82f6;
+        }
+
+        .platform-subtitle {
+            font-size: 9px;
+            font-weight: 500;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 14px;
+        }
+
+        .platform-subtitle svg {
+            flex-shrink: 0;
+        }
     </style>
 </head>
 
@@ -848,7 +924,7 @@
 
                                 <!-- Reporting -->
 
-                                <li data-type="child" class="nav-item">
+                                {{-- <li data-type="child" class="nav-item">
                                     <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
                                         data-expanded="false">
                                         <i class="fas fa-chart-bar"></i>
@@ -865,6 +941,74 @@
                                         <li class="nav-item">
                                             <a class="nav-link submenu-link" href="{{ route('get=all-company') }}">
                                                 Summary Report
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li> --}}
+                                <li data-type="child" class="nav-item">
+                                    <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
+                                        data-expanded="false">
+                                        <i class="fa-solid fa-cloud"></i>
+                                        <span class="toggle-none">Other Platforms</span>
+                                        <i class="fas fa-chevron-down arrow-icon"></i>
+                                    </a>
+                                    <ul class="submenu">
+                                        <!-- <li class="nav-item">
+                                                <a class="nav-link submenu-link"
+                                                    href="{{ route('get=all-company') }}">
+                                                    Company Report
+                                                </a>
+                                            </li> -->
+                                        <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg"
+                                                    alt="">
+                                            </div>
+                                            <a class="" href="https://dashboard.kiwiticketing.com/login?platform=rbac" target="_blank">
+                                                <div class="platform-text">
+                                                    <span class="platform-title">Kiwiticketing</span>
+                                                    <span class="platform-subtitle">
+                                                        Reporting Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8"
+                                                            height="8" viewBox="0 0 24 24" fill="none"
+                                                            stroke="currentColor" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round"
+                                                            aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path
+                                                                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6">
+                                                            </path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+
+                                            </a>
+                                        </li>
+                                        <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg"
+                                                    alt="">
+                                            </div>
+                                            <a class="" href="https://users.kiwiticketing.com/?platform=rbac" target="_blank">
+                                                <div class="platform-text">
+                                                    <span class="platform-title">Roles Dashboard</span>
+                                                    <span class="platform-subtitle">
+                                                        users Portal 
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8"
+                                                            height="8" viewBox="0 0 24 24" fill="none"
+                                                            stroke="currentColor" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round"
+                                                            aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path
+                                                                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6">
+                                                            </path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+
                                             </a>
                                         </li>
                                     </ul>
@@ -919,10 +1063,10 @@
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script src="{{ asset('admin/assets/js/custom.js') }}"></script>
     <script src="{{ asset('admin/assets/js/admin.js') }}"></script>
-    <script src="{{ asset('admin/assets/js/productEstimate.js') }}"></script> 
-    <script src="{{ asset('admin/assets/js/taxProductEstimate.js') }}"></script> 
+    <script src="{{ asset('admin/assets/js/productEstimate.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/taxProductEstimate.js') }}"></script>
     <script src="{{ asset('admin/assets/js/productDiscount.js') }}"></script>
-    <script src="{{ asset('admin/assets/js/productPayment.js') }}"></script> 
+    <script src="{{ asset('admin/assets/js/productPayment.js') }}"></script>
 
     <script>
         // Page load complete hone par skeleton hide karo
