@@ -260,12 +260,12 @@ class Auth0LoginController extends Controller
                     return redirect()->route('manager.dashboard');
 
                 case 'company':
-                    if ($company && $company->status == 0) {
-                        Auth::logout();
-                        return redirect()
-                            ->route('login')
-                            ->with('error', 'Company account disabled');
-                    }
+                    // if ($company && $company->status == 0) {
+                    //     Auth::logout();
+                    //     return redirect()
+                    //         ->route('login')
+                    //         ->with('error', 'Company account disabled');
+                    // }
                     return redirect()->route('company.dashboard');
 
                 case 'salesman':
