@@ -11,23 +11,97 @@ $('.modal').on('hidden.bs.modal', function () {
     $(this).find('#modalAlert').addClass('d-none').text('');
 });
 
-// Function to recalculate totals
+
+// function updateTotals() {
+//     let subtotal = 0;
+//     let totalTax = 0;
+//     let gratuityRate = 0; // 5% gratuity
+//     let total = 0;
+
+//     $('#productTable tbody tr').each(function() {
+//         const rowTotalText = $(this).find('.item-total').text().replace('$', '').replace(',', '');
+//         const rowTotal = parseFloat(rowTotalText) || 0;
+
+//         subtotal += rowTotal;
+
+//         // Calculate taxes for this row
+//         let rowTax = 0;
+//         const taxDiv = $(this).find('small.text-muted'); // contains taxes like "VAT (10%), Service (5%)"
+//         if (taxDiv.length) {
+//             const taxText = taxDiv.text(); // e.g., "VAT (10%), Service (5%)"
+//             const taxMatches = taxText.match(/\(([\d.]+)%\)/g); // ["(10%)", "(5%)"]
+//             if (taxMatches) {
+//                 taxMatches.forEach(t => {
+//                     const percent = parseFloat(t.replace('(', '').replace('%)', '')) || 0;
+//                     rowTax += rowTotal * (percent / 100);
+//                 });
+//             }
+//         }
+
+//         totalTax += rowTax;
+//     });
+
+//     const gratuityAmount = subtotal * gratuityRate;
+//     total = subtotal + totalTax + gratuityAmount;
+
+//     $('#subtotal').text('$' + subtotal.toFixed(2));
+//     $('#tax_amount').text('$' + totalTax.toFixed(2));
+//     $('#gratuity').text ? $('#gratuity').text('$' + gratuityAmount.toFixed(2)) : null;
+//     $('#total').text('$' + total.toFixed(2));
+// }
 function updateTotals() {
     let subtotal = 0;
+    let totalTax = 0;
+    let gratuityRate = 0;
+    let total = 0;
 
-    $('#productTable tbody tr').each(function() {
-        const totalText = $(this).find('.item-total').text().replace('$', '');
-        subtotal += parseFloat(totalText) || 0;
+    // 1️⃣ Subtotal & Tax
+    $('#productTable tbody tr').each(function () {
+        const rowText = $(this).find('.item-total').text().replace('$','').replace(',','').trim();
+        const rowTotal = parseFloat(rowText) || 0;
+        subtotal += rowTotal;
+
+        // Tax
+        let rowTax = 0;
+        const taxDiv = $(this).find('small.text-muted');
+        if (taxDiv.length) {
+            const taxMatches = taxDiv.text().match(/\(([\d.]+)%\)/g);
+            if (taxMatches) {
+                taxMatches.forEach(t => {
+                    const percent = parseFloat(t.replace('(', '').replace('%)','')) || 0;
+                    rowTax += rowTotal * (percent/100);
+                });
+            }
+        }
+        totalTax += rowTax;
     });
 
-    const tax = subtotal * 0.10;       // 10% Tax
-    const gratuity = subtotal * 0.05;  // 5% Gratuity
-    const total = subtotal + tax + gratuity;
+    // 2️⃣ Discount (percent only)
+    const discountCell = $('.discount_percent').first();
+    const discountPercent = discountCell.length
+        ? parseFloat(discountCell.text().replace('%','').trim()) || 0
+        : 0;
+    const discountAmount = subtotal * (discountPercent / 100);
 
+    // 3️⃣ Gratuity
+    const gratuityAmount = subtotal * gratuityRate;
+
+    // 4️⃣ Total
+    total = subtotal - discountAmount + totalTax + gratuityAmount;
+
+    // 5️⃣ Remaining total (if paid input exists)
+    const paidAmount = parseFloat($('#paidAmount').val()) || 0;
+    const remainingTotal = total - paidAmount;
+
+    // 6️⃣ Update UI
     $('#subtotal').text('$' + subtotal.toFixed(2));
-    $('#tax').text('$' + tax.toFixed(2));
-    $('#gratuity').text('$' + gratuity.toFixed(2));
+    $('#tax_amount').text('$' + totalTax.toFixed(2));
+    $('#discount_amount').text('-$' + discountAmount.toFixed(2));
+    $('#gratuity').length && $('#gratuity').text('$' + gratuityAmount.toFixed(2));
     $('#total').text('$' + total.toFixed(2));
+    $('#remainingTotal').text('$' + remainingTotal.toFixed(2));
+    $('#remainingTotalInput').val(remainingTotal.toFixed(2));
+    $('#total_amount').val(remainingTotal.toFixed(2)); 
 }
 
 // Add products dynamically
@@ -107,7 +181,7 @@ $('#addProductsBtn').on('click', function (e) {
 
                 // Update totals
                 updateTotals();
-
+                window.location.reload();
             } else {
                 showModalMessage($('#productModal'), res.message || 'Unable to add products', 'danger');
             }

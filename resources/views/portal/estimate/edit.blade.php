@@ -878,7 +878,21 @@
                                                 @if($estimate && $estimate->items->count())
                                                     @foreach($estimate->items as $item)
                                                         <tr data-id="{{ $item->id }}">
-                                                            <td>{{ $item->name }}</td>
+                                                            <td>
+                                                                {{ $item->name }}
+                                                                @if($item->itemTaxes && $item->itemTaxes->count())
+                                                                    <small class="text-muted d-block" data-taxes='[
+                                                                                                    @foreach($item->itemTaxes as $tax)
+                                                                                                        {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if(!$loop->last),@endif
+                                                                                                    @endforeach
+                                                                                                ]'>
+                                                                                Apply Taxes: 
+                                                                                @foreach($item->itemTaxes as $tax)
+                                                                                    {{ $tax->name }}@if(!$loop->last), @endif
+                                                                                @endforeach
+                                                                    </small>
+                                                                @endif
+                                                            </td>
                                                             <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
                                                             <td>${{ number_format($item->price, 2) }}</td>
                                                             <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
@@ -916,22 +930,68 @@
                                                     <th id="subtotal">$0.00</th>
                                                     <th></th>
                                                 </tr>
+
+                                                @if($estimate && $estimate->taxes->count())
                                                 <tr>
-                                                    <th colspan="3" class="text-end">Tax (10%):</th>
-                                                    <th id="tax">$0.00</th>
+                                                    <th colspan="3" class="text-end">Tax:
+                                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                                            @foreach($estimate->taxes as $tax)
+                                                                <div class="border rounded px-2 py-1 d-flex align-items-center gap-1"
+                                                                    data-tax-id="{{ $tax->id }}">
+
+                                                                    <small class="fw-semibold">
+                                                                        {{ $tax->name }} ({{ $tax->percent }}%)
+                                                                    </small>
+
+                                                                    <button class="btn btn-sm btn-link text-primary edit-tax"
+                                                                            data-tax-id="{{ $tax->id }}"
+                                                                            data-url="{{ route('estimate.tax.get') }}"
+                                                                            data-update-url="dsfsdf"
+                                                                            data-csrf="{{ csrf_token() }}"
+                                                                            data-estimateid="{{ $estimate->id }}"
+                                                                            data-toggle="modal"
+                                                                            data-target="#editTaxModal">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+
+                                                                    <button class="btn btn-sm btn-link text-danger p-0 delete-tax"
+                                                                            data-url="{{ route('estimate.tax.delete', $tax->id) }}"
+                                                                            data-csrf="{{ csrf_token() }}">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </th>
+                                                    <th id="tax_amount">${{ number_format($estimate->taxes->sum('amount'), 2) }}</th>
                                                     <th></th>
                                                 </tr>
-                                                <tr>
-                                                    <th colspan="3" class="text-end">Gratuity (5%):</th>
-                                                    <th id="gratuity">$0.00</th>
-                                                    <th></th>
+                                                @endif
+                                               @if($estimate && $estimate->discounts->count())
+                                                <tr class="fw-bold discount-row">
+                                                    @foreach($estimate->discounts as $discount)
+                                                        <th colspan="3" class="text-end">
+                                                            Discount {{ $discount->name }}
+                                                             <button class="btn btn-sm btn-link text-danger p-0 delete-discount"
+                                                                    data-url="{{ route('estimate.product.discount.delete', $discount->id) }}"
+                                                                    data-csrf="{{ csrf_token() }}">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </th>
+                                                        <th class="discount_percent">
+                                                            {{ $discount->value }} %
+                                                        </th>
+                                                        <th></th>
+                                                    @endforeach
                                                 </tr>
-                                                <tr>
+                                                @endif
+                                                <tr class="fw-bold">
                                                     <th colspan="3" class="text-end">Total:</th>
                                                     <th id="total">$0.00</th>
                                                     <th></th>
                                                 </tr>
                                             </tfoot>
+
                                         </table>
 
 
@@ -945,18 +1005,93 @@
                                             data-toggle="modal" data-target="#productModal">
                                             <i class="fas fa-cube me-1"></i>Add Product
                                         </button>
-                                        <button type="button" class="btn btn-info btn-sm no-print" data-toggle="modal"
-                                            data-target="#taxModal">
+                                        <button class="btn btn-info btn-sm no-print"
+                                                data-toggle="modal"
+                                                data-target="#taxModal"
+                                                data-url="{{ route('estimate.products.get') }}"
+                                                data-csrf="{{ csrf_token() }}"
+                                                data-estimateid="{{ $estimate->id }}">
                                             <i class="fas fa-percentage me-1"></i>Add Tax
                                         </button>
+                                        @if($estimate && $estimate->discounts->count())
+                                            @foreach($estimate->discounts as $discounts)
+                                                <button type="button" class="btn btn-warning btn-sm no-print"
+                                                    data-toggle="modal" data-target="#editdiscountModal"
+                                                    data-url="{{ route('estimate.product.discount.get') }}"
+                                                    data-csrf="{{ csrf_token() }}"
+                                                    data-estimateid="{{ $estimate->id }}"
+                                                    data-discountid="{{ $discounts->id }}"
+                                                >
+                                                    <i class="fas fa-tag me-1"></i>Edit Discount
+                                                </button>
+                                            @endforeach
+                                        @else
                                         <button type="button" class="btn btn-warning btn-sm no-print"
                                             data-toggle="modal" data-target="#discountModal">
                                             <i class="fas fa-tag me-1"></i>Add Discount
                                         </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
+                                        Payment Schdule
+                                    </h5>
+                                    <form id="paymentScheduleForm" method="POST" action="{{ route('estimate.installments.save', $estimate->id) }}">
+                                        @csrf
+                                        <input type="hidden" name="total_amount" id="total_amount" value="{{ $estimate->total_amount }}">
+                                        @php
+                                        $installments = $estimate->installments ?? collect();
+                                        @endphp
 
+                                        <div id="dynamicInputsContainer">
+                                            @foreach($installments as $inst)
+                                                <div class="row mb-2 installment-row">
+                                                    <div class="col-md-5">
+                                                        <input type="number" 
+                                                            name="installments[{{$loop->index}}][amount]" 
+                                                            class="form-control inst-amount" 
+                                                            value="{{ $inst->amount }}" 
+                                                            step="0.01" min="0" required>
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <input type="date" 
+                                                            name="installments[{{$loop->index}}][date]" 
+                                                            class="form-control inst-date" 
+                                                            value="{{ $inst->installment_date }}" 
+                                                            min="{{ date('Y-m-d') }}" required>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger w-100 btn-remove">×</button>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+
+                                        <hr>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0">Installment Schedule</h6>
+                                            <div id="installmentError" class="text-danger mt-2" style="display:none;">
+                                                Please add product before adding installment.
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Remaining Total:</strong>
+                                            <span id="remainingTotal">$1,000.00</span>
+                                            <input type="hidden" name="remaining_total" id="remaining_total" value="{{ $estimate->total_amount }}">
+                                        </div>
+
+                                        <button type="submit" class="btn btn-warning btn-sm no-print">Save Payment Schedule</button>
+                                    </form>
+
+                                    <div id="formMessage" class="mt-2 text-success" style="display:none;"></div>
+
+                                </div>
+                            </div>
                             
 
                     </div>
@@ -1070,7 +1205,198 @@
                 </form>
             </div>
         </div>
-    
+
+        {{-- Add Tax Modals --}}
+        <div class="modal fade" id="taxModal" tabindex="-1" role="dialog" aria-labelledby="taxModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <form id="taxForm" onsubmit="event.preventDefault(); addTax();">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="taxModalLabel">
+                                        <i class="fas fa-percentage me-2"></i>Add Tax
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="modalAlert" class="alert d-none" role="alert"></div>
+                                    <div class="form-group">
+                                        <label for="taxName">Tax Name</label>
+                                        <input type="text" id="taxName" class="form-control" placeholder="e.g. VAT"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="taxPercent">Tax Percent (%)</label>
+                                        <input type="number" id="taxPercent" class="form-control" placeholder="e.g. 10"
+                                            min="0" step="0.01" required>
+                                    </div>
+                                    <table class="table product-table" id="taxTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Select Product</th>
+                                            <th>Product Name</th>
+                                            <th>Quantity</th>
+                                            <th>Product Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- PRODUCTS HERE -->
+                                    </tbody>
+                                </table>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="addTaxBtn" class="btn btn-primary btn-sm"
+                                            data-url="{{ route('estimate.tax.add') }}"
+                                            data-estimateid="{{ $estimate->id }}"
+                                            data-csrf="{{ csrf_token() }}">
+                                        <i class="fas fa-plus me-1"></i> Add Tax
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+        {{-- Edit Tax Modals --}}
+        <div class="modal fade" id="editTaxModal" tabindex="-1" role="dialog" aria-labelledby="taxModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <form id="taxForm" onsubmit="event.preventDefault(); updateTax();">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="taxModalLabel">
+                                        <i class="fas fa-percentage me-2"></i>Add Tax
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="modalAlert" class="alert d-none" role="alert"></div>
+                                    <div class="form-group">
+                                        <label for="taxName">Tax Name</label>
+                                        <input type="text" id="edittaxName" class="form-control" placeholder="e.g. VAT"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="taxPercent">Tax Percent (%)</label>
+                                        <input type="number" id="edittaxPercent" class="form-control" placeholder="e.g. 10"
+                                            min="0" step="0.01" required>
+                                    </div>
+                                    <table class="table product-table" id="editTaxTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Select Product</th>
+                                            <th>Product Name</th>
+                                            <th>Quantity</th>
+                                            <th>Product Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- PRODUCTS HERE -->
+                                    </tbody>
+                                </table>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="updateTaxBtn" class="btn btn-primary btn-sm"
+                                            data-url="{{ route('estimate.tax.update') }}"
+                                            data-estimateid="{{ $estimate->id }}"
+                                            data-csrf="{{ csrf_token() }}">
+                                        <i class="fas fa-plus me-1"></i> Update Tax
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {{-- Add Disscount Modals --}}
+                <div class="modal fade" id="discountModal" tabindex="-1" role="dialog"
+                    aria-labelledby="discountModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <form id="discountForm" onsubmit="event.preventDefault(); addProductDiscount();">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="discountModalLabel">
+                                        <i class="fas fa-tag me-2"></i>Add Discount
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="discountName">Discount Name</label>
+                                        <input type="text" id="discountName" class="form-control"
+                                            placeholder="e.g. Summer Sale">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="discountValue">Discount Amount %</label>
+                                        <div class="input-group">
+                                            <input type="number" id="discountAmount" class="form-control"
+                                                placeholder="e.g. 10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm"
+                                        data-dismiss="modal">Cancel</button>
+                                    <button id="addDiscount" class="btn btn-primary btn-sm"
+                                            data-url="{{ route('estimate.product.discount.add') }}"
+                                            data-estimateid="{{ $estimate->id }}"
+                                            data-csrf="{{ csrf_token() }}">
+                                        <i class="fas fa-plus me-1"></i> Apply Discount
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {{-- Edit Disscount Modals --}}
+                <div class="modal fade" id="editdiscountModal" tabindex="-1" role="dialog"
+                    aria-labelledby="discountModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <form id="discountForm" onsubmit="event.preventDefault(); addProductDiscount();">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="discountModalLabel">
+                                        <i class="fas fa-tag me-2"></i>Edit Discount
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="discountName">Discount Name</label>
+                                        <input type="text" id="editdiscountName" class="form-control"
+                                            placeholder="e.g. Summer Sale">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="discountValue">Discount Amount %</label>
+                                        <div class="input-group">
+                                            <input type="number" id="editdiscountAmount" class="form-control"
+                                                placeholder="e.g. 10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm"
+                                        data-dismiss="modal">Cancel</button>
+                                    <button type="button"
+                                        id="updateDiscount"
+                                        class="btn btn-primary btn-sm"
+                                        data-url="{{ route('estimate.product.discount.update') }}"
+                                        data-estimateid="{{ $estimate->id }}"
+                                        data-csrf="{{ csrf_token() }}">
+                                        <i class="fas fa-save me-1"></i> Update Discount
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
     </section>
 
 

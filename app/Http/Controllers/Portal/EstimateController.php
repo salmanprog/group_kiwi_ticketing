@@ -155,7 +155,7 @@ class EstimateController extends CRUDCrontroller
     public function beforeRenderEditView($slug)
     {
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $estimate = Estimate::with('items')->where('slug', $slug)->first();
+        $estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('slug', $slug)->first();
         $this->__data['estimate'] = $estimate;
         $this->__data['clients'] = Client::where('company_id', $company->id)->get();
         $this->__data['products'] = Product::where('company_id', $company->id)->get();

@@ -218,6 +218,16 @@ class EstimateItemController extends CRUDCrontroller
         ]);
     }
 
+    public function getItem(Request $request)
+    {
+        $item = EstimateItem::where('user_estimate_id', $request->estimate_id)->get();
+
+        return response()->json([
+            'status' => true,
+            'item' => $item
+        ]);
+    }
+
 
 
 

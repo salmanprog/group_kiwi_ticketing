@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class EstimateItem extends Model
+class UserEstimateItemTax extends Model
 {
     use CRUDGenerator;
     /**
@@ -13,7 +13,7 @@ class EstimateItem extends Model
      *
      * @var string
      */
-    protected $table = 'user_estimate_items';
+    protected $table = 'user_estimate_item_taxes';
 
     /**
      * The primary key associated with the table.
@@ -28,16 +28,10 @@ class EstimateItem extends Model
      * @var array
      */
     protected $fillable = [
-        'user_estimate_id',
-        'product_id',
+        'estimate_tax_id',
+        'user_estimate_item_id',
         'name',
-        'quantity',
-        'unit',
-        'price',
-        'total_price',
-        'product_price',
-        'tax',
-        'gratuity',
+        'percentage',
         'created_at',
         'updated_at',
     ];
@@ -65,14 +59,4 @@ class EstimateItem extends Model
      */
     protected $__cache_expire_time = 1; //days
 
-    public function estimate()
-    {
-        return $this->belongsTo(Estimate::class, 'estimate_id');
-    }
-
-    public function itemTaxes()
-    {
-        return $this->hasMany(UserEstimateItemTax::class, 'user_estimate_item_id', 'id');
-    }
-    
 }

@@ -920,6 +920,9 @@
     <script src="{{ asset('admin/assets/js/custom.js') }}"></script>
     <script src="{{ asset('admin/assets/js/admin.js') }}"></script>
     <script src="{{ asset('admin/assets/js/productEstimate.js') }}"></script> 
+    <script src="{{ asset('admin/assets/js/taxProductEstimate.js') }}"></script> 
+    <script src="{{ asset('admin/assets/js/productDiscount.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/productPayment.js') }}"></script> 
 
     <script>
         // Page load complete hone par skeleton hide karo

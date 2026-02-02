@@ -26,6 +26,9 @@ use App\Http\Controllers\Portal\ContractController;
 use App\Http\Controllers\Portal\ReportingController;
 use App\Http\Controllers\Portal\ContactActivityLogController;
 use App\Http\Controllers\Portal\EstimateItemController;
+use App\Http\Controllers\Portal\EstimateTaxController;
+use App\Http\Controllers\Portal\EstimateDiscountController;
+use App\Http\Controllers\Portal\EstimateInstallmentController;
 use Auth0\Laravel\Facade\Auth0;
 
 
@@ -203,5 +206,28 @@ Route::middleware(['auth'])->group(function () {
     ->name('estimate.products.update');
     Route::post('/estimate-products/delete', [EstimateItemController::class, 'deleteItem'])
     ->name('estimate.products.delete');
+    Route::get('/estimate-products/get', [EstimateItemController::class, 'getItem'])->name('estimate.products.get');
+    Route::post('/estimate-tax/add', [EstimateTaxController::class, 'productTaxAdd'])
+     ->name('estimate.tax.add');
+     Route::post('/estimate-tax/update', [EstimateTaxController::class, 'productTaxUpdate'])
+    ->name('estimate.tax.update');
+    Route::get('/get-estimate-tax/get-item', [EstimateTaxController::class, 'editGetItem'])
+     ->name('estimate.tax.get');
+    Route::delete('/estimate-tax/{tax}', [EstimateTaxController::class, 'deleteTax'])
+    ->name('estimate.tax.delete');
+    Route::post('/estimate-product-discount/add', [EstimateDiscountController::class, 'productDiscountAdd'])
+     ->name('estimate.product.discount.add');
+    Route::get('/get-product-discount/get-item', [EstimateDiscountController::class, 'getItem'])
+     ->name('estimate.product.discount.get');
+    Route::post(
+    '/get-product-discount/update',
+    [EstimateDiscountController::class, 'updateDiscount']
+)->name('estimate.product.discount.update');
+    Route::delete(
+    '/get-product-discount/{id}/delete',
+    [EstimateDiscountController::class, 'deleteDiscount']
+)->name('estimate.product.discount.delete');
+    Route::post('/estimate-installment/{estimate}/payment-save', [EstimateInstallmentController::class, 'savePaymentSchedule'])
+    ->name('estimate.installments.save');
 
 });
