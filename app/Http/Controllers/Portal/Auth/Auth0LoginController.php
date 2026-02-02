@@ -167,8 +167,7 @@ class Auth0LoginController extends Controller
             $idToken = $credentials->idToken;        // for external API
             $accessToken = $credentials->accessToken; // if needed for other API calls
 
-             print_r($auth0User);
-            die();
+             
             if (!$auth0User || empty($auth0User['email'])) {
                 redirect($auth0->login());
             }
@@ -205,7 +204,8 @@ class Auth0LoginController extends Controller
             $user = User::where('email', $auth0User['email'])
                 ->where('auth0_id', $auth0User['sub'])
                 ->first();
-
+            print_r($user);
+            die();
             if (!$user) {
                 // Create company
                 $company = Company::create([
