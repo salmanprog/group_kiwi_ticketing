@@ -245,14 +245,15 @@ class Auth0LoginController extends Controller
 
                 $user = $companyAdmin;
             }
-            print_r($user);
-            die();
+            // print_r($user);
+            // die();
             // 6️⃣ Login user into Laravel
             Auth::login($user, true);
 
             // 7️⃣ Redirect based on role
             $company = CompanyUser::getCompany($user->id);
-
+            print_r($company);
+            die();
             switch ($user->user_type) {
                 case 'admin':
                     return redirect()->route('admin.dashboard');
