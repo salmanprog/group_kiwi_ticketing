@@ -172,6 +172,8 @@ class Auth0LoginController extends Controller
                 redirect($auth0->login());
             }
 
+            print_r($auth0User);
+            die();
            
              
             // $apiUrl = 'https://dev.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
