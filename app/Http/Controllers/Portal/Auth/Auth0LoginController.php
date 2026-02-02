@@ -204,8 +204,7 @@ class Auth0LoginController extends Controller
             $user = User::where('email', $auth0User['email'])
                 ->where('auth0_id', $auth0User['sub'])
                 ->first();
-            print_r($user);
-            die();
+            
             if (!$user) {
                 // Create company
                 $company = Company::create([
@@ -246,7 +245,8 @@ class Auth0LoginController extends Controller
 
                 $user = $companyAdmin;
             }
-
+            print_r($user);
+            die();
             // 6️⃣ Login user into Laravel
             Auth::login($user, true);
 
