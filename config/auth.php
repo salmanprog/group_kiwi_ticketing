@@ -40,6 +40,10 @@ return [
             'driver' => 'session',   // correct
             'provider' => 'users',   // 👈 must be 'users', NOT 'session'
         ],
+        'portal' => [
+            'driver' => 'session',
+            'provider' => 'portal_users',
+        ],
     ],
 
     /*
