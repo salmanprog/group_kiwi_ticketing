@@ -167,13 +167,13 @@ class Auth0LoginController extends Controller
             $idToken = $credentials->idToken;        // for external API
             $accessToken = $credentials->accessToken; // if needed for other API calls
 
-            
+             print_r($auth0User);
+            die();
             if (!$auth0User || empty($auth0User['email'])) {
                 redirect($auth0->login());
             }
 
-            // print_r($auth0User);
-            // die();
+           
              
             // $apiUrl = 'https://dev.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
 
