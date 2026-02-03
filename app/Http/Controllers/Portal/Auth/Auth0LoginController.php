@@ -173,66 +173,84 @@ class Auth0LoginController extends Controller
             }
 
              
-            // $apiUrl = 'https://dev.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
+            $apiUrl = 'https://dev.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
 
-            // // Build query parameters
-            // $queryParams = [
-            //     'userTokenId' => $idToken,
-            //     'domain' => env('AUTH0_DOMAIN'),
-            // ];
+            // Build query parameters
+            $queryParams = [
+                'userTokenId' => $idToken,
+                'domain' => env('AUTH0_DOMAIN'),
+            ];
 
-            // // Send POST request with query string
-            // $externalApiResponse = Http::timeout(60)
-            //     ->withHeaders([
-            //         'Accept' => '*/*',
-            //     ])
-            //     ->post($apiUrl . '?' . http_build_query($queryParams));
+            // Send POST request with query string
+            $externalApiResponse = Http::timeout(60)
+                ->withHeaders([
+                    'Accept' => '*/*',
+                ])
+                ->post($apiUrl . '?' . http_build_query($queryParams));
                 
-            // if (!$externalApiResponse->successful()) {
-            //     logger()->error('External API call failed', [
-            //         'status' => $externalApiResponse->status(),
-            //         'body' => $externalApiResponse->body(),
-            //     ]);
-
-            //     redirect($auth0->login());
-            // }
-
-            // $externalData = $externalApiResponse->json(); // store or use if needed
-           
-            // 5️⃣ Find or create local user
-            $user = User::where('email', $auth0User['email'])
-                ->where('auth0_id', $auth0User['sub'])
-                ->first();
-            
-            if (!$user) {
-                // Create company
-                $company = Company::create([
-                    'name' => $auth0User['name'] ?? $auth0User['email'],
-                    'slug' => Company::generateUniqueSlug(uniqid()),
-                    'email' => $auth0User['email'],
-                    'company_image_url' => $auth0User['picture'] ?? null,
-                    'mobile_no' => '1' . substr(md5($auth0User['email']), 0, 10),
-                    'description' => 'test description',
-                    'website' => 'https://www.google.com',
-                    'address' => 'test 123',
+            if (!$externalApiResponse->successful()) {
+                logger()->error('External API call failed', [
+                    'status' => $externalApiResponse->status(),
+                    'body' => $externalApiResponse->body(),
                 ]);
 
-                // Create company admin
-                $username = CompanyAdmin::generateUniqueUserName($auth0User['name']);
+                redirect($auth0->login());
+            }
+
+            $externalData = $externalApiResponse->json();
+
+            // Only proceed when API returns success (errorCode 0)
+            if (($externalData['errorCode'] ?? null) !== 0) {
+                logger()->warning('Auth0 UserLogin API error', [
+                    'errorCode' => $externalData['errorCode'] ?? null,
+                    'errorMessage' => $externalData['errorMessage'] ?? 'Unknown',
+                ]);
+                return redirect()->route('admin.login')
+                    ->with('error', $externalData['errorMessage'] ?? 'Login failed. Please try again.');
+            }
+
+            $userDetails = $externalData['data']['userDetails'] ?? [];
+            $companyDetails = $externalData['data']['companyDetails'] ?? [];
+            $email = $userDetails['email'] ?? $auth0User['email'];
+            $auth0UserId = $userDetails['auth0UserId'] ?? $auth0User['sub'];
+            $companyName = $companyDetails['companyName'] ?? null;
+            $authCode = $companyDetails['authCode'] ?? null;
+
+            // Find or create local user (using API data: email, company_name, auth_code)
+            $user = User::where('email', $email)
+                ->where('auth_code', $authCode)
+                ->first();
+
+            if (!$user) {
+                $name = trim(($userDetails['firstName'] ?? '') . ' ' . ($userDetails['lastName'] ?? '')) ?: ($auth0User['name'] ?? $email);
+                $username = $userDetails['userName'] ?? CompanyAdmin::generateUniqueUserName($name);
+
+                $company = Company::create([
+                    'name' => $companyName ?? $name,
+                    'slug' => Company::generateUniqueSlug(uniqid()),
+                    'email' => $email,
+                    'image_url' => $companyDetails['logo'] ?? $userDetails['image'] ?? $auth0User['picture'] ?? null,
+                    'mobile_no' => '1' . substr(md5($email), 0, 10),
+                    'description' => 'Created via Auth0',
+                    'website' => 'https://www.google.com',
+                    'address' => '—',
+                ]);
+
                 $companyAdmin = CompanyAdmin::create([
                     'user_group_id' => 2,
-                    'auth0_id' => $auth0User['sub'],
+                    'auth0_id' => $auth0UserId,
                     'user_type' => 'company',
                     'slug' => $username,
                     'username' => $username,
-                    'name' => $auth0User['name'],
-                    'email' => $auth0User['email'],
-                    'mobile_no' => '1' . substr(md5($auth0User['email']), 0, 10),
+                    'name' => $name,
+                    'email' => $email,
+                    'auth_code' => $authCode,
+                    'mobile_no' => '1' . substr(md5($email), 0, 10),
                     'password' => Hash::make('Auth0@Login'),
-                    'status' => 1,
+                    'image_url' => $userDetails['image'] ?? $auth0User['picture'] ?? null,
+                    'status' => (int) ($userDetails['status'] ?? 1),
                 ]);
 
-                // Link company & admin
                 CompanyUser::create([
                     'company_id' => $company->id,
                     'user_id' => $companyAdmin->id,
@@ -242,33 +260,25 @@ class Auth0LoginController extends Controller
                 ]);
 
                 $user = $companyAdmin;
+            } else {
+                // Update existing user with company_name and auth_code from API
+                $user->company_name = $companyName;
+                $user->auth_code = $authCode;
+                $user->save();
             }
-            // print_r($user);
-            // die();
-            // 6️⃣ Login user into Laravel
+
             Auth::login($user, true);
 
-            // 7️⃣ Redirect based on role
             $company = CompanyUser::getCompany($user->id);
             switch ($user->user_type) {
                 case 'admin':
                     return redirect()->route('admin.dashboard');
-
                 case 'manager':
                     return redirect()->route('manager.dashboard');
-
                 case 'company':
-                    // if ($company && $company->status == 0) {
-                    //     Auth::logout();
-                    //     return redirect()
-                    //         ->route('login')
-                    //         ->with('error', 'Company account disabled');
-                    // }
                     return redirect()->route('company.dashboard');
-
                 case 'salesman':
                     return redirect()->route('salesman.dashboard');
-
                 default:
                     return redirect()->route('client.dashboard');
             }
