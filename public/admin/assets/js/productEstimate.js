@@ -336,5 +336,53 @@ $(document).on('click', '.save-note', function () {
 });
 
 
+$(document).on('click', '.send-to-client', function () {
+
+    const btn = $(this);
+    const url = btn.data('url');
+    const csrf = btn.data('csrf');
+    const estimateId = btn.data('estimateid');
+    const slug = btn.data('slug');
+    const status = btn.data('status');
+
+    const issue_date   = $('input[name="estimate_date"]').val();
+    const eventDate      = $('input[name="event_date"]').val() ?? null;
+    const valid_until = $('input[name="expiration_date"]').val();
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+            _token: csrf,
+            estimate_id: estimateId,
+            slug: slug,
+            issue_date: issue_date,
+            eventDate: eventDate,
+            valid_until: valid_until,
+            is_installment:1,
+            mail_send:1,
+            status: status,
+        },
+        success: function (res) {
+            $('#formMessage')
+                .removeClass('text-danger text-success')
+                .addClass(res.status ? 'text-success' : 'text-danger')
+                .text(res.message)
+                .fadeIn();
+
+            // Optional: update print preview instantly
+            window.location.reload();
+        },
+        error: function () {
+            $('#formMessage')
+                .removeClass('text-success')
+                .addClass('text-danger')
+                .text('Failed to save note')
+                .fadeIn();
+        }
+    });
+});
+
+
 // Initialize totals on page load
 $(document).ready(updateTotals);

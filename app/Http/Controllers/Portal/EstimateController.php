@@ -168,7 +168,7 @@ class EstimateController extends CRUDCrontroller
     }
 
     /**
-     * This function is called before a model load
+     * This function is called before a model loads
      */
     public function beforeUpdateLoadModel()
     {
@@ -401,6 +401,62 @@ class EstimateController extends CRUDCrontroller
         return response()->json([
             'status' => true,
             'message' => 'Note saved successfully'
+        ]);
+    }
+
+
+    public function sendToClient(Request $request)
+    {
+        $request->validate([
+            'estimate_id' => 'required',
+            'slug' => 'required|string',
+        ]);
+        
+         $status = ($request->status == 'draft') ? "draft" : 'revised';
+
+        $estimate = Estimate::where('slug', $request->slug)->first();
+                    $estimate->issue_date = $request->issue_date;
+                    $estimate->valid_until = $request->valid_until;
+                    $estimate->is_installment = $request->is_installment;
+                    $estimate->is_adjusted = $request->status;
+                    //$estimate->status = 'sent';
+                    $estimate->is_adjusted = 1;
+                    $estimate->save();
+
+        
+        if(Auth::user()->user_type != 'client') {
+            if(!empty($request->mail_send) && $request->mail_send == '1') {
+                
+                    $getEstimate = Estimate::where('slug', $request->slug)->first();
+                    $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('company_id', $getEstimate->company_id)->first();
+                    $user = User::where('email', $getClientEmail->email)->first();
+                    $getCompany = CompanyUser::getCompany(Auth::user()->id);
+                    if ($user) {
+                        $mail_params['company_name'] = $getCompany->name;
+                        $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
+                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email)]) : env('APP_URL');
+                        $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
+                        $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
+                       
+                        $check_mail = sendMail(
+                            $user->email,
+                            'estimate',
+                            'New Estimate',
+                            $mail_params
+                        );
+                        
+                    }
+                    // dd($mail_params['link']);
+
+                    Estimate::where('slug', $request->slug)->update([
+                        'status' => 'sent'
+                    ]);
+            }   
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Estimate send successfully'
         ]);
     }
 

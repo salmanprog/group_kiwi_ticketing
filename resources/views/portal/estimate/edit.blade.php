@@ -803,6 +803,7 @@
 
                     {{-- Estimate Start --}}
                     <div class="form-section">
+                        
                                                     <div class="form-row">
                                 @if ($record->contract_id == null)
                                     <div class="form-group">
@@ -1172,8 +1173,14 @@
 
                                         @if ($estimate->status != 'approved')
                                             <input type="hidden" name="mail_send" value="1">
-                                            <button type="submit" class="btn btn-success">
-                                                <i class="fas fa-paper-plane me-1"></i>Send to Client
+                                            <button type="button"
+                                                class="btn btn-success send-to-client"
+                                                data-url="{{ route('estimates.send.to.client', ['estimate' => $estimate->slug]) }}"
+                                                data-csrf="{{ csrf_token() }}"
+                                                data-estimateid="{{ $estimate->id }}"
+                                                data-slug="{{ $estimate->slug }}"
+                                                data-slug="{{ $estimate->status }}">
+                                            Send to Client
                                             </button>
                                             <!-- <button type="button" class="btn btn-success" onclick="submitSentForm()">
                                                     <i class="fas fa-paper-plane me-1"></i>Send

@@ -193,7 +193,7 @@ class EstimateHook
     | ----------------------------------------------------------------------
     | Hook for execute command after edit public static function called
     | ----------------------------------------------------------------------
-    | @request  = Http request object
+    | @request  = Http request objects
     | @$slug    = $slug
     |
     */

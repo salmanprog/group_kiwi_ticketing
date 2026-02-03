@@ -233,4 +233,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/estimate/note/save', [EstimateController::class, 'saveNote'])
     ->name('estimate.note.save');
 
+    Route::post('/estimates-send-to-client/{estimate}', [EstimateController::class, 'sendToClient'])->name('estimates.send.to.client');
+
+
 });

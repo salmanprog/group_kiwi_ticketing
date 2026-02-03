@@ -50,7 +50,7 @@
             <p><strong>👉 Next Steps:</strong></p>
             <ul>
                 <li>Setup your password to a secure one</li>
-                <li>Log in to your account at <a href="{{ $link }}">{{ $link }}</a></li>
+                <li>Log in to your account at <a href="{{ $link }}">Click Here</a></li>
             </ul>
         </div>
         
