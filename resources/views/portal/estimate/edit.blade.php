@@ -1,728 +1,10 @@
 @extends('portal.master')
 
 @section('content')
-    <style>
-        :root {
-            --primary-color: #A0C242;
-            --primary-dark: #8AA835;
-            --primary-light: #E8F4D3;
-            --secondary-color: #2C3E50;
-            --light-bg: #F8F9FA;
-            --border-color: #E0E0E0;
-            --text-color: #333333;
-            --text-light: #6C757D;
-        }
+@push('stylesheets')
+        <link href="{{ asset('admin/assets/scss/Estimate-style.css') }}" rel="stylesheet" type="text/css">
+    @endpush
 
-        body {
-            font-family: "Poppins", sans-serif !important;
-            background-color: #f5f7fa;
-            color: var(--text-color);
-            font-size: 14px !important;
-            line-height: 1.4;
-        }
-
-        /* Mobile First Approach */
-        .estimate-wrapper {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            margin-top: 15px;
-            border: 1px solid var(--border-color);
-            width: 100%;
-            overflow-x: hidden;
-            box-sizing: border-box;
-        }
-
-        .estimate-header {
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .estimate-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 8px;
-            line-height: 1.2;
-        }
-
-        .estimate-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            font-size: 14px;
-        }
-
-        .estimate-number {
-            background: var(--primary-light);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-weight: 600;
-            color: var(--secondary-color);
-            display: inline-block;
-            width: fit-content;
-        }
-
-        .status {
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-            width: fit-content;
-        }
-
-        .status.draft {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        .status.sent {
-            background-color: #36a3f7;
-            color: #fff;
-        }
-
-        .status.approved {
-            background-color: #28a745;
-            color: #fff;
-        }
-
-        .status.rejected {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-        .status.revised {
-            background-color: #ffc107;
-            color: #212529;
-        }
-
-        .address-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .address-box {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-            box-sizing: border-box;
-        }
-
-        .address-box h4 {
-            margin-bottom: 12px;
-            color: #1f2937;
-            font-weight: 600;
-            border-bottom: 1px solid var(--primary-light);
-            padding-bottom: 6px;
-            font-size: 16px;
-        }
-
-        .form-section {
-            margin-top: 20px;
-        }
-
-        .form-row {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group {
-            width: 100%;
-        }
-
-        label {
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--secondary-color);
-            display: block;
-            font-size: 14px;
-        }
-
-        .form-control {
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px;
-            transition: all 0.3s ease;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(160, 194, 66, 0.25);
-        }
-
-        .print-value {
-            display: none;
-            font-size: 14px;
-            padding: 8px;
-            background: var(--light-bg);
-            border-radius: 5px;
-            color: var(--text-color);
-            font-weight: 600;
-            margin-top: 6px;
-            border: 1px solid var(--border-color);
-        }
-
-        /* Table Responsiveness */
-        .forref {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .product-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            border-radius: 6px;
-            overflow: hidden;
-            min-width: 600px;
-        }
-
-        .product-table th {
-            background: #F7FAFC !important;
-            color: var(--secondary-color);
-            font-weight: 600;
-            padding: 12px 8px;
-            text-align: left;
-            border: none;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
-        .product-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-            font-size: 13px;
-        }
-
-        .product-table tr:hover {
-            background-color: var(--light-bg);
-        }
-
-        /* Button Styles for Mobile */
-        .btn {
-            border-radius: 6px;
-            font-weight: 600;
-            padding: 10px 15px;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 14px;
-            width: 100%;
-            margin-bottom: 8px;
-            box-sizing: border-box;
-            text-align: center;
-            display: block;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-            transform: translateY(-1px);
-        }
-
-        .btn-info {
-            background: #17a2b8;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background: #138496;
-            transform: translateY(-1px);
-        }
-
-        .btn-warning {
-            background: #ffc107;
-            color: #212529;
-        }
-
-        .btn-warning:hover {
-            background: #e0a800;
-            transform: translateY(-1px);
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-            transform: translateY(-1px);
-        }
-
-        .btn-sm {
-            padding: 6px 10px;
-            font-size: 12px;
-            width: auto;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin: 15px 0;
-        }
-
-        /* Summary Table */
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            background: var(--light-bg);
-            border-radius: 6px;
-            overflow: hidden;
-            font-size: 14px;
-        }
-
-        .summary-table th,
-        .summary-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .summary-table th {
-            background: var(--primary-light);
-            color: var(--secondary-color);
-            font-weight: 600;
-            text-align: left;
-        }
-
-        .summary-table tr:last-child {
-            background: var(--primary-color);
-            color: white;
-            font-weight: 700;
-        }
-
-        .summary-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .tax-row,
-        .discount-entry {
-            background: var(--light-bg);
-            padding: 8px 12px;
-            border-radius: 5px;
-            margin-bottom: 8px;
-            border-left: 3px solid var(--primary-color);
-            font-size: 13px;
-        }
-
-        /* Activity Section */
-        .activity-section {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            border: 1px solid #E0E0E0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .section-header {
-            color: #1f2937;
-            font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-        }
-
-        .activity-table-container {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #E0E0E0;
-            border-radius: 6px;
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        .activity-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 13px;
-            min-width: 500px;
-        }
-
-        .activity-table th {
-            background: #F7FAFC;
-            color: #2C3E50;
-            font-weight: 600;
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid #E0E0E0;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            font-size: 13px;
-        }
-
-        .activity-table td {
-            padding: 8px;
-            border-bottom: 1px solid #f0f0f0;
-            color: #555;
-            font-size: 13px;
-        }
-
-        .activity-table tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .activity-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Badge Styles */
-        .badge {
-            display: inline-block;
-            padding: 3px 6px;
-            border-radius: 3px;
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: white;
-        }
-
-        /* Modal Styles */
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-light), #f0f7e4);
-            border-bottom: 1px solid var(--primary-color);
-            padding: 12px 15px;
-        }
-
-        .modal-title {
-            color: var(--secondary-color);
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .modal-content {
-            border-radius: 8px;
-            border: none;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Print Styles */
-        @media print {
-
-            input,
-            select,
-            textarea,
-            .btn,
-            .select2,
-            label,
-            form button,
-            .no-print {
-                display: none !important;
-            }
-
-            .print-value {
-                display: block !important;
-            }
-
-            .estimate-wrapper,
-            .address-box,
-            table,
-            th,
-            td {
-                border: 1px solid #000 !important;
-                background-color: #fff !important;
-            }
-
-            th {
-                background-color: #eee !important;
-                -webkit-print-color-adjust: exact;
-            }
-
-            .main-content {
-                padding: 0;
-                margin: 0;
-            }
-
-            @page {
-                margin: 15mm;
-            }
-
-            .estimate-title {
-                color: #000 !important;
-            }
-        }
-
-        /* Tablet Styles */
-        @media (min-width: 768px) {
-            .estimate-wrapper {
-                padding: 25px;
-                border-radius: 10px;
-            }
-
-            .estimate-title {
-                font-size: 18px;
-            }
-
-            .estimate-meta {
-                flex-direction: row;
-                align-items: center;
-                gap: 15px;
-            }
-
-            .address-section {
-                flex-direction: row;
-            }
-
-            .address-box {
-                flex: 1;
-                min-width: 280px;
-                padding: 20px;
-            }
-
-            .form-row {
-                flex-direction: row;
-            }
-
-            .form-group {
-                flex: 1;
-                min-width: 200px;
-            }
-
-            .action-buttons {
-                flex-direction: row;
-            }
-
-            .btn {
-                width: auto;
-                margin-bottom: 0;
-            }
-
-            .activity-section {
-                padding: 20px;
-            }
-        }
-
-        /* Desktop Styles */
-        @media (min-width: 992px) {
-            .estimate-wrapper {
-                padding: 30px;
-            }
-
-            .estimate-title {
-                font-size: 18px;
-            }
-
-            .address-box {
-                padding: 25px;
-            }
-
-            .activity-section {
-                max-width: 1330.5px;
-                margin-inline: auto;
-                padding: 25px;
-            }
-
-            .section-header {
-                font-size: 18px;
-            }
-        }
-
-        /* Small Mobile Optimization */
-        @media (max-width: 480px) {
-            .estimate-wrapper {
-                padding: 12px;
-                margin-top: 10px;
-            }
-
-            .estimate-title {
-                font-size: 18px;
-            }
-
-            .address-box {
-                padding: 12px;
-            }
-
-            .address-box h4 {
-                font-size: 15px;
-            }
-
-            .form-control {
-                padding: 8px;
-                font-size: 13px;
-            }
-
-            .btn {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-
-            .product-table th,
-            .product-table td {
-                padding: 8px 6px;
-                font-size: 12px;
-            }
-
-            .summary-table th,
-            .summary-table td {
-                padding: 8px 10px;
-                font-size: 13px;
-            }
-
-            .activity-section {
-                padding: 12px;
-            }
-
-            .activity-table th,
-            .activity-table td {
-                padding: 6px 4px;
-                font-size: 12px;
-            }
-        }
-
-        /* Fix for very small screens */
-        @media (max-width: 360px) {
-            .estimate-wrapper {
-                padding: 10px;
-            }
-
-            .estimate-title {
-                font-size: 18px;
-            }
-
-            .address-box {
-                padding: 10px;
-            }
-
-            .btn {
-                padding: 8px 10px;
-                font-size: 12px;
-            }
-
-            .product-table {
-                min-width: 500px;
-            }
-        }
-
-        /* Utility Classes */
-        .text-right {
-            text-align: right;
-        }
-
-        .font-weight-bold {
-            font-weight: 700;
-        }
-
-        .text-danger {
-            color: #dc3545;
-        }
-
-        .text-success {
-            color: #ffffff !important;
-        }
-
-        .text-muted {
-            color: var(--text-light);
-        }
-
-        .cust-bd {
-            border: 1px solid #A0C242;
-        }
-
-        .cust-main-table {
-            margin-left: unset !important;
-            width: 100% !important;
-        }
-
-        .theme-bg {
-            background-color: #A0C242 !important;
-        }
-
-        .theme-text {
-            color: #A0C242 !important;
-        }
-
-        .theme-border {
-            border-color: #A0C242 !important;
-        }
-
-        .theme-table thead {
-            background-color: #A0C242;
-            color: white;
-        }
-
-        .theme-table {
-            border: 1px solid #A0C242;
-        }
-
-        .table-bordered {
-            border: 1px solid #A0C242;
-        }
-
-        .table-bordered th,
-        .table-bordered td {
-            border: 1px solid #dee2e6;
-        }
-
-        .theme-badge {
-            background-color: #A0C242;
-            color: white;
-        }
-
-        /* Modal specific styles */
-        .modal-header {
-            background-color: #A0C242;
-            color: white;
-            border-bottom: none;
-        }
-
-        .modal-title {
-            font-weight: 600;
-        }
-
-        .modal-header .btn-close {
-            color: #000;
-        }
-
-        .modal-header .btn-close:hover {
-            opacity: 1;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: var(--primary-light);
-        }
-
-        .deleted-alert {
-            background: linear-gradient(135deg, rgb(253, 239, 227), rgb(251, 210, 187));
-            border: 1px solid #dc3545;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-    </style>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <section class="main-content">
 <div class="row">
@@ -898,24 +180,47 @@
                                                             <td>${{ number_format($item->price, 2) }}</td>
                                                             <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
                                                             <td class="no-print">
-                                                                <button class="btn btn-sm btn-primary edit-item"
-                                                                        data-url="{{ route('estimate.products.update') }}"
-                                                                        data-estimateid="{{ $estimate->id }}"
-                                                                        data-csrf="{{ csrf_token() }}"
-                                                                        data-id="{{ $item->id }}"
-                                                                        data-name="{{ $item->name }}"
-                                                                        data-quantity="{{ $item->quantity }}"
-                                                                        data-unit="{{ $item->unit }}"
-                                                                        data-price="{{ $item->price }}">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                                <button class="btn btn-sm btn-danger remove-item"
-                                                                        data-url="{{ route('estimate.products.delete') }}"
-                                                                        data-id="{{ $item->id }}"
-                                                                        data-estimateid="{{ $estimate->id }}"
-                                                                        data-csrf="{{ csrf_token() }}">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
+                                                                <span class="f-line for-d-g">
+                                                                    <button class="btn btn-sm btn-primary edit-item foest-edit"
+                                                                            data-url="{{ route('estimate.products.update') }}"
+                                                                            data-estimateid="{{ $estimate->id }}"
+                                                                            data-csrf="{{ csrf_token() }}"
+                                                                            data-id="{{ $item->id }}"
+                                                                            data-name="{{ $item->name }}"
+                                                                            data-quantity="{{ $item->quantity }}"
+                                                                            data-unit="{{ $item->unit }}"
+                                                                            data-price="{{ $item->price }}">
+                                                                        <a href="javascript:void(0);" class="cust-edit">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                                                class="lucide lucide-pen-line" aria-hidden="true">
+                                                                                <path d="M13 21h8"></path>
+                                                                                <path
+                                                                                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                                                                                </path>
+                                                                            </svg>
+                                                                        </a>
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-danger remove-item cust-btn-delete"
+                                                                            data-url="{{ route('estimate.products.delete') }}"
+                                                                            data-id="{{ $item->id }}"
+                                                                            data-estimateid="{{ $estimate->id }}"
+                                                                            data-csrf="{{ csrf_token() }}">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12"
+                                                                            height="12" viewBox="0 0 24 24" fill="none"
+                                                                            stroke="currentColor" stroke-width="2"
+                                                                            stroke-linecap="round" stroke-linejoin="round"
+                                                                            class="lucide lucide-trash2 lucide-trash-2"
+                                                                            aria-hidden="true">
+                                                                            <path d="M10 11v6"></path>
+                                                                            <path d="M14 11v6"></path>
+                                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                                                            <path d="M3 6h18"></path>
+                                                                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                                        </svg>
+                                                                    </button>
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -927,14 +232,14 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <th colspan="3" class="text-end">Subtotal:</th>
+                                                    <th colspan="4" class="text-end">Subtotal:</th>
                                                     <th id="subtotal">$0.00</th>
-                                                    <th></th>
+                                                    {{-- <th></th> --}}
                                                 </tr>
 
                                                 @if($estimate && $estimate->taxes->count())
                                                 <tr>
-                                                    <th colspan="3" class="text-end">Tax:
+                                                    <th colspan="4" class="text-end">Tax:
                                                         <div class="d-flex flex-wrap gap-2 justify-content-end">
                                                             @foreach($estimate->taxes as $tax)
                                                                 <div class="border rounded px-2 py-1 d-flex align-items-center gap-1"
@@ -952,20 +257,39 @@
                                                                             data-estimateid="{{ $estimate->id }}"
                                                                             data-toggle="modal"
                                                                             data-target="#editTaxModal">
-                                                                        <i class="fas fa-edit"></i>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                                                class="lucide lucide-pen-line" aria-hidden="true">
+                                                                                <path d="M13 21h8"></path>
+                                                                                <path
+                                                                                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                                                                                </path>
+                                                                        </svg>
                                                                     </button>
 
                                                                     <button class="btn btn-sm btn-link text-danger p-0 delete-tax"
                                                                             data-url="{{ route('estimate.tax.delete', $tax->id) }}"
                                                                             data-csrf="{{ csrf_token() }}">
-                                                                        <i class="fas fa-trash"></i>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12"
+                                                                            height="12" viewBox="0 0 24 24" fill="none"
+                                                                            stroke="currentColor" stroke-width="2"
+                                                                            stroke-linecap="round" stroke-linejoin="round"
+                                                                            class="lucide lucide-trash2 lucide-trash-2"
+                                                                            aria-hidden="true">
+                                                                            <path d="M10 11v6"></path>
+                                                                            <path d="M14 11v6"></path>
+                                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                                                            <path d="M3 6h18"></path>
+                                                                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                                        </svg>
                                                                     </button>
                                                                 </div>
                                                             @endforeach
                                                         </div>
                                                     </th>
                                                     <th id="tax_amount">${{ number_format($estimate->taxes->sum('amount'), 2) }}</th>
-                                                    <th></th>
+                                                    {{-- <th></th> --}}
                                                 </tr>
                                                 @endif
                                                @if($estimate && $estimate->discounts->count())
@@ -987,9 +311,9 @@
                                                 </tr>
                                                 @endif
                                                 <tr class="fw-bold">
-                                                    <th colspan="3" class="text-end">Total:</th>
+                                                    <th colspan="4" class="text-end">Total:</th>
                                                     <th id="total">$0.00</th>
-                                                    <th></th>
+                                                    {{-- <th></th> --}}
                                                 </tr>
                                             </tfoot>
 
@@ -1041,6 +365,7 @@
                                         Payment Schdule
                                     </h5>
                                     <form id="paymentScheduleForm" method="POST" action="{{ route('estimate.installments.save', $estimate->id) }}">
+                                        <div class="sec-css">
                                         @csrf
                                         <input type="hidden" name="total_amount" id="total_amount" value="{{ $estimate->total_amount }}">
                                         @php
@@ -1065,7 +390,21 @@
                                                             min="{{ date('Y-m-d') }}" required>
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <button type="button" class="btn btn-danger w-100 btn-remove">×</button>
+                                                        <button type="button" class="btn btn-danger w-100 btn-remove">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12"
+                                                                    height="12" viewBox="0 0 24 24" fill="none"
+                                                                    stroke="currentColor" stroke-width="2"
+                                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                                    class="lucide lucide-trash2 lucide-trash-2"
+                                                                    aria-hidden="true">
+                                                                    <path d="M10 11v6"></path>
+                                                                    <path d="M14 11v6"></path>
+                                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                                                                    <path d="M3 6h18"></path>
+                                                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                            </svg>
+                                                           <span>Remove</span> 
+                                                        </button>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -1077,7 +416,7 @@
                                             <div id="installmentError" class="text-danger mt-2" style="display:none;">
                                                 Please add product before adding installment.
                                             </div>
-                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+</button>
+                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+ Add Installment</button>
                                         </div>
 
                                         <div class="d-flex justify-content-between">
@@ -1085,7 +424,7 @@
                                             <span id="remainingTotal">$1,000.00</span>
                                             <input type="hidden" name="remaining_total" id="remaining_total" value="{{ $estimate->total_amount }}">
                                         </div>
-
+                                    </div>
                                         <button type="submit" class="btn btn-warning btn-sm no-print">Save Payment Schedule</button>
                                     </form>
 
@@ -1219,12 +558,14 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="fas fa-cube me-2"></i>Select Products
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
+                        <div class="modal-header-text">
+                            <i class="fas fa-cube me-2"></i>
+                            <h5 class="modal-title" id="taxModalLabel">
+                                Select Products
+                            </h5>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">&times;</button>
                     </div>
 
                     <div class="modal-body">
@@ -1280,7 +621,7 @@
         {{-- Edit Product Modals --}}
 
         <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <form id="editProductForm">
                     @csrf
                     <input type="hidden" name="item_id">
@@ -1320,13 +661,16 @@
         {{-- Add Tax Modals --}}
         <div class="modal fade" id="taxModal" tabindex="-1" role="dialog" aria-labelledby="taxModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <form id="taxForm" onsubmit="event.preventDefault(); addTax();">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="taxModalLabel">
-                                        <i class="fas fa-percentage me-2"></i>Add Tax
-                                    </h5>
+                                    <div class="modal-header-text">
+                                        <i class="fas fa-percentage me-2"></i>
+                                        <h5 class="modal-title" id="taxModalLabel">
+                                            Add Tax
+                                        </h5>
+                                    </div>
                                     <button type="button" class="close" data-dismiss="modal"
                                         aria-label="Close">&times;</button>
                                 </div>
@@ -1374,13 +718,16 @@
         {{-- Edit Tax Modals --}}
         <div class="modal fade" id="editTaxModal" tabindex="-1" role="dialog" aria-labelledby="taxModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <form id="taxForm" onsubmit="event.preventDefault(); updateTax();">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="taxModalLabel">
-                                        <i class="fas fa-percentage me-2"></i>Add Tax
-                                    </h5>
+                                    <div class="modal-header-text">
+                                        <i class="fas fa-percentage me-2"></i>
+                                        <h5 class="modal-title" id="taxModalLabel">
+                                            Add Tax
+                                        </h5>
+                                    </div>
                                     <button type="button" class="close" data-dismiss="modal"
                                         aria-label="Close">&times;</button>
                                 </div>
