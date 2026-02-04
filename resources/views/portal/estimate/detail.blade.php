@@ -437,57 +437,87 @@
                                     <th>Description</th>
                                     <th>Qty</th>
                                     <th>Product Price</th>
-                                    <th>Tax (%)</th>
-                                    <th>Gratuity (%)</th>
+                                    <th>Tax</th>
+                                    <th>Gratuity</th>
                                     <th>Price (Tax + Gratuity)</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($estimate->items as $item)
+                                    @php
+                                        $price = (float) ($item->price ?? 0);
+                                        $qty = (int) ($item->quantity ?? 0);
+                                        $tax = (float) ($item->tax ?? 0);
+                                        $gratuity = (float) ($item->gratuity ?? 0);
+                                        $productPrice = (float) ($item->product_price ?? 0);
+                                        $lineTotal = $qty * $productPrice;
+                                    @endphp
                                     <tr>
                                         <td>{{ $item->name ?? 'Item' }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        <td>${{ number_format($item->price, 2) }}</td>
-                                        <td>${{ number_format($item->tax, 2) }}</td>
-                                        <td>${{ number_format($item->gratuity, 2) }}</td>
-                                        <td>${{ number_format($item->product_price,2) }}</td>
-                                        <td>${{ number_format($item->total_price, 2) }}</td>
+                                        <td>{{ $qty }}</td>
+                                        <td>${{ number_format($price, 2) }}</td>
+                                        <td>${{ number_format($tax, 2) }}</td>
+                                        <td>${{ number_format($gratuity, 2) }}</td>
+                                        <td>${{ number_format($productPrice, 2) }}</td>
+                                        <td>${{ number_format($lineTotal, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
 
-                    {{-- Summary Section --}}
+                    {{-- Summary Sections (calculated to match product table) --}}
+                    @php
+                        $summarySubtotal = $estimate->items->sum(fn($item) => (int)($item->quantity ?? 0) * (float)($item->product_price ?? 0));
+                        $summaryTaxTotal = 0;
+                        foreach ($estimate->taxes ?? [] as $t) {
+                            $summaryTaxTotal += ($t->percent / 100) * $summarySubtotal;
+                        }
+                        $summaryDiscountTotal = 0;
+                        foreach ($estimate->discounts ?? [] as $d) {
+                            if (strtolower((string)($d->type ?? 'fixed')) === 'percent') {
+                                $summaryDiscountTotal += ($d->value / 100) * $summarySubtotal;
+                            } else {
+                                $summaryDiscountTotal += (float) $d->value;
+                            }
+                        }
+                        $summaryTotal = $summarySubtotal + $summaryTaxTotal - $summaryDiscountTotal;
+                    @endphp
                     <table class="summary-table">
                         <tbody>
                             <tr>
                                 <th>Subtotal</th>
-                                <td>${{ number_format($estimate->subtotal, 2) }}</td>
+                                <td>${{ number_format($summarySubtotal, 2) }}</td>
                             </tr>
 
                             {{-- Taxes --}}
-                            @foreach ($estimate->taxes as $tax)
+                            @foreach ($estimate->taxes ?? [] as $tax)
+                                @php $taxAmount = ($tax->percent / 100) * $summarySubtotal; @endphp
                                 <tr>
                                     <th>{{ $tax->name }} ({{ $tax->percent }}%)</th>
-                                    <td>${{ number_format(($tax->percent / 100) * $estimate->subtotal, 2) }}</td>
+                                    <td>${{ number_format($taxAmount, 2) }}</td>
                                 </tr>
                             @endforeach
 
                             {{-- Discounts --}}
-                            @if ($estimate->discounts)
+                            @if ($estimate->discounts && $estimate->discounts->count() > 0)
                                 @foreach ($estimate->discounts as $discount)
+                                    @php
+                                        $discountAmount = strtolower((string)($discount->type ?? 'fixed')) === 'percent'
+                                            ? ($discount->value / 100) * $summarySubtotal
+                                            : (float) $discount->value;
+                                    @endphp
                                     <tr>
-                                        <th>{{ $discount->name }}</th>
-                                        <td class="text-danger">– ${{ number_format($discount->value, 2) }}</td>
+                                        <th>{{ $discount->name ?? 'Discount' }}</th>
+                                        <td class="text-danger">– ${{ number_format($discountAmount, 2) }}</td>
                                     </tr>
                                 @endforeach
                             @endif
 
                             <tr>
                                 <th>Total</th>
-                                <td class="font-weight-bold">${{ number_format($estimate->total, 2) }}</td>
+                                <td class="font-weight-bold">${{ number_format($summaryTotal, 2) }}</td>
                             </tr>
                             <!--
                                 <tr>
@@ -509,6 +539,9 @@
                         </div>
                     @endif
                     @if ($estimate->installments && $estimate->installments->count() > 0)
+                        @php
+                            $installmentsTotal = $estimate->installments->sum(fn($inst) => (float)($inst->amount ?? 0));
+                        @endphp
                         <div class="installments-section mt-4">
                             <h3 class="text-lg font-semibold mb-2">Payment Schedule</h3>
                             <div class="table-responsive">
@@ -526,11 +559,17 @@
                                                 <td>#{{ $index + 1 }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($installment->installment_date)->format('M d, Y') }}</td>
                                                 <td class="font-weight-bold">
-                                                    {{ number_format($installment->amount, 2) }}
+                                                    ${{ number_format((float)($installment->amount ?? 0), 2) }}
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
+                                    <tfoot>
+                                        <tr class="font-weight-bold">
+                                            <th colspan="2">Total scheduled</th>
+                                            <td>${{ number_format($installmentsTotal, 2) }}</td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>

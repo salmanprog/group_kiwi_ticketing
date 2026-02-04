@@ -190,7 +190,7 @@ class EstimateController extends CRUDCrontroller
     public function show($slug)
     {
         $record = Estimate::with([
-            'items',
+            'items.itemTaxes',
             'taxes',
             'discounts',
             'company',
@@ -205,7 +205,7 @@ class EstimateController extends CRUDCrontroller
         ])
             ->where('slug', $slug)
             ->first();
-
+        
         $this->__data['estimate'] = $record;
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
             ->join('users', 'users.id', '=', 'user_activity_logs.user_id')
