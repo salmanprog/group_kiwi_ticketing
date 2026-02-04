@@ -437,9 +437,8 @@
                                     <th>Description</th>
                                     <th>Qty</th>
                                     <th>Product Price</th>
-                                    <th>Tax</th>
-                                    <th>Gratuity</th>
-                                    <th>Price (Tax + Gratuity)</th>
+                                    <th>Taxes</th>
+                                    <th>Price</th>
                                     <th>Total</th>
                                 </tr>
                             </thead>
@@ -449,7 +448,6 @@
                                         $price = (float) ($item->price ?? 0);
                                         $qty = (int) ($item->quantity ?? 0);
                                         $tax = (float) ($item->tax ?? 0);
-                                        $gratuity = (float) ($item->gratuity ?? 0);
                                         $productPrice = (float) ($item->product_price ?? 0);
                                         $lineTotal = $qty * $productPrice;
                                     @endphp
@@ -458,7 +456,6 @@
                                         <td>{{ $qty }}</td>
                                         <td>${{ number_format($price, 2) }}</td>
                                         <td>${{ number_format($tax, 2) }}</td>
-                                        <td>${{ number_format($gratuity, 2) }}</td>
                                         <td>${{ number_format($productPrice, 2) }}</td>
                                         <td>${{ number_format($lineTotal, 2) }}</td>
                                     </tr>

@@ -611,45 +611,74 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($invoice->invoiceItems as $item)
+                                @foreach ($invoice->invoiceItems ?? [] as $item)
+                                    @php
+                                        $unitPrice = (float) ($item->price ?? 0);
+                                        $qty = (int) ($item->quantity ?? 0);
+                                        $lineTotal = $qty * $unitPrice;
+                                    @endphp
                                     <tr>
                                         <td>{{ $item->name ?? 'Item' }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        <td>${{ number_format($item->price, 2) }}</td>
-                                        <td>${{ number_format($item->total_price, 2) }}</td>
+                                        <td>{{ $qty }}</td>
+                                        <td>${{ number_format($unitPrice, 2) }}</td>
+                                        <td>${{ number_format($lineTotal, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
 
-                    {{-- Summary Section --}}
+                    {{-- Summary Section (calculated from items/taxes/discounts) --}}
+                    @php
+                        $summarySubtotal = ($invoice->invoiceItems ?? collect())->sum(fn($item) => (int)($item->quantity ?? 0) * (float)($item->price ?? 0));
+                        $summaryTaxTotal = 0;
+                        foreach ($invoice->invoiceTax ?? [] as $t) {
+                            $summaryTaxTotal += ($t->percent / 100) * $summarySubtotal;
+                        }
+                        $summaryDiscountTotal = 0;
+                        foreach ($invoice->invoiceDiscount ?? [] as $d) {
+                            $dType = strtolower((string)($d->type ?? 'fixed'));
+                            if ($dType === 'percent' || $dType === 'percentage') {
+                                $summaryDiscountTotal += ($d->value / 100) * $summarySubtotal;
+                            } else {
+                                $summaryDiscountTotal += (float) ($d->value ?? 0);
+                            }
+                        }
+                        $summaryTotal = $summarySubtotal + $summaryTaxTotal - $summaryDiscountTotal;
+                    @endphp
                     <table class="summary-table">
                         <tbody>
                             <tr>
                                 <th>Subtotal</th>
-                                <td>${{ number_format($invoice->subtotal, 2) }}</td>
+                                <td>${{ number_format($summarySubtotal, 2) }}</td>
                             </tr>
 
                             {{-- Taxes --}}
-                            @foreach ($invoice->invoiceTax as $tax)
+                            @foreach ($invoice->invoiceTax ?? [] as $tax)
+                                @php $taxAmount = ($tax->percent / 100) * $summarySubtotal; @endphp
                                 <tr>
                                     <th>{{ $tax->name }} ({{ $tax->percent }}%)</th>
-                                    <td>${{ number_format(($tax->percent / 100) * $invoice->subtotal, 2) }}</td>
+                                    <td>${{ number_format($taxAmount, 2) }}</td>
                                 </tr>
                             @endforeach
 
                             {{-- Discounts --}}
-                            @foreach ($invoice->invoiceDiscount as $discount)
+                            @foreach ($invoice->invoiceDiscount ?? [] as $discount)
+                                @php
+                                    $dType = strtolower((string)($discount->type ?? 'fixed'));
+                                    $discountAmount = ($dType === 'percent' || $dType === 'percentage')
+                                        ? ($discount->value / 100) * $summarySubtotal
+                                        : (float) ($discount->value ?? 0);
+                                @endphp
                                 <tr>
-                                    <th>{{ $discount->name }}</th>
-                                    <td class="text-danger">– ${{ number_format($discount->value, 2) }}</td>
+                                    <th>{{ $discount->name ?? 'Discount' }}</th>
+                                    <td class="text-danger">– ${{ number_format($discountAmount, 2) }}</td>
                                 </tr>
                             @endforeach
 
                             <tr>
                                 <th>Total</th>
-                                <td class="font-weight-bold">${{ number_format($invoice->total, 2) }}</td>
+                                <td class="font-weight-bold">${{ number_format($summaryTotal, 2) }}</td>
                             </tr>
 
                             <!-- <tr>

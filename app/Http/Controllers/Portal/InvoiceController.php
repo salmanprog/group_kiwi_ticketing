@@ -154,7 +154,18 @@ class InvoiceController extends CRUDCrontroller
 
     public function show($slug)
     {
-        $record = Invoice::with('invoiceItems', 'invoiceTax', 'invoiceDiscount', 'company', 'estimate.organization', 'client')->where('slug', $slug)->first();
+        $record = Invoice::with([
+            'invoiceItems',
+            'invoiceTax',
+            'invoiceDiscount',
+            'company',
+            'estimate' => function ($q) {
+                $q->with(['organization' => function ($q2) {
+                    $q2->withTrashed();
+                }]);
+            },
+            'client',
+        ])->where('slug', $slug)->first();
         $this->__data['invoice'] = $record;
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }
