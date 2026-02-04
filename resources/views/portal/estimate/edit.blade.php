@@ -425,10 +425,15 @@
                                             <input type="hidden" name="remaining_total" id="remaining_total" value="{{ $estimate->total_amount }}">
                                         </div>
                                     </div>
-                                        <button type="submit" class="btn btn-warning btn-sm no-print">Save Payment Schedule</button>
+                                        <button type="submit" id="savePaymentScheduleBtn" class="btn btn-warning btn-sm no-print">
+                                            <span class="btn-schedule-text">Save Payment Schedule</span>
+                                            <span class="btn-schedule-loading" style="display:none;">
+                                                <span class="schedule-spinner"></span> Saving…
+                                            </span>
+                                        </button>
                                     </form>
 
-                                    <div id="formMessage" class="mt-2 text-success" style="display:none;"></div>
+                                    <div id="paymentScheduleMessage" class="mt-2 text-success" style="display:none;"></div>
 
                                 </div>
                             </div>
@@ -449,7 +454,8 @@
                                                 data-url="{{ route('estimate.note.save') }}"
                                                 data-csrf="{{ csrf_token() }}"
                                                 data-estimateid="{{ $estimate->id }}">
-                                            <i class="fas fa-save me-1"></i> Save Note
+                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Note</span>
+                                            <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
                                         </button>
 
                                         <div id="formMessage" class="mt-2" style="display:none;"></div>
@@ -471,7 +477,8 @@
                                                 data-url="{{ route('estimate.note.save') }}"
                                                 data-csrf="{{ csrf_token() }}"
                                                 data-estimateid="{{ $estimate->id }}">
-                                            <i class="fas fa-save me-1"></i> Save Term and Condition
+                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Term and Condition</span>
+                                            <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
                                         </button>
                                         <div class="print-value mt-3">
                                             <strong>Terms & Conditions (Preview):</strong>
@@ -860,12 +867,86 @@
 
 
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet">
+@push('stylesheets')
+<style>
+.schedule-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; vertical-align: middle; margin-right: 6px; animation: schedule-spin 0.7s linear infinite; }
+@keyframes schedule-spin { to { transform: rotate(360deg); } }
+</style>
+@endpush
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
 <script>
 $(document).ready(function () {
+
+    $('#paymentScheduleForm').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var btn = $('#savePaymentScheduleBtn');
+        var msgEl = $('#paymentScheduleMessage');
+        btn.prop('disabled', true);
+        btn.find('.btn-schedule-text').hide();
+        btn.find('.btn-schedule-loading').show();
+        msgEl.hide().removeClass('text-success text-danger');
+
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(res) {
+                btn.prop('disabled', false);
+                btn.find('.btn-schedule-loading').hide();
+                btn.find('.btn-schedule-text').show();
+                if (res.status === true) {
+                    msgEl.text(res.message || 'Payment schedule saved successfully!').addClass('text-success').show();
+                } else {
+                    msgEl.text(res.message || 'Something went wrong.').addClass('text-danger').show();
+                }
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false);
+                btn.find('.btn-schedule-loading').hide();
+                btn.find('.btn-schedule-text').show();
+                var res = (xhr.responseJSON || {});
+                msgEl.text(res.message || (xhr.responseText || 'Request failed.')).addClass('text-danger').show();
+            }
+        });
+    });
+
+    var $saveNoteBtnActive = null;
+    $(document).on('click', '.save-note', function() {
+        var btn = $(this);
+        $saveNoteBtnActive = btn;
+        btn.prop('disabled', true);
+        btn.find('.btn-note-text').hide();
+        btn.find('.btn-note-loading').show();
+    });
+    $(document).ajaxComplete(function(event, xhr, settings) {
+        var url = (settings.url || '').toString();
+        if ((url.indexOf('note/save') !== -1 || url.indexOf('estimate.note.save') !== -1) && $saveNoteBtnActive && $saveNoteBtnActive.length) {
+            $saveNoteBtnActive.prop('disabled', false);
+            $saveNoteBtnActive.find('.btn-note-loading').hide();
+            $saveNoteBtnActive.find('.btn-note-text').show();
+            $saveNoteBtnActive = null;
+        }
+        if (url.indexOf('estimates-send-to-client') !== -1 && $sendToClientBtnActive && $sendToClientBtnActive.length) {
+            $sendToClientBtnActive.prop('disabled', false);
+            $sendToClientBtnActive.find('.btn-send-loading').hide();
+            $sendToClientBtnActive.find('.btn-send-text').show();
+            $sendToClientBtnActive = null;
+        }
+    });
+
+    var $sendToClientBtnActive = null;
+    $(document).on('click', '.send-to-client', function() {
+        var btn = $(this);
+        $sendToClientBtnActive = btn;
+        btn.prop('disabled', true);
+        btn.find('.btn-send-text').hide();
+        btn.find('.btn-send-loading').show();
+    });
     
     $('#estimate_note').summernote({
         height: 180,

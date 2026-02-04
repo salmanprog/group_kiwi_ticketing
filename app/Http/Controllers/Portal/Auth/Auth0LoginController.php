@@ -240,6 +240,7 @@ class Auth0LoginController extends Controller
                     'user_group_id' => 2,
                     'auth0_id' => $auth0UserId,
                     'user_type' => 'company',
+                    'users_username' => $username,
                     'slug' => $username,
                     'username' => $username,
                     'name' => $name,
@@ -262,7 +263,6 @@ class Auth0LoginController extends Controller
                 $user = $companyAdmin;
             } else {
                 // Update existing user with company_name and auth_code from API
-                $user->company_name = $companyName;
                 $user->auth_code = $authCode;
                 $user->save();
             }

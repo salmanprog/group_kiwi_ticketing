@@ -7,3 +7,7 @@ RewriteRule (.*) /public/$1 [L]
 
 ==============================htaccess end------------------------------------
 ALTER TABLE `users` ADD `authCode` VARCHAR(255) NULL DEFAULT NULL AFTER `user_group_id`;
+
+
+dev@ideaseat.com
+7Q1cbxQ(G\04
