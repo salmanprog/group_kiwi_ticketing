@@ -697,7 +697,7 @@
                                                 <td>
                                                     <a href="{{ route('estimate.show', $estimate->slug) }}"
                                                         class="text-decoration-none theme-text fw-bold">
-                                                        <i class="fas fa-external-link-alt me-1"></i>
+                                                        <i class="fas fa-external-link-alt me-1 ss"></i>
                                                         {{ strtoupper($estimate->slug) }}
                                                     </a>
                                                 </td>
@@ -711,7 +711,7 @@
                                                         <small class="text-muted"><em>(Adjusted)</em></small>
                                                     @endif
                                                 </td>
-                                                <td class="fw-semibold">${{ number_format($estimate->total, 2) }}</td>
+                                                <td class="fw-semibold">${{ number_format($estimate->items->sum('total_price') ?: (float)($estimate->total ?? 0), 2) }}</td>
                                             </tr>
                                         @endforeach
                                     @else
@@ -765,13 +765,16 @@
                                         @foreach ($record->items as $item)
                                             <tr>
                                                 <td>{{ $item->name }}  @if($item->is_modified == 1) <span class="badge bg-warning">M</span> @endif</td>
-                                                <td>{{ $item->unit }}</td>
-                                                <td>{{ $item->price }}</td>
-                                                <td>{{ $item->taxes }}</td>
-                                                <td>{{ $item->gratuity }}</td>
-                                                <td>{{ $item->price + $item->taxes + $item->gratuity }}</td>
-                                                <td>{{ $item->quantity }}</td>
-                                                <td>{{ $item->total_price }}</td>
+                                                <td>{{ $item->unit ?? '-' }}</td>
+                                                <td class="fw-semibold">${{ number_format((float)($item->price ?? 0), 2) }}</td>
+                                                <td>${{ number_format((float)($item->taxes ?? 0), 2) }}</td>
+                                                <td>${{ number_format((float)($item->gratuity ?? 0), 2) }}</td>
+                                                @php
+                                                    $itemPriceWithTax = (float)($item->product_price ?? 0) ?: ((float)($item->price ?? 0) + (float)($item->taxes ?? 0) + (float)($item->gratuity ?? 0));
+                                                @endphp
+                                                <td>${{ number_format($itemPriceWithTax, 2) }}</td>
+                                                <td>{{ $item->quantity ?? 0 }}</td>
+                                                <td class="fw-semibold">${{ number_format((float)($item->total_price ?? 0), 2) }}</td>
                                                 <td>
                                                     @if ($item->is_accepted_by_client == 1)
                                                         <span class="badge bg-success">Yes</span>
@@ -783,7 +786,7 @@
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="6" class="text-center text-muted py-4">
+                                            <td colspan="9" class="text-center text-muted py-4">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i><br>
                                                 <em>No products found.</em>
                                             </td>

@@ -141,7 +141,7 @@ class ContractController extends CRUDCrontroller
             },
             'company',
             'client',
-            'estimates',
+            'estimates.items',
             'invoices.installmentPlan.payments',
             'invoices.creditNotes',
             'items'
