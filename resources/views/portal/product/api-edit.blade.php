@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('product.api.update', $ticket['id']) }}">
+                    <form method="POST" action="{{ route('product.api.update', $ticket['id'] ?? 0) }}">
                         @csrf
 
                         <div class="form-section">
@@ -20,31 +20,31 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Ticket Name</label>
                                     <input type="text" class="form-control" name="ticketName"
-                                        value="{{ old('ticketName', $ticket['ticketName']) }}" required>
+                                        value="{{ old('ticketName', $ticket['ticketName'] ?? '') }}" required>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Ticket Type</label>
                                     <input type="text" class="form-control" name="ticketType"
-                                        value="{{ $ticket['ticketType'] }}" disabled>
+                                        value="{{ $ticket['ticketType'] ?? '' }}" disabled>
                                 </div>
 
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Sale Channel</label>
                                     <input type="text" class="form-control" name="saleChannel"
-                                        value="{{ $ticket['saleChannel'] }}" disabled>
+                                        value="{{ $ticket['saleChannel'] ?? '' }}" disabled>
                                 </div>
 
                                 <div class="col-md-6 mt-3">
                                     <label class="form-label">Price</label>
                                     <input type="number" step="0.01" name="ticketPrice"
                                         class="form-control"
-                                        value="{{ old('ticketPrice', $ticket['ticketPrice']) }}" required>
+                                        value="{{ old('ticketPrice', $ticket['ticketPrice'] ?? '') }}" required>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="form-label">Description</label>
-                                        <textarea name="description" id="description" class="form-control" style="height: 120px;" placeholder="Enter description here...">{{ old('description', $ticket['description']) }}</textarea>
+                                        <textarea name="description" id="description" class="form-control" style="height: 120px;" placeholder="Enter description here...">{{ old('description', $get_product->description ?? '') }}</textarea>
                                     </div>
                                 </div>
                             </div>

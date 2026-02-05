@@ -150,7 +150,7 @@ class ProductController extends CRUDCrontroller
     // Show Create Form
     public function createApi()
     {
-        $response = $this->apiService->getTicketPricingRecord();
+        $response = $this->apiService->getTicketPricingRecord([], Auth::user()->auth_code);
 
         $tickets = [];
 
@@ -206,14 +206,27 @@ class ProductController extends CRUDCrontroller
             'TicketId'    => $ticketId,
         ];
 
-        $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams);
-
-        if ($apiResponse->failed()) {
-            return redirect()->back()->with('error', 'Ticket saved locally, but API sync failed.');
-        }
+        $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams, Auth::user()->auth_code);
 
         $apiData = $apiResponse->json();
+        $apiSuccess = isset($apiData['errorCode']) && (int) $apiData['errorCode'] === 0;
 
+        if (!$apiSuccess) {
+            $errorMessage = 'Ticket saved locally, but API sync failed.';
+            if (!empty($apiData['errors']) && is_array($apiData['errors'])) {
+                $messages = collect($apiData['errors'])->flatten()->filter()->values()->all();
+                $errorMessage = 'Ticket saved locally. API error: ' . implode(' ', $messages);
+            } elseif (!empty($apiData['title'])) {
+                $errorMessage = 'Ticket saved locally. API error: ' . $apiData['title'];
+            } elseif (!empty($apiData['errorMessage'])) {
+                $errorMessage = 'Ticket saved locally. API error: ' . $apiData['errorMessage'];
+            } elseif ($apiResponse->failed()) {
+                $errorMessage = 'Ticket saved locally. API request failed (HTTP ' . $apiResponse->status() . ').';
+            }
+            return redirect()->back()->withInput()->with('error', $errorMessage);
+        }
+
+        // API reported success (errorCode 0): update slug from response
         if (!empty($apiData['data']['ticketSlug'])) {
             $product->update(['slug' => $apiData['data']['ticketSlug']]);
         }
@@ -229,14 +242,14 @@ class ProductController extends CRUDCrontroller
 
     public function editApi($slug)
     {
-        $response = $this->apiService->getTicketPricingRecord();
+        $response = $this->apiService->getTicketPricingRecord([], Auth::user()->auth_code);
 
         $ticket = collect($response->json()['data'])
             ->firstWhere('ticketSlug', $slug);
-
+        $get_product = Product::where('slug', $slug)->first();
         abort_if(!$ticket, 404);
 
-        return view('portal.product.api-edit', compact('ticket'));
+        return view('portal.product.api-edit', compact('ticket', 'get_product'));
     }
 
     public function updateApi(Request $request, $id)
@@ -248,7 +261,7 @@ class ProductController extends CRUDCrontroller
         ]);
 
         // Fetch ticket from API
-        $response = $this->apiService->getTicketPricingRecord();
+        $response = $this->apiService->getTicketPricingRecord([], Auth::user()->auth_code);
         $ticket = collect($response->json()['data'])->firstWhere('id', $id);
 
         if (!$ticket) {
@@ -264,7 +277,7 @@ class ProductController extends CRUDCrontroller
                 'company_id'                  => $company->id,
                 'company_product_category_id' => 0, // you can set default or dynamic category
                 'name'                        => $validated['ticketName'],
-                'description'                 => $validated['description'],
+                'description'                 => $request->description,
                 'price'                       => $validated['ticketPrice'],
                 'unit'                        => 'Ticket',
                 'status'                      => '1',
@@ -273,7 +286,7 @@ class ProductController extends CRUDCrontroller
 
         // API update
         $apiParams = [
-            'AuthCode'    => config('services.third_party.auth_code'),
+            'AuthCode'    => Auth::user()->auth_code,
             'TicketName'  => $validated['ticketName'],
             'TicketPrice' => $validated['ticketPrice'],
             'UserId'      => 'dev',
@@ -282,7 +295,7 @@ class ProductController extends CRUDCrontroller
             'TicketId'    => $ticket['id'],
         ];
 
-        $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams);
+        $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams, Auth::user()->auth_code);
 
         if ($apiResponse->failed()) {
             return redirect()->back()->with('error', 'Local DB updated, but failed to sync API.');
