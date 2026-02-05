@@ -61,6 +61,12 @@
                                     <label class="form-label">Price</label>
                                     <input type="number" step="0.01" name="ticketPrice" id="ticketPrice" class="form-control" required>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Description</label>
+                                        <textarea name="description" id="description" class="form-control" style="height: 120px;" placeholder="Enter description here...">{{ old('description') }}</textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

@@ -186,10 +186,11 @@ class ProductController extends CRUDCrontroller
 
         $company = CompanyUser::getCompany(Auth::user()->id);
         $product = Product::create([
+            'auth_code'                   => Auth::user()->auth_code,
             'company_id'                  => $company->id,
             'company_product_category_id' => 0,
             'name'        => $ticketName,
-            'description' => $ticketName,
+            'description' => $request->description,
             'price'       => $validated['ticketPrice'],
             'unit'        => 'Ticket',
             'status'      => '1',
@@ -263,7 +264,7 @@ class ProductController extends CRUDCrontroller
                 'company_id'                  => $company->id,
                 'company_product_category_id' => 0, // you can set default or dynamic category
                 'name'                        => $validated['ticketName'],
-                'description'                 => $validated['ticketName'],
+                'description'                 => $validated['description'],
                 'price'                       => $validated['ticketPrice'],
                 'unit'                        => 'Ticket',
                 'status'                      => '1',

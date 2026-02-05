@@ -41,6 +41,12 @@
                                         class="form-control"
                                         value="{{ old('ticketPrice', $ticket['ticketPrice']) }}" required>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Description</label>
+                                        <textarea name="description" id="description" class="form-control" style="height: 120px;" placeholder="Enter description here...">{{ old('description', $ticket['description']) }}</textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

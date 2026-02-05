@@ -590,7 +590,7 @@
         <div class="container">
             <div class="contract-wrapper">
 
-                <!-- Contract Header -->
+                <!-- Contract s -->
                 <div class="contract-header">
                     <div class="contract-title">
                         <i class="fas fa-file-contract me-2"></i>Contract

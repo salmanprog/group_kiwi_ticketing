@@ -12,7 +12,8 @@ class ThirdPartyApiService
     public function __construct()
     {
         $this->baseUrl = config('services.third_party.api_base_url');
-        $this->authCode = config('services.third_party.auth_code');
+        //$this->authCode = config('services.third_party.auth_code');
+        $this->authCode = Auth::user()->auth_code;
     }
 
     public function getTicketPricingRecord(array $params = [])
