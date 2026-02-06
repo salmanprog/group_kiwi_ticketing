@@ -539,7 +539,7 @@
                                 <a class="dropdown-toggle  cust-dropdown-toggle" data-toggle="dropdown"
                                     href="#">
                                     <img alt="" class="rounded-circle"
-                                        src="{{ !empty(currentUser()->image_url) ? Storage::url(currentUser()->image_url) : URL::to('admin/assets/img/avtar-2.png') }}"
+                                        src="{{ URL::to('admin/assets/img/avtar-2.png') }}"
                                         width="30">
                                     {{ currentUser()->name }}
                                 </a>
