@@ -105,14 +105,15 @@ function addProductDiscount() {
                 setTimeout(() => modal.modal('hide'), 1000);
 
                 // Optionally render discounts in table footers
-                renderDiscounts(res.discount_id, discountName, discountType, discountValue);
-
+                //renderDiscounts(res.discount_id, discountName, discountType, discountValue);
+                location.reload();
                 // Recalculate totals
-                updateTotals();
-                window.location.reload();
+                //updateTotals();
+                
             } else {
                 showModalMessage(modal, res.message, 'danger');
             }
+            //window.location.reload();
         },
         error: function(xhr) {
             let msg = 'Something went wrong';
@@ -196,7 +197,8 @@ $(document).on('click', '.delete-discount', function () {
                 button.closest('tr').remove();
 
                 // Recalculate totals
-                updateTotals();
+                //updateTotals();
+                location.reload();
             } else {
                 alert(res.message || 'Something went wrong');
             }
