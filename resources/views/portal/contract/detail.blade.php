@@ -687,7 +687,8 @@
                 <!-- Linked Estimates -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-file-invoice-dollar me-2"></i>Estimates Linked to this Contract
+                        {{-- <i class="fas fa-file-invoice-dollar me-2"></i> --}}
+                        Estimates Linked to this Contract
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -761,7 +762,8 @@
                     <!-- Linked Estimates -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-file-invoice-dollar me-2"></i>Contract Items
+                        {{-- <i class="fas fa-file-invoice-dollar me-2"></i> --}}
+                        Contract Items
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -809,7 +811,8 @@
                 <!-- Invoices Section -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-receipt me-2"></i>Invoices Generated
+                        {{-- <i class="fas fa-receipt me-2"></i> --}}
+                        Invoices Generated
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -1096,7 +1099,8 @@
                     <!-- Terms & Notes -->
                     <div class="card">
                         <div class="card-header">
-                            <i class="fas fa-clipboard-list me-2"></i>Terms & Notes
+                            {{-- <i class="fas fa-clipboard-list me-2"></i> --}}
+                            Terms & Notes
                         </div>
                         <div class="card-body">
                             <h5 class="fw-bold theme-text mb-3">Terms</h5>
@@ -1108,10 +1112,10 @@
                     </div>
 
                     @if(Auth::user()->user_type != 'client')
-                  <div class="activity-section shadow-sm rounded bg-white p-4">
+                  <div class="activity-section shadow-sm rounded bg-white p-4 rnt-pd">
     <div class="section-header d-flex align-items-center mb-3">
-        <i class="fas fa-history me-2 text-primary"></i>
-        <h5 class="mb-0">Recent Activity</h5>
+        {{-- <i class="fas fa-history me-2 text-primary"></i> --}}
+        <h5 class="mb-0 act-txt">Recent Activity</h5>
     </div>
 
     <div class="table-responsive">
@@ -1153,26 +1157,27 @@
                     @if (Auth::user()->user_type == 'company')
                         <div class="card">
                             <div class="card-header">
-                                <i class="fas fa-edit me-2"></i>Edit Contract Details
+                                {{-- <i class="fas fa-edit me-2"></i> --}}
+                                Edit Contract Details
                             </div>
                             <div class="card-body">
                                 <form action="{{ route('contract.update-contract', $record->slug) }}" method="POST">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
-                                            <label class="form-label fw-bold">Event Date</label>
+                                            <label class="form-label">Event Date</label>
                                             <input type="date" class="form-control" value="{{ $record->event_date }}"
                                                 name="event_date" required>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Terms</label>
+                                        <label class="form-label">Terms</label>
                                         <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Notes</label>
+                                        <label class="form-label">Notes</label>
                                         <textarea name="notes" rows="3" class="form-control" placeholder="Enter any additional notes...">{{ $record->notes }}</textarea>
                                     </div>
 

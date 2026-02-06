@@ -659,6 +659,11 @@ button.btn.btn-success {
     align-items: center;
 }
 
+.contract-wrapper .activity-section.shadow-sm.rounded.bg-white.p-4.rnt-pd {
+    padding-inline: 0 !important;
+    box-shadow: unset !important;
+}
+
 button.btn.btn-secondary {
     font-weight: 600;
     font-size: 14px;
