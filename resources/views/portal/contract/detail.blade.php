@@ -706,7 +706,7 @@
                                             <tr>
                                                 <td>
                                                     <a href="{{ route('estimate.show', $estimate->slug) }}"
-                                                        class="text-decoration-none theme-text fw-bold">
+                                                        class="btn btn-xs btn-info">
                                                         <i class="fas fa-external-link-alt me-1 ss"></i>
                                                         {{ strtoupper($estimate->slug) }}
                                                     </a>
@@ -832,7 +832,7 @@
                                         <tr>
                                             <td>
                                                 <a href="{{ route('invoice.show', $invoice->slug) }}"
-                                                    class="fw-bold text-decoration-none theme-text">
+                                                    class="btn btn-xs btn-info">
                                                     <i class="fas fa-external-link-alt me-1"></i>
                                                     {{ strtoupper($invoice->slug) }}
                                                 </a>
