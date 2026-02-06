@@ -220,11 +220,12 @@ class Auth0LoginController extends Controller
             $user = User::where('email', $email)
                 ->where('auth_code', $authCode)
                 ->first();
-
+           
             if (!$user) {
+                 
                 $name = trim(($userDetails['firstName'] ?? '') . ' ' . ($userDetails['lastName'] ?? '')) ?: ($auth0User['name'] ?? $email);
-                $username = $userDetails['userName'] ?? CompanyAdmin::generateUniqueUserName($name);
-
+                
+                $username = CompanyAdmin::generateUniqueUserName($name);
                 $company = Company::create([
                     'name' => $companyName ?? $name,
                     'slug' => Company::generateUniqueSlug(uniqid()),

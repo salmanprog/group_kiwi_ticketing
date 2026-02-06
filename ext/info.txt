@@ -8,6 +8,7 @@ RewriteRule (.*) /public/$1 [L]
 ==============================htaccess end------------------------------------
 ALTER TABLE `users` ADD `auth_code` VARCHAR(255) NULL DEFAULT NULL AFTER `user_group_id`;
 ALTER TABLE `company_products` ADD `auth_code` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
+ALTER TABLE `contract_taxes` ADD `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
 
 
 dev@ideaseat.com

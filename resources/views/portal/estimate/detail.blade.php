@@ -431,110 +431,100 @@
                         <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
                                         Product Details
                                     </h5>
-                        <table class="product-table">
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Qty</th>
-                                    <th>Product Price</th>
-                                    <th>Taxes</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($estimate->items as $item)
-                                    @php
-                                        $price = (float) ($item->price ?? 0);
-                                        $qty = (int) ($item->quantity ?? 0);
-                                        $tax = (float) ($item->tax ?? 0);
-                                        $productPrice = (float) ($item->product_price ?? 0);
-                                        $lineTotal = $qty * $productPrice;
-                                    @endphp
-                                    <tr>
-                                        <td>{{ $item->name ?? 'Item' }}</td>
-                                        <td>{{ $qty }}</td>
-                                        <td>${{ number_format($price, 2) }}</td>
-                                        <td>${{ number_format($tax, 2) }}</td>
-                                        <td>${{ number_format($productPrice, 2) }}</td>
-                                        <td>${{ number_format($lineTotal, 2) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                        <table class="table product-table" id="productTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Product Price</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if($estimate && $estimate->items->count())
+                                                    @foreach($estimate->items as $item)
+                                                        <tr data-id="{{ $item->id }}">
+                                                            <td>
+                                                                {{ $item->name }}
+                                                                @if($item->itemTaxes && $item->itemTaxes->count())
+                                                                    <small class="text-muted d-block" data-taxes='[
+                                                                                                    @foreach($item->itemTaxes as $tax)
+                                                                                                        {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if(!$loop->last),@endif
+                                                                                                    @endforeach
+                                                                                                ]'>
+                                                                                Apply Taxes: 
+                                                                                @foreach($item->itemTaxes as $tax)
+                                                                                    {{ $tax->name }}@if(!$loop->last), @endif
+                                                                                @endforeach
+                                                                    </small>
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
+                                                            <td>${{ number_format($item->price, 2) }}</td>
+                                                            <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                                            
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr class="no-items">
+                                                        <td colspan="5" class="text-center">No products added yet.</td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="4" class="text-end">Subtotal:</th>
+                                                    <th id="subtotal">$0.00</th>
+                                                    {{-- <th></th> --}}
+                                                </tr>
 
-                    {{-- Summary Sections (calculated to match product table) --}}
-                    @php
-                        $summarySubtotal = $estimate->items->sum(fn($item) => (int)($item->quantity ?? 0) * (float)($item->product_price ?? 0));
-                        $summaryTaxTotal = 0;
-                        foreach ($estimate->taxes ?? [] as $t) {
-                            $summaryTaxTotal += ($t->percent / 100) * $summarySubtotal;
-                        }
-                        $summaryDiscountTotal = 0;
-                        foreach ($estimate->discounts ?? [] as $d) {
-                            if (strtolower((string)($d->type ?? 'fixed')) === 'percent') {
-                                $summaryDiscountTotal += ($d->value / 100) * $summarySubtotal;
-                            } else {
-                                $summaryDiscountTotal += (float) $d->value;
-                            }
-                        }
-                        $summaryTotal = $summarySubtotal + $summaryTaxTotal - $summaryDiscountTotal;
-                    @endphp
-                    <table class="summary-table">
-                        <tbody>
-                            <tr>
-                                <th>Subtotal</th>
-                                <td>${{ number_format($summarySubtotal, 2) }}</td>
-                            </tr>
+                                                @if($estimate && $estimate->taxes->count())
+                                                <tr>
+                                                    <th colspan="4" class="text-end">Tax:
+                                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                                            @foreach($estimate->taxes as $tax)
+                                                                <div class="border rounded px-2 py-1 d-flex align-items-center gap-1"
+                                                                    data-tax-id="{{ $tax->id }}">
 
-                            {{-- Taxes --}}
-                            @foreach ($estimate->taxes ?? [] as $tax)
-                                @php $taxAmount = ($tax->percent / 100) * $summarySubtotal; @endphp
-                                <tr>
-                                    <th>{{ $tax->name }} ({{ $tax->percent }}%)</th>
-                                    <td>${{ number_format($taxAmount, 2) }}</td>
-                                </tr>
-                            @endforeach
+                                                                    <small class="fw-semibold">
+                                                                        {{ $tax->name }} ({{ $tax->percent }}%)
+                                                                    </small>
 
-                            {{-- Discounts --}}
-                            @if ($estimate->discounts && $estimate->discounts->count() > 0)
-                                @foreach ($estimate->discounts as $discount)
-                                    @php
-                                        $discountAmount = strtolower((string)($discount->type ?? 'fixed')) === 'percent'
-                                            ? ($discount->value / 100) * $summarySubtotal
-                                            : (float) $discount->value;
-                                    @endphp
-                                    <tr>
-                                        <th>{{ $discount->name ?? 'Discount' }}</th>
-                                        <td class="text-danger">– ${{ number_format($discountAmount, 2) }}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                                                                                                                                   </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </th>
+                                                    <th id="tax_amount">${{ number_format($estimate->taxes->sum('amount'), 2) }}</th>
+                                                    {{-- <th></th> --}}
+                                                </tr>
+                                                @endif
+                                               @if($estimate && $estimate->discounts->count())
+                                                <tr class="fw-bold discount-row">
+                                                    @foreach($estimate->discounts as $discount)
+                                                        <th colspan="3" class="text-end">
+                                                            Discount {{ $discount->name }}
+                                                             <button class="btn btn-sm btn-link text-danger p-0 delete-discount"
+                                                                    data-url="{{ route('estimate.product.discount.delete', $discount->id) }}"
+                                                                    data-csrf="{{ csrf_token() }}">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </th>
+                                                        <th class="discount_percent">
+                                                            {{ $discount->value }} %
+                                                        </th>
+                                                        <th></th>
+                                                    @endforeach
+                                                </tr>
+                                                @endif
+                                                <tr class="fw-bold">
+                                                    <th colspan="4" class="text-end">Total:</th>
+                                                    <th id="total">$0.00</th>
+                                                    {{-- <th></th> --}}
+                                                </tr>
+                                            </tfoot>
 
-                            <tr>
-                                <th>Total</th>
-                                <td class="font-weight-bold">${{ number_format($summaryTotal, 2) }}</td>
-                            </tr>
-                            <!--
-                                <tr>
-                                    <th>Amount Paid</th>
-                                    <td class="text-success">${{ number_format($estimate->total, 2) }}</td>
-                                </tr> -->
-                        </tbody>
-                    </table>
-                    {{-- Notes--}}
-                   @if ($estimate->note)
-                        <div class="notes-section note-box">
-                            <h5 class="note-title">
-                                <i class="fas fa-file-contract me-2"></i>
-                                Note
-                            </h5>
-                            <div class="note-content">
-                                {!! $estimate->note !!}
-                            </div>
-                        </div>
-                    @endif
+                                        </table>
+                                        
                     @if ($estimate->installments && $estimate->installments->count() > 0)
                         @php
                             $installmentsTotal = $estimate->installments->sum(fn($inst) => (float)($inst->amount ?? 0));
@@ -571,12 +561,24 @@
                             </div>
                         </div>
                     @endif
+                    {{-- Notes--}}
+                   @if ($estimate->note)
+                        <div class="notes-section note-box">
+                            <h5 class="note-title">
+                                <i class="fas fa-file-contract me-2"></i>
+                                Note
+                            </h5>
+                            <div class="note-content">
+                                {!! $estimate->note !!}
+                            </div>
+                        </div>
+                    @endif
                     {{-- Notes and Terms --}}
-                    @if ($estimate->terms_and_condition)
+                    @if ($estimate->terms)
                         <div class="notes-section">
-                            @if ($estimate->terms_and_condition)
+                            @if ($estimate->terms)
                                 <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
-                                <p>{!! $estimate->terms_and_condition !!}</p>
+                                <p>{!! $estimate->terms !!}</p>
                             @endif
                         </div>
                     @endif

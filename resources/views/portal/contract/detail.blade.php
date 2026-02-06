@@ -708,10 +708,19 @@
                                                         {{ strtoupper($estimate->status) }}
                                                     </span>
                                                     @if ($estimate->is_adjusted)
-                                                        <small class="text-muted"><em>(Adjusted)</em></small>
+                                                        <small class="text-muted"><em>(Adjusted)s</em></small>
                                                     @endif
                                                 </td>
-                                                <td class="fw-semibold">${{ number_format($estimate->items->sum('total_price') ?: (float)($estimate->total ?? 0), 2) }}</td>
+                                                @php
+                                                    $subtotal = $estimate->items->sum('total_price') ?: (float) ($estimate->total ?? 0);
+                                                    $taxPercent = $record->taxes->sum('percent');
+                                                    $taxAmount = $subtotal * ($taxPercent / 100);
+                                                    $total = $subtotal + $taxAmount;
+                                                @endphp
+
+                                                <td class="fw-semibold">
+                                                    ${{ number_format($total, 2) }}
+                                                </td>
                                             </tr>
                                         @endforeach
                                     @else
@@ -750,11 +759,7 @@
                                 <thead>
                                     <tr>
                                         <th>Item Name</th>
-                                        <th>Unit</th>
                                         <th>Price</th>
-                                        <th>Tax</th>
-                                        <th>Gratuity</th>
-                                        <th>Price (tax + gratuity)</th>
                                         <th>Quantity</th>
                                         <th>Total Price</th>
                                         <th>Accepted By client</th>
@@ -765,14 +770,7 @@
                                         @foreach ($record->items as $item)
                                             <tr>
                                                 <td>{{ $item->name }}  @if($item->is_modified == 1) <span class="badge bg-warning">M</span> @endif</td>
-                                                <td>{{ $item->unit ?? '-' }}</td>
                                                 <td class="fw-semibold">${{ number_format((float)($item->price ?? 0), 2) }}</td>
-                                                <td>${{ number_format((float)($item->taxes ?? 0), 2) }}</td>
-                                                <td>${{ number_format((float)($item->gratuity ?? 0), 2) }}</td>
-                                                @php
-                                                    $itemPriceWithTax = (float)($item->product_price ?? 0) ?: ((float)($item->price ?? 0) + (float)($item->taxes ?? 0) + (float)($item->gratuity ?? 0));
-                                                @endphp
-                                                <td>${{ number_format($itemPriceWithTax, 2) }}</td>
                                                 <td>{{ $item->quantity ?? 0 }}</td>
                                                 <td class="fw-semibold">${{ number_format((float)($item->total_price ?? 0), 2) }}</td>
                                                 <td>

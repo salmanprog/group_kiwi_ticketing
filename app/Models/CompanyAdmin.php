@@ -165,6 +165,7 @@ class CompanyAdmin extends Authenticatable
     public static function generateUniqueUserName($username)
     {
         $username = Str::slug($username);
+        
         $query = self::where('username',$username)->count();
         if( $query > 0){
             $username = $username . $query . rand(111,999);

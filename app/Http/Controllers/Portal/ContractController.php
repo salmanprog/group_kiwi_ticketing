@@ -144,7 +144,8 @@ class ContractController extends CRUDCrontroller
             'estimates.items',
             'invoices.installmentPlan.payments',
             'invoices.creditNotes',
-            'items'
+            'items',
+            'taxes'
         ])
             ->where('slug', $slug)
             ->first();
