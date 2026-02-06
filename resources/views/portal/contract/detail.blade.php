@@ -1,6 +1,10 @@
 @extends('portal.master')
 
 @section('content')
+    @push('stylesheets')
+        <link href="{{ asset('admin/assets/scss/invoice-tables.css') }}" rel="stylesheet" type="text/css">
+    @endpush
+
     <style>
         :root {
             --primary-color: #A0C242;
@@ -129,13 +133,10 @@
         }
 
         .card-header {
-            background: #F8F9FA;
-            border-bottom: 1px solid var(--primary-color);
-            color: var(--secondary-color);
-            font-weight: 600;
-            padding: 12px 15px;
-            border-radius: 0 !important;
-            font-size: 15px;
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            padding: 20px 30px !important;
+            color: #1f2937 !important;
         }
 
         /* Table Responsiveness */
@@ -205,7 +206,7 @@
             font-weight: 600;
             padding: 10px 15px;
             transition: all 0.3s ease;
-            border: none;
+            border-radius: 8px;
             font-size: 14px;
             width: 100%;
             margin-bottom: 8px;
@@ -215,9 +216,18 @@
         }
 
         .btn-primary {
-            background: var(--primary-color) !important;
-            border: 1px solid var(--primary-color) !important;
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px !important;
+            padding: 10px 20px !important;
             color: white;
+            text-decoration: none;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary:hover {
