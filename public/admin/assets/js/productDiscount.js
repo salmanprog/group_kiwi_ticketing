@@ -104,11 +104,12 @@ function addProductDiscount() {
                 // Close modal and refresh totals
                 setTimeout(() => modal.modal('hide'), 1000);
 
-                // Optionally render discounts in table footer
+                // Optionally render discounts in table footers
                 renderDiscounts(res.discount_id, discountName, discountType, discountValue);
 
                 // Recalculate totals
                 updateTotals();
+                window.location.reload();
             } else {
                 showModalMessage(modal, res.message, 'danger');
             }
