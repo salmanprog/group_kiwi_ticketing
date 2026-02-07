@@ -201,11 +201,6 @@
                                                     @foreach($estimate->discounts as $discount)
                                                         <th colspan="4" class="">
                                                             Discount {{ $discount->name }}
-                                                             <button class="btn btn-sm btn-link text-danger p-0 delete-discount"
-                                                                    data-url="{{ route('estimate.product.discount.delete', $discount->id) }}"
-                                                                    data-csrf="{{ csrf_token() }}">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
                                                         </th>
                                                         <th class="discount_percent">
                                                             {{ $discount->value }} %
@@ -222,6 +217,8 @@
                                             </tfoot>
 
                                         </table>
+
+                                     
                                         
                     @if ($estimate->installments && $estimate->installments->count() > 0)
                         @php
@@ -300,7 +297,6 @@
                             <th>Date & Time</th>
                             <th>User</th>
                             <th>Description</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -309,15 +305,6 @@
                                 <td>{{ $log->created_at }}</td>
                                 <td>{{ $log->user_name ?? 'N/A' }}</td>
                                 <td>{{ Str::limit($log->description, 60) }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary view-details" data-bs-toggle="modal"
-                                        data-bs-target="#activityModal" data-description="{{ $log->description }}"
-                                        data-alldata='{{ $log->new_data }}'>
-                                        View
-                                    </button>
-
-
-                                </td>
                             </tr>
                         @empty
                             <tr>

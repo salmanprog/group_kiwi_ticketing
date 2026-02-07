@@ -304,12 +304,27 @@ class EstimateController extends CRUDCrontroller
 
     public function acceptEstimate(Request $request)
     {
-        return DB::transaction(function () use ($request) {
-            $estimate = Estimate::where('slug', $request->slug)->firstOrFail();
+       
+        //return DB::transaction(function () use ($request) {
+            $estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('slug', $request->slug)->firstOrFail();
             $oldEstimateData = $estimate->toArray();
+            $subtotal = $estimate->items->sum(fn($item) => $item->total_price);
 
-            $estimate->update(['status' => 'approved']);
+            $taxTotal = $estimate->items->sum(fn($item) => 
+                $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
+            );
 
+            $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->value);
+            $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
+            $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
+
+            // echo "Subtotal: $subtotal\n";
+            // echo "Tax: $taxTotal\n";
+            // echo "Discount: $discountAmount\n";
+            // echo "Total: $total\n";
+               
+            $estimate->update(['subtotal' => $subtotal,'total' => $total,'discount_total' => $discountAmount,'tax_total' => $taxTotal,'status' => 'approved']);
+               
             $contract = Contract::find($estimate->contract_id);
 
             if (!$contract) {
@@ -335,16 +350,16 @@ class EstimateController extends CRUDCrontroller
             $contract->save();
 
             $estimate->update(['contract_id' => $contract->id]);
-
+  
             $invoice = Invoice::generateInvoice($request, $estimate, $contract); 
-
+                
             $this->logActivity('estimate', $estimate->id, 'Estimate Approved', $oldEstimateData, $estimate->toArray());
             $this->logActivity('contract', $contract->id, 'Contract Updated/Created', [], $contract->toArray());
 
             return redirect()
                 ->route('invoice.show', ['invoice' => $invoice->slug])
                 ->with('success', 'Invoice Created & Contract Updated.');
-        });
+        //});
     }
 
     protected function logActivity($module, $id, $desc, $old, $new)

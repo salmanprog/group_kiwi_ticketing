@@ -49,77 +49,136 @@ $('.modal').on('hidden.bs.modal', function () {
 //     $('#gratuity').text ? $('#gratuity').text('$' + gratuityAmount.toFixed(2)) : null;
 //     $('#total').text('$' + total.toFixed(2));
 // }
+// function updateTotals() {
+//     let subtotal = 0;
+//     let totalTax = 0;
+//     let gratuityRate = 0; // update if you add gratuity input
+//     let total = 0;
+
+//     /* -----------------------------
+//        1️⃣ Subtotal (from products)
+//     ------------------------------ */
+//     $('#productTable tbody tr').each(function () {
+//         const rowText = $(this)
+//             .find('.item-total')
+//             .text()
+//             .replace('$', '')
+//             .replace(/,/g, '')
+//             .trim();
+
+//         const rowTotal = parseFloat(rowText) || 0;
+//         subtotal += rowTotal;
+//     });
+
+//     /* -----------------------------
+//        2️⃣ Tax (from tfoot)
+//        supports multiple taxes
+//     ------------------------------ */
+//     $('#productTable tfoot small.fw-semibold').each(function () {
+//         const match = $(this).text().match(/([\d.]+)\s*%/);
+//         if (match) {
+//             const percent = parseFloat(match[1]) || 0;
+//             totalTax += subtotal * (percent / 100);
+//         }
+//     });
+
+//     /* -----------------------------
+//        3️⃣ Discount (percent only)
+//     ------------------------------ */
+//     const discountCell = $('.discount_percent').first();
+//     const discountPercent = discountCell.length
+//         ? parseFloat(discountCell.text().replace('%', '').trim()) || 0
+//         : 0;
+
+//     const discountAmount = subtotal * (discountPercent / 100);
+
+//     /* -----------------------------
+//        4️⃣ Gratuity (optional)
+//     ------------------------------ */
+//     const gratuityAmount = subtotal * gratuityRate;
+
+//     /* -----------------------------
+//        5️⃣ Total
+//     ------------------------------ */
+//     total = subtotal - discountAmount + totalTax + gratuityAmount;
+
+//     /* -----------------------------
+//        6️⃣ Remaining amount
+//     ------------------------------ */
+//     const paidAmount = parseFloat($('#paidAmount').val()) || 0;
+//     const remainingTotal = total - paidAmount;
+
+//     /* -----------------------------
+//        7️⃣ Update UI
+//     ------------------------------ */
+//     $('#subtotal').text('$' + subtotal.toFixed(2));
+//     $('#tax_amount').text('$' + totalTax.toFixed(2));
+//     $('#discount_amount').text('-$' + discountAmount.toFixed(2));
+//     $('#gratuity').length && $('#gratuity').text('$' + gratuityAmount.toFixed(2));
+//     $('#total').text('$' + total.toFixed(2));
+//     $('#remainingTotal').text('$' + remainingTotal.toFixed(2));
+//     $('#remainingTotalInput').val(remainingTotal.toFixed(2));
+//     $('#total_amount').val(remainingTotal.toFixed(2));
+// }
+
+
 function updateTotals() {
     let subtotal = 0;
     let totalTax = 0;
-    let gratuityRate = 0; // update if you add gratuity input
+    let totalDiscount = 0;
+    let gratuityRate = 0; // change if you have a gratuity input
+    let gratuityAmount = 0;
     let total = 0;
 
-    /* -----------------------------
-       1️⃣ Subtotal (from products)
-    ------------------------------ */
+    // 1️⃣ Subtotal & Item Taxes
     $('#productTable tbody tr').each(function () {
-        const rowText = $(this)
-            .find('.item-total')
-            .text()
-            .replace('$', '')
-            .replace(/,/g, '')
+        const rowTotalText = $(this).find('.item-total').text()
+            .replace('$','')
+            .replace(/,/g,'')
             .trim();
+        const rowTotal = parseFloat(rowTotalText) || 0;
 
-        const rowTotal = parseFloat(rowText) || 0;
         subtotal += rowTotal;
+
+        const taxesData = $(this).find('small[data-taxes]').data('taxes') || [];
+        taxesData.forEach(tax => {
+            const percent = parseFloat(tax.percent) || 0;
+            const taxAmount = parseFloat((rowTotal * (percent / 100)).toFixed(2)); // round per-item-tax
+            totalTax += taxAmount;
+        });
     });
 
-    /* -----------------------------
-       2️⃣ Tax (from tfoot)
-       supports multiple taxes
-    ------------------------------ */
-    $('#productTable tfoot small.fw-semibold').each(function () {
-        const match = $(this).text().match(/([\d.]+)\s*%/);
-        if (match) {
-            const percent = parseFloat(match[1]) || 0;
-            totalTax += subtotal * (percent / 100);
-        }
+    // 2️⃣ Discounts (percent discounts applied on subtotal + tax)
+    totalDiscount = 0;
+    $('.discount_percent').each(function () {
+        const discountPercent = parseFloat($(this).text().replace('%','').trim()) || 0;
+        const discountAmount = parseFloat(((subtotal + totalTax) * (discountPercent / 100)).toFixed(2));
+        totalDiscount += discountAmount;
     });
 
-    /* -----------------------------
-       3️⃣ Discount (percent only)
-    ------------------------------ */
-    const discountCell = $('.discount_percent').first();
-    const discountPercent = discountCell.length
-        ? parseFloat(discountCell.text().replace('%', '').trim()) || 0
-        : 0;
+    // 3️⃣ Gratuity (optional)
+    gratuityAmount = parseFloat(((subtotal + totalTax - totalDiscount) * gratuityRate).toFixed(2));
 
-    const discountAmount = subtotal * (discountPercent / 100);
+    // 4️⃣ Total
+    total = subtotal + totalTax - totalDiscount + gratuityAmount;
 
-    /* -----------------------------
-       4️⃣ Gratuity (optional)
-    ------------------------------ */
-    const gratuityAmount = subtotal * gratuityRate;
-
-    /* -----------------------------
-       5️⃣ Total
-    ------------------------------ */
-    total = subtotal - discountAmount + totalTax + gratuityAmount;
-
-    /* -----------------------------
-       6️⃣ Remaining amount
-    ------------------------------ */
+    // 5️⃣ Remaining after paid
     const paidAmount = parseFloat($('#paidAmount').val()) || 0;
     const remainingTotal = total - paidAmount;
 
-    /* -----------------------------
-       7️⃣ Update UI
-    ------------------------------ */
+    // 6️⃣ Update UI
     $('#subtotal').text('$' + subtotal.toFixed(2));
     $('#tax_amount').text('$' + totalTax.toFixed(2));
-    $('#discount_amount').text('-$' + discountAmount.toFixed(2));
-    $('#gratuity').length && $('#gratuity').text('$' + gratuityAmount.toFixed(2));
+    $('#discount_amount').text('-$' + totalDiscount.toFixed(2));
+    if($('#gratuity').length) {
+        $('#gratuity').text('$' + gratuityAmount.toFixed(2));
+    }
     $('#total').text('$' + total.toFixed(2));
     $('#remainingTotal').text('$' + remainingTotal.toFixed(2));
     $('#remainingTotalInput').val(remainingTotal.toFixed(2));
     $('#total_amount').val(remainingTotal.toFixed(2));
 }
+
 
 
 // Add products dynamically

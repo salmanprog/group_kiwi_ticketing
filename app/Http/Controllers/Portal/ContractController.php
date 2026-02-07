@@ -135,20 +135,36 @@ class ContractController extends CRUDCrontroller
 
     public function show($slug)
     {
+        // $this->__data['record'] = Contract::with([
+        //     'organization',
+        //     'company',
+        //     'client',
+        //     'estimates.items',
+        //     'invoices.installmentPlan.payments',
+        //     'invoices.creditNotes',
+        //     'items',
+        //     'taxes'
+        // ])
+        //     ->where('slug', $slug)
+        //     ->first();
+
         $this->__data['record'] = Contract::with([
-            'organization' => function ($query) {
-                $query->withTrashed();
-            },
-            'company',
-            'client',
-            'estimates.items',
-            'invoices.installmentPlan.payments',
-            'invoices.creditNotes',
-            'items',
-            'taxes'
-        ])
-            ->where('slug', $slug)
-            ->first();
+                            'organization',
+                            'company',
+                            'client',
+                            // Load estimates and all the same relationships you used before
+                            'estimates.items.itemTaxes',   // nested: items -> itemTaxes
+                            'estimates.taxes',             // estimate -> taxes
+                            'estimates.discounts',          // estimate -> discounts
+                            'estimates.installments',      // estimate -> installments
+                            // Other relationships
+                            'invoices.installmentPlan.payments',
+                            'invoices.creditNotes',
+                            'items',
+                            'taxes'
+                        ])
+                        ->where('slug', $slug)
+                        ->first();
 
         if (Auth::user()->user_type == 'client') {
             $this->__data['products'] = [];
