@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CustomAuthentication;
+use App\Http\Middleware\ThirdPartyApiMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,7 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'custom_auth' => CustomAuthentication::class
+            'custom_auth' => CustomAuthentication::class,
+            'third_party_api' => ThirdPartyApiMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
