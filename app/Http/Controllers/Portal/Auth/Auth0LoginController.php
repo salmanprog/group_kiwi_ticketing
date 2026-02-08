@@ -69,7 +69,8 @@ class Auth0LoginController extends Controller
             // Build query parameters
             $queryParams = [
                 'userTokenId' => $idToken,
-                'domain' => env('AUTH0_DOMAIN'),
+                // 'domain' => env('AUTH0_DOMAIN'),
+                'domain' => 'https://group.kiwiticketing.com/portal',
             ];
 
             // Send POST request with query string
