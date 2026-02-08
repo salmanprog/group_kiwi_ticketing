@@ -804,107 +804,107 @@
                                     @endif
                                 </tbody>
                             </table> -->
-                            <table class="table product-table" id="productTable">
-                                <thead>
-                                    <tr>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Product Price</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $subtotal = 0;
-                                        $taxTotal = 0;
-                                        $discountTotal = 0;
-                                    @endphp
-
-                                    @if($estimate && $estimate->items->count())
-                                        @foreach($estimate->items as $item)
-                                            @php
-                                                $subtotal += $item->total_price;
-
-                                                // Sum per-item taxes and round each
-                                                foreach($item->itemTaxes as $tax) {
-                                                    $taxTotal += round($item->total_price * ($tax->percentage / 100), 2);
-                                                }
-                                            @endphp
-                                            <tr data-id="{{ $item->id }}">
-                                                <td>
-                                                    {{ $item->name }}
-                                                    @if($item->itemTaxes && $item->itemTaxes->count())
-                                                        <small class="text-muted d-block" data-taxes='[
-                                                            @foreach($item->itemTaxes as $tax)
-                                                                {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if(!$loop->last),@endif
-                                                            @endforeach
-                                                        ]'>
-                                                            Apply Taxes:
-                                                            @foreach($item->itemTaxes as $tax)
-                                                                {{ $tax->name }}@if(!$loop->last), @endif
-                                                            @endforeach
-                                                        </small>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
-                                                <td>${{ number_format($item->price, 2) }}</td>
-                                                <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
-                                            </tr>
-                                        @endforeach
-                                    @else
-                                        <tr class="no-items">
-                                            <td colspan="5" class="text-center">No products added yet.</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th colspan="4" class="">Subtotal:</th>
-                                        <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
-                                    </tr>
-
-                                    @if($estimate && $estimate->taxes->count())
+                                <table class="table product-table" id="productTable">
+                                    <thead>
                                         <tr>
-                                            <th colspan="4" class="">Tax:
-                                                <div class="d-flex flex-wrap gap-2 justify-content-end">
-                                                    @foreach($estimate->taxes as $tax)
-                                                        <div class="border rounded px-2 py-1 d-flex align-items-center gap-1" data-tax-id="{{ $tax->id }}">
-                                                            <small class="fw-semibold">
-                                                                {{ $tax->name }} ({{ $tax->percent }}%)
-                                                            </small>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </th>
-                                            <th id="tax_amount">${{ number_format($taxTotal, 2) }}</th>
+                                            <th>Product Name</th>
+                                            <th>Quantity</th>
+                                            <th>Product Price</th>
+                                            <th>Total</th>
                                         </tr>
-                                    @endif
-
-                                    @if($estimate && $estimate->discounts->count())
-                                        <tr class="fw-bold discount-row">
-                                            @foreach($estimate->discounts as $discount)
-                                                @php
-                                                    $discountTotal += round($subtotal * ($discount->value / 100), 2);
-                                                @endphp
-                                                <th colspan="4" class="">
-                                                    Discount {{ $discount->name }}
-                                                </th>
-                                                <th class="discount_percent">
-                                                    {{ $discount->value }} %
-                                                </th>
-                                            @endforeach
-                                        </tr>
-                                    @endif
-
-                                    <tr class="fw-bold">
-                                        <th colspan="4" class="">Total:</th>
+                                    </thead>
+                                    <tbody>
                                         @php
-                                            $total = $subtotal + $taxTotal - $discountTotal;
+                                            $subtotal = 0;
+                                            $taxTotal = 0;
+                                            $discountTotal = 0;
                                         @endphp
-                                        <th id="total">${{ number_format($total, 2) }}</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+
+                                        @if($estimate && $estimate->items->count())
+                                            @foreach($estimate->items as $item)
+                                                @php
+                                                    $subtotal += $item->total_price;
+
+                                                    // Sum per-item taxes and round each
+                                                    foreach($item->itemTaxes as $tax) {
+                                                        $taxTotal += round($item->total_price * ($tax->percentage / 100), 2);
+                                                    }
+                                                @endphp
+                                                <tr data-id="{{ $item->id }}">
+                                                    <td>
+                                                        {{ $item->name }}
+                                                        @if($item->itemTaxes && $item->itemTaxes->count())
+                                                            <small class="text-muted d-block" data-taxes='[
+                                                                @foreach($item->itemTaxes as $tax)
+                                                                    {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if(!$loop->last),@endif
+                                                                @endforeach
+                                                            ]'>
+                                                                Apply Taxes:
+                                                                @foreach($item->itemTaxes as $tax)
+                                                                    {{ $tax->name }}@if(!$loop->last), @endif
+                                                                @endforeach
+                                                            </small>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
+                                                    <td>${{ number_format($item->price, 2) }}</td>
+                                                    <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr class="no-items">
+                                                <td colspan="5" class="text-center">No products added yet.</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="4" class="">Subtotal:</th>
+                                            <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
+                                        </tr>
+
+                                        @if($estimate && $estimate->taxes->count())
+                                            <tr>
+                                                <th colspan="4" class="">Tax:
+                                                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                                        @foreach($estimate->taxes as $tax)
+                                                            <div class="border rounded px-2 py-1 d-flex align-items-center gap-1" data-tax-id="{{ $tax->id }}">
+                                                                <small class="fw-semibold">
+                                                                    {{ $tax->name }} ({{ $tax->percent }}%)
+                                                                </small>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </th>
+                                                <th id="tax_amount">${{ number_format($taxTotal, 2) }}</th>
+                                            </tr>
+                                        @endif
+
+                                        @if($estimate && $estimate->discounts->count())
+                                            <tr class="fw-bold discount-row">
+                                                @foreach($estimate->discounts as $discount)
+                                                    @php
+                                                        $discountTotal += round($subtotal * ($discount->value / 100), 2);
+                                                    @endphp
+                                                    <th colspan="4" class="">
+                                                        Discount {{ $discount->name }}
+                                                    </th>
+                                                    <th class="discount_percent">
+                                                        {{ $discount->value }} %
+                                                    </th>
+                                                @endforeach
+                                            </tr>
+                                        @endif
+
+                                        <tr class="fw-bold">
+                                            <th colspan="4" class="">Total:</th>
+                                            @php
+                                                $total = $subtotal + $taxTotal - $discountTotal;
+                                            @endphp
+                                            <th id="total">${{ number_format($total, 2) }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
 
                         </div>
                     </div>

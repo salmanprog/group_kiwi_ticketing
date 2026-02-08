@@ -37,7 +37,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'user_group_id','first_time_login', 'user_type', 'name', 'username', 'slug', 'email','auth0_id', 'auth_code', 'company_name', 'auth_code', 'mobile_no', 'password', 'image_url','blur_image','status',
-        'platform_type','platform_id','is_email_verify', 'email_verify_at', 'is_mobile_verify', 'mobile_verify_at', 'country', 'city', 'state',
+        'platform_type','platform_id','companyDomain','is_email_verify', 'email_verify_at', 'is_mobile_verify', 'mobile_verify_at', 'country', 'city', 'state',
         'zipcode', 'address', 'latitude', 'longitude', 'online_status','mobile_otp', 'email_otp', 'remember_token',
         'gateway_customer_id','gateway_connect_id','created_at', 'updated_at', 'deleted_at'
     ];

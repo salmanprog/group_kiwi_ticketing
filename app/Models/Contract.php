@@ -15,6 +15,7 @@ class Contract extends Model
         'contract_number',
         'client_id',
         'company_id',
+        'organization_id',
         'title',
         'salutation',
         'ticket_rate',
