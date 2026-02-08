@@ -98,7 +98,7 @@ use Auth0\Laravel\Facade\Auth0;
 
 //Route::middleware(['custom_auth:web'])->group(function () {
 
-Route::middleware(['auth:web'])->group(function () {
+Route::middleware(['auth:web', 'third_party_api'])->group(function () {
 
     Route::match(['get', 'post'], 'user-profile', [CompanyAdminController::class, 'profile'])->name('admin.profile');
     Route::match(['get', 'post'], 'update-stripe-key', [CompanyAdminController::class, 'stripeKey'])->name('portal.update-stripe-key');
@@ -234,6 +234,11 @@ Route::middleware(['auth:web'])->group(function () {
     ->name('estimate.note.save');
 
     Route::post('/estimates-send-to-client/{estimate}', [EstimateController::class, 'sendToClient'])->name('estimates.send.to.client');
+
+    Route::get('/no-permission', [UserController::class, 'noPermission'])
+    ->name('no-permission');
+    Route::get('/check-permission', [UserController::class, 'checkPermission'])
+    ->name('check-permission');
 
 
 });
