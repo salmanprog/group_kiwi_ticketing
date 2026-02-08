@@ -235,5 +235,10 @@ Route::middleware(['auth:web', 'third_party_api'])->group(function () {
 
     Route::post('/estimates-send-to-client/{estimate}', [EstimateController::class, 'sendToClient'])->name('estimates.send.to.client');
 
+    Route::get('/no-permission', [UserController::class, 'noPermission'])
+    ->name('no-permission');
+    Route::get('/check-permission', [UserController::class, 'checkPermission'])
+    ->name('check-permission');
+
 
 });

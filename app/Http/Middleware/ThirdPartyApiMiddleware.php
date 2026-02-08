@@ -29,10 +29,7 @@ class ThirdPartyApiMiddleware
                         $data = json_decode($response->body(), true);
 
                         if (($data['errorCode'] ?? null) === 0) {
-                            // Save API response in session
                             Session::put('thirdPartyApiData', $data['data']);
-
-                            // Share data with all Blade templates
                             view()->share('thirdPartyApiData', $data['data']);
                         }
                     }
