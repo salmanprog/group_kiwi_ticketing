@@ -320,7 +320,7 @@ class Auth0LoginController extends Controller
          
         // Redirect to Auth0 logout
         return redirect(
-        $auth0->logout('http://127.0.0.1:8000/portal/login')
+        $auth0->logout(env('THIRD_PARTY_DOMAIN_URL'))
     );
     }
 
