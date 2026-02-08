@@ -154,7 +154,7 @@ class Auth0LoginController extends Controller
                     0,
                     32
                 ),
-                'strategy'      => 'webapp', // handles PKCE automatically
+                'strategy'      => 'webapp',
             ]);
 
             // 2️⃣ Exchange authorization code for tokens
