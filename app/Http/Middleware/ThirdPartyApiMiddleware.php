@@ -24,7 +24,6 @@ class ThirdPartyApiMiddleware
                             'userTokenId' => $idToken,
                             'domain' => env('THIRD_PARTY_DOMAIN_URL'),
                         ]));
-
                     if ($response->successful()) {
                         $data = json_decode($response->body(), true);
 
