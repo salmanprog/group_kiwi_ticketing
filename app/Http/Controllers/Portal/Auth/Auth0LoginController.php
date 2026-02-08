@@ -11,25 +11,13 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use App\Models\{User,CompanyAdmin,CompanyUser,Company};
+use Illuminate\Support\Facades\DB;
+use App\Models\{User,UserGroup,CompanyAdmin,CompanyUser,Company};
 
 class Auth0LoginController extends Controller
 {
     public function login()
     {
-    //     $state = Str::random(40);
-    // session(['auth0_state' => $state]);
-
-    // $query = http_build_query([
-    //     'client_id' => env('AUTH0_CLIENT_ID'),
-    //     'redirect_uri' => env('AUTH0_REDIRECT_URI'),
-    //     'response_type' => 'code',
-    //     'scope' => env('AUTH0_SCOPE', 'openid profile email'),
-    //     'state' => $state,
-    // ]);
-
-    // return redirect('https://' . env('AUTH0_DOMAIN') . '/authorize?' . $query);
-
         $auth0 = new Auth0([
             'domain'        => env('AUTH0_DOMAIN'),
             'clientId'      => env('AUTH0_CLIENT_ID'),
@@ -46,104 +34,9 @@ class Auth0LoginController extends Controller
         return redirect($auth0->login());
     }
 
-    // public function callback()
-    // {
-    //     // Initialize the SDK as you already have
-    //     $auth0 = new Auth0([
-    //         'domain'        => env('AUTH0_DOMAIN'),
-    //         'clientId'      => env('AUTH0_CLIENT_ID'),
-    //         'clientSecret'  => env('AUTH0_CLIENT_SECRET'),
-    //         'redirectUri'   => env('AUTH0_REDIRECT_URI'),
-    //         'cookieSecret'  => substr(base64_decode(str_replace('base64:', '', env('APP_KEY'))), 0, 32),
-    //         'strategy'      => 'webapp',
-    //     ]);
-
-    //     try {
-    //         $auth0->exchange();
-    //         $auth0User = $auth0->getUser();
-            
-    //         // Optional: Get full credentials (tokens + user)
-    //         // $credentials = $auth0->getCredentials();
-
-    //         dd($auth0User);
-
-    //         if (!$auth0User || empty($auth0User['email'])) {
-    //             return redirect()->route('login')->with('error', 'Unable to fetch user email');
-    //         }
-
-    //         $user = User::where('email', $auth0User['email'])->where('auth0_id', $auth0User['sub'])->first();
-
-    //         if (!$user) {
-    //             // Create company
-    //             $company = Company::create([
-    //                 'name'       => $auth0User['name'] ?? $auth0User['email'],
-    //                 'slug'       => Company::generateUniqueSlug(uniqid(uniqid())),
-    //                 'email'      => $auth0User['email'],
-    //                 'company_image_url' => $auth0User['picture'] ?? null,
-    //                 'mobile_no'  => '1114555454',
-    //                 'description' => 'test description',
-    //                 'website' => 'www.google.com',
-    //                 'address'   => 'test 123'
-    //             ]);
-
-    //             // Create company admin
-    //             $username = CompanyAdmin::generateUniqueUserName($auth0User['name']);
-    //             $companyAdmin = new CompanyAdmin();
-    //             $companyAdmin->user_group_id = 2;
-    //             $companyAdmin->auth0_id = $auth0User['sub'];
-    //             $companyAdmin->user_type = 'company';
-    //             $companyAdmin->slug = $username;
-    //             $companyAdmin->username = $username;
-    //             $companyAdmin->name = $auth0User['name'];
-    //             $companyAdmin->email = $auth0User['email'];
-    //             $companyAdmin->mobile_no = '1214558785';
-    //             $companyAdmin->password = Hash::make('Test@123');
-    //             $companyAdmin->status = 1;
-    //             $companyAdmin->save();
-
-    //             // Link company and admin
-    //             CompanyUser::create([
-    //                 'company_id' => $company->id,
-    //                 'user_id' => $companyAdmin->id,
-    //                 'user_type' => 'Admin',
-    //                 'created_by' => '2',
-    //                 'created_at' => Carbon::now()
-    //             ]);
-
-    //             // Assign to $user for login
-    //             $user = $companyAdmin;
-    //         }
-
-
-    //         Auth::login($user);
-    //         $getCompany = CompanyUser::getCompany($user->id);
-    //         switch ($user->user_type) {
-    //             case 'admin':
-    //                 return redirect()->route('admin.dashboard');
-    //             case 'manager':
-    //                 return redirect()->route('manager.dashboard');
-    //             case 'company':
-    //                 if (isset($getCompany->status) && $getCompany->status == "0") {
-    //                     Auth::logout();
-    //                     return redirect()->back()->with('error', 'Company account has been disabled.');
-    //                 }
-    //                 return redirect()->route('company.dashboard');
-    //             case 'salesman':
-    //                 return redirect()->route('salesman.dashboard');
-    //             case 'client':
-    //             default:
-    //                 return redirect()->route('client.dashboard');
-    //         }
-    //         //dd($user); 
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], 400);
-    //     }
-    // }
-    
     public function callback(Request $request)
     {
         try {
-            // 1️⃣ Initialize Auth0 SDK
             $auth0 = new Auth0([
                 'domain'        => env('AUTH0_DOMAIN'),
                 'clientId'      => env('AUTH0_CLIENT_ID'),
@@ -157,10 +50,8 @@ class Auth0LoginController extends Controller
                 'strategy'      => 'webapp', // handles PKCE automatically
             ]);
 
-            // 2️⃣ Exchange authorization code for tokens
             $auth0->exchange();
-
-            // 3️⃣ Get user profile and tokens
+            
             $auth0User = $auth0->getUser();
             $credentials = $auth0->getCredentials();
 
@@ -173,7 +64,7 @@ class Auth0LoginController extends Controller
             }
 
              
-            $apiUrl = 'https://dev.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
+            $apiUrl = 'https://dynamicpricing-api.dynamicpricingbuilder.com/api/Auth0Management/UserLogin';
 
             // Build query parameters
             $queryParams = [
@@ -188,6 +79,12 @@ class Auth0LoginController extends Controller
                 ])
                 ->post($apiUrl . '?' . http_build_query($queryParams));
                 
+            dd([
+                'status' => $externalApiResponse->status(),
+                'ok'     => $externalApiResponse->ok(),
+                'body'   => $externalApiResponse->body(),
+            ]);
+            die();
             if (!$externalApiResponse->successful()) {
                 logger()->error('External API call failed', [
                     'status' => $externalApiResponse->status(),
@@ -211,14 +108,20 @@ class Auth0LoginController extends Controller
 
             $userDetails = $externalData['data']['userDetails'] ?? [];
             $companyDetails = $externalData['data']['companyDetails'] ?? [];
+            $userRoles = $externalData['data']['userRoles'] ?? [];
+            $permissionDetails = $externalData['data']['permissionDetails'] ?? [];
             $email = $userDetails['email'] ?? $auth0User['email'];
             $auth0UserId = $userDetails['auth0UserId'] ?? $auth0User['sub'];
             $companyName = $companyDetails['companyName'] ?? null;
             $authCode = $companyDetails['authCode'] ?? null;
-
-            // Find or create local user (using API data: email, company_name, auth_code)
+            $domain = $companyDetails['companyDomain'] ?? null;
+             print_r($permissionDetails);
+            die();
+            
+            $userGroup = UserGroup::where('title', $userRoles[0]['roleName'])->first();
             $user = User::where('email', $email)
                 ->where('auth_code', $authCode)
+                ->where('user_group_id', $userGroup->id)
                 ->first();
            
             if (!$user) {
@@ -238,7 +141,7 @@ class Auth0LoginController extends Controller
                 ]);
 
                 $companyAdmin = CompanyAdmin::create([
-                    'user_group_id' => 2,
+                    'user_group_id' => $userGroup->id,
                     'auth0_id' => $auth0UserId,
                     'user_type' => 'company',
                     'users_username' => $username,
@@ -247,6 +150,7 @@ class Auth0LoginController extends Controller
                     'name' => $name,
                     'email' => $email,
                     'auth_code' => $authCode,
+                    'companyDomain' => $domain,
                     'mobile_no' => '1' . substr(md5($email), 0, 10),
                     'password' => Hash::make('Auth0@Login'),
                     'image_url' => $userDetails['image'] ?? $auth0User['picture'] ?? null,
@@ -267,6 +171,77 @@ class Auth0LoginController extends Controller
                 $user->auth_code = $authCode;
                 $user->save();
             }
+            
+            $permissions = $permissionDetails;
+            $cmsRoleId = $userGroup->id;
+
+            foreach ($permissions as $permission) {
+                $permissionName = $permission['permissionName'];
+
+                // Default flags
+                $flags = [
+                    'is_add'    => '0',
+                    'is_view'   => '0',
+                    'is_update' => '0',
+                    'is_delete' => '0',
+                ];
+
+                // Extract module name dynamically from permission
+                if (str_contains($permissionName, ':')) {
+                    [$action, $moduleName] = explode(':', $permissionName);
+
+                    // Fetch module from DB dynamically
+                    $module = DB::table('cms_modules')
+                        ->where('name', $moduleName)
+                        ->first();
+
+                    if (!$module) {
+                        // Module not found, skip to next permission
+                        continue;
+                    }
+
+                    // Set flags based on action
+                    match ($action) {
+                        'Create' => $flags['is_add'] = '1',
+                        'Read'   => $flags['is_view'] = '1',
+                        'Update' => $flags['is_update'] = '1',
+                        'Delete' => $flags['is_delete'] = '1',
+                        default  => null,
+                    };
+                } else {
+                    // Handle global "View" permission (if needed)
+                    // if ($permissionName === 'View') {
+                    //     $moduleName = 'User'; // or whatever default module
+                    //     $module = DB::table('cms_modules')
+                    //         ->where('name', $moduleName)
+                    //         ->first();
+
+                    //     if (!$module) continue;
+
+                        $flags['is_view'] = '1';
+                    // }
+                }
+
+                // Insert or update cms_module_permissions
+                DB::table('cms_module_permissions')->updateOrInsert(
+                    [
+                        'user_id'   => $user->id,
+                        'user_group_id'   => $cmsRoleId,
+                        'cms_module_id' => $module->id,
+                    ],
+                    [
+                        'is_add'     => $flags['is_add'],
+                        'is_view'    => $flags['is_view'],
+                        'is_update'  => $flags['is_update'],
+                        'is_delete'  => $flags['is_delete'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+
+            
+           
 
             Auth::login($user, true);
 
@@ -296,30 +271,44 @@ class Auth0LoginController extends Controller
                 ->with('error', 'Authentication failed. Please try again.');
         }
     }
-    public function logout()
-    {
+    // public function logout()
+    // {
         // Logout locally
-        auth()->logout();
+        //auth()->logout();
 
         // Create Auth0 instance
-        $auth0 = new Auth0([
-            'domain'        => env('AUTH0_DOMAIN'),
-            'clientId'      => env('AUTH0_CLIENT_ID'),
-            'clientSecret'  => env('AUTH0_CLIENT_SECRET'),
-            'redirectUri'   => env('AUTH0_REDIRECT_URI'),
-            'cookieSecret'  => substr(
-                base64_decode(str_replace('base64:', '', env('APP_KEY'))),
-                0,
-                32
-            ),
-            'strategy'      => 'webapp',
-        ]);
+        // $auth0 = new Auth0([
+        //     'domain'        => env('AUTH0_DOMAIN'),
+        //     'clientId'      => env('AUTH0_CLIENT_ID'),
+        //     'clientSecret'  => env('AUTH0_CLIENT_SECRET'),
+        //     'redirectUri'   => env('AUTH0_REDIRECT_URI'),
+        //     'cookieSecret'  => substr(
+        //         base64_decode(str_replace('base64:', '', env('APP_KEY'))),
+        //         0,
+        //         32
+        //     ),
+        //     'strategy'      => 'webapp',
+        // ]);
          
         // Redirect to Auth0 logout
-        return redirect(
-        $auth0->logout('http://127.0.0.1:8000/portal/login')
-    );
+    //}
+
+    public function logout()
+    {
+        auth()->logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+        $returnTo = env('APP_URL') . '/portal/login';
+
+        $logoutUrl = 'https://' . env('AUTH0_DOMAIN') . '/v2/logout?' . http_build_query([
+            'client_id' => env('AUTH0_CLIENT_ID'),
+            'returnTo'  => $returnTo,
+        ]);
+
+        return redirect($logoutUrl);
     }
+
 
 
                     

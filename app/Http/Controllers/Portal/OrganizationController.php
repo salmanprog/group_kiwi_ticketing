@@ -188,7 +188,7 @@ class OrganizationController extends CRUDCrontroller
             'createdBy',
             'updatedBy',
             'contract.client',
-            'estimate.estimateinvoices', // 👈 use your new relation name
+            'estimate.estimateinvoices',
         ])
         ->where('slug', $slug)
         ->firstOrFail();

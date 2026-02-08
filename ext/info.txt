@@ -6,10 +6,9 @@ RewriteRule (.*) /public/$1 [L]
 
 
 ==============================htaccess end------------------------------------
-ALTER TABLE `users` ADD `auth_code` VARCHAR(255) NULL DEFAULT NULL AFTER `user_group_id`;
-ALTER TABLE `company_products` ADD `auth_code` VARCHAR(255) NULL DEFAULT NULL AFTER `id`;
-ALTER TABLE `contract_taxes` ADD `deleted_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
-
+ALTER TABLE `users` ADD `companyDomain` VARCHAR(255) NULL DEFAULT NULL AFTER `platform_id`;
+INSERT INTO `user_groups` (`id`, `title`, `slug`, `description`, `type`, `is_super_admin`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, 'Admin', 'admin', 'Admin is very powerful', 'admin', '1', '1', NULL, NULL, NULL);
+INSERT INTO `cms_modules` (`id`, `parent_id`, `slug`, `name`, `route_name`, `icon`, `status`, `sort_order`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, '0', 'user', 'User', 'user.index', 'fa fa-cog', '1', '6.00', '2026-01-08 20:26:16', NULL, NULL);
 
 dev@ideaseat.com
 7Q1cbxQ(G\04

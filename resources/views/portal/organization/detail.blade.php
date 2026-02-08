@@ -250,7 +250,7 @@
                         </div>
                     </div>
 
-                    <!-- Contract INFORMATION -->
+                    <!-- Contract INFORMATIONs -->
                     <div class="form-section">
                         <div class="section-header">
                             <h5>Contract Information</h5>
