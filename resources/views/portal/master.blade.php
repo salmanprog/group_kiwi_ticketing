@@ -676,6 +676,7 @@
                                 </li>
 
                                 {{-- API-driven categories (SideMenu only) --}}
+                                @if(!empty($platforms) && isset($platforms[0]['categories']))
                                 @foreach($platforms[0]['categories'] as $category)
 
                                     @if($category['menuPosition'] !== 'SideMenu')
@@ -779,6 +780,7 @@
                                         </ul>
                                     </li>
                                 @endforeach
+                                @endif
                             </ul>
                         </div>
                     </div>
