@@ -10,5 +10,15 @@ ALTER TABLE `users` ADD `companyDomain` VARCHAR(255) NULL DEFAULT NULL AFTER `pl
 INSERT INTO `user_groups` (`id`, `title`, `slug`, `description`, `type`, `is_super_admin`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, 'Admin', 'admin', 'Admin is very powerful', 'admin', '1', '1', NULL, NULL, NULL);
 INSERT INTO `cms_modules` (`id`, `parent_id`, `slug`, `name`, `route_name`, `icon`, `status`, `sort_order`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, '0', 'user', 'User', 'user.index', 'fa fa-cog', '1', '6.00', '2026-01-08 20:26:16', NULL, NULL);
 
+
+
+ALTER TABLE `organization_event_type` ADD `company_id` INT(11) NOT NULL DEFAULT '0' AFTER `created_by`;
+ALTER TABLE `organization_type` ADD `company_id` INT(11) NOT NULL DEFAULT '0' AFTER `created_by`;
+
+
+kiwiticketing
+u2-nqewjfywa1fd@c1102859.sgvps.net
+18765
+
 dev@ideaseat.com
 7Q1cbxQ(G\04
