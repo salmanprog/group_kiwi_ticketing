@@ -748,41 +748,38 @@
                                     @endif
 
                                 @endforeach
+                                {{-- ====================== Profile Dropdown ====================== --}}
+                                @foreach($platforms[0]['categories'] as $category)
+                                    @if($category['menuPosition'] !== 'ProfileMenu')
+                                        @continue
+                                    @endif
+
+                                    @php
+                                        $pages = $category['pages'] ?? [];
+                                    @endphp
+
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
+                                            <i class="fas fa-user"></i>
+                                            <span class="toggle-none">Profile</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+
+                                        <ul class="submenu">
+                                            @foreach($pages as $page)
+                                                @php
+                                                    $routeName = $routeMap[$page['pageSlug']] ?? null;
+                                                @endphp
+                                                <li class="nav-item">
+                                                    <a class="nav-link submenu-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
+                                                        {{ $page['pageName'] }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endforeach
                             </ul>
-
-                            {{-- ====================== Profile Dropdown ====================== --}}
-                            @foreach($platforms[0]['categories'] as $category)
-                                @if($category['menuPosition'] !== 'ProfileMenu')
-                                    @continue
-                                @endif
-
-                                @php
-                                    $pages = $category['pages'] ?? [];
-                                @endphp
-
-                                <li class="nav-item has-submenu">
-                                    <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
-                                        <i class="fas fa-user"></i>
-                                        <span class="toggle-none">Profile</span>
-                                        <i class="fas fa-chevron-down arrow-icon"></i>
-                                    </a>
-
-                                    <ul class="submenu">
-                                        @foreach($pages as $page)
-                                            @php
-                                                $routeName = $routeMap[$page['pageSlug']] ?? null;
-                                            @endphp
-                                            <li class="nav-item">
-                                                <a class="nav-link submenu-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
-                                                    {{ $page['pageName'] }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            @endforeach
-
-
                         </div>
                     </div>
 
