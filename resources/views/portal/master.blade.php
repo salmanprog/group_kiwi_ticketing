@@ -741,7 +741,7 @@
                                         @endphp
                                         <li data-type="parent" class="nav-item">
                                             <a class="nav-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
-                                                <i class="fas fa-link"></i>
+                                                <i class="fas fa-calendar-alt"></i>
                                                 <span class="toggle-none">{{ $category['categoryName'] }}</span>
                                             </a>
                                         </li>
