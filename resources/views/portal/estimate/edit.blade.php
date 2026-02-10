@@ -296,12 +296,14 @@
                                                 <tr class="fw-bold discount-row">
                                                     @foreach($estimate->discounts as $discount)
                                                         <th colspan="3" class="text-end">
-                                                            Discount {{ $discount->name }}
-                                                             <button class="btn btn-sm btn-link text-danger p-0 delete-discount"
-                                                                    data-url="{{ route('estimate.product.discount.delete', $discount->id) }}"
-                                                                    data-csrf="{{ csrf_token() }}">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
+                                                            <span class="dist-all">
+                                                                Discount {{ $discount->name }}
+                                                                <button class="btn btn-sm btn-link text-danger p-0 delete-discount"
+                                                                        data-url="{{ route('estimate.product.discount.delete', $discount->id) }}"
+                                                                        data-csrf="{{ csrf_token() }}">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </span>
                                                         </th>
                                                         <th class="discount_percent">
                                                             {{ $discount->value }} %

@@ -886,6 +886,15 @@ label {
     transition: background-color 0.2s, color 0.2s !important;
 }
 
+.dist-all{
+    display: flex;
+    gap: 15px;
+}
+
+.dist-all button{
+    cursor: pointer;
+}
+
 .estimate-title i {
     margin-right: 11px;
 }

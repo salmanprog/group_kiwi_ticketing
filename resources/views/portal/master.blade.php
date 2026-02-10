@@ -676,6 +676,7 @@
                                 </li>
 
                                 {{-- API-driven categories (SideMenu only) --}}
+                                @if(!empty($platforms) && isset($platforms[0]['categories']))
                                 @foreach($platforms[0]['categories'] as $category)
 
                                     @if($category['menuPosition'] !== 'SideMenu')
@@ -741,48 +742,46 @@
                                         @endphp
                                         <li data-type="parent" class="nav-item">
                                             <a class="nav-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
-                                                <i class="fas fa-link"></i>
+                                                <i class="fas fa-calendar-alt"></i>
                                                 <span class="toggle-none">{{ $category['categoryName'] }}</span>
                                             </a>
                                         </li>
                                     @endif
 
                                 @endforeach
-                            </ul>
+                                {{-- ====================== Profile Dropdown ====================== --}}
+                                @foreach($platforms[0]['categories'] as $category)
+                                    @if($category['menuPosition'] !== 'ProfileMenu')
+                                        @continue
+                                    @endif
 
-                            {{-- ====================== Profile Dropdown ====================== --}}
-                            @foreach($platforms[0]['categories'] as $category)
-                                @if($category['menuPosition'] !== 'ProfileMenu')
-                                    @continue
+                                    @php
+                                        $pages = $category['pages'] ?? [];
+                                    @endphp
+
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
+                                            <i class="fas fa-user"></i>
+                                            <span class="toggle-none">Profile</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+
+                                        <ul class="submenu">
+                                            @foreach($pages as $page)
+                                                @php
+                                                    $routeName = $routeMap[$page['pageSlug']] ?? null;
+                                                @endphp
+                                                <li class="nav-item">
+                                                    <a class="nav-link submenu-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
+                                                        {{ $page['pageName'] }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endforeach
                                 @endif
-
-                                @php
-                                    $pages = $category['pages'] ?? [];
-                                @endphp
-
-                                <li class="nav-item has-submenu">
-                                    <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
-                                        <i class="fas fa-user"></i>
-                                        <span class="toggle-none">Profile</span>
-                                        <i class="fas fa-chevron-down arrow-icon"></i>
-                                    </a>
-
-                                    <ul class="submenu">
-                                        @foreach($pages as $page)
-                                            @php
-                                                $routeName = $routeMap[$page['pageSlug']] ?? null;
-                                            @endphp
-                                            <li class="nav-item">
-                                                <a class="nav-link submenu-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
-                                                    {{ $page['pageName'] }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            @endforeach
-
-
+                            </ul>
                         </div>
                     </div>
 
