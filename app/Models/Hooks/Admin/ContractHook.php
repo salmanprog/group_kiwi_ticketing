@@ -32,7 +32,7 @@ class ContractHook
         if (Auth::user()->user_type == 'client') {
             $query->where('contracts.client_id', Auth::user()->id);
         } else {
-            $query->where('contracts.company_id', $getCompany->id);
+            $query->where('contracts.auth_code', Auth::user()->auth_code);
         }
 
           if( !empty($request['keyword']) ){

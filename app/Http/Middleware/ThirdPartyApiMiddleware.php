@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Auth0\SDK\Auth0;
 
 class ThirdPartyApiMiddleware
 {
@@ -25,10 +26,13 @@ class ThirdPartyApiMiddleware
         'user-profile'        => 'admin.profile',
         'change-password'     => 'admin.change-password',
         'update-stripe-key'   => 'portal.update-stripe-key',
+        'update-installment-status'   => 'portal.update-installment-status',
+        'update-invoice-status' => 'portal.update-invoice-status'
     ];
 
     public function handle($request, Closure $next)
     {
+
         if (!Auth::check()) {
             return $next($request);
         }

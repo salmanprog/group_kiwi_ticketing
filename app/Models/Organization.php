@@ -29,6 +29,7 @@ class Organization extends Model
      */
     protected $fillable = [
         'organization_type_id',
+        'auth_code',
         'event_type_id',
         'event_history_id',
         'client_id',

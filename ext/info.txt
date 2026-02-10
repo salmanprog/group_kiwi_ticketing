@@ -16,6 +16,17 @@ ALTER TABLE `organization_event_type` ADD `company_id` INT(11) NOT NULL DEFAULT 
 ALTER TABLE `organization_type` ADD `company_id` INT(11) NOT NULL DEFAULT '0' AFTER `created_by`;
 
 
+
+ALTER TABLE `organizations` ADD `auth_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `organization_type_id`;
+ALTER TABLE `organization_users` ADD `auth_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `company_id`;
+ALTER TABLE `user_estimate` ADD `auth_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `slug`;
+ALTER TABLE `organization_type` ADD `auth_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `created_by`;
+ALTER TABLE `organization_event_type` ADD `auth_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `created_by`;
+ALTER TABLE `contracts` ADD `auth_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `slug`;
+ALTER TABLE `user_invoices` ADD `auth_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `slug`;
+
+
+
 kiwiticketing
 u2-nqewjfywa1fd@c1102859.sgvps.net
 18765

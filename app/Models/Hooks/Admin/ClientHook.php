@@ -31,7 +31,8 @@ class ClientHook
 
         if (Auth::user()->user_type != 'admin') {
             $getCompany = CompanyUser::getCompany(Auth::user()->id);
-            $query->where('organizations.company_id', $getCompany->id);
+            //$query->where('organizations.company_id', $getCompany->id);
+            $query->where('organizations.auth_code', Auth::user()->auth_code);
         }
 
         if (!empty($request['keyword'])) {
@@ -63,6 +64,7 @@ class ClientHook
                 'name' => $postdata['first_name'] . ' ' . $postdata['last_name'],
                 'slug' => $username,
                 'username' => $username,
+                'auth_code' => Auth::user()->auth_code,
                 'user_group_id' => 5,
                 'user_type' => 'client',
                 'email' => $postdata['email'],
@@ -72,6 +74,7 @@ class ClientHook
         $postdata['client_id'] = User::where('email', $postdata['email'])->value('id');
         $postdata['company_id'] = $getCompany->id;
         $postdata['created_by'] = Auth::user()->id;
+        $postdata['auth_code'] = Auth::user()->auth_code;
         $postdata['slug'] = uniqid() . time();
         Organization::where('id', $postdata['organization_id'])->update([
             'client_id' => $postdata['client_id']

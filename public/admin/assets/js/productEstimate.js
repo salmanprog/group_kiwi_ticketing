@@ -436,7 +436,7 @@ $(document).on('click', '.send-to-client', function () {
             $('#formMessage')
                 .removeClass('text-success')
                 .addClass('text-danger')
-                .text('Failed to save note')
+                .text('Failed to sending client')
                 .fadeIn();
         }
     });

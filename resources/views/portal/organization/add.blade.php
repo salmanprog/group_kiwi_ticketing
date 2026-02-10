@@ -73,6 +73,20 @@
                                     <h5>Address Details</h5>
                                 </div>
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address</label>
+                                            <input type="text" name="address_one" class="form-control"
+                                                value="{{ old('address_one') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address 2</label>
+                                            <input type="text" name="address_two" class="form-control"
+                                                value="{{ old('address_two') }}">
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">City</label>
@@ -89,32 +103,20 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Country</label>
-                                            <input type="text" name="country" class="form-control"
-                                                value="{{ old('country') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
                                             <label class="form-label">Zip</label>
                                             <input type="text" name="zip" class="form-control"
                                                 value="{{ old('zip') }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Address Line 1</label>
-                                            <input type="text" name="address_one" class="form-control"
-                                                value="{{ old('address_one') }}">
+                                            <label class="form-label">Country</label>
+                                            <input type="text" name="country" class="form-control"
+                                                value="{{ old('country') }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="form-label">Address Line 2</label>
-                                            <input type="text" name="address_two" class="form-control"
-                                                value="{{ old('address_two') }}">
-                                        </div>
-                                    </div>
+                                    
+                                    
                                 </div>
                             </div>
 
@@ -562,5 +564,31 @@
         .form-control::placeholder {
             color: #9ca3af;
         }
+        
     </style>
+    @push('stylesheets')
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet"></link>
+    @endpush
+    
+    @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
+<script>
+$(document).ready(function () {
+
+    $('#description').summernote({
+        height: 180,
+        placeholder: 'Write note here...',
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline']],
+            ['para', ['ul', 'ol']],
+            ['insert', ['link']],
+            ['view', ['codeview']]
+        ]
+    });
+});
+
+</script>
+ @endpush
 @endsection

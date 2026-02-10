@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
+use Auth;
 
 // use App
 
@@ -33,6 +34,7 @@ class Invoice extends Model
     protected $fillable = [
         'client_id',
         'slug',
+        'auth_code',
         'created_by',
         'estimate_number',
         'company_id',
@@ -141,6 +143,7 @@ class Invoice extends Model
             $invoice = new Invoice();
             $invoice->invoice_number = $slug;
             $invoice->slug = $slug;
+            $invoice->auth_code = Auth::user()->auth_code;
             $invoice->client_id = $estimate->client_id;
             $invoice->company_id = $estimate->company_id;
             $invoice->created_by = $estimate->created_by;

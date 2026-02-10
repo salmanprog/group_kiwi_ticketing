@@ -24,7 +24,8 @@ class EventHook
     public function hook_query_index(&$query,$request, $slug=NULL) {
         //Your code here
         $getCompany = CompanyUser::getCompany(Auth::user()->id); 
-        $query->where('company_id', $getCompany->id);
+        //$query->where('company_id', $getCompany->id);
+        $query->where('auth_code', Auth::user()->auth_code);
     }
 
     /*
@@ -39,6 +40,8 @@ class EventHook
         $getCompany = CompanyUser::getCompany(Auth::user()->id); 
         $postdata['company_id'] = $getCompany->id;
         $postdata['slug'] = uniqid() . time();
+        $postdata['created_by'] = Auth::user()->id;
+        $postdata['auth_code'] = Auth::user()->auth_code;
     }
 
     /*
