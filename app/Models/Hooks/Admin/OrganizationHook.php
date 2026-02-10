@@ -39,7 +39,8 @@ class OrganizationHook
         if(Auth::user()->user_type != 'admin'){
                if(Auth::user()->user_type != 'client'){
                     $getCompany = CompanyUser::getCompany(Auth::user()->id); 
-                    $query->where('organizations.company_id', $getCompany->id);   
+                    //$query->where('organizations.company_id', $getCompany->id);
+                    $query->where('organizations.auth_code', Auth::user()->auth_code);   
                 }else{
                     $query->where('organizations.client_id', Auth::user()->id);
                 }   
@@ -82,6 +83,7 @@ class OrganizationHook
         $postdata['company_id'] = $getCompany->id;
         $postdata['created_by'] = Auth::user()->id;
         $postdata['slug'] = uniqid() . time();
+        $postdata['auth_code'] = Auth::user()->auth_code;
     }
 
     /*

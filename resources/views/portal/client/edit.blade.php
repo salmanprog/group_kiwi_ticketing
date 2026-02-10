@@ -123,6 +123,20 @@
                                     <h5>Address Details</h5>
                                 </div>
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address</label>
+                                            <input required type="text" name="address_one" class="form-control"
+                                                value="{{ old('address_one') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address 2</label>
+                                            <input type="text" name="address_two" class="form-control"
+                                                value="{{ old('address_two') }}" readonly>
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">City</label>
@@ -137,13 +151,7 @@
                                                 value="{{ old('state') }}" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Country</label>
-                                            <input required type="text" name="country" class="form-control"
-                                                value="{{ old('country') }}" readonly>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Zip</label>
@@ -151,20 +159,14 @@
                                                 value="{{ old('zip') }}" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Address Line 1</label>
-                                            <input required type="text" name="address_one" class="form-control"
-                                                value="{{ old('address_one') }}" readonly>
+                                            <label class="form-label">Country</label>
+                                            <input required type="text" name="country" class="form-control"
+                                                value="{{ old('country') }}" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="form-label">Address Line 2</label>
-                                            <input type="text" name="address_two" class="form-control"
-                                                value="{{ old('address_two') }}" readonly>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                             </div>
 

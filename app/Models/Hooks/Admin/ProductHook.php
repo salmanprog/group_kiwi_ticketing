@@ -21,15 +21,15 @@ class ProductHook
    |
    */
     public function hook_query_index(&$query,$request, $slug=NULL) {
-        $getCompany = CompanyUser::getCompany(Auth::user()->id); 
+        $getCompany = CompanyUser::getCompany(Auth::user()->id);
 
         // $query->select('company_products.*','company_product_category.name as category_name')
         // ->join('company_product_category','company_product_category.id','company_products.company_product_category_id');
 
         $query->select('company_products.*');
         // ->join('company_product_category','company_product_category.id','company_products.company_product_category_id');
-        $query->where('company_products.company_id', $getCompany->id);
-
+        //$query->where('company_products.company_id', $getCompany->id);
+        $query->where('company_products.auth_code', Auth::user()->auth_code);
             
         if( !empty($request['keyword']) ){
             $keyword = $request['keyword'];

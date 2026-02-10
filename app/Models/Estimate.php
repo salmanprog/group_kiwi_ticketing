@@ -15,6 +15,7 @@ class Estimate extends Model
     protected $fillable = [
         'client_id',
         'slug',
+        'auth_code',
         'created_by',
         'estimate_number',
         'company_id',

@@ -111,6 +111,20 @@
                                             <h5>Address Details</h5>
                                         </div>
                                         <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">Address</label>
+                                                    <input required type="text" name="address_one" class="form-control"
+                                                        value="{{ old('address_one') }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="form-label">Address 2</label>
+                                                    <input type="text" name="address_two" class="form-control"
+                                                        value="{{ old('address_two') }}" readonly>
+                                                </div>
+                                            </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">City</label>
@@ -125,13 +139,7 @@
                                                         value="{{ old('state') }}" readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Country</label>
-                                                    <input required type="text" name="country" class="form-control"
-                                                        value="{{ old('country') }}" readonly>
-                                                </div>
-                                            </div>
+                                            
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Zip</label>
@@ -139,20 +147,14 @@
                                                         value="{{ old('zip') }}" readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="form-label">Address Line 1</label>
-                                                    <input required type="text" name="address_one" class="form-control"
-                                                        value="{{ old('address_one') }}" readonly>
+                                                    <label class="form-label">Country</label>
+                                                    <input required type="text" name="country" class="form-control"
+                                                        value="{{ old('country') }}" readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Address Line 2</label>
-                                                    <input type="text" name="address_two" class="form-control"
-                                                        value="{{ old('address_two') }}" readonly>
-                                                </div>
-                                            </div>
+                                            
                                         </div>
                                     </div>
 
@@ -194,7 +196,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="form-label">Phone</label>
+                                                    <label class="form-label">Phone <span class="required">*</span></label>
                                                     <input required type="text" name="mobile_no" class="form-control phone_us"
                                                         value="{{ old('mobile_no') }}">
                                                 </div>
@@ -226,9 +228,8 @@
                                                 <div class="form-group">
                                                     <label class="form-label">
                                                         Ticket Rate
-                                                        <span class="required">*</span>
                                                     </label>
-                                                    <input required type="text" name="ticket_rate" value="{{ old('ticket_rate') }}"
+                                                    <input  type="text" name="ticket_rate" value="{{ old('ticket_rate') }}"
                                                         class="form-control" placeholder="Enter ticket rate">
                                                 </div>
                                             </div>
@@ -237,37 +238,37 @@
                                                 <div class="form-group">
                                                     <label class="form-label">
                                                         Catering Menu
-                                                        <span class="required">*</span>
+                                                        
                                                     </label>
-                                                    <input required type="text" name="catering_menu" value="{{ old('catering_menu') }}"
+                                                    <input  type="text" name="catering_menu" value="{{ old('catering_menu') }}"
                                                         class="form-control" placeholder="Enter catering menu">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Catering Price</label>
-                                                    <input required type="text" name="catering_price" class="form-control"
+                                                    <input  type="text" name="catering_price" class="form-control"
                                                         value="{{ old('catering_price') }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Deposite Amount</label>
-                                                    <input required type="text" name="deposite_amount" class="form-control"
+                                                    <input  type="text" name="deposite_amount" class="form-control"
                                                         value="{{ old('deposite_amount') }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Hours</label>
-                                                    <input required type="text" name="hours" class="form-control"
+                                                    <input  type="text" name="hours" class="form-control"
                                                         value="{{ old('hours') }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Alt Contacts</label>
-                                                    <input required type="text" name="alt_contact" class="form-control"
+                                                    <input  type="text" name="alt_contact" class="form-control"
                                                         value="{{ old('alt_contact') }}">
                                                 </div>
                                             </div>
@@ -609,8 +610,15 @@
         }
     </style>
 @endsection
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
 @push('scripts')
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+
 $(document).ready(function () {
 
     $('#organization_id').on('change', function () {
@@ -661,6 +669,11 @@ $(document).ready(function () {
             $(function() {
                 $('.phone_us').mask('(000) 000-0000');
             });
+            $('#organization_id').select2({
+        placeholder: "-- Select Account --",
+        allowClear: true,
+        width: '100%' // makes it full width
+    });
         })(jQuery);
 </script>
 @endpush

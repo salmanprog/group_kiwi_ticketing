@@ -30,7 +30,7 @@ class InvoiceHook
             $query->where('user_invoices.client_id', Auth::user()->id);
             $query->where('user_invoices.status', '!=', 'draft');
         }else{
-            $query->where('user_invoices.company_id', $getCompany->id);
+            $query->where('user_invoices.auth_code', Auth::user()->auth_code);
         }
 
          if( !empty($request['keyword']) ){

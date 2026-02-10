@@ -131,12 +131,12 @@ class EstimateController extends CRUDCrontroller
         $this->__data['contract_slug'] = (isset($this->__request->contract)) ? decrypt($this->__request->contract) : '';
         $this->__data['client_id'] = (isset($this->__request->contract)) ? Contract::where('slug', decrypt($this->__request->contract))->value('client_id') : '';
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $this->__data['clients'] = Client::where('organization_users.company_id', $company->id)
+        $this->__data['clients'] = Client::where('organization_users.auth_code', Auth::user()->auth_code)
             ->select('organization_users.*', 'organizations.name as organization_name')
             ->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')
             ->where('organizations.status', '1')->where('organizations.deleted_at', null)
             ->get();
-        $this->__data['products'] = Product::where('company_id', $company->id)->get();
+        $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
     }
 
     /**
@@ -157,8 +157,8 @@ class EstimateController extends CRUDCrontroller
         $company = CompanyUser::getCompany(Auth::user()->id);
         $estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('slug', $slug)->first();
         $this->__data['estimate'] = $estimate;
-        $this->__data['clients'] = Client::where('company_id', $company->id)->get();
-        $this->__data['products'] = Product::where('company_id', $company->id)->get();
+        $this->__data['clients'] = Client::where('auth_code',  Auth::user()->auth_code)->get();
+        $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
         $this->__data['installments'] = EstimateInstallment::where('estimate_id', $estimate->id)->get();
         $this->__data['default_terms_and_condition'] = \App\Models\TermsAndCondition::where('company_id', $company->id)->first();
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
@@ -331,6 +331,7 @@ class EstimateController extends CRUDCrontroller
                 $contractSlug = Contract::generateUniqueSlug();
                 $contract = new Contract([
                     'slug' => $contractSlug,
+                    'auth_code' => Auth::user()->auth_code,
                     'contract_number' => $contractSlug,
                     'client_id' => $estimate->client_id,
                     'company_id' => $estimate->company_id,
@@ -443,7 +444,7 @@ class EstimateController extends CRUDCrontroller
             if(!empty($request->mail_send) && $request->mail_send == '1') {
                 
                     $getEstimate = Estimate::where('slug', $request->slug)->first();
-                    $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('company_id', $getEstimate->company_id)->first();
+                    $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('auth_code', Auth::user()->auth_code)->first();
                     $user = User::where('email', $getClientEmail->email)->first();
                     $getCompany = CompanyUser::getCompany(Auth::user()->id);
                     if ($user) {

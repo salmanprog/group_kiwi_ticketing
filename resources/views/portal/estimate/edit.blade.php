@@ -526,7 +526,7 @@
                                                 data-estimateid="{{ $estimate->id }}"
                                                 data-slug="{{ $estimate->slug }}"
                                                 data-slug="{{ $estimate->status }}">
-                                            Send to Client
+                                            Sent to Client
                                             </button>
                                             <!-- <button type="button" class="btn btn-success" onclick="submitSentForm()">
                                                     <i class="fas fa-paper-plane me-1"></i>Send
