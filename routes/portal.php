@@ -96,8 +96,21 @@ use Auth0\Laravel\Facade\Auth0;
 
 // });
 
-//Route::middleware(['custom_auth:web'])->group(function () {
+// -------------------------------------------------------------------------
+// Client routes: Laravel login (/portal/client/login) — uses auth:web only
+// -------------------------------------------------------------------------
+Route::middleware(['auth_client:web'])->group(function () {
+    Route::get('client/dashboard', [DashboardController::class, 'clientIndex'])->name('client.dashboard');
+    Route::get('estimate/ajax-listing', [EstimateController::class, 'ajaxListing'])->name('estimate.ajax-listing');
+    Route::post('estimate-save', [EstimateController::class, 'saveEstimate'])->name('estimate.save');
+    Route::post('estimate-accept', [EstimateController::class, 'acceptEstimate'])->name('estimates.accept');
+    Route::post('estimate-reject', [EstimateController::class, 'rejectEstimate'])->name('estimates.reject');
+    Route::resource('estimate', EstimateController::class);
+});
 
+// -------------------------------------------------------------------------
+// Auth0 / portal routes: custom_auth + third_party_api
+// -------------------------------------------------------------------------
 Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
     Route::match(['get', 'post'], 'user-profile', [CompanyAdminController::class, 'profile'])->name('admin.profile');
@@ -126,7 +139,6 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
     Route::resource('salesman-management', SalesmanController::class);
 
 
-    Route::get('client/dashboard', [DashboardController::class, 'clientIndex'])->name('client.dashboard');
     Route::get('client-management/ajax-listing', [ClientController::class, 'ajaxListing'])->name('client-management.ajax-listing');
     Route::resource('client-management', ClientController::class);
     Route::get('/organization/fetch/{id}', [ClientController::class, 'fetch'])

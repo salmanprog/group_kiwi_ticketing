@@ -590,6 +590,7 @@
                         <div class="static-sidebar-menu" style="margin-top: 20px;">
                         @php
                             // ====================== Variables ======================
+                            $thirdPartyApiData = $thirdPartyApiData ?? [];
                             $userDetails   = $thirdPartyApiData['userDetails'] ?? [];
                             $companyDetails = $thirdPartyApiData['companyDetails'] ?? [];
                             $userRoles     = $thirdPartyApiData['userRoles'] ?? [];
@@ -666,17 +667,194 @@
                             {{-- ====================== Sidebar Menu ====================== --}}
                             <ul class="nav flex-column" id="dynamicMenu">
 
-                                {{-- Dashboard (static) --}}
-                                <li data-type="parent"
-                                    class="nav-item {{ request()->routeIs($dashboards[Auth::user()->user_type]) ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ route($dashboards[Auth::user()->user_type]) }}">
-                                        <i class="grid-icon"></i>
-                                        <span class="toggle-none">Dashboard</span>
-                                    </a>
-                                </li>
+                                @if(Auth::user()->user_type == 'client')
+                                    {{-- Static sidebar for client (Laravel login) --}}
+                                    <li data-type="parent" class="nav-item {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route('client.dashboard') }}">
+                                            <i class="grid-icon"></i>
+                                            <span class="toggle-none">Dashboard</span>
+                                        </a>
+                                    </li>
+                                    @php
+                                    $user_group_id = Auth::user()->user_group_id;
 
-                                {{-- API-driven categories (SideMenu only) --}}
-                                @if(!empty($platforms) && isset($platforms[0]['categories']))
+                                    $cmsCompanyModule = DB::table('cms_modules')
+                                        ->where('slug', 'company-management')
+                                        ->first();
+                                    $cmsCompanyPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsCompanyModule->id ?? null)
+                                        ->first();
+
+                                    $cmsOrganizationModule = DB::table('cms_modules')
+                                        ->where('slug', 'organization')
+                                        ->first();
+                                    $cmsOrganizationPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsOrganizationModule->id ?? null)
+                                        ->first();
+
+                                    $cmsClientModule = DB::table('cms_modules')
+                                        ->where('slug', 'client-management')
+                                        ->first();
+                                    $cmsClientPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsClientModule->id ?? null)
+                                        ->first();
+
+                                    $cmsCrmModule = DB::table('cms_modules')->where('slug', 'crm')->first();
+                                    $cmsCrmPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsCrmModule->id ?? null)
+                                        ->first();
+
+                                    $cmsCrmSettingsModule = DB::table('cms_modules')
+                                        ->where('slug', 'crm-settings')
+                                        ->first();
+                                    $cmsCrmSettingsPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsCrmSettingsModule->id ?? null)
+                                        ->first();
+
+                                    $cmsOrganizationTypeModule = DB::table('cms_modules')
+                                        ->where('slug', 'organization-type')
+                                        ->first();
+                                    $cmsOrganizationTypePermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsOrganizationTypeModule->id ?? null)
+                                        ->first();
+
+                                    $cmsEventTypeModule = DB::table('cms_modules')
+                                        ->where('slug', 'event-type')
+                                        ->first();
+                                    $cmsEventTypePermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsEventTypeModule->id ?? null)
+                                        ->first();
+
+                                    $cmsSalesTeamModule = DB::table('cms_modules')
+                                        ->where('slug', 'sales-team')
+                                        ->first();
+                                    $cmsSalesTeamPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsSalesTeamModule->id ?? null)
+                                        ->first();
+
+                                    $cmsSalesManagementModule = DB::table('cms_modules')
+                                        ->where('slug', 'salesman-management')
+                                        ->first();
+                                    $cmsSalesManagementPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsSalesManagementModule->id ?? null)
+                                        ->first();
+
+                                    $cmsManagerManagmentModule = DB::table('cms_modules')
+                                        ->where('slug', 'manager-management')
+                                        ->first();
+                                    $cmsManagerManagmentPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsManagerManagmentModule->id ?? null)
+                                        ->first();
+
+                                    $cmsOpportunityModule = DB::table('cms_modules')
+                                        ->where('slug', 'opportunites')
+                                        ->first();
+                                    $cmsOpportunityPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsOpportunityModule->id ?? null)
+                                        ->first();
+
+                                    $cmsEstimateModule = DB::table('cms_modules')->where('slug', 'estimate')->first();
+                                    $cmsEstimatePermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsEstimateModule->id ?? null)
+                                        ->first();
+
+                                    $cmsContractModule = DB::table('cms_modules')->where('slug', 'contract')->first();
+                                    $cmsContractPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsContractModule->id ?? null)
+                                        ->first();
+
+                                    $cmsInvoiceModule = DB::table('cms_modules')->where('slug', 'invoice')->first();
+                                    $cmsInvoicePermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsInvoiceModule->id ?? null)
+                                        ->first();
+
+                                    $cmsOpportunitySettingsModule = DB::table('cms_modules')
+                                        ->where('slug', 'opportunites-setting')
+                                        ->first();
+                                    $cmsOpportunitySettingsPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsOpportunitySettingsModule->id ?? null)
+                                        ->first();
+
+                                    $cmsProductModule = DB::table('cms_modules')->where('slug', 'product')->first();
+                                    $cmsProductPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsProductModule->id ?? null)
+                                        ->first();
+
+                                    $cmsProductCategoryModule = DB::table('cms_modules')
+                                        ->where('slug', 'product-category')
+                                        ->first();
+                                    $cmsProductCategoryPermission = DB::table('cms_module_permissions')
+                                        ->where('user_group_id', $user_group_id)
+                                        ->where('cms_module_id', $cmsProductCategoryModule->id ?? null)
+                                        ->first();
+                                @endphp
+
+                                @if ($cmsOpportunityPermission->is_view == '1')
+                                    <!-- Opportunities (with children) -->
+                                    <li data-type="child" class="nav-item">
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);"
+                                            data-expanded="false">
+                                            <i class="fas fa-briefcase"></i>
+                                            <span class="toggle-none">Opportunities</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+                                        <ul class="submenu">
+                                            @if ($cmsEstimatePermission->is_view == '1')
+                                                <li class="nav-item">
+                                                    <a class="nav-link submenu-link"
+                                                        href="{{ route('estimate.index') }}">
+                                                        Estimates
+                                                    </a>
+                                                </li>
+                                            @endif
+
+                                            @if ($cmsContractPermission->is_view == '1')
+                                                <li class="nav-item">
+                                                    <a class="nav-link submenu-link"
+                                                        href="{{ route('contract.index') }}">
+                                                        Contracts
+                                                    </a>
+                                                </li>
+                                            @endif
+                                            @if ($cmsInvoicePermission->is_view == '1')
+                                                <li class="nav-item">
+                                                    <a class="nav-link submenu-link"
+                                                        href="{{ route('invoice.index') }}">
+                                                        Invoices
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </li>
+                                @endif
+                                @else
+                                    {{-- Dashboard (static) --}}
+                                    <li data-type="parent"
+                                        class="nav-item {{ request()->routeIs($dashboards[Auth::user()->user_type]) ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route($dashboards[Auth::user()->user_type]) }}">
+                                            <i class="grid-icon"></i>
+                                            <span class="toggle-none">Dashboard</span>
+                                        </a>
+                                    </li>
+
+                                    {{-- API-driven categories (SideMenu only) --}}
+                                    @if(!empty($platforms) && isset($platforms[0]['categories']))
                                 @foreach($platforms[0]['categories'] as $category)
 
                                     @if($category['menuPosition'] !== 'SideMenu')
@@ -780,6 +958,7 @@
                                         </ul>
                                     </li>
                                 @endforeach
+                                    @endif
                                 @endif
                             </ul>
                         </div>

@@ -190,7 +190,7 @@ class Auth0LoginController extends Controller
                     'Accept' => '*/*',
                 ])
                 ->post($apiUrl . '?' . http_build_query($queryParams));
-                
+           
             if (!$externalApiResponse->successful()) {
                 logger()->error('External API call failed', [
                     'status' => $externalApiResponse->status(),
