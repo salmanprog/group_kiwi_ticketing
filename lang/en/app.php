@@ -42,4 +42,5 @@ return [
     'company_mobile_no_unique'    => 'Company Mobile number already exists',
     'company_email_unique'        => 'Company Email already exists',
     'user_email_unique'           => 'User Email already exists',
+    'user_group_not_found'        => 'Invalid user group',
 ];

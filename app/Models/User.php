@@ -55,7 +55,7 @@ class User extends Authenticatable
      * It is used to enable or disable DB cache record
      * @var bool
      */
-    protected $__is_cache_record = true;
+    protected $__is_cache_record = false;
 
     /**
      * @var

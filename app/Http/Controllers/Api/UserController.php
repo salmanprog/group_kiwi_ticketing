@@ -11,7 +11,7 @@ use Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RestController;
-use App\Libraries\Payment\Payment;
+//use App\Libraries\Payment\Payment;
 
 class UserController extends RestController
 {
@@ -24,8 +24,8 @@ class UserController extends RestController
         parent::__construct('User');
         $this->__request     = $request;
         $this->__apiResource = 'Auth';
-        if( env('GATEWAY_TYPE') != 'None' )
-            $this->_gateway = Payment::init();
+        // if( env('GATEWAY_TYPE') != 'None' )
+        //     $this->_gateway = Payment::init();
     }
 
     /**
@@ -185,7 +185,7 @@ class UserController extends RestController
      */
     public function beforeUpdateLoadModel($request,$slug)
     {
-
+        
     }
 
     /**
@@ -288,6 +288,8 @@ class UserController extends RestController
             return $this->__sendError(__('app.validation_msg'),['message' => __('app.login_failed_msg')] ,400);
         if( !Hash::check($request['password'],$user->password) )
             return $this->__sendError(__('app.validation_msg'),['message' => __('app.login_failed_msg')] ,400);
+        if( $user->user_group_id != 5)
+            return $this->__sendError(__('app.validation_msg'),['message' => __('app.user_group_not_found')], 400);
         if( $user->status != 1)
             return $this->__sendError(__('app.validation_msg'),['message' => __('app.account_disabled')], 400);
         if( env('MAIL_SANDBOX') == '0' && $user->is_email_verify != 1){
