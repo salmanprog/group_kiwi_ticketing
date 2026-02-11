@@ -1,0 +1,282 @@
+{
+  "info": {
+    "_postman_id": "af99ae5f-7708-46f9-bf5f-b7699aef0830",
+    "name": "Group",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41841361"
+  },
+  "item": [
+    {
+      "name": "App",
+      "item": [
+        {
+          "name": "User",
+          "item": [
+            {
+              "name": "Get Record By Slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "5QuAW2/Zspqnm4G4yFaAN60EZU/UdP531XWprm3ZMzxdUAa7rJg41yx6Cm+4/4AH",
+                    "type": "text"
+                  },
+                  {
+                    "key": "user-token",
+                    "value": "R8Wug//tJ89AULLytiYv/2dAPQanvyZVzVlc8dvsukAkrXOZHdKYGywU3Etac8cCuxpqAKh6NrnE5D9/MoehVfhEzREN2aDEC6qSdXn2ycLMis7yW55WfwQV8UtP2gNjP8x9l6M8nadkqTm2VvJchDyJXBt9InELpzoqdFLiDZa12y4n8s+bDqEdtpywnprMKeWit6DOlBBZ0g+29k3+14mzMlfu46mp4t3zzJVsA/OGwvAn+8mnwus0K4PpuIxJfPrKNNqTnpyYkTVOFXkc3vY35awmA308t/N3F/tVz2acG7m0BAKNSChzZBANYDrXuzjJfie3I9xx6jTMPBvpCF765KBTULpgr/U4p7KCy8gSdZBxwiOvftpf1TVMmb8J4VNCeqq2xnmzVbrqS3JaS1fAyQJZ9OzpdDOyM0jk6aN3e92tp/ZPH3whRfALEVXtboY1w03Ewc2ChvPqagoafj4nkjlYn5UhT6y0ZfjOvyE/kAGteT+6xJzJY4fCY5dm96xxN+dvnWDLScvTvmHWXfN1XS60F8oUGDI5+ZOLKQQXyFkYN+wAia6aD+Ir1+a5VEg9VEN9qum0pWU4bV3jKsU/35hhy6j8SfOjZfE7H/N/xrqwq2YmeWUkH3vm8L7ZuEsN+sY0fh3QYOWthTfJFCs+D9RnAXLVkNTgU3KIv2UoPpSqEH6zxbpkUsMuBmiGduGqiC+D0JGDdgSWpU8kP8KZ2ipr1CuquWhYtc9Xnzj3RAY4XsCiwO7EzG6Zvpm4G8lQxX9VsvpEqmr5PKFzMQ==",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}api/user/aaaaaaaaaa-bbbbbbbbbbbb",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "user",
+                    "aaaaaaaaaa-bbbbbbbbbbbb"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update User",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "5QuAW2/Zspqnm4G4yFaAN60EZU/UdP531XWprm3ZMzxdUAa7rJg41yx6Cm+4/4AH",
+                    "type": "text"
+                  },
+                  {
+                    "key": "user-token",
+                    "value": "R8Wug//tJ89AULLytiYv/2dAPQanvyZVzVlc8dvsukAkrXOZHdKYGywU3Etac8cCuxpqAKh6NrnE5D9/MoehVbMZZm5GhNQOCn5rqxo9gPlGvVeiS+IDT4EU0J/CJfEHXKQ9UP1XgTwqkI6nAoLXPFt12zk/ObzgU2Dea6D6L8dyDddS+/7y+rHGYP0h2VGDQTqvYuPJAizVBQyTFcF6Eqii37R/WB7HPAhxIULtgnt07iKiLcaMQwNta4QPp/+8CNKeLWZJttW+tPguWcTOzIyvO88hXA6Yq0oR5+qdeY4iqh9aj6+hDB7yL7I5aeFqumLT32dSgQoxeQaQK0PAqcdJGaHkaihweVjT+yEPoJO6Vb5FF4XmHosTpnjmpbIxM32qOoQkyRWw2cT2nQOwkCCpYSpnwvQx5UN21YWdEVcqTD1YTv9vdf5V9uQOQH35tZWeFyFjFmsTOsb2U2MXdYHmxTkXBWYzdGCA3HBz1KHZ/K4ovuY144vkZ0Jk9Z3RmmxnRh4ftfgvcUm3VNnWKz9bV/sxbXAz8xTrUYXrpcwW2Q/rSPeVtc0e45VjXPCbIVVoXYf4SbSU6QpTiUmim1XAd3oyk2yQoL+6e3U6gFUkmiJ3azvZ0DSqSd0IwtBkWvGg8uiL003u0RYX1PJibTzWgQUAzOenzL5Wuds4pyhQCkFBBCTJbmq/hT2xvn/+GN6LVTL4vr3TjDrItfmjMr9SeG9anral9Bex8fDVHI1CLKKIKT2u9RrRRXcRLLUBonPJ0oiTJN+msILjO1K3yw==",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "sdas",
+                      "type": "text"
+                    },
+                    {
+                      "key": "image_url",
+                      "type": "file",
+                      "uuid": "2b4846d8-e0ee-40c4-a659-a807aa1c0ba5",
+                      "src": "/C:/Users/kh/Downloads/e50893761923eb605f56bd0b0f0c090c.jpg_960x960q80.jpg_.webp"
+                    },
+                    {
+                      "key": "mobile_no",
+                      "value": "21321321321",
+                      "type": "text",
+                      "uuid": "6592198a-a070-4c04-9d13-22522f79a2ef"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}api/user/aaaaaaaaaa-bbbbbbbbbbbb",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "user",
+                    "aaaaaaaaaa-bbbbbbbbbbbb"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User Login",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "5QuAW2/Zspqnm4G4yFaAN60EZU/UdP531XWprm3ZMzxdUAa7rJg41yx6Cm+4/4AH",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "libucuvem@mailinator.com",
+                      "description": "required",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "Herry@123",
+                      "description": "required",
+                      "type": "text"
+                    },
+                    {
+                      "key": "device_type",
+                      "value": "web",
+                      "description": "android,ios,web",
+                      "type": "text",
+                      "uuid": "3d4d00e7-596d-4308-9a59-0e5be56df1f6"
+                    },
+                    {
+                      "key": "device_token",
+                      "value": "ABCD123",
+                      "type": "text",
+                      "uuid": "767bcc76-fed3-4b94-a9eb-2761daf646be"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}api/user/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "user",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Forgot Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "wYt/VdryGgbFfQtLTViDG8t0FZwIPFnzjPMqGhZBkkasm7CVW9gZRYJsfDzytqa4",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "herry@yopmail.com",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}api/user/forgot-password",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "user",
+                    "forgot-password"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Change Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "5QuAW2/Zspqnm4G4yFaAN60EZU/UdP531XWprm3ZMzxdUAa7rJg41yx6Cm+4/4AH",
+                    "type": "text"
+                  },
+                  {
+                    "key": "user-token",
+                    "value": "R8Wug//tJ89AULLytiYv/2dAPQanvyZVzVlc8dvsukAkrXOZHdKYGywU3Etac8cCuxpqAKh6NrnE5D9/MoehVfhEzREN2aDEC6qSdXn2ycLMis7yW55WfwQV8UtP2gNjP8x9l6M8nadkqTm2VvJchDyJXBt9InELpzoqdFLiDZa12y4n8s+bDqEdtpywnprMKeWit6DOlBBZ0g+29k3+14mzMlfu46mp4t3zzJVsA/OGwvAn+8mnwus0K4PpuIxJfPrKNNqTnpyYkTVOFXkc3vY35awmA308t/N3F/tVz2acG7m0BAKNSChzZBANYDrXuzjJfie3I9xx6jTMPBvpCF765KBTULpgr/U4p7KCy8gSdZBxwiOvftpf1TVMmb8J4VNCeqq2xnmzVbrqS3JaS1fAyQJZ9OzpdDOyM0jk6aN3e92tp/ZPH3whRfALEVXtboY1w03Ewc2ChvPqagoafj4nkjlYn5UhT6y0ZfjOvyE/kAGteT+6xJzJY4fCY5dm96xxN+dvnWDLScvTvmHWXfN1XS60F8oUGDI5+ZOLKQQXyFkYN+wAia6aD+Ir1+a5VEg9VEN9qum0pWU4bV3jKsU/35hhy6j8SfOjZfE7H/N/xrqwq2YmeWUkH3vm8L7ZuEsN+sY0fh3QYOWthTfJFCs+D9RnAXLVkNTgU3KIv2UoPpSqEH6zxbpkUsMuBmiGduGqiC+D0JGDdgSWpU8kP8KZ2ipr1CuquWhYtc9Xnzj3RAY4XsCiwO7EzG6Zvpm4G8lQxX9VsvpEqmr5PKFzMQ==",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "current_password",
+                      "value": "Admin@123$",
+                      "type": "text"
+                    },
+                    {
+                      "key": "new_password",
+                      "value": "Herry@123",
+                      "type": "text"
+                    },
+                    {
+                      "key": "confirm_password",
+                      "value": "Herry@123",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}api/user/change-password",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "user",
+                    "change-password"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "5QuAW2/Zspqnm4G4yFaAN60EZU/UdP531XWprm3ZMzxdUAa7rJg41yx6Cm+4/4AH",
+                    "type": "text"
+                  },
+                  {
+                    "key": "user-token",
+                    "value": "R8Wug//tJ89AULLytiYv/2dAPQanvyZVzVlc8dvsukAkrXOZHdKYGywU3Etac8cCuxpqAKh6NrnE5D9/MoehVfhEzREN2aDEC6qSdXn2ycLMis7yW55WfwQV8UtP2gNjP8x9l6M8nadkqTm2VvJchDyJXBt9InELpzoqdFLiDZa12y4n8s+bDqEdtpywnprMKeWit6DOlBBZ0g+29k3+14mzMlfu46mp4t3zzJVsA/OGwvAn+8mnwus0K4PpuIxJfPrKNNqTnpyYkTVOFXkc3vY35awmA308t/N3F/tVz2acG7m0BAKNSChzZBANYDrXuzjJfie3I9xx6jTMPBvpCF765KBTULpgr/U4p7KCy8gSdZBxwiOvftpf1TVMmb8J4VNCeqq2xnmzVbrqS3JaS1fAyQJZ9OzpdDOyM0jk6aN3e92tp/ZPH3whRfALEVXtboY1w03Ewc2ChvPqagoafj4nkjlYn5UhT6y0ZfjOvyE/kAGteT+6xJzJY4fCY5dm96xxN+dvnWDLScvTvmHWXfN1XS60F8oUGDI5+ZOLKQQXyFkYN+wAia6aD+Ir1+a5VEg9VEN9qum0pWU4bV3jKsU/35hhy6j8SfOjZfE7H/N/xrqwq2YmeWUkH3vm8L7ZuEsN+sY0fh3QYOWthTfJFCs+D9RnAXLVkNTgU3KIv2UoPpSqEH6zxbpkUsMuBmiGduGqiC+D0JGDdgSWpU8kP8KZ2ipr1CuquWhYtc9Xnzj3RAY4XsCiwO7EzG6Zvpm4G8lQxX9VsvpEqmr5PKFzMQ==",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "device_type",
+                      "value": "android",
+                      "description": "required = ios, android",
+                      "type": "text"
+                    },
+                    {
+                      "key": "device_token",
+                      "value": "1234567890",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}api/user/logout",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "user",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
