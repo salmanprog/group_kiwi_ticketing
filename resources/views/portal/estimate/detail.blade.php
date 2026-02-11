@@ -159,7 +159,7 @@
                                                             </td>
                                                             <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
                                                             <td>${{ number_format($item->price, 2) }}</td>
-                                                            <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                                            <td class="item-total" colspan="2">${{ number_format($item->total_price, 2) }}</td>
                                                             
                                                         </tr>
                                                     @endforeach
@@ -284,7 +284,7 @@
         </div>
 
         @if(Auth::user()->user_type !== 'client')
-        <div class="activity-section">
+        <div class="activity-section col-md-10 ">
             <div class="section-header">
                 {{-- <i class="fas fa-history me-2"></i> --}}
                 Recent Activity
