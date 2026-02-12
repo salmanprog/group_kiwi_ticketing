@@ -29,7 +29,7 @@ class Invoice extends JsonResource
 
         $taxTotal = $items->sum(function ($item) {
             return $item->itemTaxes->sum(function ($tax) use ($item) {
-                return round($item->total_price * ($tax->percentage / 100), 2);
+                return $item->total_price * ($tax->percentage / 100);
             });
         });
 

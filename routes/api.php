@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PayoutController;
 use App\Http\Controllers\Api\UserEstimateController;
 use App\Http\Controllers\Api\UserContractController;
 use App\Http\Controllers\Api\UserInvoiceController;
+use App\Http\Controllers\Api\StripeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,7 @@ Route::middleware([ApiAuthorization::class])->group(function(){
         Route::resource('client-estimates',UserEstimateController::class)->except(['create','delete']);
         Route::resource('client-contracts',UserContractController::class)->except(['create','update','delete']);
         Route::resource('client-invoices',UserInvoiceController::class)->except(['create','update','delete']);
+        Route::post('stripe/payment-intent',[StripeController::class,'createPaymentIntent'])->name('api.stripe-payment-intent');
 
         Route::resource('gateway/card',UserCardController::class);
 
