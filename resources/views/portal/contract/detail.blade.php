@@ -859,13 +859,13 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th colspan="4" class="">Subtotal:</th>
+                                            <th colspan="3" class="">Subtotal:</th>
                                             <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
                                         </tr>
 
                                         @if($estimate && $estimate->taxes->count())
                                             <tr>
-                                                <th colspan="4" class="">Tax:
+                                                <th colspan="3" class="">Tax:
                                                     <div class="d-flex flex-wrap gap-2 justify-content-end">
                                                         @foreach($estimate->taxes as $tax)
                                                             <div class="border rounded px-2 py-1 d-flex align-items-center gap-1" data-tax-id="{{ $tax->id }}">
@@ -886,7 +886,7 @@
                                                     @php
                                                         $discountTotal += round($subtotal * ($discount->value / 100), 2);
                                                     @endphp
-                                                    <th colspan="4" class="">
+                                                    <th colspan="3" class="">
                                                         Discount {{ $discount->name }}
                                                     </th>
                                                     <th class="discount_percent">
@@ -897,7 +897,7 @@
                                         @endif
 
                                         <tr class="fw-bold">
-                                            <th colspan="4" class="">Total:</th>
+                                            <th colspan="3" class="">Total:</th>
                                             @php
                                                 $total = $subtotal + $taxTotal - $discountTotal;
                                             @endphp
@@ -1048,6 +1048,7 @@
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Paid On</th>
+                                                                        <th>Paid type</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>

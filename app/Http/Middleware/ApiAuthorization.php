@@ -37,6 +37,15 @@ class ApiAuthorization
     public function handle($request, Closure $next, ...$guards)
     {
         $token = $this->request->header('token');
+        // $encrypted = openssl_encrypt(
+        //     config('constants.CLIENT_ID'),
+        //     'aes-256-cbc',
+        //     config('constants.AES_SECRET'),
+        //     0,
+        //     config('constants.AES_IV')
+        // );
+        
+        // echo $encrypted; die;
         if( empty($token) ){
             return response()->json([
                 'code'    => 401,

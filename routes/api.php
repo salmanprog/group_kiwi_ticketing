@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\UserCardController;
 use App\Http\Controllers\Api\PayoutController;
+use App\Http\Controllers\Api\UserEstimateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,8 @@ Route::middleware([ApiAuthorization::class])->group(function(){
     Route::resource('faq',FaqController::class)->only('index');
 
     Route::middleware(['custom_auth:api'])->group(function(){
+
+        Route::resource('client-estimates',UserEstimateController::class)->except(['create','delete']);
 
         Route::resource('gateway/card',UserCardController::class);
 

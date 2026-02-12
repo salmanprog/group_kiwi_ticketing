@@ -745,14 +745,14 @@
                         <tfoot>
                             {{-- Subtotal --}}
                             <tr>
-                                <th colspan="4" class="">Subtotal:</th>
+                                <th colspan="3" class="">Subtotal:</th>
                                 <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
                             </tr>
 
                             {{-- Taxes --}}
                             @if($invoice->estimate && $invoice->estimate->taxes->count())
                                 <tr>
-                                    <th colspan="4" class="">Tax:
+                                    <th colspan="3" class="">Tax:
                                         <div class="d-flex flex-wrap gap-2 justify-content-end">
                                             @foreach($invoice->estimate->taxes as $tax)
                                                 <div class="border rounded px-2 py-1 d-flex align-items-center gap-1" data-tax-id="{{ $tax->id }}">
@@ -777,7 +777,7 @@
                                                 : (float) $discount->value;
                                             $discountTotal += $discountAmount;
                                         @endphp
-                                        <th colspan="4" class="">
+                                        <th colspan="3" class="">
                                             Discount {{ $discount->name }}
                                         </th>
                                         <th class="discount_percent">
@@ -792,7 +792,7 @@
                                 $total = $subtotal + $taxTotal - $discountTotal;
                             @endphp
                             <tr class="fw-bold">
-                                <th colspan="4" class="">Total:</th>
+                                <th colspan="3" class="">Total:</th>
                                 <th id="total">${{ number_format($total, 2) }}</th>
                             </tr>
                         </tfoot>

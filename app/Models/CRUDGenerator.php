@@ -117,6 +117,7 @@ trait CRUDGenerator
     {
         $this->_request = $request;
         if(!empty($data)){
+            
             //before update record request hook
             if(method_exists($this->loadHook(),'hook_before_edit'))
                 $this->loadHook()->hook_before_edit($request, $slug, $data);
