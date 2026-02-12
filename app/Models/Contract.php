@@ -89,4 +89,5 @@ class Contract extends Model
     {
         return $this->hasMany(ContractTaxes::class, 'contract_id');
     }
+    
 }
