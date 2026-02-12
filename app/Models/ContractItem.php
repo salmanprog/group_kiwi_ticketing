@@ -31,5 +31,6 @@ class ContractItem extends Model
     {
         return $this->belongsTo(Contract::class);
     }
+    
 
 }
