@@ -125,22 +125,22 @@ class Contract extends JsonResource
             // }),
 
             // Invoices
-            // 'invoices' => $this->whenLoaded('invoices', function () {
-            //     return $this->invoices->map(function ($invoice) {
-            //         return [
-            //             'id' => $invoice->id,
-            //             'invoice_number' => $invoice->invoice_number,
-            //             'status' => $invoice->status,
+            'invoices' => $this->whenLoaded('invoices', function () {
+                return $this->invoices->map(function ($invoice) {
+                    return [
+                        'id' => $invoice->id,
+                        'invoice_number' => $invoice->invoice_number,
+                        'status' => $invoice->status,
 
-            //             'installment_plan' => $invoice->installmentPlan ? [
-            //                 'id' => $invoice->installmentPlan->id,
-            //                 'payments' => $invoice->installmentPlan->payments,
-            //             ] : null,
+                        'installment_plan' => $invoice->installmentPlan ? [
+                            'id' => $invoice->installmentPlan->id,
+                            'payments' => $invoice->installmentPlan->payments,
+                        ] : null,
 
-            //             'credit_notes' => $invoice->creditNotes,
-            //         ];
-            //     });
-            // }),
+                        'credit_notes' => $invoice->creditNotes,
+                    ];
+                });
+            }),
         ];
     }
 }
