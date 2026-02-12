@@ -134,7 +134,7 @@ class Invoice extends Model
     }
 
 
-    public static function generateInvoice($request, $estimate, $contract)
+    public static function generateInvoice($request, $estimate, $contract,$auth_code=null)
     {
         $estimate = Estimate::with('items', 'taxes', 'discounts', 'company', 'organization', 'client','installments')->where('slug', $request->slug)->first();
           DB::beginTransaction();
@@ -143,7 +143,7 @@ class Invoice extends Model
             $invoice = new Invoice();
             $invoice->invoice_number = $slug;
             $invoice->slug = $slug;
-            $invoice->auth_code = Auth::user()->auth_code;
+            $invoice->auth_code = $auth_code ?? Auth::user()->auth_code;
             $invoice->client_id = $estimate->client_id;
             $invoice->company_id = $estimate->company_id;
             $invoice->created_by = $estimate->created_by;
