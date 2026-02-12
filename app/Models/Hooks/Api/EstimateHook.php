@@ -120,7 +120,7 @@ class EstimateHook
         );
         $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->value);
         $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
-        $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
+        $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100); 
 
         if($params['status'] == 'approved'){
         

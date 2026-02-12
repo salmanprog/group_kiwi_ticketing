@@ -9,16 +9,31 @@ class Contract extends JsonResource
 {
     public function toArray($request)
     {
+
+        $subtotal = $this->estimates->sum(fn($estimate) => $estimate->items->sum(fn($item) => $item->total_price));
+        $taxTotal = $this->estimates->sum(fn($estimate) => 
+            $estimate->items->sum(fn($item) => 
+                $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
+            )
+        );
+        $discountPercent = $this->estimates->sum(fn($estimate) => $estimate->discounts->sum(fn($discount) => $discount->value));
+        $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
+        $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
+
         return [
             'id' => $this->id,
             'auth_code' => $this->auth_code,
             'slug' => $this->slug,
-            'contract_number' => $this->contract_number,
+            'contract_number' => $this->contract_number, 
             'event_date' => $this->event_date,
             'note' => $this->note,
             'terms' => $this->terms,
             'status' => $this->status,
             'is_accept' => $this->is_accept,
+            'subtotal' => $subtotal,
+            'total' => $total,
+            'discount_total' => $discountAmount,
+            'tax_total' => $taxTotal,
 
             // Users
             'client' => new PublicUser($this->whenLoaded('client')),

@@ -59,7 +59,7 @@ class ContractHook
                         'invoices.creditNotes',
                     ])->where('client_id',$request['user']->id)->where('is_accept','accepted');
     }
-
+ 
     /*
     | ----------------------------------------------------------------------
     | Hook for manipulate data input before add data is execute

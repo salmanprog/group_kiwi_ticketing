@@ -16,6 +16,15 @@ class Estimate extends JsonResource
      */
     public function toArray($request)
     {
+
+          $subtotal = $this->items->sum(fn($item) => $item->total_price);
+        $taxTotal = $this->items->sum(fn($item) => 
+            $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
+        );
+        $discountPercent = $this->discounts->sum(fn($discount) => $discount->value);
+        $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
+        $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100); 
+
         return [
             'id'         => $this->id,
             'auth_code'  => $this->auth_code,
@@ -27,6 +36,10 @@ class Estimate extends JsonResource
             'terms'       => $this->terms,
             'status'       => $this->status,
             'estimate_number'       => $this->estimate_number,
+            'subtotal' => $subtotal,
+            'total' => $total,
+            'discount_total' => $discountAmount,
+            'tax_total' => $taxTotal,
             'createdBy' => new PublicUser($this->createdBy),
             'client' => new PublicUser($this->client),
             'organization' => new PublicUser($this->organization),

@@ -714,7 +714,7 @@
                                                 $taxTotal += round($item->total_price * ($tax->percentage / 100), 2);
                                             }
                                         }
-                                    @endphp
+                                    @endphp 
                                     <tr data-id="{{ $item->id }}">
                                         <td>
                                             {{ $item->name }}
