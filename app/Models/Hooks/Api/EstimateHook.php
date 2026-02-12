@@ -8,22 +8,31 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
-class UserHook
+class EstimateHook
 {
     private $_model,
             $except_update_params = [
-                'username',
+                'auth_code',
                 'slug',
-                'email',
-                'mobile_no',
-                'password',
-                'status',
-                'is_email_verify',
-                'is_mobile_verify',
-                'mobile_otp',
-                'email_otp',
-                'remember_token',
+                'client_id',
+                'company_id',
+                'organization_id',
+                'contract_id',
+                'issue_date',
+                'valid_until',
+                'event_date',
+                'note',
+                'terms',
+                'is_adjusted',
+                'is_open',
+                'subtotal',
+                'total',
+                'is_installment',
+                'tax_total',
+                'discount_total',
+                'terms_and_condition',
             ];
 
     public function __construct($model)
@@ -41,14 +50,7 @@ class UserHook
    */
     public function hook_query_index(&$query,$request, $slug=NULL) {
         //Your code here
-        $query->select('users.*');
-        //check same user
-        if( $request['user']->slug == $slug ){
-            $query->selectRaw('api_token,device_type,device_token,users.platform_type,users.platform_id')
-                ->join('user_api_token AS uat','uat.user_id','=','users.id')
-                ->where('uat.api_token',$request['api_token']);
-        }
-        $query->where('users.user_type','client');
+        $query->with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('client_id',$request['user']->id)->where('status','<>','draft');
     }
 
     /*
@@ -60,20 +62,7 @@ class UserHook
     */
     public function hook_before_add($request,&$postdata)
     {
-        if( env('MAIL_SANDBOX') ){
-            $postdata['is_email_verify'] = '1';
-            $postdata['email_verify_at'] = Carbon::now();
-        }
-        //set data
-        $postdata['user_group_id'] = 2;
-        $postdata['user_group_id'] = 1;
-        $postdata['username']   = $this->_model::generateUniqueUserName($postdata['name']);
-        $postdata['slug']       = $postdata['username'];
-        $postdata['password']   = Hash::make($postdata['password']);
-        $postdata['created_at'] = Carbon::now();
-        if( !empty($request['image_url']) ){
-            $postdata['image_url'] =  CustomHelper::uploadMedia('user',$request['image_url']);
-        }
+       
     }
 
     /*
@@ -85,35 +74,6 @@ class UserHook
     */
     public function hook_after_add($request,$record)
     {
-        $api_token  = UserApiToken::generateApiToken($record->id,$request->ip(),$request->header('token'),$record->created_at);
-        $request['api_token'] = $api_token;
-        $request['user']      = $record;
-        //insert api token
-        \DB::table('user_api_token')
-            ->insert([
-                'user_id'       => $record->id,
-                'api_token'     => $api_token,
-                'refresh_token' => NULL,
-                'udid'          => $request->header('token'),
-                'device_type'   => $request['device_type'],
-                'device_token'  => $request['device_token'],
-                'platform_type' => !empty($request['platform_type']) ? $request['platform_type'] : 'custom',
-                'platform_id'   => !empty($request['platform_id']) ? $request['platform_id'] : NULL,
-                'ip_address'    => $request->ip(),
-                'user_agent'    => $request->server('HTTP_USER_AGENT'),
-                'created_at'    => Carbon::now()
-            ]);
-        //send verification email
-        if( env('VERIFICATION_TYPE') == 'email' && env('MAIL_SANDBOX') == 0 ){
-            $mail_params['name'] = $record->name;
-            $mail_params['link'] = route('verifyEmail',['name' => encrypt($record->email)]);
-            sendMail(
-                $record->email,
-                'registration',
-                'Welcome To '. env('APP_NAME'),
-                $mail_params
-            );
-        }
 
     }
 
@@ -135,8 +95,6 @@ class UserHook
         $params = $request->all();
         if( !empty($postData['image_url']) ){
             $postData['image_url'] = CustomHelper::uploadMedia('users',$postData['image_url']);
-            //$blur_image = CustomHelper::getBlurHashImage(Storage::url($postData['image_url']));
-            //$postData['blur_image'] = $blur_image;
         }
         
     }
