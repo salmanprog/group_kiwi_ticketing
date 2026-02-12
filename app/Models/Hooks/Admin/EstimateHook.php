@@ -39,7 +39,8 @@ class EstimateHook
             $query->where('user_estimate.client_id', Auth::user()->id);
             $query->where('user_estimate.status', '!=', 'draft');
         } else {
-            $query->where('user_estimate.company_id', $getCompany->id);
+           // $query->where('user_estimate.company_id', $getCompany->id);
+            $query->where('user_estimate.auth_code', Auth::user()->auth_code);
         }
 
 
@@ -81,10 +82,11 @@ class EstimateHook
         $slug = $this->_model::generateUniqueSlug();
         $postdata['company_id'] = $getCompany->id;
         $postdata['slug'] = $slug;
+        $postdata['auth_code'] = Auth::user()->auth_code;
         $postdata['estimate_number'] = $slug;
         $postdata['created_by'] = Auth::user()->id;
         $postdata['issue_date'] = $postdata['estimate_date'];
-        $organization_id = Client::where('client_id', $postdata['client_id'])->where('company_id', $getCompany->id)->value('organization_id');
+        $organization_id = Client::where('client_id', $postdata['client_id'])->where('auth_code', Auth::user()->auth_code)->value('organization_id');
         $postdata['organization_id'] = $organization_id;
     }
 
@@ -235,7 +237,7 @@ class EstimateHook
     | ----------------------------------------------------------------------
     | Hook for execute command after edit public static function called
     | ----------------------------------------------------------------------
-    | @request  = Http request object
+    | @request  = Http request objects
     | @$slug    = $slug
     |
     */

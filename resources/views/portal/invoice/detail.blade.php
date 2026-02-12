@@ -601,7 +601,7 @@
 
                     {{-- Product Table --}}
                     <div class="table-container">
-                        <table class="product-table">
+                        <!-- <table class="product-table">
                             <thead>
                                 <tr>
                                     <th>Description</th>
@@ -611,67 +611,192 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($invoice->invoiceItems as $item)
+                                @foreach ($invoice->invoiceItems ?? [] as $item)
+                                    @php
+                                        $unitPrice = (float) ($item->price ?? 0);
+                                        $qty = (int) ($item->quantity ?? 0);
+                                        $lineTotal = $qty * $unitPrice;
+                                    @endphp
                                     <tr>
                                         <td>{{ $item->name ?? 'Item' }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        <td>${{ number_format($item->price, 2) }}</td>
-                                        <td>${{ number_format($item->total_price, 2) }}</td>
+                                        <td>{{ $qty }}</td>
+                                        <td>${{ number_format($unitPrice, 2) }}</td>
+                                        <td>${{ number_format($lineTotal, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
 
-                    {{-- Summary Section --}}
+                    {{-- Summary Section (calculated from items/taxes/discounts) --}}
+                    @php
+                        $summarySubtotal = ($invoice->invoiceItems ?? collect())->sum(fn($item) => (int)($item->quantity ?? 0) * (float)($item->price ?? 0));
+                        $summaryTaxTotal = 0;
+                        foreach ($invoice->invoiceTax ?? [] as $t) {
+                            $summaryTaxTotal += ($t->percent / 100) * $summarySubtotal;
+                        }
+                        $summaryDiscountTotal = 0;
+                        foreach ($invoice->invoiceDiscount ?? [] as $d) {
+                            $dType = strtolower((string)($d->type ?? 'fixed'));
+                            if ($dType === 'percent' || $dType === 'percentage') {
+                                $summaryDiscountTotal += ($d->value / 100) * $summarySubtotal;
+                            } else {
+                                $summaryDiscountTotal += (float) ($d->value ?? 0);
+                            }
+                        }
+                        $summaryTotal = $summarySubtotal + $summaryTaxTotal - $summaryDiscountTotal;
+                    @endphp
                     <table class="summary-table">
                         <tbody>
                             <tr>
                                 <th>Subtotal</th>
-                                <td>${{ number_format($invoice->subtotal, 2) }}</td>
+                                <td>${{ number_format($summarySubtotal, 2) }}</td>
                             </tr>
 
                             {{-- Taxes --}}
-                            @foreach ($invoice->invoiceTax as $tax)
+                            @foreach ($invoice->invoiceTax ?? [] as $tax)
+                                @php $taxAmount = ($tax->percent / 100) * $summarySubtotal; @endphp
                                 <tr>
                                     <th>{{ $tax->name }} ({{ $tax->percent }}%)</th>
-                                    <td>${{ number_format(($tax->percent / 100) * $invoice->subtotal, 2) }}</td>
+                                    <td>${{ number_format($taxAmount, 2) }}</td>
                                 </tr>
                             @endforeach
 
                             {{-- Discounts --}}
-                            @foreach ($invoice->invoiceDiscount as $discount)
+                            @foreach ($invoice->invoiceDiscount ?? [] as $discount)
+                                @php
+                                    $dType = strtolower((string)($discount->type ?? 'fixed'));
+                                    $discountAmount = ($dType === 'percent' || $dType === 'percentage')
+                                        ? ($discount->value / 100) * $summarySubtotal
+                                        : (float) ($discount->value ?? 0);
+                                @endphp
                                 <tr>
-                                    <th>{{ $discount->name }}</th>
-                                    <td class="text-danger">– ${{ number_format($discount->value, 2) }}</td>
+                                    <th>{{ $discount->name ?? 'Discount' }}</th>
+                                    <td class="text-danger">– ${{ number_format($discountAmount, 2) }}</td>
                                 </tr>
                             @endforeach
 
                             <tr>
                                 <th>Total</th>
-                                <td class="font-weight-bold">${{ number_format($invoice->total, 2) }}</td>
+                                <td class="font-weight-bold">${{ number_format($summaryTotal, 2) }}</td>
                             </tr>
 
-                            <!-- <tr>
+                            <tr>
                                 <th>Amount Paid</th>
                                 <td class="text-success">${{ number_format($invoice->total, 2) }}</td>
-                            </tr> -->
+                            </tr>
                         </tbody>
-                    </table>
+                    </table> -->
+                    <table class="table product-table" id="productTable">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Product Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $subtotal = 0;
+                                $taxTotal = 0;
+                                $discountTotal = 0;
+                            @endphp
 
-                    {{-- Notes and Terms --}}
-                    @if ($invoice->note || $invoice->terms)
-                        <div class="notes-section">
-                            @if ($invoice->note)
-                                <h5><i class="fas fa-sticky-note me-2"></i>Note</h5>
-                                <p>{!! $invoice->note !!}</p>
+                            @if($invoice->estimate && $invoice->estimate->items->count())
+                                @foreach($invoice->estimate->items as $item)
+                                    @php
+                                        $subtotal += $item->total_price;
+
+                                        // Sum per-item taxes
+                                        if ($item->itemTaxes && $item->itemTaxes->count()) {
+                                            foreach ($item->itemTaxes as $tax) {
+                                                $taxTotal += round($item->total_price * ($tax->percentage / 100), 2);
+                                            }
+                                        }
+                                    @endphp
+                                    <tr data-id="{{ $item->id }}">
+                                        <td>
+                                            {{ $item->name }}
+                                            @if($item->itemTaxes && $item->itemTaxes->count())
+                                                <small class="text-muted d-block" data-taxes='[
+                                                    @foreach($item->itemTaxes as $tax)
+                                                        {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if(!$loop->last),@endif
+                                                    @endforeach
+                                                ]'>
+                                                    Apply Taxes:
+                                                    @foreach($item->itemTaxes as $tax)
+                                                        {{ $tax->name }}@if(!$loop->last), @endif
+                                                    @endforeach
+                                                </small>
+                                            @endif
+                                        </td>
+                                        <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
+                                        <td>${{ number_format($item->price, 2) }}</td>
+                                        <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr class="no-items">
+                                    <td colspan="5" class="text-center">No products added yet.</td>
+                                </tr>
                             @endif
-                            @if ($invoice->terms)
-                                <h5><i class="fas fa-file-contract me-2"></i>Terms</h5>
-                                <p>{!!$invoice->terms!!}</p>
+                        </tbody>
+                        <tfoot>
+                            {{-- Subtotal --}}
+                            <tr>
+                                <th colspan="3" class="">Subtotal:</th>
+                                <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
+                            </tr>
+
+                            {{-- Taxes --}}
+                            @if($invoice->estimate && $invoice->estimate->taxes->count())
+                                <tr>
+                                    <th colspan="3" class="">Tax:
+                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                            @foreach($invoice->estimate->taxes as $tax)
+                                                <div class="border rounded px-2 py-1 d-flex align-items-center gap-1" data-tax-id="{{ $tax->id }}">
+                                                    <small class="fw-semibold">
+                                                        {{ $tax->name }} ({{ $tax->percent }}%)
+                                                    </small>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </th>
+                                    <th id="tax_amount">${{ number_format($taxTotal, 2) }}</th>
+                                </tr>
                             @endif
-                        </div>
-                    @endif
+
+                            {{-- Discounts --}}
+                            @if($invoice->estimate && $invoice->estimate->discounts->count())
+                                <tr class="fw-bold discount-row">
+                                    @foreach($invoice->estimate->discounts as $discount)
+                                        @php
+                                            $discountAmount = strtolower($discount->type) === 'percent'
+                                                ? round($subtotal * ($discount->value / 100), 2)
+                                                : (float) $discount->value;
+                                            $discountTotal += $discountAmount;
+                                        @endphp
+                                        <th colspan="3" class="">
+                                            Discount {{ $discount->name }}
+                                        </th>
+                                        <th class="discount_percent">
+                                            {{ $discount->value }} %
+                                        </th>
+                                    @endforeach
+                                </tr>
+                            @endif
+
+                            {{-- Total --}}
+                            @php
+                                $total = $subtotal + $taxTotal - $discountTotal;
+                            @endphp
+                            <tr class="fw-bold">
+                                <th colspan="3" class="">Total:</th>
+                                <th id="total">${{ number_format($total, 2) }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
 
                     {{-- Payment Actions --}}
                     @if (Auth::user()->user_type === 'client')
@@ -703,7 +828,7 @@
                     {{-- Installment Plan Schedule --}}
                     @if ($invoice->installmentPlan)
                         <h5 class="mt-5" style="color: #1f2937;">
-                            <i class="fas fa-calendar-check me-2"></i>Installment Schedule
+                            <i class="fas fa-calendar-check me-2"></i>Payment Schedule
                         </h5>
                         <div class="table-container">
                             <table class="installment-table">
@@ -767,9 +892,32 @@
                         @endif
                     @endif
 
+                    {{-- Notes and Terms --}}
+                    @if ($invoice->estimate->note)
+                        <div class="notes-section note-box">
+                            <h5 class="note-title">
+                                <i class="fas fa-file-contract me-2"></i>
+                                Note
+                            </h5>
+                            <div class="note-content">
+                                {!! $invoice->estimate->note !!}
+                            </div>
+                        </div>
+                    @endif
+                    {{-- Notes and Terms --}}
+                    @if ($invoice->estimate->terms)
+                        <div class="notes-section">
+                            @if ($invoice->estimate->terms)
+                                <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
+                                <p>{!! $invoice->estimate->terms !!}</p>
+                            @endif
+                        </div>
+                    @endif
+
                 </div>
             </div>
         </div>
     </section>
 
+    
 @endsection

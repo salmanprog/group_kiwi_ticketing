@@ -29,6 +29,7 @@ class EstimateItem extends Model
      */
     protected $fillable = [
         'user_estimate_id',
+        'product_id',
         'name',
         'quantity',
         'unit',
@@ -67,4 +68,9 @@ class EstimateItem extends Model
         return $this->belongsTo(Estimate::class, 'estimate_id');
     }
 
+    public function itemTaxes()
+    {
+        return $this->hasMany(UserEstimateItemTax::class, 'user_estimate_item_id', 'id');
+    }
+    
 }

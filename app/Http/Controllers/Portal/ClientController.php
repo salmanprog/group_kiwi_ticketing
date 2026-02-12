@@ -91,7 +91,8 @@ class ClientController extends CRUDCrontroller
      */
     public function beforeRenderCreateView()
     {
-        $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id', 0)->get();
+        //$this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id', 0)->get();
+        $this->__data['organizations'] = Organization::where('status', 1)->where('auth_code', Auth::user()->auth_code)->where('client_id', 0)->get();
     }
 
     /**
@@ -99,6 +100,7 @@ class ClientController extends CRUDCrontroller
      */
     public function beforeStoreLoadModel()
     {
+         $this->__success_store_message = 'Contact created successfully';
     }
 
     /**
@@ -116,6 +118,7 @@ class ClientController extends CRUDCrontroller
      */
     public function beforeUpdateLoadModel()
     {
+        $this->__success_update_message = 'Contact updated successfully';
 
     }
 

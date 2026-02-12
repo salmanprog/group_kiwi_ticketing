@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
+use Auth;
 
 // use App
 
@@ -33,6 +34,7 @@ class Invoice extends Model
     protected $fillable = [
         'client_id',
         'slug',
+        'auth_code',
         'created_by',
         'estimate_number',
         'company_id',
@@ -132,7 +134,7 @@ class Invoice extends Model
     }
 
 
-    public static function generateInvoice($request, $estimate, $contract)
+    public static function generateInvoice($request, $estimate, $contract,$auth_code=null)
     {
         $estimate = Estimate::with('items', 'taxes', 'discounts', 'company', 'organization', 'client','installments')->where('slug', $request->slug)->first();
           DB::beginTransaction();
@@ -141,6 +143,7 @@ class Invoice extends Model
             $invoice = new Invoice();
             $invoice->invoice_number = $slug;
             $invoice->slug = $slug;
+            $invoice->auth_code = $auth_code ?? Auth::user()->auth_code;
             $invoice->client_id = $estimate->client_id;
             $invoice->company_id = $estimate->company_id;
             $invoice->created_by = $estimate->created_by;
@@ -155,16 +158,44 @@ class Invoice extends Model
             $invoice->status = 'unpaid';
             $invoice->save();
             
-            if($estimate->is_installment == "1"){
+            // if($estimate->is_installment == "1"){
+            //     $plan = \App\Models\InstallmentPlan::create([
+            //         'invoice_id' => $invoice->id,
+            //         'total_amount' => $estimate->total,
+            //         'installment_count' => $estimate->installments->count(),
+            //         'start_date' => $estimate->installments->first()->installment_date,
+            //         'estimate_id' => $estimate->id
+            //     ]);
+
+            //     foreach ($estimate->installments as $index => $installment) {
+            //         \App\Models\InstallmentPayment::create([
+            //             'installment_plan_id' => $plan->id,
+            //             'installment_number' => $index + 1,
+            //             'invoice_id' => $invoice->id,
+            //             'estimate_id' => $estimate->id,
+            //             'contract_id' => $contract->id,
+            //             'due_date' => $installment->installment_date,
+            //             'amount' => $installment->amount,
+            //             'is_paid' => false,
+            //         ]);   
+            //     }
+
+
+            // }   
+
+            $installments = $estimate->installments;
+
+            if ($estimate->is_installment == "1" && $installments->isNotEmpty()) {
+
                 $plan = \App\Models\InstallmentPlan::create([
                     'invoice_id' => $invoice->id,
                     'total_amount' => $estimate->total,
-                    'installment_count' => $estimate->installments->count(),
-                    'start_date' => $estimate->installments->first()->installment_date,
-                    'estimate_id' => $estimate->id
+                    'installment_count' => $installments->count(),
+                    'start_date' => $installments->first()->installment_date,
+                    'estimate_id' => $estimate->id,
                 ]);
 
-                foreach ($estimate->installments as $index => $installment) {
+                foreach ($installments as $index => $installment) {
                     \App\Models\InstallmentPayment::create([
                         'installment_plan_id' => $plan->id,
                         'installment_number' => $index + 1,
@@ -174,11 +205,9 @@ class Invoice extends Model
                         'due_date' => $installment->installment_date,
                         'amount' => $installment->amount,
                         'is_paid' => false,
-                    ]);   
+                    ]);
                 }
-
-
-            }   
+            }
 
 
             foreach ($estimate->items as $item) {
@@ -228,12 +257,12 @@ class Invoice extends Model
                     'value' => $discount->value,
                 ]);
 
-                ContractDiscountItem::create([
-                    'contract_id' => $contract->id,
-                    'name' => $discount->name,
-                    'value' => $discount->value,
-                    'invoice_id' => $invoice->id,
-                ]);
+                // ContractDiscountItem::create([
+                //     'contract_id' => $contract->id,
+                //     'name' => $discount->name,
+                //     'value' => $discount->value,
+                //     'invoice_id' => $invoice->id,
+                // ]);
             }
         
         DB::commit();

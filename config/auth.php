@@ -37,14 +37,18 @@ return [
 
     'guards' => [
         'web' => [
+            'driver' => 'session',   // correct
+            'provider' => 'users',   // 👈 must be 'users', NOT 'session'
+        ],
+        'portal' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'portal_users',
         ],
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | User Providers
+    | User Providersh
     |--------------------------------------------------------------------------
     |
     | All authentication guards have a user provider, which defines how the
@@ -61,8 +65,9 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+             'driver' => 'eloquent',
+             //'driver' => 'session',
+             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
         // 'users' => [

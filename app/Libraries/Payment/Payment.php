@@ -1,7 +1,7 @@
 <?php
 namespace App\Libraries\Payment;
 
-class payment
+class Payment
 {
     private static $instance = null;
 

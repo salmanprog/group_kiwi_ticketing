@@ -13,8 +13,10 @@ class Contract extends Model
     protected $fillable = [
         'slug',
         'contract_number',
+        'auth_code',
         'client_id',
         'company_id',
+        'organization_id',
         'title',
         'salutation',
         'ticket_rate',
@@ -82,8 +84,8 @@ class Contract extends Model
         return $this->hasMany(ContractItem::class, 'contract_id');
     }
 
-    public function modifications()
+    public function taxes()
     {
-        return $this->hasMany(ContractModified::class, 'contract_id')->orderBy('id', 'desc');
+        return $this->hasMany(ContractTaxes::class, 'contract_id');
     }
 }

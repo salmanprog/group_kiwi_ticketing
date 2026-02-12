@@ -1,311 +1,9 @@
 @extends('portal.master')
 @section('content')
 
-    <style>
-        /* ===============================
-        ESTIMATE PROFESSIONAL THEME
-        =============================== */
-
-        body {
-            background: #f3f4f6;
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            color: #1f2937;
-        }
-
-        /* Main Wrapper */
-        .estimate-wrapper {
-            background: #ffffff;
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-            margin-bottom: 40px;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .action-buttons .btn {
-            font-weight: 500;
-            padding: 8px 16px;
-        }
-
-        /* Header */
-        .estimate-header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 20px;
-            margin-bottom: 24px;
-        }
-
-        .estimate-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .estimate-meta {
-            text-align: right;
-            font-size: 14px;
-        }
-
-        .estimate-number {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        /* Status Pills */
-        .status {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .status.sent { background: #e0f2fe; color: #0369a1; }
-        .status.accepted { background: #dcfce7; color: #166534; }
-        .status.rejected { background: #fee2e2; color: #991b1b; }
-        .status.revised { background: #fef3c7; color: #92400e; }
-
-        /* Edit link */
-        .edit-link {
-            display: inline-block;
-            margin-top: 6px;
-            color: #2563eb;
-            font-weight: 500;
-            text-decoration: none;
-        }
-
-        .edit-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Address Section */
-        .address-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .address-box {
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 16px;
-            background: #fafafa;
-        }
-
-        .address-box h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #374151;
-        }
-
-        .address-box p {
-            font-size: 14px;
-            margin-bottom: 0;
-            line-height: 1.6;
-        }
-
-        /* Product Table */
-        .product-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 24px;
-        }
-
-        .product-table thead {
-            background: #f9fafb;
-        }
-
-        .product-table th {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-            color: #6b7280;
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .product-table td {
-            padding: 12px;
-            font-size: 14px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .product-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Summary Table */
-        .summary-table {
-            width: 320px;
-            margin-left: auto;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-        }
-
-        .summary-table th,
-        .summary-table td {
-            padding: 8px 12px;
-            font-size: 14px;
-        }
-
-        .summary-table th {
-            color: #374151;
-            font-weight: 500;
-        }
-
-        .summary-table td {
-            text-align: right;
-        }
-
-        .summary-table tr:last-child {
-            border-top: 2px solid #111827;
-        }
-
-        .summary-table tr:last-child th,
-        .summary-table tr:last-child td {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        /* Notes Section */
-        .notes-section {
-            border-top: 1px solid #e5e7eb;
-            padding-top: 20px;
-            margin-top: 20px;
-        }
-
-        .notes-section h5 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        /* Installments */
-        .installments-section h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .installments-section table th {
-            background: #f9fafb;
-            font-size: 13px;
-        }
-
-        /* Activity Section */
-        .activity-section {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-        }
-
-        .section-header {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .estimate-info {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-            padding: 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            background: #fafafa;
-        }
-
-        .info-item label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6b7280;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .info-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .note-box {
-            background: #f9fafb;
-            border-left: 4px solid #2563eb;
-            padding: 16px 18px;
-            border-radius: 8px;
-            margin-top: 24px;
-        }
-
-        .note-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-        }
-
-        .note-content {
-            font-size: 14px;
-            color: #374151;
-            line-height: 1.65;
-        }
-
-        .note-content p {
-            margin-bottom: 8px;
-        }
-
-        .note-content p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .estimate-info {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .estimate-info {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Print Friendly */
-        @media print {
-            body {
-                background: #ffffff;
-            }
-            .action-buttons,
-            .activity-section {
-                display: none;
-            }
-            .estimate-wrapper {
-                box-shadow: none;
-                padding: 0;
-            }
-        }
-
-    </style>
+    @push('stylesheets')
+        <link href="{{ asset('admin/assets/scss/view-est.css') }}" rel="stylesheet" type="text/css">
+    @endpush
 
     <section class="main-content">
         <div class="row">
@@ -431,78 +129,101 @@
                         <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
                                         Product Details
                                     </h5>
-                        <table class="product-table">
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Qty</th>
-                                    <th>Product Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($estimate->items as $item)
-                                    <tr>
-                                        <td>{{ $item->name ?? 'Item' }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        <td>${{ number_format($item->price, 2) }}</td>
-                                        <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                        <table class="table product-table" id="productTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Product Price</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if($estimate && $estimate->items->count())
+                                                    @foreach($estimate->items as $item)
+                                                        <tr data-id="{{ $item->id }}">
+                                                            <td>
+                                                                {{ $item->name }}
+                                                                @if($item->itemTaxes && $item->itemTaxes->count())
+                                                                    <small class="text-muted d-block" data-taxes='[
+                                                                                                    @foreach($item->itemTaxes as $tax)
+                                                                                                        {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if(!$loop->last),@endif
+                                                                                                    @endforeach
+                                                                                                ]'>
+                                                                                Apply Taxes: 
+                                                                                @foreach($item->itemTaxes as $tax)
+                                                                                    {{ $tax->name }}@if(!$loop->last), @endif
+                                                                                @endforeach
+                                                                    </small>
+                                                                @endif
+                                                            </td>
+                                                            <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
+                                                            <td>${{ number_format($item->price, 2) }}</td>
+                                                            <td class="item-total" colspan="2">${{ number_format($item->total_price, 2) }}</td>
+                                                            
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr class="no-items">
+                                                        <td colspan="5" class="text-center">No products added yet.</td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="4" class="">Subtotal:</th>
+                                                    <th id="subtotal">$0.00</th>
+                                                    {{-- <th></th> --}}
+                                                </tr>
 
-                    {{-- Summary Section --}}
-                    <table class="summary-table">
-                        <tbody>
-                            <tr>
-                                <th>Subtotal</th>
-                                <td>${{ number_format($estimate->subtotal, 2) }}</td>
-                            </tr>
+                                                @if($estimate && $estimate->taxes->count())
+                                                <tr>
+                                                    <th colspan="4" class="">Tax:
+                                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                                            @foreach($estimate->taxes as $tax)
+                                                                <div class="border rounded px-2 py-1 d-flex align-items-center gap-1"
+                                                                    data-tax-id="{{ $tax->id }}">
 
-                            {{-- Taxes --}}
-                            @foreach ($estimate->taxes as $tax)
-                                <tr>
-                                    <th>{{ $tax->name }} ({{ $tax->percent }}%)</th>
-                                    <td>${{ number_format($tax->amount, 2) }}</td>
-                                </tr>
-                            @endforeach
+                                                                    <small class="fw-semibold">
+                                                                        {{ $tax->name }} ({{ $tax->percent }}%)
+                                                                    </small>
 
-                            {{-- Discounts --}}
-                            @if ($estimate->discounts)
-                                @foreach ($estimate->discounts as $discount)
-                                    <tr>
-                                        <th>{{ $discount->name }}</th>
-                                        <td class="text-danger">– ${{ number_format($discount->value, 2) }}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                                                                                                                                   </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </th>
+                                                    <th id="tax_amount">${{ number_format($estimate->taxes->sum('amount'), 2) }}</th>
+                                                    {{-- <th></th> --}}
+                                                </tr>
+                                                @endif
+                                               @if($estimate && $estimate->discounts->count())
+                                                <tr class="fw-bold discount-row">
+                                                    @foreach($estimate->discounts as $discount)
+                                                        <th colspan="4" class="">
+                                                            Discount {{ $discount->name }}
+                                                        </th>
+                                                        <th class="discount_percent">
+                                                            {{ $discount->value }} %
+                                                        </th>
+                                                        {{-- <th></th> --}}
+                                                    @endforeach
+                                                </tr>
+                                                @endif
+                                                <tr class="fw-bold">
+                                                    <th colspan="4" class="">Total:</th>
+                                                    <th id="total">$0.00</th>
+                                                    {{-- <th></th> --}}
+                                                </tr>
+                                            </tfoot>
 
-                            <tr>
-                                <th>Total</th>
-                                <td class="font-weight-bold">${{ number_format($estimate->total, 2) }}</td>
-                            </tr>
-                            <!--
-                                <tr>
-                                    <th>Amount Paid</th>
-                                    <td class="text-success">${{ number_format($estimate->total, 2) }}</td>
-                                </tr> -->
-                        </tbody>
-                    </table>
-                    {{-- Notes--}}
-                   @if ($estimate->note)
-                        <div class="notes-section note-box">
-                            <h5 class="note-title">
-                                <i class="fas fa-file-contract me-2"></i>
-                                Note
-                            </h5>
-                            <div class="note-content">
-                                {!! $estimate->note !!}
-                            </div>
-                        </div>
-                    @endif
+                                        </table>
+
+                                     
+                                        
                     @if ($estimate->installments && $estimate->installments->count() > 0)
+                        @php
+                            $installmentsTotal = $estimate->installments->sum(fn($inst) => (float)($inst->amount ?? 0));
+                        @endphp
                         <div class="installments-section mt-4">
                             <h3 class="text-lg font-semibold mb-2">Payment Schedule</h3>
                             <div class="table-responsive">
@@ -520,21 +241,39 @@
                                                 <td>#{{ $index + 1 }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($installment->installment_date)->format('M d, Y') }}</td>
                                                 <td class="font-weight-bold">
-                                                    {{ number_format($installment->amount, 2) }}
+                                                    ${{ number_format((float)($installment->amount ?? 0), 2) }}
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
+                                    <tfoot>
+                                        <tr class="font-weight-bold">
+                                            <th colspan="2">Total scheduled</th>
+                                            <td>${{ number_format($installmentsTotal, 2) }}</td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
                     @endif
+                    {{-- Notes--}}
+                   @if ($estimate->note)
+                        <div class="notes-section note-box">
+                            <h5 class="note-title">
+                                <i class="fas fa-file-contract me-2"></i>
+                                Note
+                            </h5>
+                            <div class="note-content">
+                                {!! $estimate->note !!}
+                            </div>
+                        </div>
+                    @endif
                     {{-- Notes and Terms --}}
-                    @if ($estimate->terms_and_condition)
+                    @if ($estimate->terms)
                         <div class="notes-section">
-                            @if ($estimate->terms_and_condition)
+                            @if ($estimate->terms)
                                 <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
-                                <p>{!! $estimate->terms_and_condition !!}</p>
+                                <p>{!! $estimate->terms !!}</p>
                             @endif
                         </div>
                     @endif
@@ -545,9 +284,10 @@
         </div>
 
         @if(Auth::user()->user_type !== 'client')
-        <div class="activity-section">
+        <div class="activity-section col-md-10 ">
             <div class="section-header">
-                <i class="fas fa-history me-2"></i>Recent Activity
+                {{-- <i class="fas fa-history me-2"></i> --}}
+                Recent Activity
             </div>
 
             <div class="activity-table-container">
@@ -557,7 +297,6 @@
                             <th>Date & Time</th>
                             <th>User</th>
                             <th>Description</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -566,15 +305,6 @@
                                 <td>{{ $log->created_at }}</td>
                                 <td>{{ $log->user_name ?? 'N/A' }}</td>
                                 <td>{{ Str::limit($log->description, 60) }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary view-details" data-bs-toggle="modal"
-                                        data-bs-target="#activityModal" data-description="{{ $log->description }}"
-                                        data-alldata='{{ $log->new_data }}'>
-                                        View
-                                    </button>
-
-
-                                </td>
                             </tr>
                         @empty
                             <tr>

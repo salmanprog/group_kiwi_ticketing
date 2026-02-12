@@ -28,6 +28,6 @@ class CmsModulePermission extends Model
      * @var array
      */
     protected $fillable = [
-        'cms_role_id', 'cms_module_id', 'is_add', 'is_view', 'is_update', 'is_delete', 'created_at', 'updated_at', 'deleted_at'
+        'user_id','user_group_id', 'cms_module_id', 'is_add', 'is_view', 'is_update', 'is_delete', 'created_at', 'updated_at', 'deleted_at'
     ];
 }

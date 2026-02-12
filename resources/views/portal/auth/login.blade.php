@@ -354,7 +354,7 @@
                         <h2 class="welcome-heading">Welcome Back!</h2>
                         <p class="welcome-subtext">Please sign in to access your dashboard.</p>
 
-                        <form method="post" action="" role="form" class="login-form">
+                        <form method="post" action="{{ route('client.login') }}" role="form" class="login-form">
                             {{ csrf_field() }}
                             {{-- @include('portal.flash-message') --}}
 
@@ -407,6 +407,9 @@
                             <div class="form-group">
                                 <button type="submit" class="btn-login">Sign In</button>
                             </div>
+                            <p class="text-center back-to-choices">
+                                <a href="{{ route('admin.login') }}" class="back-link">← Back to login</a>
+                            </p>
                         </form>
 
                         <div class="terms-text">
@@ -688,6 +691,20 @@
         .terms-link:hover {
             color: #3182ce;
             text-decoration: underline;
+        }
+
+        .back-to-choices {
+            margin-top: 20px;
+            margin-bottom: 0;
+        }
+        .back-link {
+            font-size: 14px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover {
+            color: #a0c242;
         }
 
         .brand-section {

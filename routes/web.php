@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Libraries\VideoStream\VideoStream;
+use App\Http\Controllers\Portal\Auth\Auth0LoginController;
+use App\Http\Controllers\Portal\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +44,15 @@ Route::get('/', function(){
     // return view('welcome');
 })->name('home');
 
+// Auth0 login page (redirects to Auth0)
+Route::get('/portal/login', [Auth0LoginController::class, 'login'])->name('admin.login');
+Route::get('/portal/callback', [Auth0LoginController::class, 'callback'])->name('portal.callback');
+Route::get('/portal/logout', [Auth0LoginController::class, 'logout'])->name('admin.logout');
+
+// Laravel session login (email & password) – client login page
+Route::match(['get', 'post'], '/portal/client/login', [LoginController::class, 'login'])->name('client.login');
+
+    
 Route::get('/cache-clear', function(){
 
     Artisan::call('cache:clear');

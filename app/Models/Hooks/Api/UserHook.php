@@ -48,7 +48,7 @@ class UserHook
                 ->join('user_api_token AS uat','uat.user_id','=','users.id')
                 ->where('uat.api_token',$request['api_token']);
         }
-        $query->where('users.user_type','user');
+        $query->where('users.user_type','client');
     }
 
     /*
@@ -132,11 +132,13 @@ class UserHook
             if( in_array($key,$this->except_update_params) )
                 unset($postData[$key]);
         }
+        $params = $request->all();
         if( !empty($postData['image_url']) ){
             $postData['image_url'] = CustomHelper::uploadMedia('users',$postData['image_url']);
             //$blur_image = CustomHelper::getBlurHashImage(Storage::url($postData['image_url']));
             //$postData['blur_image'] = $blur_image;
         }
+        
     }
 
     /*

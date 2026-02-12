@@ -329,6 +329,82 @@
             color: #9FC23F;
             background: #ffffff;
         } */
+
+        /* platforms menue css */
+
+        .menu-platform {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+
+        }
+
+        .menu-platform:hover {
+            background-color: #9fc23f0d;
+        }
+
+        .icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            transition: transform 0.3s ease;
+        }
+
+        .group:hover .icon-box {
+            transform: scale(1.1);
+        }
+
+        .icon-box img {
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+
+        .platform-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .platform-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.3s ease;
+            line-height: 16px;
+        }
+
+        .group:hover .platform-title {
+            color: #3b82f6;
+        }
+
+        .platform-subtitle {
+            font-size: 9px;
+            font-weight: 500;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 14px;
+        }
+
+        .platform-subtitle svg {
+            flex-shrink: 0;
+        }
     </style>
 </head>
 
@@ -463,7 +539,7 @@
                                 <a class="dropdown-toggle  cust-dropdown-toggle" data-toggle="dropdown"
                                     href="#">
                                     <img alt="" class="rounded-circle"
-                                        src="{{ !empty(currentUser()->image_url) ? Storage::url(currentUser()->image_url) : URL::to('admin/assets/img/avtar-2.png') }}"
+                                        src="{{ URL::to('admin/assets/img/avtar-2.png') }}"
                                         width="30">
                                     {{ currentUser()->name }}
                                 </a>
@@ -503,6 +579,7 @@
                 </div>
             </div>
         </div>
+        
 
         <div class="main-sidebar-nav default-navigation all-fonts-col">
             <div class="nano">
@@ -511,40 +588,94 @@
 
                         <!-- Static Sidebar Navigation Menu - Working Version -->
                         <div class="static-sidebar-menu" style="margin-top: 20px;">
-                            <ul class="nav flex-column" id="staticMenu">
-                                <!-- Dashboard -->
-                                @php
-                                    $dashboards = [
-                                        'admin' => 'admin.dashboard',
-                                        'company' => 'company.dashboard',
-                                        'manager' => 'manager.dashboard',
-                                        'salesman' => 'salesman.dashboard',
-                                        'client' => 'client.dashboard',
-                                    ];
-                                @endphp
+                        @php
+                            // ====================== Variables ======================
+                            $thirdPartyApiData = $thirdPartyApiData ?? [];
+                            $userDetails   = $thirdPartyApiData['userDetails'] ?? [];
+                            $companyDetails = $thirdPartyApiData['companyDetails'] ?? [];
+                            $userRoles     = $thirdPartyApiData['userRoles'] ?? [];
+                            $platforms     = $thirdPartyApiData['platform'] ?? [];
+                            $permissions   = $thirdPartyApiData['permissionDetails'] ?? [];
 
-                                @if (isset($dashboards[Auth::user()->user_type]))
-                                    <li data-type="parent"
-                                        class="nav-item {{ request()->routeIs($dashboards[Auth::user()->user_type]) ? 'active' : '' }}">
-                                        <a class="nav-link" href="{{ route($dashboards[Auth::user()->user_type]) }}">
-                                            {{-- <i class="fas fa-tachometer-alt"></i> --}}
+                            // Dashboard routes by user type
+                            $dashboards = [
+                                'admin'    => 'admin.dashboard',
+                                'company'  => 'company.dashboard',
+                                'manager'  => 'manager.dashboard',
+                                'salesman' => 'salesman.dashboard',
+                                'client'   => 'client.dashboard',
+                            ];
+
+                            // PageSlug -> Route Map
+                            $routeMap = [
+                                'company/dashboard'   => 'company.dashboard',
+                                'event-calander'      => 'event-calander',
+                                'organization'        => 'organization.index',
+                                'client-management'   => 'client-management.index',
+                                'manager-management'  => 'manager-management.index',
+                                'salesman-management' => 'salesman-management.index',
+                                'estimate'            => 'estimate.index',
+                                'contract'            => 'contract.index',
+                                'invoice'             => 'invoice.index',
+                                'product'             => 'product.index',
+                                'organization-type'   => 'organization-type.index',
+                                'event-type'          => 'event-type.index',
+                                'user-profile'        => 'admin.profile', // example
+                                'change-password'     => 'admin.change-password',
+                                'update-stripe-key'   => 'portal.update-stripe-key',
+                            ];
+
+                            // ====================== Recursive Submenu Renderer ======================
+                            function renderSubMenu($category, $routeMap, $level = 1)
+                            {
+                                $ulClass = $level === 1 ? 'submenu' : 'nested-submenu';
+                                echo '<ul class="' . $ulClass . '">';
+
+                                // Pages
+                                if (!empty($category['pages'])) {
+                                    foreach ($category['pages'] as $page) {
+                                        $routeName = $routeMap[$page['pageSlug']] ?? null;
+                                        $href = $routeName ? route($routeName) : 'javascript:void(0)';
+
+                                        echo '<li class="nav-item">';
+                                        echo '<a class="nav-link ' . ($level === 1 ? 'submenu-link' : '') . '" href="' . $href . '">';
+                                        echo e($page['pageName'] ?? $page['pageSlug']);
+                                        echo '</a>';
+                                        echo '</li>';
+                                    }
+                                }
+
+                                // Nested subCategories
+                                if (!empty($category['subCategories'])) {
+                                    foreach ($category['subCategories'] as $sub) {
+                                        echo '<li class="nav-item has-submenu">';
+                                        echo '<a class="nav-link submenu-link menu-toggle" href="javascript:void(0);" data-expanded="false">';
+                                        echo e($sub['categoryName']);
+                                        echo '<i class="fas fa-chevron-down arrow-icon"></i>';
+                                        echo '</a>';
+
+                                        renderSubMenu($sub, $routeMap, $level + 1);
+
+                                        echo '</li>';
+                                    }
+                                }
+
+                                echo '</ul>';
+                            }
+                            @endphp
+
+                            {{-- ====================== Sidebar Menu ====================== --}}
+                            <ul class="nav flex-column" id="dynamicMenu">
+
+                                @if(Auth::user()->user_type == 'client')
+                                    {{-- Static sidebar for client (Laravel login) --}}
+                                    <li data-type="parent" class="nav-item {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route('client.dashboard') }}">
                                             <i class="grid-icon"></i>
                                             <span class="toggle-none">Dashboard</span>
                                         </a>
                                     </li>
-                                @endif
-
-                                <!-- Calendar -->
-                                @if (Auth::user()->user_type == 'company')
-                                    <li data-type="parent" class="nav-item">
-                                        <a class="nav-link" href="{{ route('event-calander') }}">
-                                            <i class="fas fa-calendar-alt"></i>
-                                            <span class="toggle-none">Calendar</span>
-                                        </a>
-                                    </li>
-                                @endif
-
-                                @php
+                                    @php
                                     $user_group_id = Auth::user()->user_group_id;
 
                                     $cmsCompanyModule = DB::table('cms_modules')
@@ -674,111 +805,6 @@
                                         ->first();
                                 @endphp
 
-                                @if ($cmsCompanyPermission->is_view == '1')
-                                    <li data-type="parent" class="nav-item">
-                                        <a class="nav-link" href="{{ route('company-management.index') }}">
-                                            <i class="fas fa-calendar-alt"></i>
-                                            <span class="toggle-none">Company</span>
-                                        </a>
-                                    </li>
-                                @endif
-
-
-
-                                @if ($cmsCrmPermission->is_view == '1')
-                                    <!-- CRM (with children) -->
-                                    <li data-type="child" class="nav-item">
-                                        <a class="nav-link menu-toggle" href="javascript:void(0);"
-                                            data-expanded="false">
-                                            <i class="fas fa-users"></i>
-                                            <span class="toggle-none">CRM</span>
-                                            <i class="fas fa-chevron-down arrow-icon"></i>
-                                        </a>
-                                        <ul class="submenu">
-                                            @if ($cmsOrganizationPermission->is_view == '1')
-                                                <li class="nav-item">
-                                                    <a class="nav-link submenu-link"
-                                                        href="{{ route('organization.index') }}">
-                                                        Accounts
-                                                    </a>
-                                                </li>
-                                            @endif
-
-                                            @if ($cmsClientPermission->is_view == '1')
-                                                <li class="nav-item">
-                                                    <a class="nav-link submenu-link"
-                                                        href="{{ route('client-management.index') }}">
-                                                        Contacts
-                                                    </a>
-                                                </li>
-                                            @endif
-                                            @if ($cmsCrmSettingsPermission->is_view == '1')
-                                                <li class="nav-item has-submenu">
-                                                    <a class="nav-link submenu-link menu-toggle"
-                                                        href="javascript:void(0);" data-expanded="false">
-                                                        CRM Settings
-                                                        <i class="fas fa-chevron-down arrow-icon"></i>
-                                                    </a>
-                                                    <ul class="nested-submenu">
-                                                        @if ($cmsOrganizationTypePermission->is_view == '1')
-                                                            <li class="nav-item">
-                                                                <a class="nav-link"
-                                                                    href="{{ route('organization-type.index') }}">
-                                                                    Account Types
-                                                                </a>
-                                                            </li>
-                                                        @endif
-                                                        @if ($cmsEventTypePermission->is_view == '1')
-                                                            <li class="nav-item">
-                                                                <a class="nav-link"
-                                                                    href="{{ route('event-type.index') }}">
-                                                                    Event Types
-                                                                </a>
-                                                            </li>
-                                                        @endif
-                                                        <li class="nav-item">
-                                                            <a class="nav-link" href="javascript:void(0);">
-                                                                Email Templates
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </li>
-                                @endif
-
-
-                                @if ($cmsSalesTeamPermission->is_view == '1')
-                                    <!-- Sales Team (with children) -->
-                                    <li data-type="child" class="nav-item">
-                                        <a class="nav-link menu-toggle" href="javascript:void(0);"
-                                            data-expanded="false">
-                                            <i class="fas fa-user-friends"></i>
-                                            <span class="toggle-none">Sales Team</span>
-                                            <i class="fas fa-chevron-down arrow-icon"></i>
-                                        </a>
-                                        <ul class="submenu">
-                                            @if ($cmsManagerManagmentPermission->is_view == '1')
-                                                <li class="nav-item">
-                                                    <a class="nav-link submenu-link"
-                                                        href="{{ route('manager-management.index') }}">
-                                                        Managers
-                                                    </a>
-                                                </li>
-                                            @endif
-                                            @if ($cmsSalesManagementPermission->is_view == '1')
-                                                <li class="nav-item">
-                                                    <a class="nav-link submenu-link"
-                                                        href="{{ route('salesman-management.index') }}">
-                                                        Sales People
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </li>
-                                @endif
-
                                 @if ($cmsOpportunityPermission->is_view == '1')
                                     <!-- Opportunities (with children) -->
                                     <li data-type="child" class="nav-item">
@@ -814,61 +840,126 @@
                                                     </a>
                                                 </li>
                                             @endif
-
-                                            @if ($cmsOpportunitySettingsPermission->is_view == '1')
-                                                <li class="nav-item has-submenu">
-                                                    <a class="nav-link submenu-link menu-toggle"
-                                                        href="javascript:void(0);" data-expanded="false">
-                                                        Opportunities Settings
-                                                        <i class="fas fa-chevron-down arrow-icon"></i>
-                                                    </a>
-                                                    <ul class="nested-submenu">
-                                                        @if ($cmsProductPermission->is_view == '1')
-                                                            <li class="nav-item">
-                                                                <a class="nav-link"
-                                                                    href="{{ route('product.index') }}">
-                                                                    Product
-                                                                </a>
-                                                            </li>
-                                                        @endif
-                                                        @if ($cmsProductCategoryPermission->is_view == '1')
-                                                            <!-- <li class="nav-item">
-                                                                <a class="nav-link"
-                                                                    href="{{ route('product-category.index') }}">
-                                                                    Product category
-                                                                </a>
-                                                            </li> -->
-                                                        @endif
-                                                    </ul>
-                                                </li>
-                                            @endif
                                         </ul>
                                     </li>
                                 @endif
+                                @else
+                                    {{-- Dashboard (static) --}}
+                                    <li data-type="parent"
+                                        class="nav-item {{ request()->routeIs($dashboards[Auth::user()->user_type]) ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ route($dashboards[Auth::user()->user_type]) }}">
+                                            <i class="grid-icon"></i>
+                                            <span class="toggle-none">Dashboard</span>
+                                        </a>
+                                    </li>
 
-                                <!-- Reporting -->
+                                    {{-- API-driven categories (SideMenu only) --}}
+                                    @if(!empty($platforms) && isset($platforms[0]['categories']))
+                                @foreach($platforms[0]['categories'] as $category)
 
-                                <li data-type="child" class="nav-item">
-                                    <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);"
-                                        data-expanded="false">
-                                        <i class="fas fa-chart-bar"></i>
-                                        <span class="toggle-none">Reporting</span>
-                                        <i class="fas fa-chevron-down arrow-icon"></i>
-                                    </a>
-                                    <ul class="submenu">
-                                        <!-- <li class="nav-item">
-                                                <a class="nav-link submenu-link"
-                                                    href="{{ route('get=all-company') }}">
-                                                    Company Report
-                                                </a>
-                                            </li> -->
-                                        <li class="nav-item">
-                                            <a class="nav-link submenu-link" href="{{ route('get=all-company') }}">
-                                                Summary Report
+                                    @if($category['menuPosition'] !== 'SideMenu')
+                                        @continue
+                                    @endif
+
+                                    @php
+                                        $pages = $category['pages'] ?? [];
+                                        $hasSubCategories = !empty($category['subCategories']);
+                                        $hasMultiplePages = count($pages) > 1;
+                                        $isDropdown = $hasSubCategories || $hasMultiplePages;
+
+                                        // Skip Dashboard from API
+                                        if (isset($pages[0]['pageSlug']) && $pages[0]['pageSlug'] === 'company/dashboard') {
+                                            continue;
+                                        }
+                                    @endphp
+
+                                    {{-- Dropdown --}}
+                                    @if($isDropdown)
+                                        <li data-type="child" class="nav-item">
+                                            <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
+                                                <i class="fas fa-folder"></i>
+                                                <span class="toggle-none">{{ $category['categoryName'] }}</span>
+                                                <i class="fas fa-chevron-down arrow-icon"></i>
+                                            </a>
+
+                                            <ul class="submenu">
+                                                {{-- Pages --}}
+                                                @foreach($pages as $page)
+                                                    @php
+                                                        $routeName = $routeMap[$page['pageSlug']] ?? null;
+                                                    @endphp
+                                                    <li class="nav-item">
+                                                        <a class="nav-link submenu-link"
+                                                        href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
+                                                            {{ $page['pageName'] }}
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+
+                                                {{-- SubCategories --}}
+                                                @if($hasSubCategories)
+                                                    @foreach($category['subCategories'] as $sub)
+                                                        <li class="nav-item has-submenu">
+                                                            <a class="nav-link submenu-link menu-toggle"
+                                                            href="javascript:void(0);" data-expanded="false">
+                                                                {{ $sub['categoryName'] }}
+                                                                <i class="fas fa-chevron-down arrow-icon"></i>
+                                                            </a>
+
+                                                            {!! renderSubMenu($sub, $routeMap) !!}
+                                                        </li>
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </li>
+
+                                    {{-- Single link --}}
+                                    @else
+                                        @php
+                                            $routeName = $routeMap[$pages[0]['pageSlug']] ?? null;
+                                        @endphp
+                                        <li data-type="parent" class="nav-item">
+                                            <a class="nav-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <span class="toggle-none">{{ $category['categoryName'] }}</span>
                                             </a>
                                         </li>
-                                    </ul>
-                                </li>
+                                    @endif
+
+                                @endforeach
+                                {{-- ====================== Profile Dropdown ====================== --}}
+                                @foreach($platforms[0]['categories'] as $category)
+                                    @if($category['menuPosition'] !== 'ProfileMenu')
+                                        @continue
+                                    @endif
+
+                                    @php
+                                        $pages = $category['pages'] ?? [];
+                                    @endphp
+
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
+                                            <i class="fas fa-user"></i>
+                                            <span class="toggle-none">Profile</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+
+                                        <ul class="submenu">
+                                            @foreach($pages as $page)
+                                                @php
+                                                    $routeName = $routeMap[$page['pageSlug']] ?? null;
+                                                @endphp
+                                                <li class="nav-item">
+                                                    <a class="nav-link submenu-link" href="{{ $routeName ? route($routeName) : 'javascript:void(0)' }}">
+                                                        {{ $page['pageName'] }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endforeach
+                                    @endif
+                                @endif
                             </ul>
                         </div>
                     </div>
@@ -919,6 +1010,10 @@
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script src="{{ asset('admin/assets/js/custom.js') }}"></script>
     <script src="{{ asset('admin/assets/js/admin.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/productEstimate.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/taxProductEstimate.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/productDiscount.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/productPayment.js') }}"></script>
 
     <script>
         // Page load complete hone par skeleton hide karo

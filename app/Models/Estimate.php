@@ -15,6 +15,7 @@ class Estimate extends Model
     protected $fillable = [
         'client_id',
         'slug',
+        'auth_code',
         'created_by',
         'estimate_number',
         'company_id',
@@ -87,6 +88,11 @@ class Estimate extends Model
     public function installments()
     {
         return $this->hasMany(EstimateInstallment::class, 'estimate_id', 'id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
     /**
      * Generate unique slug

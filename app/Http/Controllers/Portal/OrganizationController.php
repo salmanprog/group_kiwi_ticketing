@@ -134,9 +134,22 @@ class OrganizationController extends CRUDCrontroller
     {
 
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $this->__data['organization_types'] = OrganizationType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
-        $this->__data['organization_events'] = Event::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+        // $this->__data['organization_types'] = OrganizationType::whereIn('created_by', [1])->where('auth_code', Auth::user()->auth_code)->where('status', 1)->get();
+        $this->__data['organization_types'] = OrganizationType::where(function($query) {
+                                                $query->whereIn('created_by', [1])
+                                                    ->orWhere('auth_code', Auth::user()->auth_code);
+                                            })
+                                            ->where('status', 1)
+                                            ->get();
+        $this->__data['organization_events'] = Event::where(function($query) {
+                                                    $query->whereIn('created_by', [1])
+                                                            ->orWhere('auth_code', Auth::user()->auth_code);
+                                                })
+                                                ->where('status', 1)
+                                                ->get();
         $this->__data['organization_history_events'] = EventHistoryType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+
+         
     }
 
     /**
@@ -144,7 +157,7 @@ class OrganizationController extends CRUDCrontroller
      */
     public function beforeStoreLoadModel()
     {
-
+        $this->__success_store_message = 'Account created successfully';
     }
 
     /**
@@ -165,6 +178,7 @@ class OrganizationController extends CRUDCrontroller
      */
     public function beforeUpdateLoadModel()
     {
+        $this->__success_update_message = 'Acount updated successfully';
 
     }
 
@@ -188,7 +202,7 @@ class OrganizationController extends CRUDCrontroller
             'createdBy',
             'updatedBy',
             'contract.client',
-            'estimate.estimateinvoices', // 👈 use your new relation name
+            'estimate.estimateinvoices',
         ])
         ->where('slug', $slug)
         ->firstOrFail();

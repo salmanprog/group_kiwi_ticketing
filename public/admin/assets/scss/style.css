@@ -3569,7 +3569,7 @@ a.ui-button:active {
 .modal-header .modal-title {
   text-align: left;
   text-transform: capitalize;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .modal-content {
@@ -7437,18 +7437,19 @@ a.btn.btn-xs.btn-info:hover {
   text-align: left;
   padding: 10px 16px;
   font-size: 12px;
-  color: #ef4444;
+  color: #ef4444 !important;
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: transparent;
+  background-color: #fef2f2 !important;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
 }
 
 .cust-btn-delete:hover {
-  background-color: #fef2f2;
+  background-color: #fef2f2 !important;
+  color: #ef4444 !important;
 }
 
 .f-line {
@@ -7477,6 +7478,25 @@ a.btn.btn-xs.btn-info:hover {
   background-color: #dbeafe;
 }
 
+.foest-edit {
+  background: unset !important;
+  border: unset !important;
+  padding: 0px !important;
+}
+
+.foest-edit:hover {
+  border-color: #9FC23F !important;
+}
+
+.for-d-g {
+  gap: 8px;
+}
+
+.close {
+  line-height: 0 !important;
+  padding: 0px !important;
+  padding-right: 15px !important;
+}
 
 @media (max-width: 991px) {
   .cust-p {

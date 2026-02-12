@@ -131,12 +131,12 @@ class EstimateController extends CRUDCrontroller
         $this->__data['contract_slug'] = (isset($this->__request->contract)) ? decrypt($this->__request->contract) : '';
         $this->__data['client_id'] = (isset($this->__request->contract)) ? Contract::where('slug', decrypt($this->__request->contract))->value('client_id') : '';
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $this->__data['clients'] = Client::where('organization_users.company_id', $company->id)
+        $this->__data['clients'] = Client::where('organization_users.auth_code', Auth::user()->auth_code)
             ->select('organization_users.*', 'organizations.name as organization_name')
             ->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')
             ->where('organizations.status', '1')->where('organizations.deleted_at', null)
             ->get();
-        $this->__data['products'] = Product::where('company_id', $company->id)->get();
+        $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
     }
 
     /**
@@ -155,10 +155,10 @@ class EstimateController extends CRUDCrontroller
     public function beforeRenderEditView($slug)
     {
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $estimate = Estimate::where('slug', $slug)->first();
-        
-        $this->__data['clients'] = Client::where('company_id', $company->id)->get();
-        $this->__data['products'] = Product::where('company_id', $company->id)->get();
+        $estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('slug', $slug)->first();
+        $this->__data['estimate'] = $estimate;
+        $this->__data['clients'] = Client::where('auth_code',  Auth::user()->auth_code)->get();
+        $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
         $this->__data['installments'] = EstimateInstallment::where('estimate_id', $estimate->id)->get();
         $this->__data['default_terms_and_condition'] = \App\Models\TermsAndCondition::where('company_id', $company->id)->first();
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
@@ -170,7 +170,7 @@ class EstimateController extends CRUDCrontroller
     }
 
     /**
-     * This function is called before a model load
+     * This function is called before a model loads
      */
     public function beforeUpdateLoadModel()
     {
@@ -192,7 +192,7 @@ class EstimateController extends CRUDCrontroller
     public function show($slug)
     {
         $record = Estimate::with([
-            'items',
+            'items.itemTaxes',
             'taxes',
             'discounts',
             'company',
@@ -207,6 +207,7 @@ class EstimateController extends CRUDCrontroller
         ])
             ->where('slug', $slug)
             ->first();
+        
         $this->__data['estimate'] = $record;
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
             ->join('users', 'users.id', '=', 'user_activity_logs.user_id')
@@ -305,18 +306,34 @@ class EstimateController extends CRUDCrontroller
 
     public function acceptEstimate(Request $request)
     {
-        return DB::transaction(function () use ($request) {
-            $estimate = Estimate::where('slug', $request->slug)->firstOrFail();
+       
+        //return DB::transaction(function () use ($request) {
+            $estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('slug', $request->slug)->firstOrFail();
             $oldEstimateData = $estimate->toArray();
+            $subtotal = $estimate->items->sum(fn($item) => $item->total_price);
 
-            $estimate->update(['status' => 'approved']);
+            $taxTotal = $estimate->items->sum(fn($item) => 
+                $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
+            );
 
+            $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->value);
+            $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
+            $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
+
+            // echo "Subtotal: $subtotal\n";
+            // echo "Tax: $taxTotal\n";
+            // echo "Discount: $discountAmount\n";
+            // echo "Total: $total\n";
+               
+            $estimate->update(['subtotal' => $subtotal,'total' => $total,'discount_total' => $discountAmount,'tax_total' => $taxTotal,'status' => 'approved']);
+               
             $contract = Contract::find($estimate->contract_id);
 
             if (!$contract) {
                 $contractSlug = Contract::generateUniqueSlug();
                 $contract = new Contract([
                     'slug' => $contractSlug,
+                    'auth_code' => Auth::user()->auth_code,
                     'contract_number' => $contractSlug,
                     'client_id' => $estimate->client_id,
                     'company_id' => $estimate->company_id,
@@ -336,16 +353,16 @@ class EstimateController extends CRUDCrontroller
             $contract->save();
 
             $estimate->update(['contract_id' => $contract->id]);
-
+  
             $invoice = Invoice::generateInvoice($request, $estimate, $contract); 
-
+                
             $this->logActivity('estimate', $estimate->id, 'Estimate Approved', $oldEstimateData, $estimate->toArray());
             $this->logActivity('contract', $contract->id, 'Contract Updated/Created', [], $contract->toArray());
 
             return redirect()
                 ->route('invoice.show', ['invoice' => $invoice->slug])
                 ->with('success', 'Invoice Created & Contract Updated.');
-        });
+        //});
     }
 
     protected function logActivity($module, $id, $desc, $old, $new)
@@ -381,4 +398,84 @@ class EstimateController extends CRUDCrontroller
             ->back()
             ->with('success', 'The estimate has been rejected');
     }
+
+    public function saveNote(Request $request)
+    {
+        $request->validate([
+            'estimate_id' => 'required',
+            'note' => 'nullable|string',
+        ]);
+        
+        if($request->note != ""){
+        Estimate::where('id', $request->estimate_id)
+            ->update(['note' => $request->note]);
+        }
+
+        if($request->terms_and_condition != ""){
+        Estimate::where('id', $request->estimate_id)
+            ->update(['terms' => $request->terms_and_condition]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Note saved successfully'
+        ]);
+    }
+
+
+    public function sendToClient(Request $request)
+    {
+        $request->validate([
+            'estimate_id' => 'required',
+            'slug' => 'required|string',
+        ]);
+        
+         $status = ($request->status == 'draft') ? "draft" : 'revised';
+
+        $estimate = Estimate::where('slug', $request->slug)->first();
+                    $estimate->issue_date = $request->issue_date;
+                    $estimate->valid_until = $request->valid_until;
+                    $estimate->is_installment = $request->is_installment;
+                    $estimate->is_adjusted = $request->status;
+                    //$estimate->status = 'sent';
+                    $estimate->is_adjusted = 1;
+                    $estimate->save();
+
+        
+        if(Auth::user()->user_type != 'client') {
+            if(!empty($request->mail_send) && $request->mail_send == '1') {
+                
+                    $getEstimate = Estimate::where('slug', $request->slug)->first();
+                    $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('auth_code', Auth::user()->auth_code)->first();
+                    $user = User::where('email', $getClientEmail->email)->first();
+                    $getCompany = CompanyUser::getCompany(Auth::user()->id);
+                    if ($user) {
+                        $mail_params['company_name'] = $getCompany->name;
+                        $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
+                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email)]) : env('CLIENT_URL');
+                        $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
+                        $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
+                       
+                        $check_mail = sendMail(
+                            $user->email,
+                            'estimate',
+                            'New Estimate',
+                            $mail_params
+                        );
+                        
+                    }
+                    // dd($mail_params['link']);
+
+                    Estimate::where('slug', $request->slug)->update([
+                        'status' => 'sent'
+                    ]);
+            }   
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Estimate send successfully'
+        ]);
+    }
+
 }

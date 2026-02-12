@@ -2,29 +2,61 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserEstimateItemTax extends Model
 {
-    use HasFactory;
-
-    // Explicitly define the table name if it doesn't follow Laravel's pluralization
+    use CRUDGenerator;
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'user_estimate_item_taxes';
 
-    // Mass assignable attributes
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'estimate_tax_id',
         'user_estimate_item_id',
         'name',
         'percentage',
+        'created_at',
+        'updated_at',
     ];
 
     /**
-     * Get the item that owns the tax.
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
      */
-    public function estimateItem()
-    {
-        return $this->belongsTo(UserEstimateItem::class, 'user_estimate_item_id');
-    }
+    protected $hidden = [];
+
+    /**
+     * It is used to enable or disable DB cache record
+     * @var bool
+     */
+    protected $__is_cache_record = false;
+
+    /**
+     * @var
+     */
+    protected $__cache_signature;
+
+    /**
+     * @var string
+     */
+    protected $__cache_expire_time = 1; //days
+
 }

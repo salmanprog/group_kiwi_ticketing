@@ -2,7 +2,7 @@
 @section('content')
     <section class="main-content">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 @include('portal.flash-message')
                 <div class="card">
                     <div class="card-header custfor-flex-header">
@@ -46,11 +46,16 @@
                                             </label>
                                             <select name="salutation" class="form-control" required>
                                                 <option value="">-- Select Salutation --</option>
-                                                <option value="Mr"  {{ old('salutation') == 'Mr' ? 'selected' : '' }}>Mr</option>
-                                                <option value="Mrs" {{ old('salutation') == 'Mrs' ? 'selected' : '' }}>Mrs</option>
-                                                <option value="Ms"  {{ old('salutation') == 'Ms' ? 'selected' : '' }}>Ms</option>
-                                                <option value="Dr"  {{ old('salutation') == 'Dr' ? 'selected' : '' }}>Dr</option>
-                                                <option value="Prof"{{ old('salutation') == 'Prof' ? 'selected' : '' }}>Prof</option>
+                                                <option value="Mr" {{ old('salutation') == 'Mr' ? 'selected' : '' }}>Mr
+                                                </option>
+                                                <option value="Mrs" {{ old('salutation') == 'Mrs' ? 'selected' : '' }}>
+                                                    Mrs</option>
+                                                <option value="Ms" {{ old('salutation') == 'Ms' ? 'selected' : '' }}>Ms
+                                                </option>
+                                                <option value="Dr" {{ old('salutation') == 'Dr' ? 'selected' : '' }}>Dr
+                                                </option>
+                                                <option value="Prof"{{ old('salutation') == 'Prof' ? 'selected' : '' }}>
+                                                    Prof</option>
                                             </select>
                                         </div>
                                     </div>
@@ -61,10 +66,8 @@
                                                 Account
                                                 <span class="required">*</span>
                                             </label>
-                                            <select name="organization_id"
-                                                    id="organization_id"
-                                                    class="form-control select2"
-                                                    required>
+                                            <select name="organization_id" id="organization_id" class="form-control select2"
+                                                required>
                                                 <option value="">-- Select Account --</option>
                                                 @foreach ($organizations as $organization)
                                                     <option value="{{ $organization->id }}">
@@ -75,228 +78,233 @@
                                         </div>
                                     </div>
                                     <!-- Basic Information -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Account Information</h5>
-                                            <span class="section-badge">Required</span>
+
+
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Account Information</h5>
+                                    <span class="section-badge">Required</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Account Name <span class="required">*</span></label>
+                                            <input required type="text" name="name" class="form-control"
+                                                value="{{ old('name') }}" readonly>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Account Name <span class="required">*</span></label>
-                                                    <input required type="text" name="name" class="form-control"
-                                                        value="{{ old('name') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Contact <span class="required">*</span></label>
-                                                    <input required type="text" name="contact" class="form-control"
-                                                        value="{{ old('contact') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Department</label>
-                                                    <input type="text" name="department" class="form-control"
-                                                        value="{{ old('department') }}" readonly>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Contact <span class="required">*</span></label>
+                                            <input required type="text" name="contact" class="form-control"
+                                                value="{{ old('contact') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Department</label>
+                                            <input type="text" name="department" class="form-control"
+                                                value="{{ old('department') }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Details -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Address Details</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address</label>
+                                            <input required type="text" name="address_one" class="form-control"
+                                                value="{{ old('address_one') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Address 2</label>
+                                            <input type="text" name="address_two" class="form-control"
+                                                value="{{ old('address_two') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">City</label>
+                                            <input required type="text" name="city" class="form-control"
+                                                value="{{ old('city') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">State</label>
+                                            <input required type="text" name="state" class="form-control"
+                                                value="{{ old('state') }}" readonly>
                                         </div>
                                     </div>
 
-                                    <!-- Address Details -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Address Details</h5>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Zip</label>
+                                            <input required type="text" name="zip" class="form-control"
+                                                value="{{ old('zip') }}" readonly>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">City</label>
-                                                    <input required type="text" name="city" class="form-control"
-                                                        value="{{ old('city') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">State</label>
-                                                    <input required type="text" name="state" class="form-control"
-                                                        value="{{ old('state') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Country</label>
-                                                    <input required type="text" name="country" class="form-control"
-                                                        value="{{ old('country') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Zip</label>
-                                                    <input required type="text" name="zip" class="form-control"
-                                                        value="{{ old('zip') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Address Line 1</label>
-                                                    <input required type="text" name="address_one" class="form-control"
-                                                        value="{{ old('address_one') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Address Line 2</label>
-                                                    <input type="text" name="address_two" class="form-control"
-                                                        value="{{ old('address_two') }}" readonly>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Country</label>
+                                            <input required type="text" name="country" class="form-control"
+                                                value="{{ old('country') }}" readonly>
                                         </div>
                                     </div>
 
-                                    <!-- Contact Information -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Contact Information</h5>
-                                        </div>
-                                        <div class="row">
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        {{-- <i class="fas fa-user"></i> --}}
-                                                        First Name
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="first_name" value="{{ old('first_name') }}"
-                                                        class="form-control" placeholder="Enter first name">
-                                                </div>
-                                            </div>
+                                </div>
+                            </div>
 
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        {{-- <i class="fas fa-user"></i> --}}
-                                                        Last Name
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="last_name" value="{{ old('last_name') }}"
-                                                        class="form-control" placeholder="Enter last name">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Email</label>
-                                                    <input required type="email" name="email" class="form-control"
-                                                        value="{{ old('email') }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Phone</label>
-                                                    <input required type="text" name="mobile_no" class="form-control phone_us"
-                                                        value="{{ old('mobile_no') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Fax</label>
-                                                    <input type="text" name="fax" class="form-control"
-                                                        value="{{ old('fax') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Rep</label>
-                                                    <input type="text" name="rep" class="form-control"
-                                                        value="{{ old('rep') }}" readonly>
-                                                </div>
-                                            </div>
+                            <!-- Contact Information -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Contact Information</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-user"></i> --}}
+                                                First Name
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="first_name"
+                                                value="{{ old('first_name') }}" class="form-control"
+                                                placeholder="Enter first name">
                                         </div>
                                     </div>
 
-                                    <!-- Contract Detail -->
-                                    <div class="form-section">
-                                        <div class="section-header">
-                                            <h5>Contract Detail</h5>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                {{-- <i class="fas fa-user"></i> --}}
+                                                Last Name
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="last_name"
+                                                value="{{ old('last_name') }}" class="form-control"
+                                                placeholder="Enter last name">
                                         </div>
-                                        <div class="row">
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        Ticket Rate
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="ticket_rate" value="{{ old('ticket_rate') }}"
-                                                        class="form-control" placeholder="Enter ticket rate">
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <input required type="email" name="email" class="form-control"
+                                                value="{{ old('email') }}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Phone <span class="required">*</span></label>
+                                            <input required type="text" name="mobile_no" class="form-control phone_us"
+                                                value="{{ old('mobile_no') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Fax</label>
+                                            <input type="text" name="fax" class="form-control"
+                                                value="{{ old('fax') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Rep</label>
+                                            <input type="text" name="rep" class="form-control"
+                                                value="{{ old('rep') }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        Catering Menu
-                                                        <span class="required">*</span>
-                                                    </label>
-                                                    <input required type="text" name="catering_menu" value="{{ old('catering_menu') }}"
-                                                        class="form-control" placeholder="Enter catering menu">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Catering Price</label>
-                                                    <input required type="text" name="catering_price" class="form-control"
-                                                        value="{{ old('catering_price') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Deposite Amount</label>
-                                                    <input required type="text" name="deposite_amount" class="form-control"
-                                                        value="{{ old('deposite_amount') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Hours</label>
-                                                    <input required type="text" name="hours" class="form-control"
-                                                        value="{{ old('hours') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label">Alt Contacts</label>
-                                                    <input required type="text" name="alt_contact" class="form-control"
-                                                        value="{{ old('alt_contact') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="form-label">Notes/History</label>
-                                                    <input type="text" name="note_history" class="form-control"
-                                                        value="{{ old('note_history') }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label>Status</label>
-                                                    <select name="contract_status" class="form-control">
-                                                        <option value="">Select Status</option>
-                                                        <option value="called">Called</option>
-                                                        <option value="dead">Dead</option>
-                                                        <option value="lead">Lead</option>
-                                                        <option value="pending">Pending</option>
-                                                        <option value="tentative_date">Tentative Date</option>
-                                                        <option value="loa_send_close">LOA Sent (Closed)</option>
-                                                        <option value="loa_received">LOA Received</option>
-                                                        <option value="gate_group">Gate Group</option>
-                                                    </select>
-                                                </div>
-                                            </div>
+                            <!-- Contract Detail -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h5>Contract Detail</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Ticket Rate
+                                            </label>
+                                            <input type="text" name="ticket_rate" value="{{ old('ticket_rate') }}"
+                                                class="form-control" placeholder="Enter ticket rate">
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Catering Menu
+
+                                            </label>
+                                            <input type="text" name="catering_menu"
+                                                value="{{ old('catering_menu') }}" class="form-control"
+                                                placeholder="Enter catering menu">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Catering Price</label>
+                                            <input type="text" name="catering_price" class="form-control"
+                                                value="{{ old('catering_price') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Deposite Amount</label>
+                                            <input type="text" name="deposite_amount" class="form-control"
+                                                value="{{ old('deposite_amount') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Hours</label>
+                                            <input type="text" name="hours" class="form-control"
+                                                value="{{ old('hours') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Alt Contacts</label>
+                                            <input type="text" name="alt_contact" class="form-control"
+                                                value="{{ old('alt_contact') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Notes/History</label>
+                                            <input type="text" name="note_history" class="form-control"
+                                                value="{{ old('note_history') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select name="contract_status" class="form-control">
+                                                <option value="">Select Status</option>
+                                                <option value="called">Called</option>
+                                                <option value="dead">Dead</option>
+                                                <option value="lead">Lead</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="tentative_date">Tentative Date</option>
+                                                <option value="loa_send_close">LOA Sent (Closed)</option>
+                                                <option value="loa_received">LOA Received</option>
+                                                <option value="gate_group">Gate Group</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -609,58 +617,68 @@
         }
     </style>
 @endsection
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
 @push('scripts')
-<script>
-$(document).ready(function () {
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
 
-    $('#organization_id').on('change', function () {
-        let organizationId = $(this).val();
+            $('#organization_id').on('change', function() {
+                let organizationId = $(this).val();
 
-        if (!organizationId) {
-            // clear fields if no selection
-            $('input[type=text]').val('');
-            return;
-        }
-
-        $.ajax({
-            url: "{{ route('organization.fetch', ':id') }}".replace(':id', organizationId),
-            type: "GET",
-            success: function (res) {
-                if (res.status) {
-                    let org = res.data;
-
-                    // Account Information
-                    $('input[name="name"]').val(org.name);
-                    $('input[name="contact"]').val(org.contact);
-                    $('input[name="department"]').val(org.department);
-
-                    // Address
-                    $('input[name="city"]').val(org.city);
-                    $('input[name="state"]').val(org.state);
-                    $('input[name="country"]').val(org.country);
-                    $('input[name="zip"]').val(org.zip);
-                    $('input[name="address_one"]').val(org.address_one);
-                    $('input[name="address_two"]').val(org.address_two);
-
-                    $('input[name="first_name"]').val(org.first_name);
-                    $('input[name="last_name"]').val(org.last_name);
-                    $('input[name="email"]').val(org.email);
-                    $('input[name="mobile_no"]').val(org.mobile_no);
-                    $('input[name="fax"]').val(org.fax);
-                    $('input[name="rep"]').val(org.rep);
+                if (!organizationId) {
+                    // clear fields if no selection
+                    $('input[type=text]').val('');
+                    return;
                 }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-            }
-        });
-    });
 
-});
-(function( $ ) {
+                $.ajax({
+                    url: "{{ route('organization.fetch', ':id') }}".replace(':id', organizationId),
+                    type: "GET",
+                    success: function(res) {
+                        if (res.status) {
+                            let org = res.data;
+
+                            // Account Information
+                            $('input[name="name"]').val(org.name);
+                            $('input[name="contact"]').val(org.contact);
+                            $('input[name="department"]').val(org.department);
+
+                            // Address
+                            $('input[name="city"]').val(org.city);
+                            $('input[name="state"]').val(org.state);
+                            $('input[name="country"]').val(org.country);
+                            $('input[name="zip"]').val(org.zip);
+                            $('input[name="address_one"]').val(org.address_one);
+                            $('input[name="address_two"]').val(org.address_two);
+
+                            $('input[name="first_name"]').val(org.first_name);
+                            $('input[name="last_name"]').val(org.last_name);
+                            $('input[name="email"]').val(org.email);
+                            $('input[name="mobile_no"]').val(org.mobile_no);
+                            $('input[name="fax"]').val(org.fax);
+                            $('input[name="rep"]').val(org.rep);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+
+        });
+        (function($) {
             $(function() {
                 $('.phone_us').mask('(000) 000-0000');
             });
+            $('#organization_id').select2({
+                placeholder: "-- Select Account --",
+                allowClear: true,
+                width: '100%' // makes it full width
+            });
         })(jQuery);
-</script>
+    </script>
 @endpush

@@ -70,7 +70,7 @@ class ResetPasswordController extends Controller
         $checkRequest = User::getClientVerfiy($email);
         if( !isset($checkRequest->id) ){
             // $url = route('admin.login') . '?auth_token=zekkmdvhkm';
-            $url = route('admin.login');
+            $url = route('client.login');
             return redirect($url)->with('error','Invalid request');
         }
 
@@ -100,7 +100,7 @@ class ResetPasswordController extends Controller
             
         }
         // $url = route('admin.login') . '?auth_token=zekkmdvhkm';
-        $url = route('admin.login');
+        $url = route('client.login');
         return redirect($url)->with('success','Password has been updated successfully');
     }
 }

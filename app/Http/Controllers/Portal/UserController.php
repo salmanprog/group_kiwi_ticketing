@@ -114,4 +114,17 @@ class UserController extends CRUDCrontroller
     {
 
     }
+
+    public function noPermission(Request $request)
+    {
+        // Optional: you can get the flash message if set
+        $errorMessage = session('error') ?? 'You don’t have the right permission to access this page.';
+
+        return view('portal.users.nopermission', compact('errorMessage'));
+    }
+
+     public function checkPermission(Request $request)
+    {
+        return view('permissioncheck');
+    }
 }

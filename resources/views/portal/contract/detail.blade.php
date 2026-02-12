@@ -1,6 +1,10 @@
 @extends('portal.master')
 
 @section('content')
+    @push('stylesheets')
+        <link href="{{ asset('admin/assets/scss/invoice-tables.css') }}" rel="stylesheet" type="text/css">
+    @endpush
+
     <style>
         :root {
             --primary-color: #A0C242;
@@ -129,13 +133,10 @@
         }
 
         .card-header {
-            background: #F8F9FA;
-            border-bottom: 1px solid var(--primary-color);
-            color: var(--secondary-color);
-            font-weight: 600;
-            padding: 12px 15px;
-            border-radius: 0 !important;
-            font-size: 15px;
+            background: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            padding: 20px 30px !important;
+            color: #1f2937 !important;
         }
 
         /* Table Responsiveness */
@@ -205,7 +206,7 @@
             font-weight: 600;
             padding: 10px 15px;
             transition: all 0.3s ease;
-            border: none;
+            border-radius: 8px;
             font-size: 14px;
             width: 100%;
             margin-bottom: 8px;
@@ -215,9 +216,18 @@
         }
 
         .btn-primary {
-            background: var(--primary-color) !important;
-            border: 1px solid var(--primary-color) !important;
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px !important;
+            padding: 10px 20px !important;
             color: white;
+            text-decoration: none;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary:hover {
@@ -590,7 +600,7 @@
         <div class="container">
             <div class="contract-wrapper">
 
-                <!-- Contract Header -->
+                <!-- Contract s -->
                 <div class="contract-header">
                     <div class="contract-title">
                         <i class="fas fa-file-contract me-2"></i>Contract
@@ -654,7 +664,7 @@
                 <!-- Parties Section -->
                 <div class="address-section">
                     <div class="address-box">
-                        <h4><i class="fas fa-building me-2"></i>Company</h4>
+                        <h4><i class="fas fa-building me-2"></i>From</h4>
                         <p>
                             <strong>{{ $record->company->name }}</strong><br>
                             {{ $record->company->address }}<br>
@@ -663,17 +673,17 @@
                         </p>
                     </div>
 
-                    <div class="address-box">
-                        <h4><i class="fas fa-users me-2"></i>Organization</h4>
-                        <p>
-                            <strong>{{ optional($record->organization)->name ?? '-' }}</strong><br>
-                            <i class="fas fa-envelope me-1"></i> {{ optional($record->organization)->email ?? '-' }}<br>
-                            <i class="fas fa-phone me-1"></i> {{ optional($record->organization)->mobile_no ?? '-' }}
-                        </p>
-                    </div>
+                        <!-- <div class="address-box">
+                            <h4><i class="fas fa-users me-2"></i>Organization</h4>
+                            <p>
+                                <strong>{{ $record->organization->id ?? '-' }}</strong><br>
+                                <i class="fas fa-envelope me-1"></i> {{ optional($record->organization)->email ?? '-' }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ optional($record->organization)->mobile_no ?? '-' }}
+                            </p>
+                        </div> -->
 
                     <div class="address-box">
-                        <h4><i class="fas fa-user me-2"></i>Client</h4>
+                        <h4><i class="fas fa-user me-2"></i>Invioce To</h4>
                         <p>
                             <strong>{{ $record->client->name }}</strong><br>
                             <i class="fas fa-envelope me-1"></i> {{ $record->client->email ?? '-' }}<br>
@@ -685,7 +695,8 @@
                 <!-- Linked Estimates -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-file-invoice-dollar me-2"></i>Estimates Linked to this Contract
+                        {{-- <i class="fas fa-file-invoice-dollar me-2"></i> --}}
+                        Estimates Linked to this Contract
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -704,8 +715,8 @@
                                             <tr>
                                                 <td>
                                                     <a href="{{ route('estimate.show', $estimate->slug) }}"
-                                                        class="text-decoration-none theme-text fw-bold">
-                                                        <i class="fas fa-external-link-alt me-1"></i>
+                                                        class="btn btn-xs btn-info">
+                                                        <i class="fas fa-external-link-alt me-1 ss"></i>
                                                         {{ strtoupper($estimate->slug) }}
                                                     </a>
                                                 </td>
@@ -716,10 +727,19 @@
                                                         {{ strtoupper($estimate->status) }}
                                                     </span>
                                                     @if ($estimate->is_adjusted)
-                                                        <small class="text-muted"><em>(Adjusted)</em></small>
+                                                        <small class="text-muted"><em>(Adjusted)s</em></small>
                                                     @endif
                                                 </td>
-                                                <td class="fw-semibold">${{ number_format($estimate->total, 2) }}</td>
+                                                @php
+                                                    $subtotal = $estimate->items->sum('total_price') ?: (float) ($estimate->total ?? 0);
+                                                    $taxPercent = $record->taxes->sum('percent');
+                                                    $taxAmount = $subtotal * ($taxPercent / 100);
+                                                    $total = $subtotal + $taxAmount;
+                                                @endphp
+
+                                                <td class="fw-semibold">
+                                                    ${{ number_format($estimate->total, 2) }}
+                                                </td>
                                             </tr>
                                         @endforeach
                                     @else
@@ -733,6 +753,17 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        @if (Auth::user()->user_type == 'company')
+                           <!-- <div class="mt-3 text-end">
+                                <button type="button" 
+                                        class="btn btn-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modifyContractModal">
+                                    <i class="fas fa-plus me-1"></i>Modify Contract
+                                </button>
+                            </div> -->
+                        @endif
                     </div>
                 </div>
 
@@ -786,19 +817,16 @@
                     <!-- Linked Estimates -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-file-invoice-dollar me-2"></i>Contract Items
+                        {{-- <i class="fas fa-file-invoice-dollar me-2"></i> --}}
+                        Contract Products
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <!-- <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th>Item Name</th>
-                                        <th>Unit</th>
                                         <th>Price</th>
-                                        <th>Tax</th>
-                                        <th>Gratuity</th>
-                                        <th>Price (tax + gratuity)</th>
                                         <th>Quantity</th>
                                         <th>Total Price</th>
                                         <th>Accepted By client</th>
@@ -809,13 +837,9 @@
                                         @foreach ($record->items as $item)
                                             <tr>
                                                 <td>{{ $item->name }}  @if($item->is_modified == 1) <span class="badge bg-warning">M</span> @endif</td>
-                                                <td>{{ $item->unit }}</td>
-                                                <td>{{ $item->price }}</td>
-                                                <td>{{ $item->taxes }}</td>
-                                                <td>{{ $item->gratuity }}</td>
-                                                <td>{{ $item->price + $item->taxes + $item->gratuity }}</td>
-                                                <td>{{ $item->quantity }}</td>
-                                                <td>{{ $item->total_price }}</td>
+                                                <td class="fw-semibold">${{ number_format((float)($item->price ?? 0), 2) }}</td>
+                                                <td>{{ $item->quantity ?? 0 }}</td>
+                                                <td class="fw-semibold">${{ number_format((float)($item->total_price ?? 0), 2) }}</td>
                                                 <td>
                                                     @if ($item->is_accepted_by_client == 1)
                                                         <span class="badge bg-success">Yes</span>
@@ -827,14 +851,116 @@
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="6" class="text-center text-muted py-4">
+                                            <td colspan="9" class="text-center text-muted py-4">
                                                 <i class="fas fa-inbox fa-2x mb-2"></i><br>
                                                 <em>No products found.</em>
                                             </td>
                                         </tr>
                                     @endif
                                 </tbody>
-                            </table>
+                            </table> -->
+                                <table class="table product-table" id="productTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Quantity</th>
+                                            <th>Product Price</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $subtotal = 0;
+                                            $taxTotal = 0;
+                                            $discountTotal = 0;
+                                        @endphp
+
+                                        @if($estimate && $estimate->items->count())
+                                            @foreach($estimate->items as $item)
+                                                @php
+                                                    $subtotal += $item->total_price;
+
+                                                    // Sum per-item taxes and round each
+                                                    foreach($item->itemTaxes as $tax) {
+                                                        $taxTotal += round($item->total_price * ($tax->percentage / 100), 2);
+                                                    }
+                                                @endphp
+                                                <tr data-id="{{ $item->id }}">
+                                                    <td>
+                                                        {{ $item->name }}
+                                                        @if($item->itemTaxes && $item->itemTaxes->count())
+                                                            <small class="text-muted d-block" data-taxes='[
+                                                                @foreach($item->itemTaxes as $tax)
+                                                                    {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if(!$loop->last),@endif
+                                                                @endforeach
+                                                            ]'>
+                                                                Apply Taxes:
+                                                                @foreach($item->itemTaxes as $tax)
+                                                                    {{ $tax->name }}@if(!$loop->last), @endif
+                                                                @endforeach
+                                                            </small>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
+                                                    <td>${{ number_format($item->price, 2) }}</td>
+                                                    <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr class="no-items">
+                                                <td colspan="5" class="text-center">No products added yet.</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3" class="">Subtotal:</th>
+                                            <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
+                                        </tr>
+
+                                        @if($estimate && $estimate->taxes->count())
+                                            <tr>
+                                                <th colspan="3" class="">Tax:
+                                                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                                        @foreach($estimate->taxes as $tax)
+                                                            <div class="border rounded px-2 py-1 d-flex align-items-center gap-1" data-tax-id="{{ $tax->id }}">
+                                                                <small class="fw-semibold">
+                                                                    {{ $tax->name }} ({{ $tax->percent }}%)
+                                                                </small>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </th>
+                                                <th id="tax_amount">${{ number_format($taxTotal, 2) }}</th>
+                                            </tr>
+                                        @endif
+
+                                        @if($estimate && $estimate->discounts->count())
+                                            <tr class="fw-bold discount-row">
+                                                @foreach($estimate->discounts as $discount)
+                                                    @php
+                                                        $discountTotal += round($subtotal * ($discount->value / 100), 2);
+                                                    @endphp
+                                                    <th colspan="3" class="">
+                                                        Discount {{ $discount->name }}
+                                                    </th>
+                                                    <th class="discount_percent">
+                                                        {{ $discount->value }} %
+                                                    </th>
+                                                @endforeach
+                                            </tr>
+                                        @endif
+
+                                        <tr class="fw-bold">
+                                            <th colspan="3" class="">Total:</th>
+                                            @php
+                                                $total = $subtotal + $taxTotal - $discountTotal;
+                                            @endphp
+                                            <th id="total">${{ number_format($total, 2) }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
                         </div>
                     </div>
                 </div>
@@ -842,7 +968,8 @@
                 <!-- Invoices Section -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-receipt me-2"></i>Invoices Generated
+                        {{-- <i class="fas fa-receipt me-2"></i> --}}
+                        Invoices Generated
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -864,7 +991,7 @@
                                         <tr>
                                             <td>
                                                 <a href="{{ route('invoice.show', $invoice->slug) }}"
-                                                    class="fw-bold text-decoration-none theme-text">
+                                                    class="btn btn-xs btn-info">
                                                     <i class="fas fa-external-link-alt me-1"></i>
                                                     {{ strtoupper($invoice->slug) }}
                                                 </a>
@@ -969,6 +1096,7 @@
                                                                         <th>Amount</th>
                                                                         <th>Status</th>
                                                                         <th>Paid On</th>
+                                                                        <th>Paid type</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -1118,26 +1246,11 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Terms & Notes -->
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fas fa-clipboard-list me-2"></i>Terms & Notes
-                        </div>
-                        <div class="card-body">
-                            <h5 class="fw-bold theme-text mb-3">Terms</h5>
-                            <p class="mb-4">{!! $record->terms_and_condition ?: 'No terms specified.' !!}</p>
-
-                            <h5 class="fw-bold theme-text mb-3">Notes</h5>
-                            <p>{!! $record->notes ?: 'No notes available.' !!}</p>
-                        </div>
-                    </div>
-
-                    @if(Auth::user()->user_type != 'client')
-                  <div class="activity-section shadow-sm rounded bg-white p-4">
+                                        @if(Auth::user()->user_type != 'client')
+                  <div class="activity-section shadow-sm rounded bg-white p-4 rnt-pd">
     <div class="section-header d-flex align-items-center mb-3">
-        <i class="fas fa-history me-2 text-primary"></i>
-        <h5 class="mb-0">Recent Activity</h5>
+        {{-- <i class="fas fa-history me-2 text-primary"></i> --}}
+        <h5 class="mb-0 act-txt">Recent Activity</h5>
     </div>
 
     <div class="table-responsive">
@@ -1174,32 +1287,70 @@
     </div>
 
                     @endif
+                    <!-- Terms & Notes -->
+                      @if ($estimate->note)
+                        <div class="notes-section note-box">
+                            <h5 class="note-title">
+                                <i class="fas fa-file-contract me-2"></i>
+                                Note
+                            </h5>
+                            <div class="note-content">
+                                {!! $estimate->note !!}
+                            </div>
+                        </div>
+                    @endif
+                    {{-- Notes and Terms --}}
+                    @if ($estimate->terms)
+                        <div class="notes-section">
+                            @if ($estimate->terms)
+                                <h5><i class="fas fa-sticky-note me-2"></i>Terms And Condtion</h5>
+                                <p>{!! $estimate->terms !!}</p>
+                            @endif
+                        </div>
+                    @endif
+
+                    <!-- <div class="card">
+                        <div class="card-header">
+                            {{-- <i class="fas fa-clipboard-list me-2"></i> --}}
+                            Terms & Notes
+                        </div>
+                        <div class="card-body">
+                            <h5 class="fw-bold theme-text mb-3">Terms</h5>
+                            <p class="mb-4">{!! $record->terms_and_condition ?: 'No terms specified.' !!}</p>
+
+                            <h5 class="fw-bold theme-text mb-3">Notes</h5>
+                            <p>{!! $record->notes ?: 'No notes available.' !!}</p>
+                        </div>
+                    </div> -->
+
+
 
                     <!-- Company Edit Section -->
                     @if (Auth::user()->user_type == 'company')
-                        <div class="card">
+                        <!-- <div class="card">
                             <div class="card-header">
-                                <i class="fas fa-edit me-2"></i>Edit Contract Details
+                                {{-- <i class="fas fa-edit me-2"></i> --}}
+                                Edit Contract Details
                             </div>
                             <div class="card-body">
                                 <form action="{{ route('contract.update-contract', $record->slug) }}" method="POST">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
-                                            <label class="form-label fw-bold">Event Date</label>
+                                            <label class="form-label">Event Date</label>
                                             <input type="date" class="form-control" value="{{ $record->event_date }}"
                                                 name="event_date" required>
                                         </div>
                                     </div>
 
-                                  <div class="mb-3">
-                                        <label class="form-label fw-bold">Terms</label>
-                                        <textarea name="terms" class="form-control editor" rows="4" placeholder="Enter terms and conditions">{!! $record->terms_and_condition ?? '' !!}</textarea>
+                                    <div class="mb-3">
+                                        <label class="form-label">Terms</label>
+                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold">Notes</label>
-                                        <textarea name="notes" rows="3" class="form-control editor" placeholder="Enter any additional notes...">{!! $record->notes ?? '' !!}</textarea>
+                                        <label class="form-label">Notes</label>
+                                        <textarea name="notes" rows="3" class="form-control" placeholder="Enter any additional notes...">{{ $record->notes }}</textarea>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary">
@@ -1207,7 +1358,7 @@
                                     </button>
                                 </form>
                             </div>
-                        </div>
+                        </div> -->
                     @endif
 
                     <!-- Client Actions -->
