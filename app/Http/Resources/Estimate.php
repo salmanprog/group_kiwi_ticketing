@@ -19,10 +19,6 @@ class Estimate extends JsonResource
             'id'         => $this->id,
             'auth_code'  => $this->auth_code,
             'slug'       => $this->slug,
-            'status'     => $this->status,
-            'client_id'  => $this->client_id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
 
             // Nested Relationships
             'items' => $this->items->map(function($item) {
@@ -30,13 +26,12 @@ class Estimate extends JsonResource
                     'id' => $item->id,
                     'name' => $item->name,
                     'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'total' => $item->total,
+                    'price' => $item->product_price,
+                    'total' => $item->total_price,
                     'taxes' => $item->itemTaxes->map(function($tax) {
                         return [
-                            'id' => $tax->id,
                             'name' => $tax->name,
-                            'rate' => $tax->rate,
+                            'rate' => $tax->percentage,
                         ];
                     }),
                 ];
@@ -46,14 +41,13 @@ class Estimate extends JsonResource
                 return [
                     'id' => $tax->id,
                     'name' => $tax->name,
-                    'rate' => $tax->rate,
+                    'rate' => $tax->percentage,
                 ];
             }),
 
             'discounts' => $this->discounts->map(function($discount){
                 return [
-                    'id' => $discount->id,
-                    'type' => $discount->type,
+                    'name' => $discount->name,
                     'value' => $discount->value,
                 ];
             }),
@@ -62,7 +56,7 @@ class Estimate extends JsonResource
                 return [
                     'id' => $installment->id,
                     'amount' => $installment->amount,
-                    'due_date' => $installment->due_date,
+                    'due_date' => $installment->installment_date,
                 ];
             }),
         ];
