@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\UserCardController;
 use App\Http\Controllers\Api\PayoutController;
 use App\Http\Controllers\Api\UserEstimateController;
 use App\Http\Controllers\Api\UserContractController;
+use App\Http\Controllers\Api\UserInvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,7 @@ Route::middleware([ApiAuthorization::class])->group(function(){
 
         Route::resource('client-estimates',UserEstimateController::class)->except(['create','delete']);
         Route::resource('client-contracts',UserContractController::class)->except(['create','update','delete']);
+        Route::resource('client-invoices',UserInvoiceController::class)->except(['create','update','delete']);
 
         Route::resource('gateway/card',UserCardController::class);
 
