@@ -89,6 +89,11 @@ class Estimate extends Model
     {
         return $this->hasMany(EstimateInstallment::class, 'estimate_id', 'id');
     }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
     /**
      * Generate unique slug
      */

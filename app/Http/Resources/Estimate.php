@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\PublicUser;
 
 class Estimate extends JsonResource
 {
@@ -19,8 +20,16 @@ class Estimate extends JsonResource
             'id'         => $this->id,
             'auth_code'  => $this->auth_code,
             'slug'       => $this->slug,
-
-            // Nested Relationships
+            'issue_date' => $this->issue_date,
+            'valid_until' => $this->valid_until,
+            'event_date'       => $this->event_date,
+            'note'       => $this->note,
+            'terms'       => $this->terms,
+            'status'       => $this->status,
+            'estimate_number'       => $this->estimate_number,
+            'createdBy' => new PublicUser($this->createdBy),
+            'client' => new PublicUser($this->client),
+            'organization' => new PublicUser($this->organization),
             'items' => $this->items->map(function($item) {
                 return [
                     'id' => $item->id,

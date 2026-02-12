@@ -117,7 +117,30 @@ class UserEstimateController extends RestController
      */
     public function beforeUpdateLoadModel($request,$slug)
     {
-        
+       $estimateExists = Estimate::where('slug', $slug)
+                ->where('status', 'approved')
+                ->exists();
+
+            if ($estimateExists) {
+                $this->__is_error = true;
+                return $this->__sendError(
+                    __('app.validation_msg'),
+                    ['message' => __('app.estimate_already_approved')],
+                    400
+                );
+            }
+        $estimateExistss = Estimate::where('slug', $slug)
+                ->where('status', 'rejected')
+                ->exists();
+
+            if ($estimateExistss) {
+                $this->__is_error = true;
+                return $this->__sendError(
+                    __('app.validation_msg'),
+                    ['message' => __('app.estimate_already_rejected')],
+                    400
+                );
+            }
     }
 
     /**
