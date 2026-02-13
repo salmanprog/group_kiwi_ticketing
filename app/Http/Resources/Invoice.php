@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Company;
 
 class Invoice extends JsonResource
 {
@@ -14,6 +15,17 @@ class Invoice extends JsonResource
      */
     public function toArray($request)
     {
+
+
+        $getCompanyAdmin = Company::getCompanyAdmin($this->company_id);
+        $stripeKeyStatus = [
+            'test_publishable_key' => $getCompanyAdmin->test_publishable_key,
+            'test_secret_key' => $getCompanyAdmin->test_secret_key,
+            'live_publishable_key' => $getCompanyAdmin->live_publishable_key,
+            'live_secret_key' => $getCompanyAdmin->live_secret_key,
+            'stripe_key_status' => $getCompanyAdmin->stripe_key_status,
+        ];
+
         $estimate = $this->estimate;
 
         // Prevent errors if estimate not loaded
@@ -69,6 +81,7 @@ class Invoice extends JsonResource
             */
             'company' => $this->whenLoaded('company'),
             'client'  => new PublicUser($this->whenLoaded('client')),
+            'stripe_key_status' => $stripeKeyStatus,
 
             /*
             |--------------------------------------------------------------------------
