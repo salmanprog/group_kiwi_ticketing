@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Libraries\Sms\Sms;
 use App\Models\User;
-use App\Models\{Estimate,Company};
+use App\Models\{Estimate,Company,Invoice,InstallmentPayment,InstallmentPlan};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Validator;
@@ -251,6 +251,92 @@ class StripeController extends RestController
         } catch (\Exception $e) {
             return $this->__sendError('Company Stripe Error.', [$e->getMessage()], 400);
         }
+    }
+
+
+    public function updatePaymentStatus(Request $request)
+    {
+
+        $request     = $this->__request;
+        $param_rule['invoice_id']   = 'required';
+        $param_rule['invoice_type'] = 'required|in:invoice,installment';
+        $param_rule['status'] = 'required|in:paid,failed';
+        $param_rule['transaction_id'] = 'required';
+        
+
+        $response = $this->__validateRequestParams($request->all(),$param_rule);
+        if( $this->__is_error )
+            return $response;
+
+        
+        if($request->status == 'failed') {
+             return response()->json([
+                'code' => 200,
+                'message' => 'Payment failed.'
+            ], 200);
+        }
+
+        if($request->invoice_type == 'invoice') {
+            
+            $invoice = Invoice::where('id', $request->invoice_id)->first();
+            if(!$invoice) {
+                return response()->json([
+                    'code' => 404,
+                    'message' => 'Invoice not found.'
+                ], 404);
+            }
+            $invoice->status = 'paid';
+            $invoice->paid_amount = $invoice->total;
+            $invoice->transaction_id = $request->transaction_id;
+            $invoice->save();
+        } else {
+           
+             $installmentPayment = InstallmentPayment::where('id', $request->invoice_id)->first();
+            if(!$installmentPayment) {
+                return response()->json([
+                    'code' => 404,
+                    'message' => 'Installment payment not found.'
+                ], 404);
+            }
+
+            $installmentPayment->update([
+                'is_paid' => 1,
+                'paid_at' => now(),
+                'status' => 'paid',
+                'transaction_id' => $request->transaction_id,
+            ]);
+
+            $installmentPlan = InstallmentPlan::findOrFail($installmentPayment->installment_plan_id);
+
+            $totalPayments = InstallmentPayment::where('installment_plan_id', $installmentPlan->id)
+                ->where('is_paid', 1)
+                ->count();
+            // Check if plan is fully paid
+            if ($installmentPlan->installment_count == $totalPayments) {
+                $installmentPlan->update([
+                    'status' => 'completed',
+                ]);
+            }
+
+            $invoice = Invoice::where('id', $installmentPlan->invoice_id)->first();
+            $invoice->paid_amount += $installmentPayment->amount;
+            if ($invoice) {
+                if ($totalPayments == '1') {
+                    $invoice->status = 'partial';
+                } elseif ($totalPayments == '2') {
+                    $invoice->status = 'partial';
+                } else {
+                    $invoice->status = 'paid';
+                }
+                $invoice->save();
+            }
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Payment status updated successfully.'
+        ], 200);
+
     }
 
 }

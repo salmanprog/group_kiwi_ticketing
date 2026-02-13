@@ -56,6 +56,7 @@ class Invoice extends Model
         'paid_amount',
         'payment_type',
         'description',
+        'transaction_id'
     ];
 
     /**
