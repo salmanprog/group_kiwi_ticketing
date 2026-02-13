@@ -204,12 +204,19 @@ class CmsWidget extends Model
         }
 
         $counts = [];
+        $labels = [];
+
         foreach ($statuses as $status) {
             $counts[] = $statusCounts[$status] ?? 0;
+            if ($status === 'sent') {
+                $labels[] = 'Pending';
+            } else {
+                $labels[] = ucfirst($status);
+            }
         }
 
         return [
-            'labels' => $statuses,
+            'labels' => $labels,
             'data' => $counts,
         ];
     }
