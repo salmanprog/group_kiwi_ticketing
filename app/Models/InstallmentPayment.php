@@ -41,6 +41,7 @@ class InstallmentPayment extends Model
         'contract_id',
         'payment_type',
         'notes',
+        'transaction_id'
     ];
 
     /**
