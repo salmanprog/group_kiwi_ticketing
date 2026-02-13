@@ -1001,9 +1001,27 @@
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
                                             </div>
+                                            <a class="" href="https://users.kiwiticketing.com/?platform=rbac" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title">User Dashboard</span>
+                                                    <span class="platform-subtitle">
+                                                        Reporting Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                </span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
                                             <a class="" href="https://dashboard.kiwiticketing.com/login?platform=rbac" target="_blank">
                                                 <div class="platform-text">
-                                                <span class="platform-title">Kiwiticketing</span>
+                                                <span class="platform-title">Kiwi Ticketing</span>
                                                     <span class="platform-subtitle">
                                                         Reporting Portal
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
