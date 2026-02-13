@@ -11,13 +11,17 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\CompanyAdmin;
+use App\Services\ThirdPartyApiService;
 
 class CompanyAdminController extends CRUDCrontroller
 {
-    public function __construct(Request $request)
+    protected $apiService;
+
+    public function __construct(Request $request, ThirdPartyApiService $apiService)
     {
         parent::__construct('CompanyAdmin');
         $this->__request    = $request;
+        $this->apiService = $apiService;
         $this->__data['page_title'] = 'Company Management';
         $this->__indexView  = 'company-admin.index';
         $this->__createView = 'company-admin.add';
@@ -227,6 +231,7 @@ class CompanyAdminController extends CRUDCrontroller
      */
     private function _submitChangePassword($request)
     {
+        
         $validator = Validator::make($request->all(), [
             'current_password' => 'required',
             'new_password'     => 'required|min:6|max:255',
@@ -235,10 +240,20 @@ class CompanyAdminController extends CRUDCrontroller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        if( !Hash::check($request['current_password'],currentUser()->password) )
-            return redirect()->back()->with('error','Invalid current password');
+        // if( !Hash::check($request['current_password'],currentUser()->password) )
+        //     return redirect()->back()->with('error','Invalid current password');
+
+        
+        $record = $this->apiService->updateUserPassword($request['new_password'], $request['confirm_password']);
+
+        dd($record);
+
+        
 
         User::updatePassword(currentUser()->id,$request['new_password']);
+
+
+
         return redirect()->back()->with('success','Password has been updated successfully');
     }
 

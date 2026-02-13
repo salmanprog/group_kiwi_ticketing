@@ -201,6 +201,10 @@ class Auth0LoginController extends Controller
             }
 
             $externalData = $externalApiResponse->json();
+            // dd($externalData['data']['companyPlatformAccess']);
+            session()->put([
+                'companyPlatformAccess'     => $externalData['data']['companyPlatformAccess'] ?? null,
+            ]);
 
             // Only proceed when API returns success (errorCode 0)
             if (($externalData['errorCode'] ?? null) !== 0) {
