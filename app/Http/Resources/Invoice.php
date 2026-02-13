@@ -138,7 +138,7 @@ class Invoice extends JsonResource
                             'id'       => $installment->id,
                             'amount'   => $installment->amount,
                             'status'   => $installment->status,
-                            'due_date' => $installment->installment_date,
+                            'due_date' => $installment->due_date,
                         ];
                     }),
                 ];
