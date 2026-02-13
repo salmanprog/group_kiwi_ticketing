@@ -124,7 +124,7 @@ class DashboardController extends Controller
                 'color' => 'bg-success',
             ],
             'salesman' => [
-                'title' => 'Salesmen',
+                'title' => 'Sales Team',
                 'count' => DB::table('users')
                     ->join('company_users', 'company_users.user_id', '=', 'users.id')
                     ->where('users.user_type', 'salesman')

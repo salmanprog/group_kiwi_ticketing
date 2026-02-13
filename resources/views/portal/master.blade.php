@@ -508,6 +508,7 @@
                                 </h1>
                             </a>
                         @endif
+                        
                         <div class="left-nav-toggle">
                             <a href="#" class="nav-collapse">
                                 <button class="custom-icon-side-btn">
@@ -520,20 +521,23 @@
                                 </button>
                             </a>
                         </div>
-                        <div class="left-nav-collapsed">
+                       <div class="left-nav-collapsed d-flex align-items-center justify-content-between">
+    
                             <a href="#" class="nav-collapsed">
-
-                                <button class="custom-icon-side-btn">
+                                <button class="custom-icon-side-btn" type="button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round"
-                                        class="lucide lucide-chevron-left ">
+                                        class="lucide lucide-chevron-left">
                                         <path d="m15 18-6-6 6-6"></path>
                                     </svg>
                                 </button>
-
                             </a>
+
+                            <p class="mb-0" style="font-size: 1.25rem;line-height: 1.75rem;font-weight: 700;color: #1f2937;">Kiwi Groups</p>
                         </div>
+
+                        
                         <ul class="list-inline top-right-nav">
                             <li class="dropdown avtar-dropdown">
                                 <a class="dropdown-toggle  cust-dropdown-toggle" data-toggle="dropdown"
