@@ -84,22 +84,40 @@
 
         <script>
             // Contract Creation Line Chart
-            new Chart(document.getElementById('contractCreationChart'), {
-                type: 'line',
-                data: {
-                    labels: @json($line_chart['labels']),
-                    datasets: @json($line_chart['datasets'])
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        }
+           new Chart(document.getElementById('contractCreationChart'), {
+                    type: 'line',
+                    data: {
+                        labels: @json($line_chart['labels']),
+                        datasets: @json($line_chart['datasets'])
                     },
-                    tension: 0.3
-                }
-            });
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                min: 0, // No negative values
+                                ticks: {
+                                    stepSize: 1, // Only integers
+                                    callback: function(value) {
+                                        if (value >= 0 && Number.isInteger(value)) {
+                                            return value;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        elements: {
+                            line: {
+                                tension: 0.3
+                            }
+                        }
+                    }
+                });
+
             /* =======================
             Graph 2: Estimate Status Pie
             ======================= */

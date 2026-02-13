@@ -28,7 +28,7 @@ class InvoiceHook
                     'invoiceDiscount', 
                     'company',
                     'client',
-                    'installmentPlan',
+                    'installmentPlan.payments',
                     'estimate' => function ($q) {
                         $q->with([
                             'items.itemTaxes',   
