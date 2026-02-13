@@ -215,8 +215,10 @@ class ContractController extends CRUDCrontroller
     public function eventCalander()
     {
 
-        $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
-        $this->__data['estimates'] = Estimate::with('client')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
+        // $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
+        // $this->__data['estimates'] = Estimate::with('client')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
+        $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->get();
+        $this->__data['estimates'] = Estimate::with('client')->get();
         // dd($this->_data['contracts']);
         // $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id','>', 0)->get();
         return $this->__cbAdminView('contract.event-calander', $this->__data);

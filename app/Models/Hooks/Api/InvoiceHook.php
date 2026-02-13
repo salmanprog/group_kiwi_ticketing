@@ -25,9 +25,10 @@ class InvoiceHook
            $query->with([
                     'invoiceItems',
                     'invoiceTax',
-                    'invoiceDiscount',
+                    'invoiceDiscount', 
                     'company',
                     'client',
+                    'installmentPlan',
                     'estimate' => function ($q) {
                         $q->with([
                             'items.itemTaxes',   
