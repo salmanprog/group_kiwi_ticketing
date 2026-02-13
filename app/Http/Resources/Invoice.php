@@ -48,8 +48,6 @@ class Invoice extends JsonResource
         $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
 
         $total = ($subtotal + $taxTotal) - $discountAmount;
-        // dd($this->installmentPlan);
-
         return [
             'id' => $this->id,
             'payment_type' => $this->payment_type,
@@ -135,7 +133,7 @@ class Invoice extends JsonResource
                         ];
                     }),
 
-                    'installments' => $estimate->installments->map(function ($installment) {
+                    'installments' => $this->installmentPlan->payments->map(function ($installment) {
                         return [
                             'id'       => $installment->id,
                             'amount'   => $installment->amount,

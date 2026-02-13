@@ -106,7 +106,7 @@ class DashboardController extends Controller
                 'count' => DB::table('users')
                     ->join('company_users', 'company_users.user_id', '=', 'users.id')
                     ->where('users.user_type', 'manager')
-                    ->where('company_users.company_id', $companyId)
+                    // ->where('company_users.company_id', $companyId)
                     ->count(),
                 'link' => route('manager-management.index'),
                 'icon' => 'fa fa-user-tie',
@@ -117,7 +117,7 @@ class DashboardController extends Controller
                 'count' => DB::table('users')
                     ->join('company_users', 'company_users.user_id', '=', 'users.id')
                     ->where('users.user_type', 'client')
-                    ->where('company_users.company_id', $companyId)
+                    // ->where('company_users.company_id', $companyId)
                     ->count(),
                 'link' => route('client-management.index'),
                 'icon' => 'fa fa-users',
@@ -128,7 +128,7 @@ class DashboardController extends Controller
                 'count' => DB::table('users')
                     ->join('company_users', 'company_users.user_id', '=', 'users.id')
                     ->where('users.user_type', 'salesman')
-                    ->where('company_users.company_id', $companyId)
+                    // ->where('company_users.company_id', $companyId)
                     ->count(),
                 'link' => route('salesman-management.index'),
                 'icon' => 'fa fa-user-tag',
@@ -137,7 +137,7 @@ class DashboardController extends Controller
             'contract' => [
                 'title' => 'Contracts',
                 'count' => DB::table('contracts')
-                    ->where('company_id', $companyId)
+                    // ->where('company_id', $companyId)
                     ->count(),
                 'link' => route('contract.index'),
                 'icon' => 'fa fa-file-contract',
@@ -146,7 +146,7 @@ class DashboardController extends Controller
             'organization' => [
                 'title' => 'Organizations',
                 'count' => DB::table('organizations')
-                    ->where('company_id', $companyId)
+                    // ->where('company_id', $companyId)
                     ->count(),
                 'link' => route('organization.index'),
                 'icon' => 'fa fa-building',
@@ -160,7 +160,7 @@ class DashboardController extends Controller
 
         $contracts = DB::table('contracts')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            ->where('company_id', $companyId)
+            // ->where('company_id', $companyId)
             ->whereYear('created_at', Carbon::now()->year)
             ->groupBy('month')
             ->pluck('total', 'month')
@@ -168,7 +168,7 @@ class DashboardController extends Controller
 
         $estimates = DB::table('user_estimate')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            ->where('company_id', $companyId)
+            // ->where('company_id', $companyId)
             ->whereYear('created_at', Carbon::now()->year)
             ->groupBy('month')
             ->pluck('total', 'month')
@@ -237,7 +237,7 @@ class DashboardController extends Controller
             'contract' => [
                 'title' => 'Contracts',
                 'count' => DB::table('contracts')
-                    ->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)
+                    // ->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)
                     ->count(),
                 'link' => route('contract.index'),
                 'icon' => 'fa fa-file-contract',
@@ -246,7 +246,7 @@ class DashboardController extends Controller
              'organization' => [
                 'title' => 'Organizations',
                 'count' => DB::table('organizations')
-                ->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)
+                // ->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)
                     ->count(),             
                 'link' => route('organization.index'),
                 'icon' => 'fa fa-building',
@@ -255,7 +255,7 @@ class DashboardController extends Controller
             'products' => [
                 'title' => 'Products',
                 'count' => DB::table('company_products')
-                ->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)
+                // ->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)
                     ->count(),
                 'link' => route('product.index'),
                 'icon' => 'fa fa-box',
