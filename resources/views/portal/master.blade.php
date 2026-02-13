@@ -548,10 +548,10 @@
                                     {{ currentUser()->name }}
                                 </a>
                                 <ul class="dropdown-menu top-dropdown">
-                                    <li>
+                                    <!-- <li>
                                         <a class="dropdown-item" href="{{ route('admin.profile') }}"><i
                                                 class="icon-user"></i> Profile</a>
-                                    </li>
+                                    </li> -->
                                     <li>
                                         <a class="dropdown-item" href="{{ route('admin.change-password') }}"><i
                                                 class="icon-lock"></i> Change Password</a>
