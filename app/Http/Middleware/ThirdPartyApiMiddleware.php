@@ -56,6 +56,9 @@ class ThirdPartyApiMiddleware
                     if (($data['errorCode'] ?? null) === 0) {
                         $apiData = $data['data'];
                         Session::put('thirdPartyApiData', $apiData);
+                        session()->put([
+                            'companyPlatformAccess'     => $apiData['companyPlatformAccess'] ?? null,
+                        ]);
                         view()->share('thirdPartyApiData', $apiData);
                     }
                 }

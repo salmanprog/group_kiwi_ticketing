@@ -937,7 +937,7 @@
                                         $pages = $category['pages'] ?? [];
                                     @endphp
 
-                                    <li class="nav-item has-submenu">
+                                    <!-- <li class="nav-item has-submenu">
                                         <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
                                             <i class="fas fa-user"></i>
                                             <span class="toggle-none">Profile</span>
@@ -956,10 +956,162 @@
                                                 </li>
                                             @endforeach
                                         </ul>
-                                    </li>
+                                    </li> -->
                                 @endforeach
                                     @endif
                                 @endif
+
+                                <!-- @if(Session::get('companyPlatformAccess'))
+                                <li class="nav-item has-submenu">
+                                        <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
+                                            <i class="fas fa-user"></i>
+                                            <span class="toggle-none">Other Platforms</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+
+                                        <ul class="submenu">
+
+                                            @foreach(Session::get('companyPlatformAccess') as $platform)
+                                              <li class="nav-item">
+                                                    <a class="nav-link submenu-link d-flex align-items-center"  target="_blank"  href="{{ $platform['domain'] }}">
+                                                        <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" 
+                                                            alt="Platform Icon" 
+                                                            style="width:20px; height:20px; margin-right:8px;">
+                                                        {{ $platform['platformName'] }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endif -->
+
+                                <li data-type="child" class="nav-item">
+                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
+                                            <i class="fa-solid fa-cloud"></i>
+                                                <span class="toggle-none">Other Platforms</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+                                    <ul class="submenu">
+                                        <!-- <li class="nav-item">
+                                        <a class="nav-link submenu-link" href="{{ route('get=all-company') }}">
+                                        Company Report
+                                        </a>
+                                        </li> -->
+                                        <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
+                                            <a class="" href="https://dashboard.kiwiticketing.com/login?platform=rbac" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title">Kiwiticketing</span>
+                                                    <span class="platform-subtitle">
+                                                        Reporting Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                         <!-- <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
+                                            <a class="" href="https://group.kiwiticketing.com/" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title">Groups Portal</span>
+                                                    <span class="platform-subtitle">
+                                                        Management Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </li> -->
+                                         <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
+                                            <a class="" href="https://dynamicpricingbuilder.com/" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title">Dynamic Pricing Builder</span>
+                                                    <span class="platform-subtitle">
+                                                         Management Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </li>
+
+                                        <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
+                                            <a class="" href="https://wildriversticketcontrol.kiwiticketing.com/" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title">Ticket Control</span>
+                                                    <span class="platform-subtitle">
+                                                         Management Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </li>
+
+
+                                        <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
+                                            <a class="" href="https://wildriversfrontgate.kiwiticketing.com/" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title">Front Gate System</span>
+                                                    <span class="platform-subtitle">
+                                                         Management Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </li>
+
+                                         <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
+                                            <a class="" href="https://dashboard.kiwiticketing.com/scan-tickets/" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title">Kiwi Scanning</span>
+                                                    <span class="platform-subtitle">
+                                                         Management Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                             </ul>
                         </div>
                     </div>
