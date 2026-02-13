@@ -58,14 +58,14 @@
                     </div>
                 </div>
             
-                <div class="card">
+                <!-- <div class="card">
                     <div class="card-header">
                         <h5>Contract Status Distribution</h5>
                     </div>
                     <div class="card-body">
                         <canvas id="contractStatusChart"></canvas>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             

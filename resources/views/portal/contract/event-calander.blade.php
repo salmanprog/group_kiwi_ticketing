@@ -55,7 +55,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> 
 
 <!-- Estimates Modal -->
 <div class="modal fade" id="estimatesModal" tabindex="-1">
