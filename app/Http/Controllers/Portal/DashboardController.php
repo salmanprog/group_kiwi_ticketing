@@ -170,6 +170,7 @@ class DashboardController extends Controller
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
             // ->where('company_id', $companyId)
             ->whereYear('created_at', Carbon::now()->year)
+            ->whereNotIn('status', ['draft', 'rejected'])
             ->groupBy('month')
             ->pluck('total', 'month')
             ->toArray();
