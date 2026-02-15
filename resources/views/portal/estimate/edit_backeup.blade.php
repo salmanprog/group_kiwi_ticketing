@@ -872,6 +872,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Product</th>
+                                                    <th>Description</th>
                                                     <th>Quantity</th>
                                                     <th>Unit Price</th>
                                                     <th>Total</th>

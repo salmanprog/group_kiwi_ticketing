@@ -642,9 +642,14 @@
                         </div>
 
                         @if ($record->is_accept === 'accepted')
-                            <small class="text-success">
-                                <i class="fas fa-check-circle me-1"></i>Client accepted this contract
+                           <small class="text-success">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Client accepted this contract 
+                                @if (!empty($record->accept_time_at))
+                                    {{ $record->accept_time_at }}
+                                @endif
                             </small>
+
                         @elseif($record->is_accept === 'rejected')
                             <small class="text-danger">
                                 <i class="fas fa-times-circle me-1"></i>Client rejected this contract
@@ -853,6 +858,7 @@
                                     <thead>
                                         <tr>
                                             <th>Product Name</th>
+                                            <th>Description</th>
                                             <th>Quantity</th>
                                             <th>Product Price</th>
                                             <th>Total</th>
@@ -891,6 +897,7 @@
                                                             </small>
                                                         @endif
                                                     </td>
+                                                    <td>{{ ($item->description) ?? 'N/A' }}</td>
                                                     <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
                                                     <td>${{ number_format($item->price, 2) }}</td>
                                                     <td class="item-total">${{ number_format($item->total_price, 2) }}</td>

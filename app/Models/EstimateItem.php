@@ -31,6 +31,7 @@ class EstimateItem extends Model
         'user_estimate_id',
         'product_id',
         'name',
+        'description',
         'quantity',
         'unit',
         'price',
