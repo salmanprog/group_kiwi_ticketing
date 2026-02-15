@@ -174,7 +174,7 @@ class OrganizationController extends CRUDCrontroller
          $this->__data['organization_contacts'] = Client::select('organization_users.*')->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')->where('organizations.slug', $slug)->get();
     
          $record = Organization::where('slug', $slug)->first();
-         $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('organization_id',$record->id)->get();
+         $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','organizations')->where('module_id',$record->id)->get();
         }
 
     /**
@@ -221,8 +221,8 @@ class OrganizationController extends CRUDCrontroller
         $this->__data['invoices'] = $invoices;
         $this->__data['organization_contacts'] = Client::select('organization_users.*')->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')->where('organizations.slug', $slug)->get();
 
-        $activityLog = AccountActivityLog::with('createdBy')->where('organization_id',$record->id)->get();
-        $this->__data['activityLog'] = $activityLog;
+        $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','organizations')->where('module_id',$record->id)->get();
+
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }

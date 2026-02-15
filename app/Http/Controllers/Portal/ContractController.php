@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Organization, CompanyUser, Contract, Invoice, CreditNote, Estimate};
+use App\Models\{Organization, CompanyUser, Contract, Invoice, CreditNote, Estimate,AccountActivityLog};
 use Auth;
 
 class ContractController extends CRUDCrontroller
@@ -182,6 +182,7 @@ class ContractController extends CRUDCrontroller
 
         // dd($this->__data['record']->company);
 
+        $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','contracts')->where('module_id',$this->__data['record']->id)->get();
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }

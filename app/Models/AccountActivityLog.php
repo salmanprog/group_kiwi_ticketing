@@ -30,7 +30,7 @@ class AccountActivityLog extends Model
      * @var array
      */
     protected $fillable = [
-        'id', 'slug', 'created_by', 'organization_id', 'notesTextarea', 'status', 'created_at', 'updated_at', 'deleted_at'
+        'id', 'slug', 'created_by', 'module', 'module_id', 'notesTextarea', 'status', 'created_at', 'updated_at', 'deleted_at'
     ];
     /**
      * The attributes that should be hidden for arrays.

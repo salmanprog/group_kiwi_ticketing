@@ -75,10 +75,12 @@
                     <p>
                         <strong>{{ $record->organization_name }}</strong><br>
                         {{ $record->organization_address_one }}
+                           <br>
+                        <strong>Contact Name:</strong> {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
                         <br>
-                        <strong>Email:</strong> {{ $record->organization_email }}
+                        <strong>Contact Email:</strong> {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
                         <br>
-                        <strong>Phone:</strong> {{ $record->organization_phone }}
+                        <strong>Contact Phone:</strong> {{ ($invoice_user->phone) ? $invoice_user->phone : 'N/A' }}
                     </p>
                 </div>
             </div>
@@ -479,7 +481,7 @@
                                                 data-url="{{ route('estimate.note.save') }}"
                                                 data-csrf="{{ csrf_token() }}"
                                                 data-estimateid="{{ $estimate->id }}">
-                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Term and Condition</span>
+                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Condition</span>
                                             <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
                                         </button>
                                         <div class="print-value mt-3">
@@ -528,7 +530,7 @@
                                                 data-estimateid="{{ $estimate->id }}"
                                                 data-slug="{{ $estimate->slug }}"
                                                 data-slug="{{ $estimate->status }}">
-                                            Sent to Client
+                                            Send to Client
                                             </button>
                                             <!-- <button type="button" class="btn btn-success" onclick="submitSentForm()">
                                                     <i class="fas fa-paper-plane me-1"></i>Send

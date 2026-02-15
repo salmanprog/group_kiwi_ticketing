@@ -257,5 +257,8 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
 });
 
-Route::post('/account/notes/save', [AccountActivityLogController::class, 'saveNotes'])
+Route::post('/account/notes/save', [AccountActivityLogController::class, 'saveOrganizationNotes'])
     ->name('account.notes.save');
+
+Route::post('/contact/notes/save', [AccountActivityLogController::class, 'saveContactNotes'])
+    ->name('contact.notes.save');

@@ -136,7 +136,7 @@ class AccountActivityLogController extends CRUDCrontroller
 
     }
     
-    public function saveNotes(Request $request)
+    public function saveOrganizationNotes(Request $request)
     {
         
 
@@ -148,12 +148,15 @@ class AccountActivityLogController extends CRUDCrontroller
         try {
             $log = new AccountActivityLog();
             $log->slug =AccountActivityLog::generateUniqueSlug(uniqid(uniqid()));
-            $log->organization_id = $request->organization_id;
+            $log->module = 'organizations';
+            $log->module_id = $request->organization_id;
             $log->notesTextarea = $request->notes;
             $log->created_by = Auth::user()->id;
             $log->save();
-
-            $activityLogs = AccountActivityLog::with('createdBy')->where('organization_id', $request->organization_id)
+ 
+            $activityLogs = AccountActivityLog::with('createdBy')
+            ->where('module', 'organizations')
+            ->where('module_id', $request->organization_id)
             ->get()
             ->map(function ($log) {
                 return [
@@ -177,5 +180,48 @@ class AccountActivityLogController extends CRUDCrontroller
             ], 500);
         }
     }
-   
+    
+    public function saveContactNotes(Request $request)
+    {
+        
+
+        $request->validate([
+            'notes' => 'required|string',
+        ]);
+
+        try {
+            $log = new AccountActivityLog();
+            $log->slug =AccountActivityLog::generateUniqueSlug(uniqid(uniqid()));
+            $log->module = 'contracts';
+            $log->module_id = $request->contract_id;
+            $log->notesTextarea = $request->notes;
+            $log->created_by = Auth::user()->id;
+            $log->save();
+ 
+            $activityLogs = AccountActivityLog::with('createdBy')
+            ->where('module', 'contracts')
+            ->where('module_id', $request->contract_id)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id'          => $log->id,
+                    'notesTextarea' => $log->notesTextarea,
+                    'created_at' => $log->created_at
+                        ->timezone('America/Los_Angeles')
+                        ->diffForHumans(),
+                    'createdBy'    => $log->createdBy,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'activityLogs' => $activityLogs,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
