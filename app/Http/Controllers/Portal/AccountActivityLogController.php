@@ -10,20 +10,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{CompanyAdmin,Company};
+use App\Models\{CompanyAdmin,Company,AccountActivityLog};
 use Carbon\Carbon;
 
-class ContactActivityLogController extends CRUDCrontroller
+class AccountActivityLogController extends CRUDCrontroller
 {
     public function __construct(Request $request)
     {
-        parent::__construct('ContactActivityLog');
+        parent::__construct('AccountActivityLog');
         $this->__request    = $request;
-        $this->__data['page_title'] = 'ContactActivityLog Management';
-        $this->__indexView  = 'company.index';
-        $this->__createView = 'company.add';
-        $this->__editView   = 'company.edit';
-        $this->__detailView   = 'company.detail';
+        $this->__data['page_title'] = 'AccountActivityLog Management';
+        $this->__indexView  = 'account-activity-log.index';
+        $this->__createView = 'account-activity-log.add';
+        $this->__editView   = 'account-activity-log.edit';
+        $this->__detailView   = 'account-activity-log.detail';
     }
 
     /**
@@ -138,21 +138,22 @@ class ContactActivityLogController extends CRUDCrontroller
     
     public function saveNotes(Request $request)
     {
+        
+
         $request->validate([
             'notes' => 'required|string',
         ]);
 
+
         try {
-            $log = new ContactActivityLog();
-            $log->slug =ContactActivityLog::generateUniqueSlug(uniqid(uniqid()));
+            $log = new AccountActivityLog();
+            $log->slug =AccountActivityLog::generateUniqueSlug(uniqid(uniqid()));
             $log->organization_id = $request->organization_id;
-            $log->client_id = $request->client_id;
             $log->notesTextarea = $request->notes;
             $log->created_by = Auth::user()->id;
             $log->save();
 
-            $activityLogs = ContactActivityLog::with('createdBy')->where('organization_id', $request->organization_id)
-            ->where('client_id', $request->client_id)
+            $activityLogs = AccountActivityLog::with('createdBy')->where('organization_id', $request->organization_id)
             ->get()
             ->map(function ($log) {
                 return [

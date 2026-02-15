@@ -25,6 +25,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Portal\ContractController;
 use App\Http\Controllers\Portal\ReportingController;
 use App\Http\Controllers\Portal\ContactActivityLogController;
+use App\Http\Controllers\Portal\AccountActivityLogController;
 use App\Http\Controllers\Portal\EstimateItemController;
 use App\Http\Controllers\Portal\EstimateTaxController;
 use App\Http\Controllers\Portal\EstimateDiscountController;
@@ -210,6 +211,7 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
     Route::get('company/ajax-listing', [ReportingController::class, 'ajaxListing'])->name('company.ajax-listing');
     Route::post('/organization/notes/save', [ContactActivityLogController::class, 'saveNotes'])
         ->name('organization.notes.save');
+  
 
 
     Route::post('/estimate-products/add', [EstimateItemController::class, 'productAdd'])
@@ -254,3 +256,6 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
 
 });
+
+Route::post('/account/notes/save', [AccountActivityLogController::class, 'saveNotes'])
+    ->name('account.notes.save');

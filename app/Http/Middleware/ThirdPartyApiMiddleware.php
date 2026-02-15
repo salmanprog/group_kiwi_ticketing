@@ -27,7 +27,7 @@ class ThirdPartyApiMiddleware
         'change-password'     => 'admin.change-password',
         'update-stripe-key'   => 'portal.update-stripe-key',
         'update-installment-status'   => 'portal.update-installment-status',
-        'update-invoice-status' => 'portal.update-invoice-status'
+        'update-invoice-status' => 'portal.update-invoice-status',
     ];
 
     public function handle($request, Closure $next)

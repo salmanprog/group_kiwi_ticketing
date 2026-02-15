@@ -76,9 +76,9 @@ class ClientHook
         $postdata['created_by'] = Auth::user()->id;
         $postdata['auth_code'] = Auth::user()->auth_code;
         $postdata['slug'] = uniqid() . time();
-        Organization::where('id', $postdata['organization_id'])->update([
-            'client_id' => $postdata['client_id']
-        ]);
+        // Organization::where('id', $postdata['organization_id'])->update([
+        //     'client_id' => $postdata['client_id']
+        // ]);
     }
 
     /*
