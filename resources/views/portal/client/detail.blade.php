@@ -871,9 +871,9 @@
                                                         <div class="text-muted small">
                                                             {{ $log->notesTextarea ?? '' }}
                                                         </div>
-                                                    </div>
+                                                    </div> 
                                                     <small class="text-muted">
-                                                        {{ TimeWithAgo($log->created_at->format('d M Y, h:i A')) }}
+                                                        {{ $log->created_at->timezone('America/Los_Angeles')->diffForHumans() }}
                                                     </small>
                                                 </div>
                                             </li>

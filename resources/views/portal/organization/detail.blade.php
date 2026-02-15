@@ -126,6 +126,8 @@
                         </div>
                     </div>
 
+            
+
                      <!-- System Field DETAILS -->
                     <div class="form-section">
                         <div class="section-header">
@@ -172,28 +174,82 @@
                             <h5>Contact Information</h5>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Contact Name</label>
-                                <div class="view-field">{{ $record->contact ?? '-' }}</div>
-                            </div>
+                       <div class="row">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($organization_contacts as $organization_contact)
+                                            <tr>
+                                                <td>
+                                                            @php
+                                                                $fullName = trim(($organization_contact->first_name ?? '') . ' ' . ($organization_contact->last_name ?? ''));
+                                                            @endphp
 
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <div class="view-field">{{ $record->email ?? '-' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <div class="view-field">{{ $record->phone ?? '-' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Mobile</label>
-                                <div class="view-field">{{ $record->fax ?? '-' }}</div>
-                            </div>
-                        </div>
+                                                            <a href="{{ $fullName !== '' 
+                                                                        ? route('client-management.show', ['client_management' => $organization_contact->slug]) 
+                                                                        : '#' }}"
+                                                            class="btn btn-xs btn-info">
+                                                                {{ $fullName !== '' ? $fullName : 'N/A' }}
+                                                            </a>
+                                                        </td>
+                                                <td>{{ $organization_contact->email }}</td>
+                                                <td>{{ $organization_contact->mobile_no }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                     </div>
+
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h5>Notes</h5>
+                            <small id="notes-status" class="text-success"></small>
+                        </div>
+
+                            <div class="form-section mt-4">
+                                @if ($activityLog->count())
+                                    <ul class="list-group" id="activityLogList">
+                                        @foreach ($activityLog as $log)
+                                            <li class="list-group-item">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
+                                                        <div class="text-muted small">
+                                                            {{ $log->notesTextarea ?? '' }}
+                                                        </div>
+                                                    </div> 
+                                                    <small class="text-muted">
+                                                        {{ $log->created_at->timezone('America/Los_Angeles')->diffForHumans() }}
+                                                    </small>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <ul class="list-group" id="activityLogList">
+                                        <li class="list-group-item">No activity found.</li>
+                                    </ul>
+                                @endif
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Add Notes</label>
+                                <input type="hidden" name="client_id" id="client_id" value="{{ $record->client_id }}">
+                                <input type="hidden" name="organization_id" id="organization_id"
+                                    value="{{ $record->id }}">
+                                <textarea id="notesTextarea" class="form-control" rows="4" readonly placeholder="Click here to add notes..."></textarea>
+                                <button id="saveNotesBtn" class="btn btn-primary mt-2 d-none">
+                                    Save Notes
+                                </button>
+                            </div>
+                    </div>
+                    
 
                     <!-- Estimates INFORMATION -->
                     <div class="form-section">
@@ -722,4 +778,94 @@
             color: #9ca3af;
         }
     </style>
+
+
+ <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('notesTextarea');
+            const saveBtn = document.getElementById('saveNotesBtn');
+            const status = document.getElementById('notes-status');
+
+            const clientId = document.getElementById('client_id').value;
+            const orgId = document.getElementById('organization_id').value;
+
+            let originalText = textarea.value;
+
+            // Enable editing on click
+            textarea.addEventListener('click', function() {
+                textarea.removeAttribute('readonly');
+                saveBtn.classList.remove('d-none');
+                originalText = textarea.value;
+            });
+
+            // Save notes
+            saveBtn.addEventListener('click', function() {
+                saveBtn.disabled = true;
+                status.textContent = 'Saving...';
+
+                fetch("{{ route('account.notes.save') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        credentials: 'same-origin', // ✅ important to send session
+                        body: JSON.stringify({
+                            notes: textarea.value,
+                            client_id: clientId,
+                            organization_id: orgId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            status.textContent = 'Error saving';
+                            return;
+                        }
+
+                        // Clear textarea
+                        textarea.value = '';
+                        textarea.setAttribute('readonly', true);
+                        saveBtn.classList.add('d-none');
+                        status.textContent = 'Saved ✔';
+
+                        // Update activity log dynamically
+                        const list = document.getElementById('activityLogList');
+                        list.innerHTML = '';
+
+                        data.activityLogs.forEach(log => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+
+                            li.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>${log.createdBy?.name ?? 'System'}</strong>
+                            <div class="text-muted small">
+                                ${log.notesTextarea}
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            ${log.created_at}
+                        </small>
+                    </div>
+                `;
+
+                            list.appendChild(li);
+                        });
+
+                        setTimeout(() => status.textContent = '', 2000);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        textarea.value = originalText;
+                        status.textContent = 'Error saving';
+                    })
+                    .finally(() => {
+                        saveBtn.disabled = false;
+                    });
+            });
+        });
+    </script>
 @endsection

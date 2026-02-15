@@ -16,7 +16,7 @@
                         <a href="{{ route('estimate.index') }}" class="btn btn-outline">
                             <i class="fas fa-arrow-left"></i> Back to List
                         </a>
-                    </div>
+                    </div> 
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ route('estimate.store') }}" class="estimate-form">
@@ -52,6 +52,7 @@
                                             </option>
                                             @endforeach
                                         </select>
+                                        
                                     </div>
                                 </div>
                                 @endif
@@ -401,52 +402,6 @@
     }
 </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Select2 if available
-        if ($('.select2').length) {
-            $('.select2').select2({
-                placeholder: '-- Select Client --',
-                allowClear: true,
-                width: '100%'
-            });
-        }
-
-        // Form validation and enhancements
-        const form = document.querySelector('.estimate-form');
-        if (form) {
-            form.addEventListener('submit', function (e) {
-                const clientId = document.querySelector('select[name="client_id"]').value;
-                const estimateDate = document.querySelector('input[name="estimate_date"]').value;
-
-                if (!clientId) {
-                    e.preventDefault();
-                    showNotification('Please select a client', 'error');
-                    return false;
-                }
-
-                if (!estimateDate) {
-                    e.preventDefault();
-                    showNotification('Please select an estimate date', 'error');
-                    return false;
-                }
-            });
-        }
-
-        // Notification function
-        function showNotification(message, type = 'info') {
-            // You can integrate with a notification library here
-            alert(message); // Simple alert for now
-        }
-
-        // Date input today as default if empty
-        const dateInput = document.querySelector('input[name="estimate_date"]');
-        if (dateInput && !dateInput.value) {
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.value = today;
-        }
-    });
-</script>
 @endsection --}}
 
 
@@ -827,19 +782,43 @@
             input[type="date"]::-webkit-calendar-picker-indicator:hover {
                 opacity: 1;
             }
+
+              /* Select2 Customization */
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #dce4e0;
+            border-radius: 6px;
+            padding: 8px 15px;
+            height: auto;
+            background: #fff;
+        }
+
+        .select2-container--default .select2-selection--single:focus {
+            border-color: #A0C242;
+            box-shadow: 0 0 0 3px rgba(160, 194, 66, 0.1);
+            outline: none;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            padding: 0;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100%;
+        }
+
+    
         </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    @endpush
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // Initialize Select2 if available
-                if ($('.select2').length) {
-                    $('.select2').select2({
-                        placeholder: '-- Select Client --',
-                        allowClear: true,
-                        width: '100%'
-                    });
-                }
-
                 // Form validation and enhancements
                 const form = document.querySelector('.estimate-form');
                 if (form) {
@@ -873,7 +852,17 @@
                     const today = new Date().toISOString().split('T')[0];
                     dateInput.value = today;
                 }
+
+                  (function($) {
+                        $('#client_id').select2({
+                            placeholder: "-- Select Client --",
+                            allowClear: true,
+                            width: '100%' // makes it full width
+                        });
+                    })(jQuery);
+                
             });
+            
         </script>
 @endsection
 

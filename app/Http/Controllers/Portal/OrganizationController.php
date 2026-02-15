@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{CompanyUser, OrganizationType, Event, EventHistoryType,Organization};
+use App\Models\{CompanyUser, OrganizationType, Event, EventHistoryType,Organization,Client,AccountActivityLog};
 use Auth;
 
 class OrganizationController extends CRUDCrontroller
@@ -47,8 +47,8 @@ class OrganizationController extends CRUDCrontroller
                     'country' => 'required',
                     'zip' => 'required',
                     'address_one' => 'required',
-                    'email' => 'required',
-                    'phone' => 'required',
+                    // 'email' => 'required',
+                    // 'phone' => 'required',
                 ], $custom_messages);
 
                 break;
@@ -171,7 +171,11 @@ class OrganizationController extends CRUDCrontroller
         $this->__data['organization_types'] = OrganizationType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
         $this->__data['organization_events'] = Event::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
          $this->__data['organization_history_events'] = EventHistoryType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
-    }
+         $this->__data['organization_contacts'] = Client::select('organization_users.*')->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')->where('organizations.slug', $slug)->get();
+    
+         $record = Organization::where('slug', $slug)->first();
+         $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','organizations')->where('module_id',$record->id)->get();
+        }
 
     /**
      * This function is called before a model load
@@ -215,6 +219,10 @@ class OrganizationController extends CRUDCrontroller
         $this->__data['record'] = $record;
         $this->__data['company'] = $company;
         $this->__data['invoices'] = $invoices;
+        $this->__data['organization_contacts'] = Client::select('organization_users.*')->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')->where('organizations.slug', $slug)->get();
+
+        $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','organizations')->where('module_id',$record->id)->get();
+
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }

@@ -27,8 +27,9 @@ class ContractHook
     {
         //Your code here
         $getCompany = CompanyUser::getCompany(Auth::user()->id);
-        $query->select('contracts.*', 'company.name as company_name');
-        $query->join('company', 'company.id', '=', 'contracts.company_id');
+        $query->select('contracts.*', 'organizations.name as company_name');
+        $query->join('company', 'company.id', '=', 'contracts.company_id')
+        ->join('organizations', 'organizations.id', '=', 'contracts.organization_id');
         if (Auth::user()->user_type == 'client') {
             $query->where('contracts.client_id', Auth::user()->id);
         } else {
@@ -39,7 +40,7 @@ class ContractHook
             $keyword = $request['keyword'];
             $query->where(function($where) use ($keyword){
                 $where->orWhere('contracts.contract_number','like',"$keyword%");
-                $where->orWhere('company.name','like',"$keyword%");
+                $where->orWhere('organizations.name','like',"$keyword%");
             });
         }
 

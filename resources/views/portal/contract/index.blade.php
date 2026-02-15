@@ -602,6 +602,13 @@
 
 
 @extends('portal.master')
+<style>
+    .filter-heading {
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+</style>
 @section('content')
     @push('stylesheets')
         <link href="{{ asset('admin/assets/lib/datatables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css">
@@ -633,17 +640,18 @@
                                     <form id="filter_form" method="GET" action="{{ route('contract.index') }}"
                                         class="filter-form"
                                         style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-
                                         <!-- Start Date -->
+                                        <p class="filter-label">Search Contract by Creation Date</p>
+
                                         <div class="date-filter-group">
-                                            <label for="start_date" class="filter-label">Start Date</label>
+                                            <label for="start_date" class="filter-label">From</label>
                                             <input type="date" id="start_date" name="start_date" class="date-input"
                                                 placeholder="Start Date" value="{{ request('start_date') }}">
                                         </div>
 
                                         <!-- End Date -->
                                         <div class="date-filter-group">
-                                            <label for="end_date" class="filter-label">End Date</label>
+                                            <label for="end_date" class="filter-label">To</label>
                                             <input type="date" id="end_date" name="end_date" class="date-input"
                                                 placeholder="End Date" value="{{ request('end_date') }}">
                                         </div>

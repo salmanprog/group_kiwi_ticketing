@@ -49,24 +49,14 @@
                                                 value="{{ old('department') }}">
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-                             <!-- Description -->
-                            <div class="form-section">
-                                <div class="section-header">
-                                    <h5>Details</h5>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
+                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="form-label">Description <span class="required">*</span></label>
-                                            <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+                                                <label class="form-label">Description <span class="required">*</span></label>
+                                                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
+                               
                             <!-- Address Details -->
                             <div class="form-section">
                                 <div class="section-header">
@@ -121,7 +111,7 @@
                             </div>
 
                             <!-- Contact Information -->
-                            <div class="form-section">
+                            <!-- <div class="form-section">
                                 <div class="section-header">
                                     <h5>Contact Information</h5>
                                 </div>
@@ -155,7 +145,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Event & Opportunity -->
                             <div class="form-section">
@@ -218,13 +208,13 @@
                                                 value="{{ old('first_meeting') }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <!-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Hot Button</label>
                                             <input type="text" name="hot_button" class="form-control"
                                                 value="{{ old('hot_button') }}">
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Closing Probability (%)</label>
