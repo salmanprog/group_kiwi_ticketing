@@ -1172,6 +1172,7 @@
     <script src="{{ asset('admin/assets/js/taxProductEstimate.js') }}"></script>
     <script src="{{ asset('admin/assets/js/productDiscount.js') }}"></script>
     <script src="{{ asset('admin/assets/js/productPayment.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/modifyContract.js') }}"></script>
 
     <script>
         // Page load complete hone par skeleton hide karo

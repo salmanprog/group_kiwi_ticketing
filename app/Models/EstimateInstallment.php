@@ -28,7 +28,7 @@ class EstimateInstallment extends Model
      * @var array
      */
     protected $fillable = [
-        'estimate_id','amount','installment_date','created_at', 'updated_at', 'deleted_at'
+        'estimate_id','amount','installment_date','is_modify','created_at', 'updated_at', 'deleted_at'
     ];
 
     /**

@@ -752,14 +752,16 @@
                         </div>
 
                         @if (Auth::user()->user_type == 'company')
-                           <!-- <div class="mt-3 text-end">
+                           <div class="mt-3 text-end">
                                 <button type="button" 
                                         class="btn btn-primary" 
+                                        data-id="{{ $record->id }}"
+                                        data-url="{{ route('contract.modify.details', $record->id) }}"
                                         data-bs-toggle="modal" 
                                         data-bs-target="#modifyContractModal">
                                     <i class="fas fa-plus me-1"></i>Modify Contract
                                 </button>
-                            </div> -->
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -1407,103 +1409,298 @@
 
   <div class="modal fade" id="modifyContractModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <form action="{{ route('contract.modify') }}" method="POST">
+        <form id="contractForm" action="{{ route('contract.modify.product') }}" method="POST">
             @csrf
             <input type="hidden" name="contract_id" value="{{ $record->id }}">
             
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modify Contract Products</h5>
+                    <h5 class="modal-title">Modify Contract</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <div id="contractMessages"></div>
                 <div class="modal-body">
                     
                     <div class="row align-items-end mb-4 border-bottom pb-3">
                         <div class="col-md-3">
                             <label class="form-label">Product</label>
-                            <select id="productSelect" class="form-select">
+                            <select id="product" name="product" class="form-select">
                                 <option value="" data-price="0">Choose...</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}" 
-                                            data-price="{{ $product->total_price }}" 
+                                            data-price="{{ $product->price }}"
                                             data-name="{{ $product->name }}"
-                                            data-tax="{{ $product->tax }}"
-                                            data-gratuity="{{ $product->gratuity }}"
-                                            data-product_price="{{ $product->price }}"
                                             >
                                         {{ $product->name }}
                                     </option>
                                 @endforeach
                             </select>
-                        </div>
-                         <div class="col-md-2">
-                            <label class="form-label">Tax</label>
-                            <input type="number" id="tempTax" class="form-control" step="0.01" readonly>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Price</label>
-                            <input type="number" id="tempPrice" class="form-control" step="0.01" readonly>
+                            <input type="hidden" id="product_name" name="product_name" value="">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Qty</label>
-                            <input type="number" id="tempQty" class="form-control" value="1" min="1">
+                            <input type="number" id="product_qty" name="product_qty" class="form-control" value="1" min="1">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Total</label>
-                            <input type="text" id="tempTotal" class="form-control bg-light" readonly value="0.00">
+                            <label class="form-label">Price</label>
+                            <input type="text" id="product_price" name="product_price" class="form-control bg-light" readonly value="0.00">
                         </div>
                         <div class="col-md-3">
-                            <button type="button" id="addToTable" class="btn btn-info w-100">
-                                <i class="fas fa-plus"></i> Add to List
+                            <button type="submit" class="btn btn-info w-100">
+                                    <i class="fas fa-plus"></i> Add to List
+                                </button>
+                            <button class="btn btn-info btn-sm no-print"
+                                    type="button" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#taxModal"
+                                    data-id="{{ $record->id }}"
+                                    data-url="{{ route('contract.modify.details', $record->id) }}"
+                                    data-csrf="{{ csrf_token() }}">
+                                <i class="fas fa-percentage me-1"></i>Add Tax
                             </button>
                         </div>
-                    </div>
+                        <div id="contractLoader" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:1000;text-align:center;padding-top:50px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table product-table" id="md_productTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Product Price</th>
+                                        <th>Total</th>
+                                        <th class="no-print">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="4" class="text-end">Subtotal:</th>
+                                        <th id="md_subtotal">$0.00</th>
+                                    </tr>
+                                    <tr id="tax_row">
+                                        <th colspan="4" class="text-end">Tax:</th>
+                                        <th id="md_tax_amount">$0.00</th>
+                                    </tr>
+                                    <!-- <tr id="discount_row">
+                                        <th colspan="4" class="text-end">Discount:</th>
+                                        <th id="discount_amount">$0.00</th>
+                                    </tr> -->
+                                    <tr>
+                                        <th colspan="4" class="text-end">Total:</th>
+                                        <th id="md_total">$0.00</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="productTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Product</th>
-                                    <th style="width: 150px;">Price</th>
-                                    <th style="width: 100px;">Qty</th>
-                                    <th>Total</th>
-                                    <th style="width: 50px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                </tbody>
-                            <tfoot>
-                                <tr class="table-secondary">
-                                    <th colspan="3" class="text-end">Grand Total:</th>
-                                    <th>
-                                        <span id="grandTotal">0.00</span>
-                                        <input type="hidden" name="grand_total" id="hiddenGrandTotal" value="0">
-                                    </th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                        </div>
+                        </form>
+                        <div class="table-responsive mt-4">
+                            <h5>Payment Schedule</h5>
+                            <form id="modifypaymentScheduleForm" method="POST" action="{{ route('estimate.installments.modify.save', $estimate->id) }}">
+                                        <div class="sec-css">
+                                        @csrf
+                                        <input type="hidden" name="total_amount" id="total_amount" value="0">
 
-                    <div class="mt-4 pt-3 border-top">
-                        <label class="form-label font-weight-bold">Client Confirmation Status</label>
-                        <select name="confirmed_with_client" class="form-select" required>
-                            <option value="no">No, haven't asked yet</option>
-                            <option value="yes">Yes, I don't need to ask / Approved</option>
-                        </select>
-                        <small class="text-muted text-info">Please select "Yes" if you have verbal or written approval for these changes.</small>
+                                        <div id="dynamicInputsContainer">
+                                            
+                                        </div>
+
+                                        <hr>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0">Installment Schedule</h6>
+                                            <div id="md_installmentError" class="text-danger mt-2" style="display:none;">
+                                                Please add product before adding installment.
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-success" id="addRowBtn">+ Add Installment</button>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Remaining Total:</strong>
+                                            <span id="remainingTotal">$1,000.00</span>
+                                            <input type="hidden" name="remaining_total" id="remaining_total" value="0">
+                                        </div>
+                                    </div>
+                                        <button type="submit" id="savemodifyPaymentScheduleBtn" class="btn btn-warning btn-sm no-print">
+                                            <span class="btn-schedule-text">Save Payment Schedule</span>
+                                            <span class="btn-schedule-loading" style="display:none;">
+                                                <span class="schedule-spinner"></span> Saving…
+                                            </span>
+                                        </button>
+                                    </form>
                     </div>
+                    <form id="clientConfirmationForm" method="POST" action="{{ route('contract.modify.save') }}">
+                            <input type="hidden" name="cont_id" id="cont_id" value="{{$record->id}}">
+                            <div class="mt-4 pt-3 border-top">
+                                <label class="form-label font-weight-bold">Client Confirmation Status</label>
+                                <select name="confirmed_with_client" class="form-select" required>
+                                    <option value="0">Yes, I don't need to ask / Approved</option>
+                                    <option value="1">No, haven't asked yet</option>
+                                </select>
+                                <small class="text-muted text-info">Please select "Yes" if you have verbal or written approval for these changes.</small>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success px-4">Save All Changes</button>
+                            </div>
+                    </form>
+
+                    </div>        
                 </div>
+            </div>
+        
+    </div>
+</div>
+<div class="modal fade" id="taxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form id="contractTaxForm" action="{{ route('contract.apply.tax') }}" method="POST">
+            @csrf
+            <input type="hidden" name="contract_id" value="{{ $record->id }}">
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modify Contract Tax</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div id="contractMessages"></div>
+                <div class="modal-body">
+                    
+                    <div class="row align-items-end mb-4 border-bottom pb-3">
+                        <div class="col-md-2">
+                            <label class="form-label">Tax Name</label>
+                            <input type="text" id="md_tax_name" name="md_tax_name" class="form-control" placeholder="e.g Tax">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Tax Percent (%)</label>
+                            <input type="text" id="md_tax_percent" name="md_tax_percent" class="form-control bg-light" placeholder="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-info w-100">
+                                    <i class="fas fa-plus"></i> Apply Tax
+                                </button>
+                        </div>
+                        <div id="contractLoader" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:1000;text-align:center;padding-top:50px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table product-table" id="md_producttaxTable">
+                                <thead>
+                                    <tr>
+                                        <th>Select Product</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Product Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="4" class="text-end">Subtotal:</th>
+                                        <th id="md_tx_subtotal">$0.00</th>
+                                    </tr>
+                                    <tr id="tax_row">
+                                        <th colspan="4" class="text-end">Tax:</th>
+                                        <th id="md_tax_amount">$0.00</th>
+                                    </tr>
+                                    <!-- <tr id="discount_row">
+                                        <th colspan="4" class="text-end">Discount:</th>
+                                        <th id="discount_amount">$0.00</th>
+                                    </tr> -->
+                                    <tr>
+                                        <th colspan="4" class="text-end">Total:</th>
+                                        <th id="md_tx_total">$0.00</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success px-4">Save All Changes</button>
+                        </div>
+
+                    </div>        
                 </div>
             </div>
         </form>
     </div>
 </div>
 
+<div class="modal fade" id="editTaxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form id="contracteditTaxForm" action="{{ route('contract.apply.tax') }}" method="POST">
+            @csrf
+            <input type="hidden" name="contract_id" value="{{ $record->id }}">
+            <input type="hidden" name="tax_id" id="edit_tax_id">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modify Contract Tax</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div id="contractMessages"></div>
+                <div class="modal-body">
+                    
+                    <div class="row align-items-end mb-4 border-bottom pb-3">
+                        <div class="col-md-2">
+                            <label class="form-label">Tax Name</label>
+                            <input type="text" id="md_edit_tax_name" name="md_edit_tax_name" class="form-control" placeholder="e.g Tax">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Tax Percent (%)</label>
+                            <input type="text" id="md_edit_tax_percent" name="md_edit_tax_percent" class="form-control bg-light" placeholder="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-info w-100">
+                                    <i class="fas fa-plus"></i> Update Tax
+                                </button>
+                        </div>
+                        <div id="contractLoader" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:1000;text-align:center;padding-top:50px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table product-table" id="md_edit_producttaxTable">
+                                <thead>
+                                    <tr>
+                                        <th>Select Product</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Product Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="4" class="text-end">Subtotal:</th>
+                                        <th id="md_edit_tx_subtotal">$0.00</th>
+                                    </tr>
+                                    <tr id="tax_row">
+                                        <th colspan="4" class="text-end">Tax:</th>
+                                        <th id="md_edit_tax_amount">$0.00</th>
+                                    </tr>
+                                    <!-- <tr id="discount_row">
+                                        <th colspan="4" class="text-end">Discount:</th>
+                                        <th id="discount_amount">$0.00</th>
+                                    </tr> -->
+                                    <tr>
+                                        <th colspan="4" class="text-end">Total:</th>
+                                        <th id="md_edit_tx_total">$0.00</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+
+                    </div>        
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
         </section>
 
@@ -1514,99 +1711,7 @@
 
 
    
-   <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const productSelect = document.getElementById('productSelect');
-    const tempPrice = document.getElementById('tempPrice');
-    const tempQty = document.getElementById('tempQty');
-    const tempTotal = document.getElementById('tempTotal'); // Ensure this ID exists in your HTML
-    const addButton = document.getElementById('addToTable');
-    const tableBody = document.querySelector('#productTable tbody');
-    const grandTotalElement = document.getElementById('grandTotal');
-    let rowCount = 0; 
-
-    // Function to update the preview total in the entry row
-    function calculateLineTotal() {
-        if (tempTotal) { // Only run if the element exists
-            const price = parseFloat(tempPrice.value) || 0;
-            const qty = parseInt(tempQty.value) || 0;
-            tempTotal.value = (price * qty).toFixed(2);
-        }
-    }
-
-    // Update price and total when product is selected
-    productSelect.addEventListener('change', function() {
-        const price = this.options[this.selectedIndex].getAttribute('data-price');
-        tempPrice.value = price;
-        calculateLineTotal();
-    });
-
-    // Update total when user manually changes Price or Qty
-    tempPrice.addEventListener('input', calculateLineTotal);
-    tempQty.addEventListener('input', calculateLineTotal);
-
-    // Add product to the table
-    addButton.addEventListener('click', function() {
-        const productId = productSelect.value;
-        const productName = productSelect.options[productSelect.selectedIndex].text;
-        const price = parseFloat(tempPrice.value) || 0;
-        const qty = parseInt(tempQty.value) || 0;
-
-        if (!productId || qty <= 0) {
-            alert("Please select a product and valid quantity.");
-            return;
-        }
-
-        const total = (price * qty).toFixed(2);
-
-        const row = `
-            <tr>
-                <td>
-                    ${productName}
-                    <input type="hidden" name="products[${rowCount}][product_id]" value="${productId}">
-                </td>
-                <td>
-                    <input type="number" name="products[${rowCount}][unit_price]" value="${price}" class="form-control" readonly>
-                </td>
-                <td>
-                    <input type="number" name="products[${rowCount}][qty]" value="${qty}" class="form-control" readonly>
-                </td>
-                <td class="row-total">${total}</td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm remove-row">Delete</button>
-                </td>
-            </tr>
-        `;
-
-        tableBody.insertAdjacentHTML('beforeend', row);
-        updateGrandTotal();
-        
-        rowCount++; 
-        
-        // Reset inputs
-        productSelect.value = "";
-        tempPrice.value = "";
-        tempQty.value = 1;
-        if(tempTotal) tempTotal.value = "0.00";
-    });
-
-    // Remove row
-    tableBody.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-row')) {
-            e.target.closest('tr').remove();
-            updateGrandTotal();
-        }
-    });
-
-    function updateGrandTotal() {
-        let grandTotal = 0;
-        document.querySelectorAll('.row-total').forEach(cell => {
-            grandTotal += parseFloat(cell.textContent);
-        });
-        grandTotalElement.textContent = grandTotal.toFixed(2);
-    }
-});
-</script>
+   
 
 <script>
         document.addEventListener('DOMContentLoaded', function() {
