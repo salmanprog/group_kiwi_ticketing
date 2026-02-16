@@ -1537,8 +1537,8 @@
                             <div class="mt-4 pt-3 border-top">
                                 <label class="form-label font-weight-bold">Client Confirmation Status</label>
                                 <select name="confirmed_with_client" class="form-select" required>
-                                    <option value="0">No, haven't asked yet</option>
-                                    <option value="1">Yes, I don't need to ask / Approved</option>
+                                    <option value="0">Yes, I don't need to ask / Approved</option>
+                                    <option value="1">No, haven't asked yet</option>
                                 </select>
                                 <small class="text-muted text-info">Please select "Yes" if you have verbal or written approval for these changes.</small>
                             </div>
