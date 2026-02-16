@@ -18,9 +18,9 @@ $(document).ready(function() {
     });
 
     // When quantity changes
-    $('#product_qty').on('input', function() {
-        updatePrice();
-    });
+    // $('#product_qty').on('input', function() {
+    //     updatePrice();
+    // });
 
 
     $('#contractForm').on('submit', function (e) {
