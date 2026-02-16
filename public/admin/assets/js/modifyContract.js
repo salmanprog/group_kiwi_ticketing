@@ -12,7 +12,7 @@ $(document).ready(function() {
         $('#product_name').val(name);
     }
 
-    // When product changes
+    // When product changess
     $('#product').on('change', function() {
         updatePrice();
     });
