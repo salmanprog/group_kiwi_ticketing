@@ -31,6 +31,7 @@ use App\Http\Controllers\Portal\EstimateTaxController;
 use App\Http\Controllers\Portal\EstimateDiscountController;
 use App\Http\Controllers\Portal\EstimateInstallmentController;
 use Auth0\Laravel\Facade\Auth0;
+use App\Http\Controllers\Portal\ContractEmailController;
 
 
 /*
@@ -114,6 +115,8 @@ Route::middleware(['auth_client:web'])->group(function () {
 // -------------------------------------------------------------------------
 Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
+    Route::get('/company-profile', [CompanyController::class, 'editCompanyProfile'])->name('company-profile');
+    Route::get('/contract-emails', [ContractEmailController::class, 'addContractEmail'])->name('contract-emails');
     Route::match(['get', 'post'], 'user-profile', [CompanyAdminController::class, 'profile'])->name('admin.profile');
     Route::match(['get', 'post'], 'update-stripe-key', [CompanyAdminController::class, 'stripeKey'])->name('portal.update-stripe-key');
     Route::get('terms-and-conditions', [CompanyAdminController::class, 'termsAndConditions'])->name('portal.terms-and-conditions');
@@ -273,8 +276,24 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
 });
 
+
+
 Route::post('/account/notes/save', [AccountActivityLogController::class, 'saveOrganizationNotes'])
     ->name('account.notes.save');
 
 Route::post('/contact/notes/save', [AccountActivityLogController::class, 'saveContactNotes'])
     ->name('contact.notes.save');
+
+
+
+Route::post('/company/update', [CompanyController::class, 'updateCompanyProfile'])
+    ->name('company.update');
+
+Route::post('contract-email/store', [ContractEmailController::class, 'emailStore'])->name('contract-email.store' );
+Route::get('contract-email/delete/{id}', [ContractEmailController::class, 'emailDelete'])->name('contract-email.delete' );
+Route::get('contract-email/ajax-listing', [ContractEmailController::class, 'ajaxListing'])->name('contract-email.ajax-listing');
+Route::get('/contract-email/search-ajax-listing', [ContractEmailController::class, 'SearchajaxListing'])
+     ->name('contract-email.search-ajax-listing');
+
+    Route::post('update-invoice-status', [InvoiceController::class, 'updateInvoiceStatus'])->name('update-invoice-status');
+    Route::post('update-installment-status', [InvoiceController::class, 'updateInstallmentStatus'])->name('update-installment-status');

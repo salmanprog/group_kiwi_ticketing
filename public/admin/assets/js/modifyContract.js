@@ -6,13 +6,13 @@ $(document).ready(function() {
         let name = selectedOption.data('name') || '';
         let qty = parseFloat($('#product_qty').val()) || 1;
 
-        let total = price * qty;
+        let total = price;
 
-        $('#product_price').val(total.toFixed(2));
+        $('#product_price').val(price.toFixed(2));
         $('#product_name').val(name);
     }
 
-    // When product changes
+    // When product changess
     $('#product').on('change', function() {
         updatePrice();
     });
@@ -30,7 +30,7 @@ $(document).ready(function() {
     let url = form.attr('action');
     let formData = new FormData(this);
 
-    // Show loader
+    // Show loaders
     $('#contractLoader').show();
 
     $.ajax({

@@ -627,6 +627,8 @@
                                 'user-profile'        => 'admin.profile', // example
                                 'change-password'     => 'admin.change-password',
                                 'update-stripe-key'   => 'portal.update-stripe-key',
+                                'company-profile'     => 'company-profile',
+                                'contract-emails'     => 'contract-emails',
                             ];
 
                             // ====================== Recursive Submenu Renderer ======================
@@ -899,7 +901,7 @@
                                                         </a>
                                                     </li>
                                                 @endforeach
-
+                                              
                                                 {{-- SubCategories --}}
                                                 @if($hasSubCategories)
                                                     @foreach($category['subCategories'] as $sub)

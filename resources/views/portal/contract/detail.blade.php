@@ -722,9 +722,6 @@
                                                     <span class="badge status-{{ $estimate->status }}">
                                                         {{ strtoupper($estimate->status) }}
                                                     </span>
-                                                    @if ($estimate->is_adjusted)
-                                                        <small class="text-muted"><em>(Adjusted)s</em></small>
-                                                    @endif
                                                 </td>
                                                 @php
                                                     $subtotal =
@@ -895,32 +892,30 @@
                                                                 @foreach ($item->itemTaxes as $tax)
                                                                     {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if (!$loop->last),@endif @endforeach
                                                             ]'>
-                                                            Apply Taxes:
-                                                            @foreach ($item->itemTaxes as $tax)
-                                                                {{ $tax->name }}@if (!$loop->last)
-                                                                    ,
-                                                                @endif
-                                                            @endforeach
-                                                        </small>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $item->description ?? 'N/A' }}</td>
-                                                <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
-                                                <td>${{ number_format($item->price, 2) }}</td>
-                                                <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                                                Apply Taxes:
+                                                                @foreach($item->itemTaxes as $tax)
+                                                                    {{ $tax->name }}@if(!$loop->last), @endif
+                                                                @endforeach
+                                                            </small>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ ($item->description) ?? 'N/A' }}</td>
+                                                    <td>{{ $item->quantity }}</td>
+                                                    <td>${{ number_format($item->price, 2) }}</td>
+                                                    <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr class="no-items">
+                                                <td colspan="5" class="text-center">No products added yet.</td>
                                             </tr>
-                                        @endforeach
-                                    @else
-                                        <tr class="no-items">
-                                            <td colspan="5" class="text-center">No products added yet.</td>
+                                        @endif
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3" class="">Subtotal:</th>
+                                            <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
                                         </tr>
-                                    @endif
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th colspan="3" class="">Subtotal:</th>
-                                        <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
-                                    </tr>
 
                                     @if ($estimate && $estimate->taxes->count())
                                         <tr>
@@ -1471,156 +1466,94 @@
             </div>
             </div>
 
-            <div class="modal fade" id="modifyContractModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog " style="max-width: 90%;">
-                    <form id="contractForm" action="{{ route('contract.modify.product') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="contract_id" value="{{ $record->id }}">
-
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Modify Contract</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  <div class="modal fade" id="modifyContractModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form id="contractForm" action="{{ route('contract.modify.product') }}" method="POST">
+            @csrf
+            <input type="hidden" name="contract_id" value="{{ $record->id }}">
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modify Contract</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div id="contractMessages"></div>
+                <div class="modal-body">
+                    
+                    <div class="row align-items-end mb-4 border-bottom pb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Product</label>
+                            <select id="product" name="product" class="form-select">
+                                <option value="" data-price="0">Choose Product</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}" 
+                                            data-price="{{ $product->price }}"
+                                            data-name="{{ $product->name }}"
+                                            >
+                                        {{ $product->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" id="product_name" name="product_name" value="">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Qty</label>
+                            <input type="number" id="product_qty" name="product_qty" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Price</label>
+                            <input type="text" id="product_price" name="product_price" class="form-control bg-light" readonly value="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-info w-100">
+                                    <i class="fas fa-plus"></i> Add to List
+                                </button>
+                            <button class="btn btn-info btn-sm no-print"
+                                    type="button" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#taxModal"
+                                    data-id="{{ $record->id }}"
+                                    data-url="{{ route('contract.modify.details', $record->id) }}"
+                                    data-csrf="{{ csrf_token() }}">
+                                <i class="fas fa-percentage me-1"></i>Add Tax
+                            </button>
+                        </div>
+                        <div id="contractLoader" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:1000;text-align:center;padding-top:50px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
                             </div>
-                            <div id="contractMessages"></div>
-                            <div class="modal-body">
-
-                                <div class="row align-items-end mb-4 border-bottom pb-3">
-                                    <div class="product-selection-section">
-                                        <div class="row g-3 align-items-center">
-                                            <!-- Product Dropdown -->
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label class="form-label fw-semibold text-dark mb-2">
-                                                        <i class="fas fa-box me-1 text-primary"></i>Select Product
-                                                    </label>
-                                                    <select id="product" name="product"
-                                                        class="form-select shadow-sm">
-                                                        <option value="" data-price="0">Choose a product...</option>
-                                                        @foreach ($products as $product)
-                                                            <option value="{{ $product->id }}"
-                                                                data-price="{{ $product->price }}"
-                                                                data-name="{{ $product->name }}">
-                                                                {{ $product->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    <input type="hidden" id="product_name" name="product_name"
-                                                        value="">
-                                                </div>
-                                            </div>
-
-                                            <!-- Quantity Input -->
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <label class="form-label fw-semibold text-dark mb-2">
-                                                        <i class="fas fa-sort-amount-up me-1 text-primary"></i>Quantity
-                                                    </label>
-                                                    <input type="number" id="product_qty" name="product_qty"
-                                                        class="form-control  shadow-sm" value="1"
-                                                        min="1" placeholder="Enter qty">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <label class="form-label fw-semibold text-dark mb-2">
-                                                        <i class="fas fa-sort-amount-up me-1 text-primary"></i>Unit Price
-                                                    </label>
-                                                    <input type="number" id="product_price" name="product_price"
-                                                        class="form-control shadow-sm" value="0.00"
-                                                        min="0" step="0.01" placeholder="Enter price">
-                                                </div>
-                                            </div>
-
-                                            <!-- Price Display -->
-                                            <!-- Price Display - FIXED -->
-                                            {{-- <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <label class="form-label fw-semibold text-dark mb-2">
-                                                        <i class="fas fa-tag me-1 text-primary"></i>Unit Price
-                                                    </label>
-                                                    <input type="text" id="product_price" name="product_price"
-                                                        class="form-control bg-light" readonly value="0.00"
-                                                        placeholder="0.00">
-                                                </div>
-                                            </div> --}}
-
-                                            <!-- Action Buttons -->
-                                            <div class="col-md-4">
-                                                <div class="d-flex gap-2">
-                                                    <!-- Add to List Button -->
-                                                    <button type="submit"
-                                                        class="btn btn-primary py-2 px-4 fw-semibold shadow-sm">
-                                                        <i class="fas fa-plus-circle me-2"></i>Add to List
-                                                    </button>
-
-                                                    <!-- Tax Button Row -->
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <button class="btn btn-outline-secondary btn-sm flex-grow-1 py-2"
-                                                            type="button" data-bs-toggle="modal" data-bs-target="#taxModal"
-                                                            data-id="{{ $record->id }}"
-                                                            data-url="{{ route('contract.modify.details', $record->id) }}"
-                                                            data-csrf="{{ csrf_token() }}">
-                                                            <i class="fas fa-percentage me-1"></i>Add Tax
-                                                        </button>
-
-                                                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill border">
-                                                            <i class="fas fa-info-circle me-1 text-info"></i>Optional
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Optional: Quick Summary Line -->
-                                        <div class="row mt-3">
-                                            <div class="col-12">
-                                                <div class="d-flex justify-content-end align-items-center gap-3">
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-clock me-1"></i>Products will be added to list below
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="contractLoader"
-                                        style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:1000;text-align:center;padding-top:50px;">
-                                        <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table product-table" id="md_productTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Product Name</th>
-                                                    <th>Quantity</th>
-                                                    <th>Product Price</th>
-                                                    <th>Total</th>
-                                                    <th class="no-print">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th colspan="4" class="text-end">Subtotal:</th>
-                                                    <th id="md_subtotal">$0.00</th>
-                                                </tr>
-                                                <tr id="tax_row">
-                                                    <th colspan="4" class="text-end">Tax:</th>
-                                                    <th id="md_tax_amount">$0.00</th>
-                                                </tr>
-                                                <!-- <tr id="discount_row">
-                                                                        <th colspan="4" class="text-end">Discount:</th>
-                                                                        <th id="discount_amount">$0.00</th>
-                                                                    </tr> -->
-                                                <tr>
-                                                    <th colspan="4" class="text-end">Total:</th>
-                                                    <th id="md_total">$0.00</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table product-table" id="md_productTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Product Price</th>
+                                        <th>Total</th>
+                                        <th class="no-print">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="4" class="text-end">Subtotal:</th>
+                                        <th id="md_subtotal">$0.00</th>
+                                    </tr>
+                                    <tr id="tax_row">
+                                        <th colspan="4" class="text-end">Tax:</th>
+                                        <th id="md_tax_amount">$0.00</th>
+                                    </tr>
+                                    <!-- <tr id="discount_row">
+                                        <th colspan="4" class="text-end">Discount:</th>
+                                        <th id="discount_amount">$0.00</th>
+                                    </tr> -->
+                                    <tr>
+                                        <th colspan="4" class="text-end">Total:</th>
+                                        <th id="md_total">$0.00</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
 
                                     </div>
                     </form>
