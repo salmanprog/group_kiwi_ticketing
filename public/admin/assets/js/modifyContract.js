@@ -585,7 +585,7 @@ $(document).on('submit', '#contractTaxForm', function (e) {
             $('#contractLoader').hide();
             //alert('Tax applied successfully.');
             $('#taxModal').modal('hide');
-            $('#modifyContractModal').modal('show');
+            $('#modifyContractModal').modal('hide');
             reloadModifyContract(contractId);
         },
 
@@ -639,27 +639,35 @@ function reloadModifyContract(contractId) {
         type: 'GET',
         success: function(response) {
 
-            $('#contractLoader').hide();
+           $('#contractLoader').hide();
+            
             let tbody = $('#md_productTable tbody');
             tbody.empty();
 
             if (!response.estimates || response.estimates.length === 0) {
                 tbody.append(`<tr class="no-items">
                                 <td colspan="5" class="text-center">No products added yet.</td>
-                            </tr>`);
+                              </tr>`);
                 $('#md_subtotal').text('$0.00');
                 $('#md_tax_amount').text('$0.00');
                 $('#md_total').text('$0.00');
+                $('#remaining_total').val(0);
+                $('#total_amount').val(0);
+                $('#remainingTotal').text('$0.00');
                 return;
             }
 
             let subtotal = 0;
-            let taxTotal = 0;
+            let totalTax = 0;
 
-            // Loop through estimates
+            // Clear installments container
+            let installmentsContainer = $('#dynamicInputsContainer');
+            installmentsContainer.empty();
+
             response.estimates.forEach(function(estimate){
                 if(!estimate.items || estimate.items.length === 0) return;
 
+                // Loop through items
                 estimate.items.forEach(function(item){
                     let quantity = parseFloat(item.quantity) || 0;
                     let price = parseFloat(item.price) || 0;
@@ -670,13 +678,12 @@ function reloadModifyContract(contractId) {
                     let taxesHtml = '';
                     if(item.item_taxes && item.item_taxes.length){
                         item.item_taxes.forEach(function(tax){
-                            let taxAmount = total * parseFloat(tax.percentage)/100 || 0;
-                            taxTotal += taxAmount;
+                            let taxAmount = total * parseFloat(tax.percentage)/100;
+                            totalTax += taxAmount;
                             taxesHtml += `<small class="text-muted d-block">Apply Taxes: ${tax.name} (${tax.percentage}%)</small>`;
                         });
                     }
 
-                    // Append item row
                     tbody.append(`
                         <tr data-id="${item.id}">
                             <td>${item.name}${taxesHtml}</td>
@@ -690,13 +697,10 @@ function reloadModifyContract(contractId) {
                     `);
                 });
 
-                // Append overall estimate taxes row (like your Blade HTML)
+                // Append estimate-level taxes if needed
                 if (estimate.taxes && estimate.taxes.length) {
                     let taxBlocks = '';
                     estimate.taxes.forEach(function(tax){
-                        let amount = subtotal * parseFloat(tax.percent)/100;
-                        taxTotal += amount;
-
                         taxBlocks += `
                             <div class="border rounded px-2 py-1 d-flex align-items-center gap-1" data-tax-id="${tax.id}">
                                 <small class="fw-semibold">${tax.name} (${tax.percent}%)</small>
@@ -718,9 +722,8 @@ function reloadModifyContract(contractId) {
                                     data-csrf="${$('meta[name="csrf-token"]').attr('content')}">
                                     Delete
                                 </button>
-
                             </div>
-                        `;  
+                        `;
                     });
 
                     tbody.append(`
@@ -730,16 +733,47 @@ function reloadModifyContract(contractId) {
                                     ${taxBlocks}
                                 </div>
                             </th>
-                            <th id="tax_amount">$${taxTotal.toFixed(2)}</th>
+                            <th id="tax_amount">$${totalTax.toFixed(2)}</th>
                         </tr>
                     `);
                 }
+
+                // Append installments
+                if (estimate.installments && estimate.installments.length) {
+                    estimate.installments.forEach(function(inst, idx){
+                        installmentsContainer.append(`
+                            <div class="row mb-2 installment-row">
+                                <div class="col-md-5">
+                                    <input type="number"
+                                        name="installments[${idx}][amount]"
+                                        class="form-control inst-amount"
+                                        value="${inst.amount}"
+                                        step="0.01" min="0" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="date"
+                                        name="installments[${idx}][date]"
+                                        class="form-control inst-date"
+                                        value="${inst.installment_date}"
+                                        min="${new Date().toISOString().split('T')[0]}" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger w-100 btn-remove">Remove</button>
+                                </div>
+                            </div>
+                        `);
+                    });
+                }
             });
 
-            // Update footer totals
+            // Update totals
+            let grandTotal = subtotal + totalTax;
             $('#md_subtotal').text(`$${subtotal.toFixed(2)}`);
-            $('#md_tax_amount').text(`$${taxTotal.toFixed(2)}`);
-            $('#md_total').text(`$${(subtotal + taxTotal).toFixed(2)}`);
+            $('#md_tax_amount').text(`$${totalTax.toFixed(2)}`);
+            $('#md_total').text(`$${grandTotal.toFixed(2)}`);
+            $('#remaining_total').val(grandTotal.toFixed(2));
+            $('#total_amount').val(grandTotal.toFixed(2));
+            $('#remainingTotal').text(`$${grandTotal.toFixed(2)}`);
 
             // Show success message
             showMessage('Contract products tac apply successfully!', 'success');
