@@ -1425,7 +1425,7 @@
                         <div class="col-md-3">
                             <label class="form-label">Product</label>
                             <select id="product" name="product" class="form-select">
-                                <option value="" data-price="0">Choose...</option>
+                                <option value="" data-price="0">Choose Product</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}" 
                                             data-price="{{ $product->price }}"
