@@ -119,7 +119,7 @@
 
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">
-                                    Save
+                                    Update Company
                                 </button>
                                 <a href="{{ route('company-management.index') }}" class="btn btn-secondary">
                                     Cancel

@@ -62,49 +62,48 @@
             {{-- Address Section --}}
             <div class="address-section">
                 <div class="address-box">
-                    <h4><i class="fas fa-building me-2"></i>From</h4>
+                    <h4><i class="fas fa-building mr-2"></i>From</h4>
                     <p>
                         <strong>{{ $record->company->name }}</strong><br>
-                        <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
-                        <br>
                         <strong>Email:</strong> {{ $record->company->email }}
+                        <br>
+                        <strong>Phone:</strong> {{ $record->company->mobile_no }}
+                        @if($record->company->address || $record->company->address_2)
+                            <br>
+                            <strong>Address:</strong>
+                        @endif
+
                         @if($record->company->address)
-                            <br>
-                            <strong>Address:</strong> {{ $record->company->address }}
+                            {{ $record->company->address }}<br>
                         @endif
+
                         @if($record->company->address_2)
-                            <br>
-                            <strong>Address Line 2:</strong> {{ $record->company->address_2 }}
+                            {{ $record->company->address_2 }}<br>
                         @endif
-                        @if($record->company->city)
+
+                        @if($record->company->city || $record->company->state || $record->company->zip)
+                            {{ $record->company->city }}
+                            @if($record->company->state), {{ $record->company->state }}@endif
+                            @if($record->company->zip) {{ $record->company->zip }}@endif
                             <br>
-                            <strong>City:</strong> {{ $record->company->city }}
                         @endif
-                        @if($record->company->state)
-                            <br>
-                            <strong>State:</strong> {{ $record->company->state }}
-                        @endif
-                        @if($record->company->zip)
-                            <br>
-                            <strong>Zip:</strong> {{ $record->company->zip }}
-                        @endif
+
                         @if($record->company->country)
-                            <br>
-                            <strong>Country:</strong> {{ $record->company->country }}
+                            {{ $record->company->country }}
                         @endif
                     </p>
                 </div>
                 <div class="address-box">
-                    <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
+                    <h4><i class="fas fa-user mr-2"></i>Invoice To</h4>
                     <p>
                         <strong>{{ $record->organization_name }}</strong><br>
                         {{ $record->organization_address_one }}
                            <br>
-                        <strong>Contact Name:</strong> {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
+                        {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
                         <br>
-                        <strong>Contact Email:</strong> {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
+                        {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
                         <br>
-                        <strong>Contact Phone:</strong> {{ ($invoice_user->phone) ? $invoice_user->phone : 'N/A' }}
+                        {{ ($invoice_user->phone) ? $invoice_user->phone : 'N/A' }}
                     </p>
                 </div>
             </div>
