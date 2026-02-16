@@ -793,7 +793,7 @@
                                 </ul>
                             @endif
                         </div>
-                        <div class="col-md-12">
+                        <div class="mt-4">
                             <label class="form-label">Add Notes</label>
                             <input type="hidden" name="client_id" id="client_id" value="{{ $record->client_id }}">
                             <input type="hidden" name="contract_id" id="contract_id" value="{{ $record->id }}">

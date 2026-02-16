@@ -70,7 +70,7 @@
 
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">
-                                    Create Company
+                                    update
                                 </button>
                                 <a href="{{ route('company-management.index') }}" class="btn btn-secondary">
                                     Cancel
