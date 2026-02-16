@@ -45,8 +45,8 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Company Mobile No <span
-                                                    class="required">*</span></label>
+                       Edit Ticket
+                             class="required">*</span></label>
                                             <input required type="text" name="mobile_no"
                                                 value="{{ $company->mobile_no }}" class="form-control"
                                                 placeholder="" >

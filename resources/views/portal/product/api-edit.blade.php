@@ -38,12 +38,12 @@
                                             value="{{ $ticket['saleChannel'] ?? '' }}" disabled>
                                     </div>
 
-                                    <div class="col-md-6 mt-3">
+                                    <div class="col-md-6">
                                         <label class="form-label">Price</label>
                                         <input type="number" step="0.01" name="ticketPrice" class="form-control"
                                             value="{{ old('ticketPrice', $ticket['ticketPrice'] ?? '') }}" required>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 mt-3">
                                         <div class="form-group">
                                             <label class="form-label">Description</label>
                                             <textarea name="description" id="description" class="form-control" style="height: 120px;"
@@ -54,7 +54,7 @@
                             </div>
 
                             <div class="form-actions mt-4">
-                                <button type="submit" class="btn btn-primary">Update API Ticket</button>
+                                <button type="submit" class="btn btn-primary">Update Ticket</button>
                                 <a href="{{ route('product.index') }}" class="btn btn-secondary">Cancel</a>
                             </div>
                         </form>

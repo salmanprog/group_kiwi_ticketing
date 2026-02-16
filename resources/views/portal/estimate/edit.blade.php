@@ -581,7 +581,7 @@
                             aria-label="Close">&times;</button>
                     </div>
 
-                    <div class="modal-body">
+                    <div class="modal-body forref-height">
                         <div id="modalAlert" class="alert d-none" role="alert"></div>
                         <table class="table table-hover">
                             <thead>
