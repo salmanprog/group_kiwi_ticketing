@@ -28,6 +28,8 @@ class ThirdPartyApiMiddleware
         'update-stripe-key'   => 'portal.update-stripe-key',
         'update-installment-status'   => 'portal.update-installment-status',
         'update-invoice-status' => 'portal.update-invoice-status',
+        'company-profile'    => 'company-profile',
+        'contract-emails'    => 'contract-emails',
     ];
 
     public function handle($request, Closure $next)
@@ -51,6 +53,7 @@ class ThirdPartyApiMiddleware
                         'domain'      => env('THIRD_PARTY_DOMAIN_URL'),
                     ]));
 
+                // dd($response->body());
                 if ($response->successful()) {
                     $data = json_decode($response->body(), true);
                     if (($data['errorCode'] ?? null) === 0) {
@@ -79,12 +82,13 @@ class ThirdPartyApiMiddleware
 
                 $currentRouteName = $request->route() ? $request->route()->getName() : null;
                 $currentPath = $request->path(); // e.g., portal/organization/ajax-listing
-
+                
                 // Skip checking no-permission route to avoid loop
                 if ($currentRouteName && $currentRouteName !== 'no-permission') {
                     // Check if current route matches exactly OR starts with a base route
                     $isAllowed = false;
 
+                    
                     foreach ($this->routeMap as $slug => $route) {
                         if (in_array($route, $allowedRoutes)) {
                             // Allow exact match

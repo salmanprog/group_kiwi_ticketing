@@ -635,7 +635,7 @@
                             <div class="controls-left">
                                 <div class="table-info">
                                     {{-- <i class="fas fa-database"></i>
-                                    <span>Showing all contracts</span> --}}
+                                    <span>Showing all contracts</span> --}} 
 
                                     <form id="filter_form" method="GET" action="{{ route('contract.index') }}"
                                         class="filter-form"

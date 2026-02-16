@@ -9,7 +9,7 @@
             <div class="col-md-12">
                 @include('portal.flash-message')
                 <div class="card">
-                    <div class="card-header card-default">
+                    <div class="card-header card-default"> 
                         <div class="row">
                             <div class="col-md-6">
                                Estimate
@@ -715,17 +715,17 @@
                                     <form id="filter_form" method="GET" action="{{ route('estimate.index') }}"
                                         class="filter-form"
                                         style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-
+                                         <p class="filter-label">Search Estimate by Creation Date</p>
                                         <!-- Start Date -->
                                         <div class="date-filter-group">
-                                            <label for="start_date" class="filter-label">Start Date</label>
+                                            <label for="start_date" class="filter-label">From</label>
                                             <input type="date" id="start_date" name="start_date" class="date-input"
                                                 placeholder="Start Date" value="{{ request('start_date') }}">
                                         </div>
 
                                         <!-- End Date -->
                                         <div class="date-filter-group">
-                                            <label for="end_date" class="filter-label">End Date</label>
+                                            <label for="end_date" class="filter-label">To</label>
                                             <input type="date" id="end_date" name="end_date" class="date-input"
                                                 placeholder="End Date" value="{{ request('end_date') }}">
                                         </div>

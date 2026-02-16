@@ -163,5 +163,27 @@ class CompanyController extends CRUDCrontroller
 
     }
 
+    public function editCompanyProfile()
+    {
+
+        // dd(Auth::user());
+        $company = Company::select('company.*')->join('company_users','company.id','company_users.company_id')
+        ->join('users','company_users.user_id','users.id')->where('users.id',Auth::user()->id)->first();
+        $this->__data['company'] = $company;
+
+        return $this->__cbAdminView('company.company-profile',$this->__data); 
+    }
+
+    public function updateCompanyProfile(Request $request)
+    {
+        $company = Company::where('id',$request->company_id)->first();
+        $company->name = $request->name;
+        $company->email = $request->email;
+        $company->mobile_no = $request->mobile_no;
+        $company->address = $request->address;
+        $company->save();
+        return redirect()->back()->with('success', 'Company updated successfully');
+    }
+
    
 }

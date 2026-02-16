@@ -7,11 +7,14 @@ use App\Models\UserApiToken;
 use App\Models\Estimate;
 use App\Models\Contract;
 use App\Models\Invoice;
+use App\Models\ContractEmail;
+use App\Models\Company;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EstimateHook
 {
@@ -126,6 +129,37 @@ class EstimateHook
         
         $estimate->update(['subtotal' => $subtotal,'total' => $total,'discount_total' => $discountAmount,'tax_total' => $taxTotal,'status' => 'approved']);
                
+
+        $contractEstimates = ContractEmail::where('auth_code', $estimate->auth_code)->get();
+        $company = \App\Models\Company::find($estimate->company_id);
+
+            // $pdf = Pdf::loadView('pdf.contract', compact('estimate'));
+            // $fileName = 'contracts/contract_'.$estimate->id.'.pdf';
+            // Storage::disk('public')->put($fileName, $pdf->output());
+            // $pdf_link = asset('storage/'.$fileName);
+            // $link = $pdf_link;
+
+
+
+        // if($contractEstimates->count() > 0){
+
+        //     foreach($contractEstimates as $contractEstimate){
+        //           $mail_params['username'] = $contractEstimate->name;
+        //           $mail_params['company_name'] = $company->name;
+        //           $mail_params['link'] = $link;
+        //             $subject = 'Test Email';
+        //             sendMail(
+        //                 $contractEstimate->email,
+        //                 'contract_email',
+        //                 $subject,
+        //                 $mail_params
+        //             );
+        //     }
+
+        // }
+
+
+
         $contract = Contract::find($estimate->contract_id);
 
         if (!$contract) {
