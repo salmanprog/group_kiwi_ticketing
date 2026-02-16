@@ -50,7 +50,7 @@
                                             <input required type="text" name="mobile_no"
                                                 value="{{ $company->mobile_no }}" class="form-control"
                                                 placeholder="" >
-                                            <small class="form-hint">Format: +CountryCode-Number</small>
+                                            <!-- <small class="form-hint">Format: +CountryCode-Number</small> -->
                                         </div>
                                     </div>
 
