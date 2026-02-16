@@ -723,9 +723,6 @@
                                                     <span class="badge status-{{ $estimate->status }}">
                                                         {{ strtoupper($estimate->status) }}
                                                     </span>
-                                                    @if ($estimate->is_adjusted)
-                                                        <small class="text-muted"><em>(Adjusted)s</em></small>
-                                                    @endif
                                                 </td>
                                                 @php
                                                     $subtotal = $estimate->items->sum('total_price') ?: (float) ($estimate->total ?? 0);
