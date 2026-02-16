@@ -30,7 +30,7 @@ $(document).ready(function() {
     let url = form.attr('action');
     let formData = new FormData(this);
 
-    // Show loader
+    // Show loaders
     $('#contractLoader').show();
 
     $.ajax({
