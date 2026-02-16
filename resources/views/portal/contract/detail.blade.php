@@ -897,7 +897,7 @@
                                                         @endif
                                                     </td>
                                                     <td>{{ ($item->description) ?? 'N/A' }}</td>
-                                                    <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
+                                                    <td>{{ $item->quantity }}</td>
                                                     <td>${{ number_format($item->price, 2) }}</td>
                                                     <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
                                                 </tr>
