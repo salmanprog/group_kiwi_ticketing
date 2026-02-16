@@ -97,13 +97,16 @@
                     <h4><i class="fas fa-user mr-2"></i>Invoice To</h4>
                     <p>
                         <strong>{{ $record->organization_name }}</strong><br>
-                        {{ $record->organization_address_one }}
-                           <br>
                         {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
                         <br>
+                        {{-- <strong>Email:</strong> --}}
                         {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
                         <br>
-                        {{ ($invoice_user->phone) ? $invoice_user->phone : 'N/A' }}
+                        {{-- <strong>Phone:</strong> --}}
+                         {{ ($invoice_user->phone) ? $invoice_user->phone : 'Not available' }}
+                        <br>
+                        {{-- <strong>Address:</strong>  --}}
+                        {{ $record->organization_address_one }}
                     </p>
                 </div>
             </div>
@@ -506,7 +509,7 @@
                                                 data-url="{{ route('estimate.note.save') }}"
                                                 data-csrf="{{ csrf_token() }}"
                                                 data-estimateid="{{ $estimate->id }}">
-                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Condition</span>
+                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Conditions</span>
                                             <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
                                         </button>
                                         <div class="print-value mt-3">

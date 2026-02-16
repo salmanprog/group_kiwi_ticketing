@@ -715,7 +715,7 @@
                                     <form id="filter_form" method="GET" action="{{ route('estimate.index') }}"
                                         class="filter-form"
                                         style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                                         <p class="filter-label mb-0">Search Estimate by Creation Date</p>
+                                         <p class="filter-label mb-0">Search Estimate by Creation Date:</p>
                                         <!-- Start Date -->
                                         <div class="date-filter-group">
                                             <label for="start_date" class="filter-label">From</label>

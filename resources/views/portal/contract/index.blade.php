@@ -641,7 +641,7 @@
                                         class="filter-form"
                                         style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                                         <!-- Start Date -->
-                                        <p class="filter-label mb-0">Search Contract by Creation Date</p>
+                                        <p class="filter-label mb-0">Search Contract by Creation Date:</p>
 
                                         <div class="date-filter-group">
                                             <label for="start_date" class="filter-label">From</label>
