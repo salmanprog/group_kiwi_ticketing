@@ -97,13 +97,16 @@
                     <h4><i class="fas fa-user mr-2"></i>Invoice To</h4>
                     <p>
                         <strong>{{ $record->organization_name }}</strong><br>
-                        {{ $record->organization_address_one }}
-                           <br>
                         {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
                         <br>
+                        {{-- <strong>Email:</strong> --}}
                         {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
                         <br>
-                        {{ ($invoice_user->phone) ? $invoice_user->phone : 'N/A' }}
+                        {{-- <strong>Phone:</strong> --}}
+                         {{ ($invoice_user->phone) ? $invoice_user->phone : 'Not available' }}
+                        <br>
+                        {{-- <strong>Address:</strong>  --}}
+                        {{ $record->organization_address_one }}
                     </p>
                 </div>
             </div>
