@@ -1439,7 +1439,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Qty</label>
-                            <input type="text" id="product_qty" name="product_qty" class="form-control" value="1">
+                            <input type="number" id="product_qty" name="product_qty" class="form-control" value="1" min="1">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Price</label>
