@@ -8,7 +8,7 @@ $(document).ready(function() {
 
         let total = price;
 
-        $('#product_price').val(total.toFixed(2));
+        $('#product_price').val(price.toFixed(2));
         $('#product_name').val(name);
     }
 
