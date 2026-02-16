@@ -316,4 +316,5 @@ class ContractController extends CRUDCrontroller
         return redirect()->route('contract.show', $contract->slug)->with('success', 'Contract modified successfully');
     }
 
+
 }
