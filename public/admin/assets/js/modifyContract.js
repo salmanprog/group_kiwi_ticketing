@@ -6,7 +6,7 @@ $(document).ready(function() {
         let name = selectedOption.data('name') || '';
         let qty = parseFloat($('#product_qty').val()) || 1;
 
-        let total = price * qty;
+        let total = price;
 
         $('#product_price').val(total.toFixed(2));
         $('#product_name').val(name);
