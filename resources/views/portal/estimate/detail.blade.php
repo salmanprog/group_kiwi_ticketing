@@ -133,6 +133,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Product Name</th>
+                                                    <th>Product Description</th>
                                                     <th>Quantity</th>
                                                     <th>Product Price</th>
                                                     <th>Total</th>
@@ -157,10 +158,10 @@
                                                                     </small>
                                                                 @endif
                                                             </td>
+                                                            <td>{{ $item->description }}</td>
                                                             <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
                                                             <td>${{ number_format($item->price, 2) }}</td>
                                                             <td class="item-total" colspan="2">${{ number_format($item->total_price, 2) }}</td>
-                                                            
                                                         </tr>
                                                     @endforeach
                                                 @else

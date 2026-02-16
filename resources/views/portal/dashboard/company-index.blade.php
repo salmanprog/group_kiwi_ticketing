@@ -67,10 +67,26 @@
                     </div>
                 </div> -->
             </div>
-
-            
         </div>
 
+        <div class="row font-cls">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Estimates Amount</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li><span>Pending </span>${{$estimate_send_total}}</li>
+                            <li><span>Draft </span>${{$estimate_draft_total}}</li>
+                            <li><span>Approved </span>${{$estimate_approved_total}}</li>
+                            <li><span>Rejected </span>${{$estimate_rejected_total}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Charts Row 2 -->
         {{-- <div class="row font-cls">
        

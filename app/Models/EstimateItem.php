@@ -31,6 +31,7 @@ class EstimateItem extends Model
         'user_estimate_id',
         'product_id',
         'name',
+        'description',
         'quantity',
         'unit',
         'price',
@@ -38,6 +39,7 @@ class EstimateItem extends Model
         'product_price',
         'tax',
         'gratuity',
+        'is_modify',
         'created_at',
         'updated_at',
     ];

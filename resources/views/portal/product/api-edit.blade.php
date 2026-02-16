@@ -26,13 +26,13 @@
                                             value="{{ old('ticketName', $ticket['ticketName'] ?? '') }}" required>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" style="display: none;">
                                         <label class="form-label">Ticket Type</label>
                                         <input type="text" class="form-control" name="ticketType"
                                             value="{{ $ticket['ticketType'] ?? '' }}" disabled>
                                     </div>
 
-                                    <div class="col-md-6 mt-3">
+                                    <div class="col-md-6 mt-3" style="display: none;">
                                         <label class="form-label">Sale Channel</label>
                                         <input type="text" class="form-control" name="saleChannel"
                                             value="{{ $ticket['saleChannel'] ?? '' }}" disabled>

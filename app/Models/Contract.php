@@ -33,6 +33,7 @@ class Contract extends Model
         'notes',
         'event_date',
         'is_accept',
+        'confirmed_with_client',
         'terms_and_condition',
     ];
 
