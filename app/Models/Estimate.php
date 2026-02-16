@@ -50,6 +50,14 @@ class Estimate extends Model
         return $this->hasMany(EstimateTax::class, 'estimate_id', 'id');
     }
 
+    // In Estimate.php
+    public function modifiedTaxes()
+    {
+        return $this->hasMany(EstimateTax::class, 'estimate_id', 'id')
+                    ->where('is_modify', 1);
+    }
+
+
     public function discounts()
     {
         return $this->hasMany(EstimateDiscount::class, 'estimate_id', 'id');
@@ -116,5 +124,45 @@ class Estimate extends Model
             'old_data' => json_encode($oldData),
             'new_data' => json_encode($newData),
         ]);
+    }
+
+    public function getSubtotalAttribute()
+    {
+        return $this->items->sum(function ($item) {
+            return $item->quantity * $item->price;
+        });
+    }
+
+    public function getTaxTotalAttribute()
+    {
+        return $this->items->sum(function ($item) {
+            return $item->itemTaxes->sum(function ($tax) use ($item) {
+                $itemTotal = $item->quantity * $item->price;
+                return $itemTotal * ($tax->percentage / 100);
+            });
+        });
+    }
+
+    public function getDiscountTotalAttribute()
+    {
+        $grossTotal = $this->subtotal + $this->tax_total;
+
+        return $this->discounts->sum(function ($discount) use ($grossTotal) {
+
+            if ($discount->type === 'percent') {
+                return $grossTotal * ($discount->value / 100);
+            }
+
+            if ($discount->type === 'fixed') {
+                return $discount->value;
+            }
+
+            return 0;
+        });
+    }
+
+    public function getFinalTotalAttribute()
+    {
+        return ($this->subtotal + $this->tax_total) - $this->discount_total;
     }
 }

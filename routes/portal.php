@@ -252,5 +252,21 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
     Route::get('/check-permission', [UserController::class, 'checkPermission'])
     ->name('check-permission');
 
+    Route::post('/contract/modify/product', [ContractController::class, 'modifyContractProducts'])
+    ->name('contract.modify.product');
+
+    Route::get('/contract/modify/{id}/details', [ContractController::class, 'getContractModifyDetails'])->name('contract.modify.details');
+    Route::post('/contract/modify/delete', [ContractController::class, 'modifyContractProductsDelete'])->name('contract.modify.delete');
+
+    Route::post('/portal/contract/apply-tax',[ContractController::class, 'applyTax'])->name('contract.apply.tax');
+    Route::get('/contract/{id}/tax/{taxid}/edit', [ContractController::class, 'getContractTaxModifyDetails'])->name('contract.modify.tax.edit');
+    Route::post('/estimate/tax/update', [ContractController::class, 'updateModifyTax']);
+    Route::delete('/estimate/tax/delete/{id}', [ContractController::class, 'deleteModifyTax']);
+    Route::post('/estimate-installment-modify/{estimate}/payment-save', [EstimateInstallmentController::class, 'modifysavePaymentSchedule'])
+    ->name('estimate.installments.modify.save');
+
+    Route::post('/contract/modify/save', [ContractController::class, 'saveModifiedContract'])
+        ->name('contract.modify.save');
+
 
 });

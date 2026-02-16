@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
-use App\Models\{CmsWidget, CompanyUser};
+use App\Models\{CmsWidget, CompanyUser, Estimate};
 use Illuminate\Support\Facades\Route;
 use Carbon\Carbon;
 use CustomHelper;
@@ -102,20 +102,23 @@ class DashboardController extends Controller
         ======================= */
         $data['widgets'] = [
             'manager' => [
-                'title' => 'Managers',
-                'count' => DB::table('users')
-                    ->join('company_users', 'company_users.user_id', '=', 'users.id')
-                    ->where('users.user_type', 'manager')
-                    // ->where('company_users.company_id', $companyId)
+                'title' => 'Accounts',
+                // 'count' => DB::table('users')
+                //     ->join('company_users', 'company_users.user_id', '=', 'users.id')
+                //     ->where('users.user_type', 'manager')
+                //     // ->where('company_users.company_id', $companyId)
+                //     ->count(),
+                'count' => DB::table('organizations')
+                     ->where('auth_code', Auth::user()->auth_code)
                     ->count(),
-                'link' => route('manager-management.index'),
+                'link' => route('organization.index'),
                 'icon' => 'fa fa-user-tie',
                 'color' => 'bg-primary',
             ],
             'client' => [
-                'title' => 'Clients',
-                'count' => DB::table('users')
-                    ->join('company_users', 'company_users.user_id', '=', 'users.id')
+                'title' => 'Contacts',
+                'count' => DB::table('users') ->where('auth_code', Auth::user()->auth_code)
+                    //->join('company_users', 'company_users.user_id', '=', 'users.id')
                     ->where('users.user_type', 'client')
                     // ->where('company_users.company_id', $companyId)
                     ->count(),
@@ -124,34 +127,34 @@ class DashboardController extends Controller
                 'color' => 'bg-success',
             ],
             'salesman' => [
-                'title' => 'Sales Team',
-                'count' => DB::table('users')
-                    ->join('company_users', 'company_users.user_id', '=', 'users.id')
-                    ->where('users.user_type', 'salesman')
+                'title' => 'Estimates',
+                'count' => DB::table('user_estimate')
+                    //->join('company_users', 'company_users.user_id', '=', 'users.id')
+                    ->where('auth_code', Auth::user()->auth_code)
                     // ->where('company_users.company_id', $companyId)
                     ->count(),
-                'link' => route('salesman-management.index'),
+                'link' => route('estimate.index'),
                 'icon' => 'fa fa-user-tag',
                 'color' => 'bg-warning',
             ],
             'contract' => [
                 'title' => 'Contracts',
                 'count' => DB::table('contracts')
-                    // ->where('company_id', $companyId)
+                     ->where('auth_code', Auth::user()->auth_code)
                     ->count(),
                 'link' => route('contract.index'),
                 'icon' => 'fa fa-file-contract',
                 'color' => 'bg-info',
             ],
-            'organization' => [
-                'title' => 'Organizations',
-                'count' => DB::table('organizations')
-                    // ->where('company_id', $companyId)
-                    ->count(),
-                'link' => route('organization.index'),
-                'icon' => 'fa fa-building',
-                'color' => 'bg-danger',
-            ],
+            // 'organization' => [
+            //     'title' => 'Organizations',
+            //     'count' => DB::table('organizations')
+            //         // ->where('company_id', $companyId)
+            //         ->count(),
+            //     'link' => route('organization.index'),
+            //     'icon' => 'fa fa-building',
+            //     'color' => 'bg-danger',
+            // ],
         ];
 
         /* =======================
@@ -168,7 +171,7 @@ class DashboardController extends Controller
 
         $estimates = DB::table('user_estimate')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            // ->where('company_id', $companyId)
+            // ->where('company_id', $companyId)s
             ->whereYear('created_at', Carbon::now()->year)
             ->whereNotIn('status', ['draft', 'rejected'])
             ->groupBy('month')
@@ -210,6 +213,20 @@ class DashboardController extends Controller
         ======================= */
         $data['estimate_chart'] = CmsWidget::getStatusPieChart('user_estimate');
         $data['contract_chart'] = CmsWidget::getStatusPieChart('contracts');
+        $estimates_sent = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'sent')->get();
+        $estimates_approved = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'approved')->get();
+        $estimates_draft = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'draft')->get();
+        $estimates_rejected = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'rejected')->get();
+        $estimate_send_total = (float) number_format($estimates_sent->sum('final_total'), 2, '.', '');
+        $estimate_approved_total = (float) number_format($estimates_approved->sum('final_total'), 2, '.', '');
+        $estimate_draft_total = (float) number_format($estimates_draft->sum('final_total'), 2, '.', '');
+        $estimate_rejected_total = (float) number_format($estimates_rejected->sum('final_total'), 2, '.', '');
+        $data['estimate_send_total'] = $estimate_send_total;
+        $data['estimate_approved_total'] = $estimate_approved_total;
+        $data['estimate_draft_total'] = $estimate_draft_total;
+        $data['estimate_rejected_total'] = $estimate_rejected_total;
+        // print_r($grandTotal);
+        // die();
 
         return $this->__cbAdminView('dashboard.company-index', $data);
     }

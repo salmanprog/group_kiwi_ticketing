@@ -38,6 +38,7 @@ class EstimateItem extends Model
         'product_price',
         'tax',
         'gratuity',
+        'is_modify',
         'created_at',
         'updated_at',
     ];
