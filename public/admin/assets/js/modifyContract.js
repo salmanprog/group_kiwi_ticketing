@@ -88,7 +88,7 @@ $(document).ready(function() {
                     tbody.append(`
                         <tr data-id="${item.id}">
                             <td>${item.name}${taxesHtml}</td>
-                            <td>${quantity} ${item.unit ?? ''}</td>
+                            <td>${quantity}</td>
                             <td>$${price.toFixed(2)}</td>
                             <td class="item-total">$${total.toFixed(2)}</td>
                             <td class="no-print">
@@ -191,7 +191,7 @@ $(document).on('click', 'button[data-bs-target="#modifyContractModal"]', functio
                     tbody.append(`
                         <tr data-id="${item.id}">
                             <td>${item.name}${taxesHtml}</td>
-                            <td>${quantity} ${item.unit ?? ''}</td>
+                            <td>${quantity} </td>
                             <td>$${price.toFixed(2)}</td>
                             <td class="item-total">$${total.toFixed(2)}</td>
                             <td class="no-print">
@@ -340,7 +340,7 @@ $(document).on('click', 'button[data-bs-target="#taxModal"]', function () {
                         <tr data-id="${item.id}">
                             <td><input type="checkbox" name="selected_products[]" value="${item.id}">${item.name}</td>
                             <td>${item.name}${taxesHtml}</td>
-                            <td>${quantity} ${item.unit ?? ''}</td>
+                            <td>${quantity}</td>
                             <td>$${price.toFixed(2)}</td>
                             <td class="item-total">$${total.toFixed(2)}</td>
                         </tr>
@@ -411,7 +411,7 @@ $(document).on('click', 'button[data-bs-target="#editTaxModal"]', function () {
                         <tr data-id="${item.id}">
                             <td><input type="checkbox" name="selected_products[]" value="${item.id}" ${isChecked}></td>
                             <td>${item.name}</td>
-                            <td>${quantity} ${item.unit ?? ''}</td>
+                            <td>${quantity}</td>
                             <td>$${price.toFixed(2)}</td>
                             <td class="item-total">$${total.toFixed(2)}</td>
                         </tr>
@@ -524,7 +524,7 @@ $(document).on('click', '.md-remove-item', function () {
                     tbody.append(`
                         <tr data-id="${item.id}">
                             <td>${item.name}${taxesHtml}</td>
-                            <td>${quantity} ${item.unit ?? ''}</td>
+                            <td>${quantity} </td>
                             <td>$${price.toFixed(2)}</td>
                             <td class="item-total">$${total.toFixed(2)}</td>
                             <td class="no-print">
@@ -687,7 +687,7 @@ function reloadModifyContract(contractId) {
                     tbody.append(`
                         <tr data-id="${item.id}">
                             <td>${item.name}${taxesHtml}</td>
-                            <td>${quantity} ${item.unit ?? ''}</td>
+                            <td>${quantity}</td>
                             <td>$${price.toFixed(2)}</td>
                             <td class="item-total">$${total.toFixed(2)}</td>
                             <td class="no-print">

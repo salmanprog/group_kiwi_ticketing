@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{CompanyAdmin,Company};
+use App\Models\{CompanyAdmin,Company,CompanyUser};
 
 class CompanyController extends CRUDCrontroller
 {
@@ -167,20 +167,43 @@ class CompanyController extends CRUDCrontroller
     {
 
         // dd(Auth::user());
-        $company = Company::select('company.*')->join('company_users','company.id','company_users.company_id')
-        ->join('users','company_users.user_id','users.id')->where('users.id',Auth::user()->id)->first();
-        $this->__data['company'] = $company;
 
+        $getCompany = CompanyUser::getCompany(Auth::user()->id);
+
+        $this->__data['company'] = $getCompany;
         return $this->__cbAdminView('company.company-profile',$this->__data); 
     }
 
     public function updateCompanyProfile(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'name'             => 'required|min:2|max:50',
+            'email'            => 'required|email|max:100',
+            'mobile_no'        => 'required',
+            'address'          => 'required|min:2|max:250',
+            'city'             => 'required|min:2|max:50',
+            'state'            => 'required|min:2|max:50',
+            'zip'              => 'required|min:2|max:10',
+            'country'          => 'required|min:2|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                        ->withErrors($validator)
+                        ->withInput();
+        }
         $company = Company::where('id',$request->company_id)->first();
+        // dd($company);
         $company->name = $request->name;
         $company->email = $request->email;
         $company->mobile_no = $request->mobile_no;
         $company->address = $request->address;
+        $company->address_2 = $request->address_2 ? $request->address_2 : "N/A";
+        $company->city = $request->city;
+        $company->state = $request->state;
+        $company->zip = $request->zip;
+        $company->country = $request->country;
         $company->save();
         return redirect()->back()->with('success', 'Company updated successfully');
     }

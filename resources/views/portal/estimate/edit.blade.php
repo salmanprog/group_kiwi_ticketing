@@ -68,6 +68,30 @@
                         <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
                         <br>
                         <strong>Email:</strong> {{ $record->company->email }}
+                        @if($record->company->address)
+                            <br>
+                            <strong>Address:</strong> {{ $record->company->address }}
+                        @endif
+                        @if($record->company->address_2)
+                            <br>
+                            <strong>Address Line 2:</strong> {{ $record->company->address_2 }}
+                        @endif
+                        @if($record->company->city)
+                            <br>
+                            <strong>City:</strong> {{ $record->company->city }}
+                        @endif
+                        @if($record->company->state)
+                            <br>
+                            <strong>State:</strong> {{ $record->company->state }}
+                        @endif
+                        @if($record->company->zip)
+                            <br>
+                            <strong>Zip:</strong> {{ $record->company->zip }}
+                        @endif
+                        @if($record->company->country)
+                            <br>
+                            <strong>Country:</strong> {{ $record->company->country }}
+                        @endif
                     </p>
                 </div>
                 <div class="address-box">
