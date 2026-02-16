@@ -294,3 +294,6 @@ Route::get('contract-email/delete/{id}', [ContractEmailController::class, 'email
 Route::get('contract-email/ajax-listing', [ContractEmailController::class, 'ajaxListing'])->name('contract-email.ajax-listing');
 Route::get('/contract-email/search-ajax-listing', [ContractEmailController::class, 'SearchajaxListing'])
      ->name('contract-email.search-ajax-listing');
+
+    Route::post('update-invoice-status', [InvoiceController::class, 'updateInvoiceStatus'])->name('update-invoice-status');
+    Route::post('update-installment-status', [InvoiceController::class, 'updateInstallmentStatus'])->name('update-installment-status');
