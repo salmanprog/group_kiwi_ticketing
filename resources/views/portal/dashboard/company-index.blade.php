@@ -57,6 +57,61 @@
                         <canvas id="estimatePieChart"></canvas>
                     </div>
                 </div>
+
+                <div class=" font-cls">
+                    <div class="">
+                        <div class="card estimate-card">
+                            <div class="card-header">
+                                <div class="header-content">
+                                    <h5 class="card-title">Estimates Amount</h5>
+                                    <span class="badge">Total: ${{$estimate_send_total + $estimate_draft_total + $estimate_approved_total + $estimate_rejected_total}}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="estimate-list">
+                                    <li class="estimate-item pending">
+                                        <div class="item-info">
+                                            <span class="status-text">Pending</span>
+                                        </div>
+                                        <span class="amount">${{number_format($estimate_send_total, 2)}}</span>
+                                    </li>
+                                    
+                                    <li class="estimate-item draft">
+                                        <div class="item-info">
+                                            <span class="status-text">Draft</span>
+                                        </div>
+                                        <span class="amount">${{number_format($estimate_draft_total, 2)}}</span>
+                                    </li>
+                                    
+                                    <li class="estimate-item approved">
+                                        <div class="item-info">
+                                            <span class="status-text">Approved</span>
+                                        </div>
+                                        <span class="amount">${{number_format($estimate_approved_total, 2)}}</span>
+                                    </li>
+                                    
+                                    <li class="estimate-item rejected">
+                                        <div class="item-info">
+                                            <span class="status-text">Rejected</span>
+                                            {{-- <span class="count-badge">{{$estimate_rejected_count ?? 0}}</span> --}}
+                                        </div>
+                                        <span class="amount">${{number_format($estimate_rejected_total, 2)}}</span>
+                                    </li>
+                                </ul>
+                                
+                                <div class="progress-summary">
+                                    <div class="progress-stats">
+                                        <span>Approval Rate</span>
+                                        <span class="percentage">{{round(($estimate_approved_total/($estimate_send_total+$estimate_draft_total+$estimate_approved_total+$estimate_rejected_total))*100, 1)}}%</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar approved-bar" style="width: {{($estimate_approved_total/($estimate_send_total+$estimate_draft_total+$estimate_approved_total+$estimate_rejected_total))*100}}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             
                 <!-- <div class="card">
                     <div class="card-header">
@@ -69,7 +124,7 @@
             </div>
         </div>
 
-        <div class="row font-cls">
+        {{-- <div class="row font-cls">
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
@@ -85,8 +140,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
+        </div> --}}
+
+
         <!-- Charts Row 2 -->
         {{-- <div class="row font-cls">
        
