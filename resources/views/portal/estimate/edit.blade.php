@@ -506,7 +506,7 @@
                                                 data-url="{{ route('estimate.note.save') }}"
                                                 data-csrf="{{ csrf_token() }}"
                                                 data-estimateid="{{ $estimate->id }}">
-                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Condition</span>
+                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Conditions</span>
                                             <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
                                         </button>
                                         <div class="print-value mt-3">
