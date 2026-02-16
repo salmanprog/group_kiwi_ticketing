@@ -30,7 +30,7 @@ class Company extends Model
      * @var array
      */
     protected $fillable = [
-        'id', 'name','slug', 'image_url', 'address', 'mobile_no', 'email', 'website', 'description', 'status', 'created_at', 'updated_at', 'deleted_at'
+        'id', 'name','slug', 'image_url', 'address','address_2', 'city', 'state', 'zip', 'country', 'mobile_no', 'email', 'website', 'description', 'status', 'created_at', 'updated_at', 'deleted_at'
     ];
     /**
      * The attributes that should be hidden for arrays.

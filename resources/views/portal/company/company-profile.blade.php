@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="header-content">
-                            <h3>Add New Company</h3>
+                            <h3>Update Company Details</h3>
                         </div>
                         <div class="header-actions">
                             <a href="{{ route('company-management.index') }}" class="btn btn-outline">
@@ -56,11 +56,60 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Company Address <span
+                                            <label class="form-label">Street Address <span
                                                     class="required">*</span></label>
                                             <input required type="text" name="address"
                                                 value="{{ $company->address }}" class="form-control"
                                                 placeholder="Enter full address">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Address Line 2 (optional)</label>
+                                            <input type="text" name="address_2"
+                                                value="{{ $company->address_2 }}" class="form-control"
+                                                placeholder="Enter full address">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">City <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="city"
+                                                value="{{ $company->city }}" class="form-control"
+                                                placeholder="Enter city">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">State <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="state"
+                                                value="{{ $company->state }}" class="form-control"
+                                                placeholder="Enter state">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Zip Code <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="zip"
+                                                value="{{ $company->zip }}" class="form-control"
+                                                placeholder="Enter zip code">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Country <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="country"
+                                                value="{{ $company->country }}" class="form-control"
+                                                placeholder="Enter country">
                                         </div>
                                     </div>
 
@@ -70,7 +119,7 @@
 
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">
-                                    update
+                                    Save
                                 </button>
                                 <a href="{{ route('company-management.index') }}" class="btn btn-secondary">
                                     Cancel
