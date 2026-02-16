@@ -642,9 +642,14 @@
                         </div>
 
                         @if ($record->is_accept === 'accepted')
-                            <small class="text-success">
-                                <i class="fas fa-check-circle me-1"></i>Client accepted this contract
+                           <small class="text-success">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Client accepted this contract 
+                                @if (!empty($record->accept_time_at))
+                                    {{ $record->accept_time_at }}
+                                @endif
                             </small>
+
                         @elseif($record->is_accept === 'rejected')
                             <small class="text-danger">
                                 <i class="fas fa-times-circle me-1"></i>Client rejected this contract
@@ -760,6 +765,51 @@
                         @endif
                     </div>
                 </div>
+                                <div class="card">
+
+                  <div class="card-header">
+                        <div class="card-title">
+                            <h5>Notes</h5>
+                            <small id="notes-status" class="text-success"></small>
+                        </div>
+
+                            <div class="form-section mt-4">
+                                @if ($activityLog->count())
+                                    <ul class="list-group" id="activityLogList">
+                                        @foreach ($activityLog as $log)
+                                            <li class="list-group-item">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
+                                                        <div class="text-muted small">
+                                                            {{ $log->notesTextarea ?? '' }}
+                                                        </div>
+                                                    </div> 
+                                                    <small class="text-muted">
+                                                        {{ $log->created_at->timezone('America/Los_Angeles')->diffForHumans() }}
+                                                    </small>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <ul class="list-group" id="activityLogList">
+                                        <li class="list-group-item">No activity found.</li>
+                                    </ul>
+                                @endif
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Add Notes</label>
+                                <input type="hidden" name="client_id" id="client_id" value="{{ $record->client_id }}">
+                                <input type="hidden" name="contract_id" id="contract_id"
+                                    value="{{ $record->id }}">
+                                <textarea id="notesTextarea" class="form-control" rows="4" readonly placeholder="Click here to add notes..."></textarea>
+                                <button id="saveNotesBtn" class="btn btn-primary mt-2 d-none">
+                                    Save Notes
+                                </button>
+                            </div>
+                    </div>
+                </div>
 
                     <!-- Linked Estimates -->
                 <div class="card">
@@ -810,6 +860,7 @@
                                     <thead>
                                         <tr>
                                             <th>Product Name</th>
+                                            <th>Description</th>
                                             <th>Quantity</th>
                                             <th>Product Price</th>
                                             <th>Total</th>
@@ -848,6 +899,7 @@
                                                             </small>
                                                         @endif
                                                     </td>
+                                                    <td>{{ ($item->description) ?? 'N/A' }}</td>
                                                     <td>{{ $item->quantity }} {{ $item->unit ?? '' }}</td>
                                                     <td>${{ number_format($item->price, 2) }}</td>
                                                     <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
@@ -1011,7 +1063,7 @@
                                                                                     <label class="form-label">Payment Type</label>
                                                                                     <select name="payment_type" class="form-select" required>
                                                                                         <option value="cash">Cash</option>
-                                                                                        <option value="cheque">Cheque</option>
+                                                                                        <option value="cheque">Check</option>
                                                                                     </select>
                                                                                 </div>
 
@@ -1104,7 +1156,7 @@
                                                                                                                         <label class="form-label">Payment Type</label>
                                                                                                                         <select name="payment_type" class="form-select" required>
                                                                                                                             <option value="cash">Cash</option>
-                                                                                                                            <option value="cheque">Cheque</option>
+                                                                                                                            <option value="cheque">Check</option>
                                                                                                                         </select>
                                                                                                                     </div>
 
@@ -1122,7 +1174,7 @@
                                                                                                     </div>
                                                                                                 </div>
                                                                                          @else
-                                                                                         {{ $installment->payment_type }}
+                                                                                         Paid
                                                                                          @endif
 
                                                                                     </td>
@@ -1661,5 +1713,93 @@
    
    
 
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('notesTextarea');
+            const saveBtn = document.getElementById('saveNotesBtn');
+            const status = document.getElementById('notes-status');
+
+            const clientId = document.getElementById('client_id').value;
+            const contractId = document.getElementById('contract_id').value;
+
+            let originalText = textarea.value;
+
+            // Enable editing on click
+            textarea.addEventListener('click', function() {
+                textarea.removeAttribute('readonly');
+                saveBtn.classList.remove('d-none');
+                originalText = textarea.value;
+            });
+
+            // Save notes
+            saveBtn.addEventListener('click', function() {
+                saveBtn.disabled = true;
+                status.textContent = 'Saving...';
+
+                fetch("{{ route('contact.notes.save') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        credentials: 'same-origin', // ✅ important to send session
+                        body: JSON.stringify({
+                            notes: textarea.value,
+                            client_id: clientId,
+                            contract_id: contractId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            status.textContent = 'Error saving';
+                            return;
+                        }
+
+                        // Clear textarea
+                        textarea.value = '';
+                        textarea.setAttribute('readonly', true);
+                        saveBtn.classList.add('d-none');
+                        status.textContent = 'Saved ✔';
+
+                        // Update activity log dynamically
+                        const list = document.getElementById('activityLogList');
+                        list.innerHTML = '';
+
+                        data.activityLogs.forEach(log => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+
+                            li.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>${log.createdBy?.name ?? 'System'}</strong>
+                            <div class="text-muted small">
+                                ${log.notesTextarea}
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            ${log.created_at}
+                        </small>
+                    </div>
+                `;
+
+                            list.appendChild(li);
+                        });
+
+                        setTimeout(() => status.textContent = '', 2000);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        textarea.value = originalText;
+                        status.textContent = 'Error saving';
+                    })
+                    .finally(() => {
+                        saveBtn.disabled = false;
+                    });
+            });
+        });
+    </script>
     @endsection
 

@@ -200,7 +200,7 @@
                                         <div class="form-group">
                                             <label class="form-label">Email</label>
                                             <input required type="email" name="email" class="form-control"
-                                                value="{{ old('email') }}" readonly>
+                                                value="{{ old('email') }}" >
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -221,7 +221,7 @@
                                         <div class="form-group">
                                             <label class="form-label">Rep</label>
                                             <input type="text" name="rep" class="form-control"
-                                                value="{{ old('rep') }}" readonly>
+                                                value="{{ old('rep') }}" >
                                         </div>
                                     </div>
                                 </div>
@@ -655,12 +655,12 @@
                             $('input[name="address_one"]').val(org.address_one);
                             $('input[name="address_two"]').val(org.address_two);
 
-                            $('input[name="first_name"]').val(org.first_name);
-                            $('input[name="last_name"]').val(org.last_name);
-                            $('input[name="email"]').val(org.email);
-                            $('input[name="mobile_no"]').val(org.mobile_no);
-                            $('input[name="fax"]').val(org.fax);
-                            $('input[name="rep"]').val(org.rep);
+                            // $('input[name="first_name"]').val(org.first_name);
+                            // $('input[name="last_name"]').val(org.last_name);
+                            // $('input[name="email"]').val(org.email);
+                            // $('input[name="mobile_no"]').val(org.mobile_no);
+                            // $('input[name="fax"]').val(org.fax);
+                            // $('input[name="rep"]').val(org.rep);
                         }
                     },
                     error: function(xhr) {

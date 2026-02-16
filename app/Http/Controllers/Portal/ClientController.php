@@ -92,7 +92,7 @@ class ClientController extends CRUDCrontroller
     public function beforeRenderCreateView()
     {
         //$this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id', 0)->get();
-        $this->__data['organizations'] = Organization::where('status', 1)->where('auth_code', Auth::user()->auth_code)->where('client_id', 0)->get();
+        $this->__data['organizations'] = Organization::where('status', 1)->where('auth_code', Auth::user()->auth_code)->get();
     }
 
     /**
@@ -100,7 +100,12 @@ class ClientController extends CRUDCrontroller
      */
     public function beforeStoreLoadModel()
     {
-         $this->__success_store_message = 'Contact created successfully';
+
+        $checkUserAlreadyExistOrganization = Client::where('organization_id', $this->__request->organization_id)->where('email', $this->__request->email)->first();
+        if ($checkUserAlreadyExistOrganization) {
+            return redirect()->back()->with('error', 'User already exist');
+        }        
+        $this->__success_store_message = 'Contact created successfully';
     }
 
     /**
@@ -111,6 +116,9 @@ class ClientController extends CRUDCrontroller
     public function beforeRenderEditView($slug)
     {
         $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
+        $record = Client::where('slug', $slug)->first();
+        $activityLog = ContactActivityLog::with('createdBy')->where('client_id',$record->client_id)->get();
+        $this->__data['activityLog'] = $activityLog;
     }
 
     /**

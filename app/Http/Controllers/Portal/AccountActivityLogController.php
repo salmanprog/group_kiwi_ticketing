@@ -10,20 +10,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{CompanyAdmin,Company};
+use App\Models\{CompanyAdmin,Company,AccountActivityLog};
 use Carbon\Carbon;
 
-class ContactActivityLogController extends CRUDCrontroller
+class AccountActivityLogController extends CRUDCrontroller
 {
     public function __construct(Request $request)
     {
-        parent::__construct('ContactActivityLog');
+        parent::__construct('AccountActivityLog');
         $this->__request    = $request;
-        $this->__data['page_title'] = 'ContactActivityLog Management';
-        $this->__indexView  = 'company.index';
-        $this->__createView = 'company.add';
-        $this->__editView   = 'company.edit';
-        $this->__detailView   = 'company.detail';
+        $this->__data['page_title'] = 'AccountActivityLog Management';
+        $this->__indexView  = 'account-activity-log.index';
+        $this->__createView = 'account-activity-log.add';
+        $this->__editView   = 'account-activity-log.edit';
+        $this->__detailView   = 'account-activity-log.detail';
     }
 
     /**
@@ -136,23 +136,27 @@ class ContactActivityLogController extends CRUDCrontroller
 
     }
     
-    public function saveNotes(Request $request)
+    public function saveOrganizationNotes(Request $request)
     {
+        
+
         $request->validate([
             'notes' => 'required|string',
         ]);
 
+
         try {
-            $log = new ContactActivityLog();
-            $log->slug =ContactActivityLog::generateUniqueSlug(uniqid(uniqid()));
-            $log->organization_id = $request->organization_id;
-            $log->client_id = $request->client_id;
+            $log = new AccountActivityLog();
+            $log->slug =AccountActivityLog::generateUniqueSlug(uniqid(uniqid()));
+            $log->module = 'organizations';
+            $log->module_id = $request->organization_id;
             $log->notesTextarea = $request->notes;
             $log->created_by = Auth::user()->id;
             $log->save();
-
-            $activityLogs = ContactActivityLog::with('createdBy')->where('organization_id', $request->organization_id)
-            ->where('client_id', $request->client_id)
+ 
+            $activityLogs = AccountActivityLog::with('createdBy')
+            ->where('module', 'organizations')
+            ->where('module_id', $request->organization_id)
             ->get()
             ->map(function ($log) {
                 return [
@@ -176,5 +180,48 @@ class ContactActivityLogController extends CRUDCrontroller
             ], 500);
         }
     }
-   
+    
+    public function saveContactNotes(Request $request)
+    {
+        
+
+        $request->validate([
+            'notes' => 'required|string',
+        ]);
+
+        try {
+            $log = new AccountActivityLog();
+            $log->slug =AccountActivityLog::generateUniqueSlug(uniqid(uniqid()));
+            $log->module = 'contracts';
+            $log->module_id = $request->contract_id;
+            $log->notesTextarea = $request->notes;
+            $log->created_by = Auth::user()->id;
+            $log->save();
+ 
+            $activityLogs = AccountActivityLog::with('createdBy')
+            ->where('module', 'contracts')
+            ->where('module_id', $request->contract_id)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id'          => $log->id,
+                    'notesTextarea' => $log->notesTextarea,
+                    'created_at' => $log->created_at
+                        ->timezone('America/Los_Angeles')
+                        ->diffForHumans(),
+                    'createdBy'    => $log->createdBy,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'activityLogs' => $activityLogs,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

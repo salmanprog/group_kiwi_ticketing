@@ -211,6 +211,7 @@ class ContractController extends CRUDCrontroller
 
         // dd($this->__data['record']->company);
 
+        $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','contracts')->where('module_id',$this->__data['record']->id)->get();
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }

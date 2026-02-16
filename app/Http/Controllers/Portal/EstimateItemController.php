@@ -151,6 +151,7 @@ class EstimateItemController extends CRUDCrontroller
             'user_estimate_id' => $estimateId,
             'product_id' => $product->id,
             'name' => $product->name,
+            'description' => $product->description,
             'quantity' => (int) $productData['qty'],
             'unit' => $productData['unit'] ?? 'pcs',
             'price' => (float) $productData['price'],

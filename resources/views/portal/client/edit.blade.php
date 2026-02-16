@@ -85,6 +85,49 @@
 
                                 </div>
                             </div>
+                              <div class="form-section">
+                        <div class="section-header">
+                            <h5>Notes</h5>
+                            <small id="notes-status" class="text-success"></small>
+                        </div>
+
+                            <div class="form-section mt-4">
+                                @if ($activityLog->count())
+                                    <ul class="list-group" id="activityLogList">
+                                        @foreach ($activityLog as $log)
+                                            <li class="list-group-item">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
+                                                        <div class="text-muted small">
+                                                            {{ $log->notesTextarea ?? '' }}
+                                                        </div>
+                                                    </div> 
+                                                    <small class="text-muted">
+                                                        {{ $log->created_at->timezone('America/Los_Angeles')->diffForHumans() }}
+                                                    </small>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <ul class="list-group" id="activityLogList">
+                                        <li class="list-group-item">No activity found.</li>
+                                    </ul>
+                                @endif
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Add Notes</label>
+                                <input type="hidden" name="client_id" id="client_id" value="{{ $record->client_id }}">
+                                <input type="hidden" name="organization_id" id="organization_id"
+                                    value="{{ $record->organization_id }}">
+                                <textarea id="notesTextarea" class="form-control" rows="4" readonly placeholder="Click here to add notes..."></textarea>
+
+                                <button id="saveNotesBtn" class="btn btn-primary mt-2 d-none">
+                                    Save Notes
+                                </button>
+                            </div>
+                        </div>
 
                             <!-- Basic Information -->
                             <div class="form-section">
@@ -686,4 +729,94 @@
 
         });
     </script>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('notesTextarea');
+            const saveBtn = document.getElementById('saveNotesBtn');
+            const status = document.getElementById('notes-status');
+
+            const clientId = document.getElementById('client_id').value;
+            const orgId = document.getElementById('organization_id').value;
+
+            let originalText = textarea.value;
+
+            // Enable editing on click
+            textarea.addEventListener('click', function() {
+                textarea.removeAttribute('readonly');
+                saveBtn.classList.remove('d-none');
+                originalText = textarea.value;
+            });
+
+            // Save notes
+            saveBtn.addEventListener('click', function() {
+                saveBtn.disabled = true;
+                status.textContent = 'Saving...';
+
+                fetch("{{ route('organization.notes.save') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        credentials: 'same-origin', // ✅ important to send session
+                        body: JSON.stringify({
+                            notes: textarea.value,
+                            client_id: clientId,
+                            organization_id: orgId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            status.textContent = 'Error saving';
+                            return;
+                        }
+
+                        // Clear textarea
+                        textarea.value = '';
+                        textarea.setAttribute('readonly', true);
+                        saveBtn.classList.add('d-none');
+                        status.textContent = 'Saved ✔';
+
+                        // Update activity log dynamically
+                        const list = document.getElementById('activityLogList');
+                        list.innerHTML = '';
+
+                        data.activityLogs.forEach(log => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+
+                            li.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>${log.createdBy?.name ?? 'System'}</strong>
+                            <div class="text-muted small">
+                                ${log.notesTextarea}
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            ${log.created_at}
+                        </small>
+                    </div>
+                `;
+
+                            list.appendChild(li);
+                        });
+
+                        setTimeout(() => status.textContent = '', 2000);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        textarea.value = originalText;
+                        status.textContent = 'Error saving';
+                    })
+                    .finally(() => {
+                        saveBtn.disabled = false;
+                    });
+            });
+        });
+    </script>
+
 @endpush

@@ -533,30 +533,30 @@
                     <div class="card-body">
                         <div class="table-controls">
                             <div class="controls-left">
-                                <div class="table-info">
+                                <!-- <div class="table-info"> -->
                                     {{-- <i class="fas fa-database"></i>
                                     <span>Showing all event types</span> --}}
 
-                                    <form id="filter_form" method="GET" action="{{ route('event-type.index') }}"
+                                    <!-- <form id="filter_form" method="GET" action="{{ route('event-type.index') }}"
                                         class="filter-form"
-                                        style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                                        style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;"> -->
 
                                         <!-- Start Date -->
-                                        <div class="date-filter-group">
+                                        <!-- <div class="date-filter-group">
                                             <label for="start_date" class="filter-label">Start Date</label>
                                             <input type="date" id="start_date" name="start_date" class="date-input"
                                                 placeholder="Start Date" value="{{ request('start_date') }}">
-                                        </div>
+                                        </div> -->
 
                                         <!-- End Date -->
-                                        <div class="date-filter-group">
+                                        <!-- <div class="date-filter-group">
                                             <label for="end_date" class="filter-label">End Date</label>
                                             <input type="date" id="end_date" name="end_date" class="date-input"
                                                 placeholder="End Date" value="{{ request('end_date') }}">
-                                        </div>
+                                        </div> -->
 
                                         <!-- Status Filter -->
-                                        <div class="status-filter-group">
+                                        <!-- <div class="status-filter-group">
                                             <label for="status" class="filter-label">Status</label>
                                             <select id="status" name="status" class="status-select">
                                                 <option value="" {{ request('status') == '' ? 'selected' : '' }}>All
@@ -566,13 +566,13 @@
                                                 <option value="deactive" {{ request('status') == 'deactive' ? 'selected' : '' }}>Deactive
                                                 </option>
                                             </select>
-                                        </div>
+                                        </div> -->
 
                                         <!-- Filter Button -->
-                                        <button type="submit" class="btn btn-filter">Filter</button>
-                                    </form>
+                                        <!-- <button type="submit" class="btn btn-filter">Filter</button> -->
+                                    <!-- </form> -->
 
-                                </div>
+                                <!-- </div> -->
                             </div>
                             <div class="controls-right">
                                 <form id="search_form" method="GET" class="search-form">

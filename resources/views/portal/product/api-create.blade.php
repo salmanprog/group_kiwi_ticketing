@@ -47,13 +47,13 @@
                                             placeholder="Enter new ticket name">
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" style="display: none;">
                                         <label class="form-label">Ticket Type</label>
                                         <input type="text" name="ticketType" id="ticketType" class="form-control"
                                             value="Tickets" disabled>
                                     </div>
 
-                                    <div class="col-md-6 mt-3">
+                                    <div class="col-md-6 mt-3" style="display: none;">
                                         <label class="form-label">Sale Channel</label>
                                         <input type="text" name="saleChannel" id="saleChannel" class="form-control"
                                             value="Groups" disabled>
