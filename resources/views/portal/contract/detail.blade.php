@@ -1425,7 +1425,7 @@
                         <div class="col-md-3">
                             <label class="form-label">Product</label>
                             <select id="product" name="product" class="form-select">
-                                <option value="" data-price="0">Choose...</option>
+                                <option value="" data-price="0">Choose Product</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}" 
                                             data-price="{{ $product->price }}"
@@ -1439,7 +1439,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Qty</label>
-                            <input type="number" id="product_qty" name="product_qty" class="form-control" value="1" min="1">
+                            <input type="text" id="product_qty" name="product_qty" class="form-control" value="1">
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Price</label>
