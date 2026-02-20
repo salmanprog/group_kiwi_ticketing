@@ -1118,6 +1118,36 @@
                                     </ul>
                                 </li>
 
+
+
+                                  <li data-type="child" class="nav-item">
+                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
+                                            <i class="fa-solid fa-cloud"></i>
+                                                <span class="toggle-none">Settings</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+                                    <ul class="submenu">
+                                   
+                                         <li class="menu-platform">
+                                            <a class="" href="{{ route('email-template.index') }}">
+                                                <div class="platform-text">
+                                                <span class="platform-title">Email Template</span>
+                                                </div>
+                                            </a>
+                                        </li>
+
+                                         <li class="menu-platform">
+                                            <a class="" href="{{ route('smtp-config.view') }}">
+                                                <div class="platform-text">
+                                                <span class="platform-title">SMTP configuration </span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+
+
                             </ul>
                         </div>
                     </div>

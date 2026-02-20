@@ -32,6 +32,7 @@ use App\Http\Controllers\Portal\EstimateDiscountController;
 use App\Http\Controllers\Portal\EstimateInstallmentController;
 use Auth0\Laravel\Facade\Auth0;
 use App\Http\Controllers\Portal\ContractEmailController;
+use App\Http\Controllers\Portal\EmailTemplateController;
 
 
 /*
@@ -295,5 +296,11 @@ Route::get('contract-email/ajax-listing', [ContractEmailController::class, 'ajax
 Route::get('/contract-email/search-ajax-listing', [ContractEmailController::class, 'SearchajaxListing'])
      ->name('contract-email.search-ajax-listing');
 
-    Route::post('update-invoice-status', [InvoiceController::class, 'updateInvoiceStatus'])->name('update-invoice-status');
-    Route::post('update-installment-status', [InvoiceController::class, 'updateInstallmentStatus'])->name('update-installment-status');
+Route::post('update-invoice-status', [InvoiceController::class, 'updateInvoiceStatus'])->name('update-invoice-status');
+Route::post('update-installment-status', [InvoiceController::class, 'updateInstallmentStatus'])->name('update-installment-status');
+
+
+Route::get('email-template/ajax-listing', [EmailTemplateController::class, 'ajaxListing'])->name('email-template.ajax-listing');
+Route::resource('email-template', EmailTemplateController::class);
+Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->name('smtp-config.view');
+Route::post('smtp-config-update', [EmailTemplateController::class, 'createOrupdate'])->name('user-smtp.createOrupdate');
