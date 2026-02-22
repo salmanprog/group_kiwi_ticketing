@@ -3,7 +3,8 @@
 namespace App\Models\Hooks\Admin;
 use App\Models\{CompanyUser};
 use Auth;
-class ProductHook
+
+class EmailTemplateHook
 {
     private $_model;
 
@@ -21,25 +22,10 @@ class ProductHook
    |
    */
     public function hook_query_index(&$query,$request, $slug=NULL) {
-        $getCompany = CompanyUser::getCompany(Auth::user()->id);
-
-        // $query->select('company_products.*','company_product_category.name as category_name')
-        // ->join('company_product_category','company_product_category.id','company_products.company_product_category_id');
-
-        $query->select('company_products.*');
-        // ->join('company_product_category','company_product_category.id','company_products.company_product_category_id');
-        //$query->where('company_products.company_id', $getCompany->id);
-        $query->where('company_products.auth_code', Auth::user()->auth_code);
-            
-        if( !empty($request['keyword']) ){
-            $keyword = $request['keyword'];
-            $query->where(function($where) use ($keyword){
-                $where->orWhere('company_products.name','like',"$keyword%");
-                $where->orWhere('company_products.price','like',"$keyword%");
-                $where->orWhere('company_products.unit','like',"$keyword%");
-            });
-        }
-
+        //Your code here
+        // $getCompany = CompanyUser::getCompany(Auth::user()->id); 
+        //$query->where('company_id', $getCompany->id);
+        // $query->where('auth_code', Auth::user()->auth_code);
     }
 
     /*
@@ -51,10 +37,11 @@ class ProductHook
     */
     public function hook_before_add($request,&$postdata)
     {
-        // dd($request->all());
-        $postdata['slug'] = uniqid() . time();
         $getCompany = CompanyUser::getCompany(Auth::user()->id); 
         $postdata['company_id'] = $getCompany->id;
+        $postdata['slug'] = uniqid() . time();
+        $postdata['created_by'] = Auth::user()->id;
+        $postdata['auth_code'] = Auth::user()->auth_code;
     }
 
     /*
@@ -80,12 +67,6 @@ class ProductHook
     */
     public function hook_before_edit($request, $slug, &$postData)
     {
-        if($request->notes_toggle != 'on'){
-            $postData['description'] = null;            
-        }
-
-        $postData['tax'] = ($request->tax??0);
-        $postData['gratuity'] = ($request->gratuity??0);
     }
 
     /*

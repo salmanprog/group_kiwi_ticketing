@@ -9,6 +9,7 @@ use App\Models\{OrganizationUser, CompanyUser, Client, Product, Estimate, User, 
 use Auth;
 use Illuminate\Support\Facades\Crypt;
 use DB;
+use App\Services\UserMailer;
 
 
 class EstimateController extends CRUDCrontroller
@@ -157,6 +158,7 @@ class EstimateController extends CRUDCrontroller
         $company = CompanyUser::getCompany(Auth::user()->id);
         $estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('slug', $slug)->first();
         $this->__data['invoice_user'] = User::where('id', $estimate->client_id)->first();
+        $this->__data['estimate_user'] = Client::where('client_id', $estimate->client_id)->first();
         $this->__data['estimate'] = $estimate;
         $this->__data['clients'] = Client::where('auth_code',  Auth::user()->auth_code)->get();
         $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
@@ -461,6 +463,25 @@ class EstimateController extends CRUDCrontroller
                             'New Estimate',
                             $mail_params
                         );
+                            // $auth_code = Auth::user()->auth_code;
+                            // $toEmails = $user->email;
+                            // $templateIdentifier = 'Estimate_sent';
+
+                            // $data = [
+                            //     'username' => $mail_params['username'],
+                            //     'company_name' => $mail_params['company_name'],
+                            //     'link' => $mail_params['link']
+                            // ];
+
+                            // try {
+                                
+                            //     UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+                            //     return back()->with('success', 'Email sent successfully!');
+                            // } catch (\Exception $e) {
+                            //     dd($e);
+                            //     return back()->with('error', 'Error: '.$e->getMessage());
+                            // }
+                        // dd($mail_params);
                         
                     }
                     // dd($mail_params['link']);

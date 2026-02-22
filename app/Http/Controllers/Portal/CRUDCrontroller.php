@@ -31,8 +31,8 @@ class CRUDCrontroller extends Controller
     public function index()
     {
         //check permission
-        if(modulePermission()->is_view != 1)
-            return redirect()->back()->with('error',__('app.permission_denied'));
+        // if(modulePermission()->is_view != 1)
+            // return redirect()->back()->with('error',__('app.permission_denied'));
         
 
         //before render index view hook
@@ -48,8 +48,8 @@ class CRUDCrontroller extends Controller
     public function create()
     {
         //check permission
-        if(modulePermission()->is_add != 1)
-            return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
+        // if(modulePermission()->is_add != 1)
+        //     return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
 
         //before render create view hook
         if(method_exists($this,'beforeRenderCreateView')){
@@ -64,8 +64,8 @@ class CRUDCrontroller extends Controller
     public function store()
     {
         //check permission
-        if(modulePermission()->is_add != 1)
-            return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
+        // if(modulePermission()->is_add != 1)
+        //     return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
 
         if(method_exists($this,'validation')){
             $validator = $this->validation('POST');
@@ -91,8 +91,8 @@ class CRUDCrontroller extends Controller
     public function edit($slug)
     {
         //check permission
-        if(modulePermission()->is_update != 1)
-            return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
+        // if(modulePermission()->is_update != 1)
+            // return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
 
         //before render create view hook
         if(method_exists($this,'beforeRenderEditView')){
@@ -110,8 +110,8 @@ class CRUDCrontroller extends Controller
     public function update($slug)
     {
         //check permission
-        if(modulePermission()->is_update != 1)
-            return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
+            // if(modulePermission()->is_update != 1)
+            //     return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
 
         if(method_exists($this,'validation')){
             $validator = $this->validation('PUT',$slug);
@@ -134,8 +134,8 @@ class CRUDCrontroller extends Controller
     public function show($slug)
     {
         //check permission
-        if(modulePermission()->is_view != 1)
-            return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
+        // if(modulePermission()->is_view != 1)
+        //     return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
 
         //before render index view hook
         if(method_exists($this,'beforeRenderDetailView')){

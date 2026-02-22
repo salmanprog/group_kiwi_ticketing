@@ -231,7 +231,7 @@ class ProductController extends CRUDCrontroller
             $product->update(['slug' => $apiData['data']['ticketSlug']]);
         }
 
-        return redirect()->route('product.index')
+        return redirect()->back()
             ->with('success', $isNewTicket
                 ? 'New ticket created and synced with API.'
                 : 'Existing ticket synced successfully.'
@@ -301,7 +301,7 @@ class ProductController extends CRUDCrontroller
             return redirect()->back()->with('error', 'Local DB updated, but failed to sync API.');
         }
 
-        return redirect()->route('product.index')->with('success', 'Ticket updated locally and synced with API.');
+        return redirect()->back()->with('success', 'Ticket updated locally and synced with API.');
     }
 
 
