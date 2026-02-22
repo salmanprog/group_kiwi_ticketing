@@ -86,8 +86,8 @@
                             <p>
                                 <strong>{{ $estimate->company->name ?? 'Company Name' }}</strong><br>
                                 {{ $estimate->company->address ?? 'Company Address' }}<br>
-                                <i class="fas fa-envelope me-1"></i>Email: {{ $estimate->company->email ?? '-' }}<br>
-                                <i class="fas fa-phone me-1"></i>Phone: {{ $estimate->company->phone ?? '-' }}
+                                </i>Email: {{ $estimate->company->email ?? '-' }}<br>
+                                Phone: {{ $estimate->company->phone ?? '-' }}
                             </p>
                         </div>
 
@@ -96,8 +96,8 @@
                             <p>
                                 <strong>{{ $estimate->organization->name ?? 'Client Name' }}</strong><br>
                                 {{ $estimate->organization->address_one ?? 'Client Address' }}<br>
-                                <i class="fas fa-envelope me-1"></i>Email: {{ $estimate->organization->email ?? '-' }}<br>
-                                <i class="fas fa-phone me-1"></i>Phone: {{ $estimate->organization->phone ?? '-' }}
+                                Email: {{ $estimate->organization->email ?? '-' }}<br>
+                                Phone: {{ $estimate->organization->phone ?? '-' }}
                             </p>
                         </div>
                     </div>

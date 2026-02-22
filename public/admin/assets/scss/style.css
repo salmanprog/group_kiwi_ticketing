@@ -2302,6 +2302,7 @@ button.dropdown-toggle:after {
 ul.dropdown-menu.top-dropdown {
   right: 0;
   left: auto;
+  width: 200px;
 }
 
 .dropdown-menu.lg-dropdown {
@@ -7503,4 +7504,166 @@ a.btn.btn-xs.btn-info:hover {
     margin-left: 0px !important;
     background: #fff;
   }
+}
+
+
+.estimate-card {
+    background: white;
+    border: none;
+    /* border-radius: 20px; */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.estimate-card:hover {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.estimate-card .card-header {
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 20px 25px;
+}
+
+.estimate-card .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.estimate-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1f36;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.estimate-card .badge {
+    background: linear-gradient(135deg, #9fc23f 0%, #8ac32a 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.estimate-card .card-body {
+    padding: 20px 25px;
+}
+
+.estimate-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.estimate-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.estimate-item:last-child {
+    border-bottom: none;
+}
+
+.estimate-item:hover {
+    transform: translateX(5px);
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.count-badge {
+    background: #f7fafc;
+    color: #718096;
+    padding: 2px 8px;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.amount {
+    font-weight: 600;
+    color: #1a1f36;
+    font-size: 1rem;
+}
+
+/* Status-specific styles */
+.estimate-item.pending .status-text { color: #f59e0b; }
+.estimate-item.pending .amount { color: #f59e0b; }
+
+.estimate-item.draft .status-text { color: #64748b; }
+.estimate-item.draft .amount { color: #64748b; }
+
+.estimate-item.approved .status-text { color: #10b981; }
+.estimate-item.approved .amount { color: #10b981; }
+
+.estimate-item.rejected .status-text { color: #ef4444; }
+.estimate-item.rejected .amount { color: #ef4444; }
+
+/* Progress Summary */
+.progress-summary {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #e2e8f0;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.progress-stats span:first-child {
+    color: #718096;
+    font-weight: 500;
+}
+
+.progress-stats .percentage {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.progress-bar-container {
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    border-radius: 30px;
+    transition: width 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .estimate-card .card-header,
+    .estimate-card .card-body {
+        padding: 15px 20px;
+    }
+    
+    .status-text {
+        font-size: 0.9rem;
+    }
 }

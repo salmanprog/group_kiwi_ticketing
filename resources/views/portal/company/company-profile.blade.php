@@ -45,8 +45,8 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Company Mobile No <span
-                                                    class="required">*</span></label>
+                      <label class="form-label">Phone
+                            <span  class="required">*</span></label>
                                             <input required type="text" name="mobile_no"
                                                 value="{{ $company->mobile_no }}" class="form-control"
                                                 placeholder="" >
@@ -119,7 +119,7 @@
 
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">
-                                    Save
+                                    Update Company
                                 </button>
                                 <a href="{{ route('company-management.index') }}" class="btn btn-secondary">
                                     Cancel

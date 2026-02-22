@@ -65,32 +65,31 @@
                     <h4><i class="fas fa-building me-2"></i> From</h4>
                     <p>
                         <strong>{{ $record->company->name }}</strong><br>
-                        <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
-                        <br>
                         <strong>Email:</strong> {{ $record->company->email }}
+                        <br>
+                        <strong>Phone:</strong> {{ $record->company->mobile_no }}
+                        @if($record->company->address || $record->company->address_2)
+                            <br>
+                            <strong>Address:</strong>
+                        @endif
+
                         @if($record->company->address)
-                            <br>
-                            <strong>Address:</strong> {{ $record->company->address }}
+                            {{ $record->company->address }}<br>
                         @endif
+
                         @if($record->company->address_2)
-                            <br>
-                            <strong>Address Line 2:</strong> {{ $record->company->address_2 }}
+                            {{ $record->company->address_2 }}<br>
                         @endif
-                        @if($record->company->city)
+
+                        @if($record->company->city || $record->company->state || $record->company->zip)
+                            {{ $record->company->city }}
+                            @if($record->company->state), {{ $record->company->state }}@endif
+                            @if($record->company->zip) {{ $record->company->zip }}@endif
                             <br>
-                            <strong>City:</strong> {{ $record->company->city }}
                         @endif
-                        @if($record->company->state)
-                            <br>
-                            <strong>State:</strong> {{ $record->company->state }}
-                        @endif
-                        @if($record->company->zip)
-                            <br>
-                            <strong>Zip:</strong> {{ $record->company->zip }}
-                        @endif
+
                         @if($record->company->country)
-                            <br>
-                            <strong>Country:</strong> {{ $record->company->country }}
+                            {{ $record->company->country }}
                         @endif
                     </p>
                 </div>
@@ -98,6 +97,15 @@
                     <h4><i class="fas fa-user me-2"></i> Invoice To</h4>
                     <p>
                         <strong>{{ $record->organization_name }}</strong><br>
+                        {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
+                        <br>
+                        {{-- <strong>Email:</strong> --}}
+                        {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
+                        <br>
+                        {{-- <strong>Phone:</strong> --}}
+                         {{ ($invoice_user->phone) ? $invoice_user->phone : 'Not available' }}
+                        <br>
+                        {{-- <strong>Address:</strong>  --}}
                         {{ $record->organization_address_one }}
                            <br>
 
@@ -515,7 +523,7 @@
                                                 data-url="{{ route('estimate.note.save') }}"
                                                 data-csrf="{{ csrf_token() }}"
                                                 data-estimateid="{{ $estimate->id }}">
-                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Condition</span>
+                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Conditions</span>
                                             <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
                                         </button>
                                         <div class="print-value mt-3">
@@ -613,7 +621,8 @@
                             aria-label="Close">&times;</button>
                     </div>
 
-                    <div class="modal-body">
+                    <div class="modal-body forref-height">
+                        <div id="modalAlert" class="alert d-none" role="alert"></div>
                         <table class="table table-hover">
                             <thead>
                                 <tr>
