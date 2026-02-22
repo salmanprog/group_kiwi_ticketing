@@ -37,7 +37,6 @@ class ProductHook
                 $where->orWhere('company_products.name','like',"$keyword%");
                 $where->orWhere('company_products.price','like',"$keyword%");
                 $where->orWhere('company_products.unit','like',"$keyword%");
-                $where->orWhere('company_product_category.name','like',"$keyword%");
             });
         }
 

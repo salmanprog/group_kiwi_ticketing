@@ -543,7 +543,7 @@
                                 <a class="dropdown-toggle  cust-dropdown-toggle" data-toggle="dropdown"
                                     href="#">
                                     <img alt="" class="rounded-circle"
-                                        src="{{ URL::to('admin/assets/img/avtar-2.png') }}"
+                                        src="{{ currentUser()->image_url }}"
                                         width="30">
                                     {{ currentUser()->name }}
                                 </a>
@@ -881,6 +881,10 @@
 
                                     {{-- Dropdown --}}
                                     @if($isDropdown)
+                                    @if (trim($category['categoryName']) === 'Sales Team') 
+                                        @continue; // skip this category
+                                    @endif
+                                        
                                         <li data-type="child" class="nav-item">
                                             <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
                                                 <i class="fas fa-folder"></i>
@@ -1120,7 +1124,7 @@
 
 
 
-                                  <li data-type="child" class="nav-item">
+                                  <!-- <li data-type="child" class="nav-item">
                                         <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
                                             <i class="fa-solid fa-cloud"></i>
                                                 <span class="toggle-none">Settings</span>
@@ -1144,7 +1148,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li>
+                                </li> -->
 
 
 

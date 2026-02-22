@@ -157,10 +157,10 @@ class Auth0LoginController extends Controller
                 'strategy'      => 'webapp',
             ]);
 
-            // 2️⃣ Exchange authorization code for tokens
+            // 2️ Exchange authorization code for tokens
             $auth0->exchange();
 
-            // 3️⃣ Get user profile and tokens
+            // 3️ Get user profile and tokens
             $auth0User = $auth0->getUser();
             $credentials = $auth0->getCredentials();
 
@@ -201,9 +201,10 @@ class Auth0LoginController extends Controller
             }
 
             $externalData = $externalApiResponse->json();
-            // dd($externalData['data']['companyPlatformAccess']);
+            // dd($externalData);
+            // dd($externalData['data']['userDetails']);
             session()->put([
-                'companyPlatformAccess'     => $externalData['data']['companyPlatformAccess'] ?? null,
+                'companyPlatformAccess' => $externalData['data']['companyPlatformAccess'] ?? null,
             ]);
 
             // Only proceed when API returns success (errorCode 0)
@@ -272,6 +273,7 @@ class Auth0LoginController extends Controller
             } else {
                 // Update existing user with company_name and auth_code from API
                 $user->auth_code = $authCode;
+                $user->image_url = $userDetails['image'] ?? $auth0User['picture'] ?? null;
                 $user->save();
             }
 

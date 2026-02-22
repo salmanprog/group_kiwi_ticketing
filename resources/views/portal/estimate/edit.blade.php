@@ -29,31 +29,31 @@
                     @switch($record->status)
                         @case('draft')
                             <span class="status draft">
-                                <i class="fas fa-edit me-1"></i>Draft
+                                <i class="fas fa-edit me-1"></i> Draft
                             </span>
                         @break
 
                         @case('sent')
                             <span class="status sent">
-                                <i class="fas fa-paper-plane me-1"></i>Sent
+                                <i class="fas fa-paper-plane me-1"></i> Sent
                             </span>
                         @break
 
                         @case('approved')
                             <span class="status approved">
-                                <i class="fas fa-check-circle me-1"></i>Approved
+                                <i class="fas fa-check-circle me-1"></i> Approved
                             </span>
                         @break
 
                         @case('rejected')
                             <span class="status rejected">
-                                <i class="fas fa-times-circle me-1"></i>Rejected
+                                <i class="fas fa-times-circle me-1"></i> Rejected
                             </span>
                         @break
 
                         @case('revised')
                             <span class="status revised">
-                                <i class="fas fa-redo me-1"></i>Revised
+                                <i class="fas fa-redo me-1"></i> Revised
                             </span>
                         @break
                     @endswitch
@@ -62,7 +62,7 @@
             {{-- Address Section --}}
             <div class="address-section">
                 <div class="address-box">
-                    <h4><i class="fas fa-building me-2"></i>From</h4>
+                    <h4><i class="fas fa-building me-2"></i> From</h4>
                     <p>
                         <strong>{{ $record->company->name }}</strong><br>
                         <strong>Mobile No:</strong> {{ $record->company->mobile_no }}
@@ -95,16 +95,24 @@
                     </p>
                 </div>
                 <div class="address-box">
-                    <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
+                    <h4><i class="fas fa-user me-2"></i> Invoice To</h4>
                     <p>
                         <strong>{{ $record->organization_name }}</strong><br>
                         {{ $record->organization_address_one }}
                            <br>
-                        <strong>Contact Name:</strong> {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
+
+                        @if($estimate_user->first_name)
+                        <strong>Contact Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
                         <br>
-                        <strong>Contact Email:</strong> {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
+                        @endif
+                        @if($estimate_user->email)
+                        <strong>Contact Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
                         <br>
-                        <strong>Contact Phone:</strong> {{ ($invoice_user->phone) ? $invoice_user->phone : 'N/A' }}
+                        @endif
+                        @if($estimate_user->mobile_no)
+                        <strong>Contact Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
+                        <br>
+                        @endif
                     </p>
                 </div>
             </div>
@@ -606,7 +614,6 @@
                     </div>
 
                     <div class="modal-body">
-                        <div id="modalAlert" class="alert d-none" role="alert"></div>
                         <table class="table table-hover">
                             <thead>
                                 <tr>
@@ -642,6 +649,7 @@
                     </div>
 
                     <div class="modal-footer">
+                        <div id="modalAlert" class="alert d-none w-100 mb-2" role="alert"></div>
                         <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
                         <button id="addProductsBtn" class="btn btn-primary btn-sm"
                             data-url="{{ route('estimate.products.add') }}"

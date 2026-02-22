@@ -106,8 +106,8 @@ class OrganizationController extends CRUDCrontroller
                 . e(trim(($record->contact_first_name ?? '') . ' ' . ($record->contact_last_name ?? '')) ?: 'N/A')
                 . '</a>',
 
-                $record->email,
-                $record->phone,
+                // $record->email,
+                // $record->phone,
                 $record->event_date,
                 $record->follow_up_date,
                 $record->status == 1 ? '<span class="btn btn-xs btn-success">Active</span>' : '<span class="btn btn-xs btn-danger">Disabled</span>',

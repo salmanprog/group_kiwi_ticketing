@@ -3,6 +3,7 @@
 namespace App\Models\Hooks\Admin;
 use App\Models\{CompanyUser};
 use Auth;
+use DB;
 
 class OrganizationHook
 {
@@ -34,7 +35,16 @@ class OrganizationHook
             )
             ->join('organization_type', 'organization_type.id', '=', 'organizations.organization_type_id')
             ->join('organization_event_type', 'organization_event_type.id', '=', 'organizations.event_type_id')
-            ->leftJoin('organization_users', 'organization_users.organization_id', '=', 'organizations.id');
+                    ->leftJoin(DB::raw("
+            (SELECT *
+            FROM organization_users ou1
+            WHERE ou1.id = (
+                SELECT MIN(ou2.id)
+                FROM organization_users ou2
+                WHERE ou2.organization_id = ou1.organization_id
+            )
+            ) as organization_users
+        "), 'organization_users.organization_id', '=', 'organizations.id');
 
         if(Auth::user()->user_type != 'admin'){
                if(Auth::user()->user_type != 'client'){
@@ -66,7 +76,6 @@ class OrganizationHook
             $status = ( $request['status'] == 'active' ) ? 1 : 0;
             $query->where('organizations.status', $status);
         }
-
 
     }
 

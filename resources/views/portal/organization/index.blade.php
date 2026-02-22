@@ -89,8 +89,8 @@
                                     <tr>
                                         <th>Account Name</th>
                                         <th>Contact</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
+                                        <!-- <th>Email</th>
+                                        <th>Phone</th> -->
                                         <th>Event Date</th>
                                         <th>Follow-up Date</th>
                                         <th>Status</th>
