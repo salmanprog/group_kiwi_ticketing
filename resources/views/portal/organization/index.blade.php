@@ -23,7 +23,7 @@
                                     <a class="btn btn-primary" href="{{ route('organization.create') }}">
                                         <i class="fas fa-plus-circle"></i> Add Account
                                     </a>
-                                @endif
+                                @endif 
                             </div>
                         </div>
                     </div>
@@ -38,19 +38,20 @@
                                         class="filter-form"
                                         style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
 
+                                         <p class="filter-label mb-0">Search Estimate by Creation Date:</p>
                                         <!-- Start Date -->
-                                        <!-- <div class="date-filter-group">
-                                                                            <label for="start_date" class="filter-label">Start Date</label>
-                                                                            <input type="date" id="start_date" name="start_date" class="date-input"
-                                                                                placeholder="Start Date" value="{{ request('start_date') }}">
-                                                                        </div> -->
+                                        <div class="date-filter-group">
+                                            <label for="start_date" class="filter-label">From</label>
+                                            <input type="date" id="start_date" name="start_date" class="date-input"
+                                                placeholder="Start Date" value="{{ request('start_date') }}">
+                                        </div>
 
                                         <!-- End Date -->
-                                        <!-- <div class="date-filter-group">
-                                                                            <label for="end_date" class="filter-label">End Date</label>
-                                                                            <input type="date" id="end_date" name="end_date" class="date-input"
-                                                                                placeholder="End Date" value="{{ request('end_date') }}">
-                                                                        </div> -->
+                                        <div class="date-filter-group">
+                                            <label for="end_date" class="filter-label">To</label>
+                                            <input type="date" id="end_date" name="end_date" class="date-input"
+                                                placeholder="End Date" value="{{ request('end_date') }}">
+                                        </div>
 
                                         <div class="status-filter-group">
                                             <label for="status" class="filter-label">Status</label>

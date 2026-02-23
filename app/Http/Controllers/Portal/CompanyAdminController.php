@@ -246,9 +246,9 @@ class CompanyAdminController extends CRUDCrontroller
         
         $record = $this->apiService->updateUserPassword($request['new_password'], $request['confirm_password']);
 
-        dd($record);
+        // dd($record);
 
-        
+         
 
         User::updatePassword(currentUser()->id,$request['new_password']);
 
@@ -283,7 +283,7 @@ class CompanyAdminController extends CRUDCrontroller
     {
 
         $data['page_title'] = 'Terms & Conditions';
-        $getCompany = \App\Models\CompanyUser::getCompany(Auth::user()->id);
+        $getCompany = \App\Models\CompanyUser::getCompany(currentUser()->id);
         $terms_and_conditions = \App\Models\TermsAndCondition::where('company_id', $getCompany->id)->first();
 
         $data['record'] = $terms_and_conditions;
