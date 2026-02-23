@@ -324,7 +324,7 @@ class UserController extends RestController
         return $this->__sendResponse($record,200,__('app.login_success_msg'));
     }
 
-    public function changePassword()
+    public function changePassword() 
     {
         $request = $this->__request;
         $custom_messages = [

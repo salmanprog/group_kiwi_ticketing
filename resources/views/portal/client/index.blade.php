@@ -577,20 +577,20 @@
                                     <form id="filter_form" method="GET" action="{{ route('client-management.index') }}"
                                         class="filter-form"
                                         style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-
+   <p class="filter-label mb-0">Search Estimate by Creation Date:</p>
                                         <!-- Start Date -->
-                                        <!-- <div class="date-filter-group">
-                                            <label for="start_date" class="filter-label">Start Date</label>
+                                        <div class="date-filter-group">
+                                            <label for="start_date" class="filter-label">From</label>
                                             <input type="date" id="start_date" name="start_date" class="date-input"
                                                 placeholder="Start Date" value="{{ request('start_date') }}">
-                                        </div> -->
+                                        </div>
 
                                         <!-- End Date -->
-                                        <!-- <div class="date-filter-group">
-                                            <label for="end_date" class="filter-label">End Date</label>
+                                        <div class="date-filter-group">
+                                            <label for="end_date" class="filter-label">To</label>
                                             <input type="date" id="end_date" name="end_date" class="date-input"
                                                 placeholder="End Date" value="{{ request('end_date') }}">
-                                        </div> -->
+                                        </div>
 
                                         <!-- Status Filter -->
                                         <div class="status-filter-group">

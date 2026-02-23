@@ -53,19 +53,8 @@ class ThirdPartyApiService
 
     public function updateUserPassword($password, $confirmPassword)
     {
-    //    $response = Http::withToken(session('auth0_id_token'))
-    //             ->acceptJson()
-    //             ->post('https://dynamicpricing-api.dynamicpricingbuilder.com/api/Auth0Management/ChangeAuth0UserPassword?' . http_build_query([
-    //                 'authCode' => Auth::user()->auth_code,
-    //                 'auth0UserId' => Auth::user()->auth0_id,
-    //                 'password' => $password,
-    //                 'confirmPassword' => $confirmPassword,
-    //             ]));
-
-
         $apiUrl = env('THIRD_PARTY_API_BASE_URL').'/api/Auth0Management/ChangeAuth0UserPassword';
 
-        // dd(Auth::user()->auth0_id, Auth::user()->auth_code);
        $response = Http::withHeaders([
                     'accept' => '/',
                     'Authorization' => 'Bearer ' . session('auth0_id_token'),
@@ -77,7 +66,7 @@ class ThirdPartyApiService
                     'confirmPassword' => $confirmPassword,
                 ]));
 
-        // dd($response->status(), $response->body());
+        // dd(session('auth0_id_token'));
 
         return $response->json();
     }

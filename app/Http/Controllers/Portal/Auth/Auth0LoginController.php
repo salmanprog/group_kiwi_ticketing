@@ -164,6 +164,8 @@ class Auth0LoginController extends Controller
             $auth0User = $auth0->getUser();
             $credentials = $auth0->getCredentials();
 
+            // dd($credentials);
+
             $idToken = $credentials->idToken;        // for external API
             $accessToken = $credentials->accessToken; // if needed for other API calls
 
