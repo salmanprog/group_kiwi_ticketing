@@ -221,8 +221,8 @@
                                                             </td>
                                                             <td>{{ $item->description }}</td>
                                                             <td>{{ $item->quantity }}</td>
-                                                            <td>${{ number_format($item->price, 2) }}</td>
-                                                            <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
+                                                            <td>${{ $item->price }}</td>
+                                                            <td class="item-total">${{ $item->total_price }}</td>
                                                             <td class="no-print">
                                                                 <span class="f-line for-d-g">
                                                                     <button class="btn btn-sm btn-primary edit-item foest-edit"

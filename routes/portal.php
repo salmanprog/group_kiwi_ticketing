@@ -114,9 +114,6 @@ Route::middleware(['auth_client:web'])->group(function () {
 // -------------------------------------------------------------------------
 // Auth0 / portal routes: custom_auth + third_party_api
 // -------------------------------------------------------------------------
-
-    Route::match(['get', 'post'], 'change-password', [CompanyAdminController::class, 'changePassword'])->name('admin.change-password');
-
 Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
     Route::get('/company-profile', [CompanyController::class, 'editCompanyProfile'])->name('company-profile');
@@ -126,6 +123,7 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
     Route::get('terms-and-conditions', [CompanyAdminController::class, 'termsAndConditions'])->name('portal.terms-and-conditions');
     Route::post('update-terms-and-conditions', [CompanyAdminController::class, 'updateTermsAndConditions'])->name('portal.update-terms-and-conditions');
 
+    Route::match(['get', 'post'], 'change-password', [CompanyAdminController::class, 'changePassword'])->name('admin.change-password');
     //Route::get('logout', [CompanyAdminController::class, 'logout'])->name('admin.logout');
 
     Route::get('dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
