@@ -1044,12 +1044,12 @@
                                                     @endif
                                                     @if ($invoice->status == 'unpaid' && $invoice->is_installment != 1)
                                                         <button type="button" class="btn btn-primary"
-                                                            data-bs-toggle="modal" data-bs-target="#paymentModal"
+                                                            data-bs-toggle="modal" data-bs-target="#paymentModal{{ $invoice->id }}"
                                                             data-id="{{ $invoice->id }}">
                                                             Pay Now
                                                         </button>
                                                     @endif
-                                                    <div class="modal fade" id="paymentModal" tabindex="-1"
+                                                    <div class="modal fade" id="paymentModal{{ $invoice->id }}" tabindex="-1"
                                                         aria-labelledby="paymentModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <form action="{{ route('update-invoice-status') }}"

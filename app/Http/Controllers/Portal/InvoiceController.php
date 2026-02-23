@@ -350,25 +350,21 @@ class InvoiceController extends CRUDCrontroller
             ->where('is_paid', 1)
             ->count();
         // Check if plan is fully paid
+
+        $invoice = Invoice::where('id', $request->invoice_id)->first();
+        $invoice->paid_amount += $installmentPayment->amount;
+
         if ($installmentPlan->installment_count == $totalPayments) {
             $installmentPlan->update([
                 'status' => 'completed',
             ]);
-        }
-
-        $invoice = Invoice::where('id', $request->invoice_id)->first();
-        $invoice->paid_amount += $installmentPayment->amount;
-        if ($invoice) {
-            if ($totalPayments == '1') {
-                $invoice->status = 'partial';
-            } elseif ($totalPayments == '2') {
-                $invoice->status = 'partial';
-            } else {
-                $invoice->status = 'paid';
-            }
+            $invoice->status = 'paid';
+            $invoice->save();
+            
+        }else{
+            $invoice->status = 'partial';
             $invoice->save();
         }
-
 
         ActivityLog::create([
             'module' => 'contract',
