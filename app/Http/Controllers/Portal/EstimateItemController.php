@@ -191,7 +191,7 @@ class EstimateItemController extends CRUDCrontroller
 
         $item = EstimateItem::findOrFail($request->item_id);
         $item->quantity = $request->quantity;
-        $item->unit = $request->unit;
+        $item->unit = ($request->unit) ? $request->unit : 'pcs';
         $item->price = $request->price;
         $item->total_price = $request->quantity * $request->price;
         $item->save();
