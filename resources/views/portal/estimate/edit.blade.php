@@ -221,8 +221,8 @@
                                                             </td>
                                                             <td>{{ $item->description }}</td>
                                                             <td>{{ $item->quantity }}</td>
-                                                            <td>${{ $item->price }}</td>
-                                                            <td class="item-total">${{ $item->total_price }}</td>
+                                                            <td>${{ number_format($item->price, 2) }}</td>
+                                                            <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
                                                             <td class="no-print">
                                                                 <span class="f-line for-d-g">
                                                                     <button class="btn btn-sm btn-primary edit-item foest-edit"
@@ -231,6 +231,7 @@
                                                                             data-csrf="{{ csrf_token() }}"
                                                                             data-id="{{ $item->id }}"
                                                                             data-name="{{ $item->name }}"
+                                                                            data-description="{{ $item->description }}"
                                                                             data-quantity="{{ $item->quantity }}"
                                                                             data-unit="{{ $item->unit }}"
                                                                             data-price="{{ $item->price }}">
@@ -694,10 +695,10 @@
                                 <label>Quantity</label>
                                 <input type="number" name="quantity" class="form-control">
                             </div>
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label>Unit</label>
                                 <input type="text" name="unit" class="form-control">
-                            </div>
+                            </div> -->
                             <div class="form-group">
                                 <label>Price</label>
                                 <input type="number" name="price" class="form-control" step="0.01">
