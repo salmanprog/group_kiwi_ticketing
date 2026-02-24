@@ -7687,6 +7687,11 @@ a.btn.btn-xs.btn-info:hover {
   color: #000 !important;
 }
 
+.alert-dismissible .close{
+  top: 22px;
+  cursor: pointer;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
 
