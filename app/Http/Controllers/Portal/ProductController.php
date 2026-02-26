@@ -151,7 +151,7 @@ class ProductController extends CRUDCrontroller
     public function createApi()
     {
         $response = $this->apiService->getTicketPricingRecord([], Auth::user()->auth_code);
-
+        // dd($response->json());
         $tickets = [];
 
         if ($response->successful()) {

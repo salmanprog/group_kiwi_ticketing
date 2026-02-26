@@ -33,6 +33,7 @@ use App\Http\Controllers\Portal\EstimateInstallmentController;
 use Auth0\Laravel\Facade\Auth0;
 use App\Http\Controllers\Portal\ContractEmailController;
 use App\Http\Controllers\Portal\EmailTemplateController;
+use App\Http\Controllers\Portal\UserHoldTicketsController;
 
 
 /*
@@ -304,3 +305,8 @@ Route::get('email-template/ajax-listing', [EmailTemplateController::class, 'ajax
 Route::resource('email-template', EmailTemplateController::class);
 Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->name('smtp-config.view');
 Route::post('smtp-config-update', [EmailTemplateController::class, 'createOrupdate'])->name('user-smtp.createOrupdate');
+
+Route::get('hold-tickets/ajax-listing', [UserHoldTicketsController::class, 'ajaxListing'])->name('hold-tickets.ajax-listing');
+Route::resource('hold-tickets', UserHoldTicketsController::class);    
+Route::post('hold-tickets-item', [UserHoldTicketsController::class, 'storeItem'])->name('hold-tickets-item');    
+Route::get('hold-tickets/release/{slug}', [UserHoldTicketsController::class, 'release'])->name('hold-tickets.release');

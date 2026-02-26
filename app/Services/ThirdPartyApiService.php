@@ -51,6 +51,8 @@ class ThirdPartyApiService
         );
     }
 
+
+
     public function updateUserPassword($password, $confirmPassword)
     {
         $apiUrl = env('THIRD_PARTY_API_BASE_URL').'/api/Auth0Management/ChangeAuth0UserPassword';
@@ -70,4 +72,26 @@ class ThirdPartyApiService
 
         return $response->json();
     }
+
+
+    public function holdTicket(string $date, array $body, string $authCode)
+    {
+        return Http::withQueryParameters([
+                'date' => $date,
+                'AuthCode' => $authCode,
+            ])
+            ->acceptJson()
+            ->post($this->baseUrl . '/Pricing/TicketHold', $body);
+    }
+
+    public function releaseTicket(array $body, string $authCode)
+    {
+        return Http::acceptJson()
+        ->withQueryParameters(['AuthCode' => $authCode]) 
+        ->post($this->baseUrl . '/Pricing/ReleaseHoldsByOrder', [
+            'request' => $body 
+        ]);
+    }
+
+    
 }
