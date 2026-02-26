@@ -204,16 +204,16 @@ $(document).ready(function(){
                     $('#selectedProductsTable tbody .no-record').remove();
 
                     // Check if product exists
-                    let existingRow = $('#selectedProductsTable tbody').find(`tr[data-product-id="${productId}"]`);
-                    if(existingRow.length){
-                        existingRow.find('td:nth-child(2)').text(quantity);
-                    } else {
+                    // let existingRow = $('#selectedProductsTable tbody').find(`tr[data-product-id="${productId}"]`);
+                    // if(existingRow.length){
+                    //     existingRow.find('td:nth-child(2)').text(quantity);
+                    // } else {
                         let newRow = `<tr data-product-id="${productId}">
                                         <td>${productName}</td>
                                         <td>${quantity}</td>
                                       </tr>`;
                         $('#selectedProductsTable tbody').append(newRow);
-                    }
+                    // }
 
                 } else {
                     $btn.prop('disabled', false).text('Hold');
