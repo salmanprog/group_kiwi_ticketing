@@ -49,219 +49,220 @@
                                                 value="{{ old('department') }}">
                                         </div>
                                     </div>
-                                     <div class="col-md-12">
-                                        <div class="form-group">
-                                                <label class="form-label">Description <span class="required">*</span></label>
-                                                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                               
-                            <!-- Address Details -->
-                            <div class="form-section">
-                                <div class="section-header">
-                                    <h5>Address Details</h5>
-                                </div>
-                                <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="form-label">Address</label>
-                                            <input type="text" name="address_one" class="form-control"
-                                                value="{{ old('address_one') }}">
+                                            <label class="form-label">Description <span class="required">*</span></label>
+                                            <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="form-label">Address 2</label>
-                                            <input type="text" name="address_two" class="form-control"
-                                                value="{{ old('address_two') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">City</label>
-                                            <input type="text" name="city" class="form-control"
-                                                value="{{ old('city') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">State</label>
-                                            <input type="text" name="state" class="form-control"
-                                                value="{{ old('state') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Zip</label>
-                                            <input type="text" name="zip" class="form-control"
-                                                value="{{ old('zip') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Country</label>
-                                            <input type="text" name="country" class="form-control"
-                                                value="{{ old('country') }}">
-                                        </div>
-                                    </div>
-                                    
-                                    
                                 </div>
-                            </div>
 
-                            <!-- Contact Information -->
-                            <!-- <div class="form-section">
-                                <div class="section-header">
-                                    <h5>Contact Information</h5>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Email</label>
-                                            <input type="email" name="email" class="form-control"
-                                                value="{{ old('email') }}">
-                                        </div>
+                                <!-- Address Details -->
+                                <div class="form-section">
+                                    <div class="section-header">
+                                        <h5>Address Details</h5>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Phone</label>
-                                            <input type="text" name="phone" class="form-control phone_us"
-                                                value="{{ old('phone') }}">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Address</label>
+                                                <input type="text" name="address_one" class="form-control"
+                                                    value="{{ old('address_one') }}">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Fax</label>
-                                            <input type="text" name="fax" class="form-control"
-                                                value="{{ old('fax') }}">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Address 2</label>
+                                                <input type="text" name="address_two" class="form-control"
+                                                    value="{{ old('address_two') }}">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Rep</label>
-                                            <input type="text" name="rep" class="form-control"
-                                                value="{{ old('rep') }}">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">City</label>
+                                                <input type="text" name="city" class="form-control"
+                                                    value="{{ old('city') }}">
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div> -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">State</label>
+                                                <input type="text" name="state" class="form-control"
+                                                    value="{{ old('state') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Zip</label>
+                                                <input type="text" name="zip" class="form-control"
+                                                    value="{{ old('zip') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Country</label>
+                                                <input type="text" name="country" class="form-control"
+                                                    value="{{ old('country') }}">
+                                            </div>
+                                        </div>
 
-                            <!-- Event & Opportunity -->
-                            <div class="form-section">
-                                <div class="section-header">
-                                    <h5>Event & Opportunity</h5>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Organization Type</label>
-                                            <select name="organization_type_id" class="form-control select2">
-                                                <option value="">-- Select Type --</option>
-                                                @foreach ($organization_types as $organization_type)
-                                                    <option value="{{ $organization_type->id }}">
-                                                        {{ $organization_type->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Organization Size</label>
-                                            <input type="number" name="size" class="form-control"
-                                                value="{{ old('size') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Event History</label>
-                                            <select name="event_history_id" class="form-control">
-                                                <option value="">-- Select Event History --</option>
-                                                @foreach ($organization_history_events as $event_history)
-                                                    <option value="{{ $event_history->id }}">{{ $event_history->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Group Type</label>
-                                            <select name="event_type_id" class="form-control">
-                                                <option value="">-- Select Group Type --</option>
-                                                @foreach ($organization_events as $event)
-                                                    <option value="{{ $event->id }}">{{ $event->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Group Size</label>
-                                            <input type="number" name="group_size" class="form-control"
-                                                value="{{ old('group_size') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">First Meeting</label>
-                                            <input type="date" name="first_meeting" class="form-control"
-                                                value="{{ old('first_meeting') }}">
-                                        </div>
-                                    </div>
-                                    <!-- <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Hot Button</label>
-                                            <input type="text" name="hot_button" class="form-control"
-                                                value="{{ old('hot_button') }}">
-                                        </div>
-                                    </div> -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Closing Probability (%)</label>
-                                            <input type="number" name="closing_probability" class="form-control"
-                                                value="{{ old('closing_probability') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Event Date</label>
-                                            <input type="date" name="event_date" class="form-control"
-                                                value="{{ old('event_date') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Event Status</label>
-                                            <input type="text" name="event_status" class="form-control"
-                                                value="{{ old('event_status') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Next Objective</label>
-                                            <input type="text" name="next_objective" class="form-control"
-                                                value="{{ old('next_objective') }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Follow-Up Date</label>
-                                            <input type="date" name="follow_up_date" class="form-control"
-                                                value="{{ old('follow_up_date') }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Submit -->
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary btn-outline">
-                                    Submit
-                                </button>
-                                <button type="reset" class="btn btn-secondary">
-                                    Reset Form
-                                </button>
-                            </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Information -->
+                                <!-- <div class="form-section">
+                                    <div class="section-header">
+                                        <h5>Contact Information</h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" name="email" class="form-control"
+                                                    value="{{ old('email') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Phone</label>
+                                                <input type="text" name="phone" class="form-control phone_us"
+                                                    value="{{ old('phone') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Fax</label>
+                                                <input type="text" name="fax" class="form-control"
+                                                    value="{{ old('fax') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Rep</label>
+                                                <input type="text" name="rep" class="form-control"
+                                                    value="{{ old('rep') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <!-- Event & Opportunity -->
+                                <div class="form-section">
+                                    <div class="section-header">
+                                        <h5>Event & Opportunity</h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Organization Type</label>
+                                                <select name="organization_type_id" class="form-control select2">
+                                                    <option value="">-- Select Type --</option>
+                                                    @foreach ($organization_types as $organization_type)
+                                                        <option value="{{ $organization_type->id }}">
+                                                            {{ $organization_type->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Organization Size</label>
+                                                <input type="number" name="size" class="form-control"
+                                                    value="{{ old('size') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Event History</label>
+                                                <select name="event_history_id" class="form-control">
+                                                    <option value="">-- Select Event History --</option>
+                                                    @foreach ($organization_history_events as $event_history)
+                                                        <option value="{{ $event_history->id }}">
+                                                            {{ $event_history->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Group Type</label>
+                                                <select name="event_type_id" class="form-control">
+                                                    <option value="">-- Select Group Type --</option>
+                                                    @foreach ($organization_events as $event)
+                                                        <option value="{{ $event->id }}">{{ $event->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Group Size</label>
+                                                <input type="number" name="group_size" class="form-control"
+                                                    value="{{ old('group_size') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">First Meeting</label>
+                                                <input type="date" name="first_meeting" class="form-control"
+                                                    value="{{ old('first_meeting') }}">
+                                            </div>
+                                        </div>
+                                        <!-- <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Hot Button</label>
+                                                <input type="text" name="hot_button" class="form-control"
+                                                    value="{{ old('hot_button') }}">
+                                            </div>
+                                        </div> -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Closing Probability (%)</label>
+                                                <input type="number" name="closing_probability" class="form-control"
+                                                    value="{{ old('closing_probability') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Event Date</label>
+                                                <input type="date" name="event_date" class="form-control"
+                                                    value="{{ old('event_date') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Event Status</label>
+                                                <input type="text" name="event_status" class="form-control"
+                                                    value="{{ old('event_status') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Next Objective</label>
+                                                <input type="text" name="next_objective" class="form-control"
+                                                    value="{{ old('next_objective') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Follow-Up Date</label>
+                                                <input type="date" name="follow_up_date" class="form-control"
+                                                    value="{{ old('follow_up_date') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit -->
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary btn-outline">
+                                        Submit
+                                    </button>
+                                    <button type="reset" class="btn btn-secondary">
+                                        Reset Form
+                                    </button>
+                                </div>
                         </form>
                     </div>
                 </div>
@@ -270,13 +271,13 @@
         @include('portal.footer')
     </section>
     @push('scripts')
-    <script>
-        (function( $ ) {
-            $(function() {
-                $('.phone_us').mask('(000) 000-0000');
-            });
-        })(jQuery);
-    </script>
+        <script>
+            (function($) {
+                $(function() {
+                    $('.phone_us').mask('(000) 000-0000');
+                });
+            })(jQuery);
+        </script>
     @endpush
     <style>
         /* Clean White Theme */
@@ -557,28 +558,28 @@
         
     </style>
     @push('stylesheets')
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet"></link>
+        <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.css" rel="stylesheet">
+        </link>
     @endpush
-    
+
     @push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
-<script>
-$(document).ready(function () {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
+        <script>
+            $(document).ready(function() {
 
-    $('#description').summernote({
-        height: 180,
-        placeholder: 'Write note here...',
-        toolbar: [
-            ['style', ['bold', 'italic', 'underline']],
-            ['para', ['ul', 'ol']],
-            ['insert', ['link']],
-            ['view', ['codeview']]
-        ]
-    });
-});
-
-</script>
- @endpush
+                $('#description').summernote({
+                    height: 180,
+                    placeholder: 'Write note here...',
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline']],
+                        ['para', ['ul', 'ol']],
+                        ['insert', ['link']],
+                        ['view', ['codeview']]
+                    ]
+                });
+            });
+        </script>
+    @endpush
 @endsection
