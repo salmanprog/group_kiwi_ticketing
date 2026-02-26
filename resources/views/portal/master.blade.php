@@ -995,6 +995,14 @@
                                     </li>
                                 @endif -->
 
+                                   <li data-type="child" class="nav-item">
+
+                                        <a class="nav-link" href="{{ route('hold-tickets.index') }}">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <span class="toggle-none">Hold Tickets</span>
+                                            </a>
+                                </li>
+
                                 <li data-type="child" class="nav-item">
                                         <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
                                             <i class="fa-solid fa-cloud"></i>
@@ -1292,7 +1300,7 @@
         //             $this.attr('data-expanded', 'false');
         //             $arrow.css('transform', 'rotate(0deg)');
         //             $arrow.removeClass('fa-chevron-down').addClass('fa-chevron-right');
-        //         }
+        //         } 
 
         //         // Close other main menus (optional)
         //         if (!$this.closest('.has-submenu').length) {

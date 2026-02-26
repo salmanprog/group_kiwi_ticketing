@@ -13,7 +13,7 @@ use DB;
 
 class EstimateItemController extends CRUDCrontroller
 {
-    public function __construct(Request $request)
+    public function __construct(Request $request) 
     {
         parent::__construct('EstimateItem');
         $this->__request = $request;
