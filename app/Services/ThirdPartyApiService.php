@@ -22,7 +22,7 @@ class ThirdPartyApiService
     public function getTicketPricingRecord(array $params = [], $authCode = null)
     {
         return Http::get(
-            $this->baseUrl . '/StaticTicketPricing/getTicketPricingRecord',
+            $this->baseUrl . '/Pricing/GetAllProductPrice',
             array_merge($params, [
                 'AuthCode' => $authCode ?? $this->authCode,
             ])
@@ -91,6 +91,29 @@ class ThirdPartyApiService
         ->post($this->baseUrl . '/Pricing/ReleaseHoldsByOrder', [
             'request' => $body 
         ]);
+    }
+
+    public function getAllProductPrice(array $params = [], $authCode = null)
+    {
+        return Http::get(
+            $this->baseUrl . '/Pricing/GetAllProductPrice',
+            array_merge($params, [
+                'authcode' => $authCode ?? $this->authCode,
+            ])
+        );
+    }
+
+
+    public function getCabanaOccupancy($type, $date, $authCode = null)
+    {
+        return \Http::get(
+            $this->baseUrl . '/Pricing/GetCabanaOccupancy',
+            [
+                'cabanaType' => $type,
+                'date'       => $date,
+                'Authcode'   => $authCode ?? $this->authCode,
+            ]
+        );
     }
 
     

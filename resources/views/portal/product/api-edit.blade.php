@@ -15,7 +15,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('product.api.update', $ticket['id'] ?? 0) }}">
+                        <form method="POST" action="{{ route('product.api.update', $ticket['ticketSlug'] ?? 0) }}">
                             @csrf
 
                             <div class="form-section">
@@ -23,7 +23,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Ticket Name</label>
                                         <input type="text" class="form-control" name="ticketName"
-                                            value="{{ old('ticketName', $ticket['ticketName'] ?? '') }}" required>
+                                            value="{{ old('ticketName', $ticket['ticketType'] ?? '') }}" required>
                                     </div>
 
                                     <div class="col-md-6" style="display: none;">
@@ -41,7 +41,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Price</label>
                                         <input type="number" step="0.01" name="ticketPrice" class="form-control"
-                                            value="{{ old('ticketPrice', $ticket['ticketPrice'] ?? '') }}" required>
+                                            value="{{ old('ticketPrice', $ticket['price'] ?? '') }}" required>
                                     </div>
                                     <div class="col-md-12 mt-3">
                                         <div class="form-group">

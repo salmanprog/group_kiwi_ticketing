@@ -151,12 +151,11 @@ class ProductController extends CRUDCrontroller
     public function createApi()
     {
         $response = $this->apiService->getTicketPricingRecord([], Auth::user()->auth_code);
-        // dd($response->json());
-        $tickets = [];
+        $tickets = []; 
 
         if ($response->successful()) {
-            $tickets = collect($response->json()['data'] ?? [])
-                ->unique('ticketName')
+            $tickets = collect($response->json()['getAllProductPrice']['data'] ?? [])
+                ->unique('ticketType')
                 ->values();
         }
 
@@ -195,41 +194,54 @@ class ProductController extends CRUDCrontroller
             'unit'        => 'Ticket',
             'status'      => '1',
             'slug'        => strtolower(str_replace(' ', '-', $ticketName)),
+            'venueId'     => ($request->venueId) ? $request->venueId : 0,
+            'ticketSlug'  => ($request->ticketSlug) ? $request->ticketSlug : '',
+            'ticketCategory' => ($request->ticketCategory) ? $request->ticketCategory : '',
+            'hasSeats' => ($request->hasSeats) ? 1 : 0,
         ]);
 
-        $apiParams = [
-            'TicketName'  => $ticketName,
-            'TicketPrice' => $validated['ticketPrice'],
-            'TicketType'  => $validated['ticketType'],
-            'SaleChannel' => $validated['saleChannel'],
-            'UserId'      => 'dev',
-            'TicketId'    => $ticketId,
-        ];
+        // $apiParams = [
+        //     'TicketName'  => $ticketName,
+        //     'TicketPrice' => $validated['ticketPrice'],
+        //     'TicketType'  => $validated['ticketType'],
+        //     'SaleChannel' => $validated['saleChannel'],
+        //     'UserId'      => 'dev',
+        //     'TicketId'    => $ticketId,
+        // ];
 
-        $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams, Auth::user()->auth_code);
+        // $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams, Auth::user()->auth_code);
 
-        $apiData = $apiResponse->json();
-        $apiSuccess = isset($apiData['errorCode']) && (int) $apiData['errorCode'] === 0;
+        // $apiData = $apiResponse->json();
+        // $apiSuccess = isset($apiData['errorCode']) && (int) $apiData['errorCode'] === 0;
+        // dd($apiData);
+        // if (!$apiSuccess) {
+        //     $errorMessage = 'Ticket saved locally, but API sync failed.';
+        //     if (!empty($apiData['errors']) && is_array($apiData['errors'])) {
+        //         $messages = collect($apiData['errors'])->flatten()->filter()->values()->all();
+        //         $errorMessage = 'Ticket saved locally. API error: ' . implode(' ', $messages);
+        //     } elseif (!empty($apiData['title'])) {
+        //         $errorMessage = 'Ticket saved locally. API error: ' . $apiData['title'];
+        //     } elseif (!empty($apiData['errorMessage'])) {
+        //         $errorMessage = 'Ticket saved locally. API error: ' . $apiData['errorMessage'];
+        //     } elseif ($apiResponse->failed()) {
+        //         $errorMessage = 'Ticket saved locally. API request failed (HTTP ' . $apiResponse->status() . ').';
+        //     }
+        //     return redirect()->back()->withInput()->with('error', $errorMessage);
+        // }
 
-        if (!$apiSuccess) {
-            $errorMessage = 'Ticket saved locally, but API sync failed.';
-            if (!empty($apiData['errors']) && is_array($apiData['errors'])) {
-                $messages = collect($apiData['errors'])->flatten()->filter()->values()->all();
-                $errorMessage = 'Ticket saved locally. API error: ' . implode(' ', $messages);
-            } elseif (!empty($apiData['title'])) {
-                $errorMessage = 'Ticket saved locally. API error: ' . $apiData['title'];
-            } elseif (!empty($apiData['errorMessage'])) {
-                $errorMessage = 'Ticket saved locally. API error: ' . $apiData['errorMessage'];
-            } elseif ($apiResponse->failed()) {
-                $errorMessage = 'Ticket saved locally. API request failed (HTTP ' . $apiResponse->status() . ').';
-            }
-            return redirect()->back()->withInput()->with('error', $errorMessage);
-        }
-
-        // API reported success (errorCode 0): update slug from response
-        if (!empty($apiData['data']['ticketSlug'])) {
-            $product->update(['slug' => $apiData['data']['ticketSlug']]);
-        }
+        // // API reported success (errorCode 0): update slug from response
+        // if (!empty($apiData['data']['ticketSlug'])) {
+        //     $product->update(
+        //         [
+        //             'slug' => $apiData['data']['ticketSlug'],
+        //             'ticketSlug' => $apiData['data']['ticketSlug'],
+        //             'venueId' => $apiData['data']['venueId'],
+        //             'ticketSlug' => $apiData['data']['ticketSlug'],
+        //             'ticketCategory' => $apiData['data']['ticketCategory'],
+        //             'hasSeats' => $apiData['data']['hasSeats'],
+        //         ]
+        //     );
+        // }
 
         return redirect()->back()
             ->with('success', $isNewTicket
@@ -243,12 +255,13 @@ class ProductController extends CRUDCrontroller
     public function editApi($slug)
     {
         $response = $this->apiService->getTicketPricingRecord([], Auth::user()->auth_code);
-
-        $ticket = collect($response->json()['data'])
+        
+        $ticket = collect($response->json()['getAllProductPrice']['data'])
             ->firstWhere('ticketSlug', $slug);
         $get_product = Product::where('slug', $slug)->first();
         abort_if(!$ticket, 404);
 
+        // dd($ticket);
         return view('portal.product.api-edit', compact('ticket', 'get_product'));
     }
 
@@ -262,7 +275,7 @@ class ProductController extends CRUDCrontroller
 
         // Fetch ticket from API
         $response = $this->apiService->getTicketPricingRecord([], Auth::user()->auth_code);
-        $ticket = collect($response->json()['data'])->firstWhere('id', $id);
+        $ticket = collect($response->json()['getAllProductPrice']['data'])->firstWhere('ticketSlug', $id);
 
         if (!$ticket) {
             return redirect()->back()->with('error', 'Ticket not found.');
@@ -292,7 +305,7 @@ class ProductController extends CRUDCrontroller
             'UserId'      => 'dev',
             'TicketType'  => $validated['ticketType'] ?? $ticket['ticketType'] ?? 'Tickets',
             'SaleChannel' => $validated['saleChannel'] ?? $ticket['saleChannel'] ?? 'Groups',
-            'TicketId'    => $ticket['id'],
+            'ticketSlug'  => $ticket['ticketSlug'],
         ];
 
         $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams, Auth::user()->auth_code);

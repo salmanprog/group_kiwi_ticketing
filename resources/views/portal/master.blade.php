@@ -20,6 +20,7 @@
     <link href="{{ asset('admin/assets/scss/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     @stack('stylesheets')
     <script>
         var base_url = '{{ URL::to('/') }}';
@@ -1215,7 +1216,7 @@
     <script src="{{ asset('admin/assets/js/productDiscount.js') }}"></script>
     <script src="{{ asset('admin/assets/js/productPayment.js') }}"></script>
     <script src="{{ asset('admin/assets/js/modifyContract.js') }}"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
         // Page load complete hone par skeleton hide karo
         document.addEventListener('DOMContentLoaded', function() {

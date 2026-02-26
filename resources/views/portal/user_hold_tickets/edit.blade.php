@@ -3,15 +3,12 @@
 @section('content')
 
 <style>
-/* Modal scroll */
-.modal-body-scroll {
-    max-height: 400px;
-    overflow-y: auto;
-}
+.modal-body-scroll { max-height: 400px; overflow-y: auto; }
+.seat-btn { margin: 2px; }
+.seat-btn.selected { background-color: #0d6efd !important; color: #fff !important; }
 </style>
 
 <section class="main-content" style="background:#f8faf9; padding:40px; min-height:100vh;">
-
     <div class="container">
         <div class="card" style="border:none; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08);">
 
@@ -25,18 +22,32 @@
 
                 <!-- Top Section -->
                 <div class="row mb-4">
-                    <div class="col-md-4">
-                        <label style="font-weight:600;">Estimate</label>
-                        <input type="text" class="form-control" value="{{ $record->estimate_slug }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label style="font-weight:600;">Hold Date</label>
-                        <input type="date" class="form-control" value="{{ $record->hold_date }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label style="font-weight:600;">Expiry Date</label>
-                        <input type="date" class="form-control" value="{{ $record->expiry_date }}">
-                    </div>
+                    <form action="{{ route('hold-tickets.update', $record->slug) }}" method="POST" class="row g-3">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="col-md-4">
+                            <label for="estimate_slug" class="form-label fw-semibold">Estimate</label>
+                            <input type="text" class="form-control" id="estimate_slug" name="estimate_slug" 
+                                value="{{ $record->estimate_slug }}" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="hold_date" class="form-label fw-semibold">Hold Date</label>
+                            <input type="date" class="form-control" id="hold_date" name="hold_date" 
+                                value="{{ $record->hold_date }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="expiry_date" class="form-label fw-semibold">Expiry Date</label>
+                            <input type="date" class="form-control" id="expiry_date" name="expiry_date" 
+                                value="{{ $record->expiry_date }}">
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-end mt-2">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Selected Products Table -->
@@ -48,7 +59,7 @@
                             <thead style="background:#f3f4f6;">
                                 <tr>
                                     <th>Product Name</th>
-                                    <th width="120">Quantity</th>
+                                    <th width="120">Quantity / Seats</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -68,12 +79,10 @@
                         </table>
                     </div>
 
-                    <!-- Add Product Button -->
                     <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#productModal">
                         Add Product
                     </button>
                 </div>
-
             </div>
         </div>
     </div>
@@ -116,7 +125,8 @@
                                                 data-product-slug="{{ $product->slug }}"
                                                 data-estimate-id="{{ $record->estimate_id }}"
                                                 data-hold-date="{{ $record->hold_date }}"
-                                                data-expiry-date="{{ $record->expiry_date }}">
+                                                data-expiry-date="{{ $record->expiry_date }}"
+                                                data-has-seats="{{ $product->hasSeats == 1 ? 'true' : 'false' }}">
                                             Hold
                                         </button>
                                     </td>
@@ -142,42 +152,136 @@
 
 </section>
 
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
 $(document).ready(function(){
 
-    // Enable/Disable Hold button when checkbox changes
-    $(document).on('change', '.product-checkbox', function(){
-        let $row = $(this).closest('tr');
+    // Checkbox click
+    $(document).on('change', '.product-checkbox', function () {
+        let $checkbox = $(this);
+        let $row = $checkbox.closest('tr');
         let $btn = $row.find('.hold-btn');
+        let $validationRow = $row.next('.validation-row');
+        let $validationBox = $validationRow.find('.validation-message');
 
-        if ($(this).is(':checked')) {
-            $btn.prop('disabled', false)
-                .removeClass('btn-secondary')
-                .addClass('btn-primary');
+        let productSlug = $btn.data('product-slug');
+        let holdDate = $btn.data('hold-date');
+
+        if ($checkbox.is(':checked')) {
+            $.ajax({
+                url: "{{ route('hold-tickets.check') }}",
+                type: "POST",
+                data: { _token: "{{ csrf_token() }}", product_slug: productSlug, hold_date: holdDate },
+                beforeSend: function () {
+                    $checkbox.prop('disabled', true);
+                    $btn.prop('disabled', true).text('Checking...');
+                    $validationRow.addClass('d-none');
+                    $row.next('.cabana-row').remove();
+                },
+                success: function (response) {
+                    if (!response.status) {
+                        $btn.prop('disabled', true).text('Hold');
+                        $checkbox.prop('checked', false);
+                        $validationBox.html(response.message);
+                        $validationRow.removeClass('d-none');
+                        $row.next('.cabana-row').remove();
+                    } else {
+                        $btn.prop('disabled', false)
+                            .removeClass('btn-secondary')
+                            .addClass('btn-primary')
+                            .text('Hold');
+                        $validationRow.addClass('d-none');
+
+                        // Insert cabana seats HTML inline
+                        $row.next('.cabana-row').remove();
+                        if(response.html){
+                            let cabanaRow = `<tr class="cabana-row">
+                                                <td colspan="4">${response.html}</td>
+                                              </tr>`;
+                            $row.after(cabanaRow);
+                        }
+                    }
+                },
+                error: function () {
+                    $btn.prop('disabled', true).text('Hold');
+                    $checkbox.prop('checked', false);
+                    $validationBox.html('Something went wrong. Please try again.');
+                    $validationRow.removeClass('d-none');
+                    $row.next('.cabana-row').remove();
+                },
+                complete: function () {
+                    $checkbox.prop('disabled', false);
+                }
+            });
+
         } else {
             $btn.prop('disabled', true)
                 .removeClass('btn-primary btn-success')
                 .addClass('btn-secondary')
                 .text('Hold');
+
+            $validationRow.addClass('d-none');
+            $row.next('.cabana-row').remove();
         }
     });
 
-    // Hold Button AJAX
+    // Seat button click
+    $(document).on('click', '.seat-btn', function(){
+        let $btn = $(this);
+        let $row = $btn.closest('tr').prev('tr'); // product row
+        let quantity = parseInt($row.find('.product-qty').val());
+
+        if($btn.data('selected') == 0){
+            let selectedCount = $btn.closest('td').find('.seat-btn.selected').length;
+            if(selectedCount >= quantity){
+                Toastify({
+                    text: 'You have already selected maximum seats for this product.',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    className: 'error'
+                }).showToast();
+                return;
+            }
+            $btn.addClass('selected btn-primary').removeClass('btn-outline-primary');
+            $btn.data('selected',1);
+        } else {
+            $btn.removeClass('selected btn-primary').addClass('btn-outline-primary');
+            $btn.data('selected',0);
+        }
+    });
+
+    // Hold button click
     $(document).on('click', '.hold-btn', function(){
         let $btn = $(this);
         let $row = $btn.closest('tr');
         let $validationRow = $row.nextAll('.validation-row').first();
         let $validationBox = $validationRow.find('.validation-message');
-        let quantity = $row.find('.product-qty').val();
+        let quantity = parseInt($row.find('.product-qty').val());
 
-        // Clear previous validation
-        $validationBox.html('');
-        $validationRow.addClass('d-none');
+        // Get selected seats
+        let selectedSeats = [];
+        $row.next('.cabana-row').find('.seat-btn.selected').each(function(){
+            selectedSeats.push($(this).data('seat'));
+        });
+
+        if($btn.data('has-seats') == 'true') {
+            if(selectedSeats.length != quantity){
+                Toastify({
+                    text: 'Please select exactly ' + quantity + ' seats.',
+                    duration: 3000,
+                    gravity: 'top',
+                    position: 'right',
+                    className: 'error'
+                }).showToast();
+                return;
+            }
+        }
 
         $btn.prop('disabled', true).text('Processing...');
+        $validationBox.html('');
+        $validationRow.addClass('d-none');
 
         $.ajax({
             url: "{{ route('hold-tickets-item') }}",
@@ -187,6 +291,7 @@ $(document).ready(function(){
                 product_id: $btn.data('product-id'),
                 product_slug: $btn.data('product-slug'),
                 quantity: quantity,
+                seats: selectedSeats,
                 estimate_id: $btn.data('estimate-id'),
                 hold_date: $btn.data('hold-date'),
                 expiry_date: $btn.data('expiry-date'),
@@ -200,11 +305,9 @@ $(document).ready(function(){
                     let productId = $btn.data('product-id');
                     let productName = $row.find('td:nth-child(2)').text();
 
-                    // Remove "No record found"
                     $('#selectedProductsTable tbody .no-record').remove();
 
-                    // Check if product exists
-                    // let existingRow = $('#selectedProductsTable tbody').find(`tr[data-product-id="${productId}"]`);
+                    let existingRow = $('#selectedProductsTable tbody').find(`tr[data-product-id="${productId}"]`);
                     // if(existingRow.length){
                     //     existingRow.find('td:nth-child(2)').text(quantity);
                     // } else {
