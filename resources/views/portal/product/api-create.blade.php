@@ -20,6 +20,10 @@
                             <input type="hidden" name="ticketId" id="ticketId" value="0">
                             <input type="hidden" name="ticketType" id="ticketTypeHidden" value="Tickets">
                             <input type="hidden" name="saleChannel" id="saleChannelHidden" value="Groups">
+                            <input type="hidden" name="ticketSlug" id="ticketSlugHidden" value="">
+                            <input type="hidden" name="venueId" id="venueIdHidden" value="">
+                            <input type="hidden" name="hasSeats" id="hasSeatsHidden" value="">
+                            <input type="hidden" name="ticketCategory" id="ticketCategoryHidden" value="">
                             <div class="form-section">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -29,15 +33,19 @@
                                             <option value="">Select Ticket Name</option>
 
                                             @foreach ($tickets as $ticket)
-                                                <option value="{{ $ticket['ticketName'] }}" data-id="{{ $ticket['id'] }}"
-                                                    data-price="{{ $ticket['ticketPrice'] }}"
+                                                <option value="{{ $ticket['ticketType'] }}" data-id="{{ $ticket['venueId'] }}"
+                                                    data-price="{{ $ticket['price'] }}"
                                                     data-type="{{ $ticket['ticketType'] }}"
-                                                    data-channel="{{ $ticket['saleChannel'] }}">
-                                                    {{ $ticket['ticketName'] }}
+                                                    data-channel="{{ $ticket['saleChannel'] }}"
+                                                    data-venueId="{{ $ticket['venueId'] }}"
+                                                    data-ticketSlug="{{ $ticket['ticketSlug'] }}"
+                                                    data-hasSeats="{{ $ticket['hasSeats'] }}"
+                                                    data-ticketCategory="{{ $ticket['ticketCategory'] }}">
+                                                    {{ $ticket['ticketType'] }}
                                                 </option>
                                             @endforeach
 
-                                            <option value="__new__">➕ Add New Ticket</option>
+                                            <!-- <option value="__new__">➕ Add New Ticket</option> -->
                                         </select>
                                     </div>
 
@@ -108,7 +116,6 @@
                 }
 
                 newWrapper.classList.add('d-none');
-
                 const option = this.options[this.selectedIndex];
                 ticketIdInput.value = option.getAttribute('data-id');
                 document.getElementById('ticketType').value =
@@ -125,6 +132,19 @@
 
                 document.getElementById('ticketPrice').value =
                     option.getAttribute('data-price') ?? '';
+                    
+                document.getElementById('venueIdHidden').value =
+                    option.getAttribute('data-venueId') ?? '';
+                    
+                document.getElementById('ticketSlugHidden').value =
+                    option.getAttribute('data-ticketSlug') ?? '';
+                    
+                document.getElementById('hasSeatsHidden').value =
+                    option.getAttribute('data-hasSeats') ?? '';
+                
+
+                document.getElementById('ticketCategoryHidden').value =
+                    option.getAttribute('data-ticketCategory') ?? '';
             });
 
         });

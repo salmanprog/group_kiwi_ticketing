@@ -40,6 +40,8 @@ class UserHoldTicketsController extends CRUDCrontroller
             case 'POST':
                 $validator = Validator::make($this->__request->all(), [
                     'estimate_id'             => 'required',
+                      'hold_date' => 'required|date',
+                    'expiry_date' => 'required|date|after:hold_date',
                 ],$custom_messages);
                     
                 break;
@@ -110,6 +112,22 @@ class UserHoldTicketsController extends CRUDCrontroller
         $this->__data['Estimates'] = Estimate::where('auth_code',  Auth::user()->auth_code)->get();
         $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
 
+        // $response = $this->apiService->getAllProductPrice([
+        //                 'date' => $this->__data['record']->hold_date,
+        //                 'getCabanasRecord' => 'true',
+        //                 'filter' => 'online',
+        //             ], Auth::user()->auth_code);
+
+
+        // $result = $response->json();
+
+        // if (($result['status']['errorCode'] ?? 1) === 0) {
+        //     $prodcut = collect($result['getAllProductPrice']['data'] ?? []);
+        // } else {
+
+        //     $prodcut = collect();
+        // }
+        // $this->__data['products'] = $prodcut;
 
         // dd($this->__data['products']);
 
@@ -157,12 +175,34 @@ class UserHoldTicketsController extends CRUDCrontroller
             'estimate_id'  => 'required'
         ]);
 
+        $product = Product::where('slug', $request->product_slug)->first();
+
+        $seats = $request->seats ? implode(',', $request->seats) : null;
+
+        if ($request->seats) {
+            $seatQty = count($request->seats);
+            if ($seatQty != $request->quantity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No of seats and quantity not match'
+                ], 400);
+            }
+        }
+
+        $params = [
+            "TicketType" => $product->ticketSlug,
+            "Quantity" => $request->quantity,
+        ];
+
+        if ($request->seats) {
+            $params['Seat'] = implode(',', $request->seats);
+        }
         try {
 
             // =========================
             // 2️⃣ Prepare Data
             // =========================
-            $productSlug = $request->product_slug;
+            $productSlug = $product->ticketSlug;
             $holdDate    = $request->hold_date;
             $qty         = $request->quantity;
 
@@ -175,10 +215,7 @@ class UserHoldTicketsController extends CRUDCrontroller
                 "OrderId" => $request->estimate_id,
                 "OrderSource" => "Groups",
                 "TicketHoldItem" => [
-                    [
-                        "TicketType" => $productSlug,
-                        "Quantity"   => $qty,
-                    ]
+                   $params
                 ],
                 "holdExpiryDate" => $expiryDate,
             ];
@@ -208,8 +245,7 @@ class UserHoldTicketsController extends CRUDCrontroller
                 ], 422);
             }
 
-
-            $session_id = $result['sessionId'];
+            $session_id = ($result['sessionId']) ? $result['sessionId'] : 0;
             $capacity_id = $result['data'][0]['capacityId'];
 
             $product = Product::where('slug', $request->product_slug)->first();
@@ -288,8 +324,84 @@ class UserHoldTicketsController extends CRUDCrontroller
 
 
 
- 
+ public function productCheck(Request $request)
+    {
+        $product = Product::where('slug', $request->product_slug)->first();
 
+        if (!$product) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        // Product has seats (cabana)
+        if ($product->hasSeats === 1) {
+            $response = $this->apiService->getCabanaOccupancy(
+                $product->ticketSlug,
+                $request->hold_date,
+                Auth::user()->auth_code
+            );
+
+            $data = $response->json();
+
+
+            // API error
+            if ($data['status']['errorCode'] !== 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $data['status']['errorMessage'] ?? 'Error fetching cabana info.'
+                ]);
+            }
+
+            $slots = $data['data']['availableSeats'] ?? [];
+            $cabanaType = $data['data']['cabanaType'] ?? 'Cabana';
+
+            // Build seat buttons HTML
+            $html = '<h5 class="mb-3">Cabana Type: ' . $cabanaType . '</h5>';
+
+            if (!$slots) {
+                $html .= '<div class="alert alert-warning">No available slots.</div>';
+            } else {
+                foreach ($slots as $slotIndex => $slot) {
+                    $slotTime = $slot['slotTime'] ?: 'Anytime';
+                    $html .= '<div class="card mb-3">';
+                    // $html .= '<div class="card-header"><strong>Time Slot:</strong> ' . $slotTime . '</div>';
+                    $html .= '<div class="card-header"><strong>Select Seat:</strong></div>';
+                    $html .= '<div class="card-body"><div class="d-flex flex-wrap gap-2">';
+
+                    foreach ($slot['seatNo'] as $lane) {
+                        $seats = explode(',', $lane['seatNo']);
+                        foreach ($seats as $seat) {
+                            $disabled = ($lane['isSlotClosed'] || in_array($seat, $lane['holdTicketsData'] ?? [])) 
+                                        ? 'disabled' : '';
+                          $html .= '<button type="button" class="btn btn-outline-primary seat-btn" 
+                                                data-slot="'.$slotIndex.'" 
+                                                data-seat="'.$seat.'" 
+                                                data-selected="0">
+                                                '.$seat.'
+                                            </button>';
+                        }
+                    }
+
+                    $html .= '</div></div></div>'; // Close card-body & card
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'html' => $html
+            ]);
+        } else {
+            // Product has no seats
+            return response()->json([
+                'status' => true,
+                'message' => 'Product has no seats',
+                'has_seats' => false,
+                'data' => []
+            ]);
+        }
+    }  
 
 
 }

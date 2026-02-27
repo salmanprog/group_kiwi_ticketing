@@ -310,3 +310,5 @@ Route::get('hold-tickets/ajax-listing', [UserHoldTicketsController::class, 'ajax
 Route::resource('hold-tickets', UserHoldTicketsController::class);    
 Route::post('hold-tickets-item', [UserHoldTicketsController::class, 'storeItem'])->name('hold-tickets-item');    
 Route::get('hold-tickets/release/{slug}', [UserHoldTicketsController::class, 'release'])->name('hold-tickets.release');
+
+Route::post('hold-tickets/check', [UserHoldTicketsController::class, 'productCheck'])->name('hold-tickets.check');

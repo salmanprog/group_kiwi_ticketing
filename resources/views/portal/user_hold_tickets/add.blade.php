@@ -52,7 +52,7 @@
                                                     Event Date
                                                     <span class="required">*</span>
                                                 </label>
-                                                <input required type="date" name="hold_date" class="form-control"
+                                                <input required type="date"  name="hold_date" class="form-control"
                                                     value="{{ old('hold_date') }}"  
                                                         min="{{ date('Y-m-d', strtotime('+1 day')) }}"
     >
@@ -577,6 +577,8 @@
             });
             
         </script>
+
+        
 @endsection
 
 
