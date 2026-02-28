@@ -157,6 +157,7 @@ class EstimateController extends CRUDCrontroller
     {
         $company = CompanyUser::getCompany(Auth::user()->id);
         $estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('slug', $slug)->first();
+      
         $this->__data['invoice_user'] = User::where('id', $estimate->client_id)->first();
         $this->__data['estimate_user'] = Client::where('client_id', $estimate->client_id)->first();
         $this->__data['estimate'] = $estimate;

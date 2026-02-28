@@ -292,6 +292,10 @@
 
                                                                     <small class="fw-semibold">
                                                                         {{ $tax->name }} ({{ $tax->percent }}%)
+
+                                                                        {{
+                                                                            bcdiv($tax->amount, 1, 2)
+                                                                        }}
                                                                     </small>
 
                                                                     <button class="btn btn-sm btn-link text-primary edit-tax"
@@ -350,8 +354,8 @@
                                                                 </button>
                                                             </span>
                                                         </th>
-                                                        <th class="discount_percent">
-                                                            {{ $discount->value }} %
+                                                        <th class="discount_percent" data-discount-type="{{ $discount->type }}">
+                                                            {{ $discount->value }} {{($discount->type == 'fixed') ? '$' : '%'}}
                                                         </th>
                                                         <th></th>
                                                     @endforeach
@@ -840,6 +844,13 @@
                                         aria-label="Close">&times;</button>
                                 </div>
                                 <div class="modal-body">
+                                     <div class="form-group">
+                                        <label for="discountType">Discount Type</label>
+                                        <select id="discountType" class="form-control">
+                                            <option value="percent">Percent</option>
+                                            <option value="fixed">Fixed</option>
+                                        </select>
+                                    </div>
                                     <div class="form-group">
                                         <label for="discountName">Discount Name</label>
                                         <input type="text" id="discountName" class="form-control"
@@ -881,6 +892,13 @@
                                         aria-label="Close">&times;</button>
                                 </div>
                                 <div class="modal-body">
+                                     <div class="form-group">
+                                        <label for="discountName">Discount Type</label>
+                                        <select id="editdiscountType" class="form-control">
+                                            <option value="percent">Percentage</option>
+                                            <option value="fixed">Fixed Amount</option> 
+                                        </select>
+                                    </div>
                                     <div class="form-group">
                                         <label for="discountName">Discount Name</label>
                                         <input type="text" id="editdiscountName" class="form-control"

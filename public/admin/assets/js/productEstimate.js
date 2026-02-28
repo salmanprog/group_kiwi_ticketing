@@ -123,6 +123,7 @@ $('.modal').on('hidden.bs.modal', function () {
 
 
 function updateTotals() {
+    // alert('work')
     let subtotal = 0;
     let totalTax = 0;
     let totalDiscount = 0;
@@ -151,9 +152,16 @@ function updateTotals() {
     // 2️⃣ Discounts (percent discounts applied on subtotal + tax)
     totalDiscount = 0;
     $('.discount_percent').each(function () {
+        const discountType = $(this).data('discount-type');
         const discountPercent = parseFloat($(this).text().replace('%','').trim()) || 0;
-        const discountAmount = parseFloat(((subtotal + totalTax) * (discountPercent / 100)).toFixed(2));
+        let discountAmount = 0;
+        if (discountType === 'percent') {
+            discountAmount = parseFloat(((subtotal + totalTax) * (discountPercent / 100)).toFixed(2));
+        } else {
+            discountAmount = discountPercent;
+        }
         totalDiscount += discountAmount;
+
     });
 
     // 3️⃣ Gratuity (optional)

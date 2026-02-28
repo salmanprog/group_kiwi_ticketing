@@ -128,6 +128,7 @@ class EstimateDiscountController extends CRUDCrontroller
 
         $estimateId = $request->input('user_estimate_id');
         $products = $request->input('products');
+        $discountType = $request->input('discount_type', 'percent');
 
         // // Calculate total discount amount
         $totalDiscount = 0;
@@ -144,7 +145,7 @@ class EstimateDiscountController extends CRUDCrontroller
             $discountId = \DB::table('user_estimate_discounts')->insertGetId([
                 'estimate_id' => $estimateId,
                 'name' => $products[0]['discount_name'],
-                'type' => 'percent',
+                'type' => $discountType,
                 'value' => $products[0]['discount_value'],
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -204,6 +205,7 @@ class EstimateDiscountController extends CRUDCrontroller
         $discount->update([
             'name'  => $request->name,
             'value' => $request->value,
+            'type'  => $request->type,
         ]);
 
         return response()->json([
