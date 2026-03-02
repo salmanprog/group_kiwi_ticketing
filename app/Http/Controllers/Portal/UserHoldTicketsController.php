@@ -40,7 +40,7 @@ class UserHoldTicketsController extends CRUDCrontroller
             case 'POST':
                 $validator = Validator::make($this->__request->all(), [
                     'estimate_id'             => 'required',
-                      'hold_date' => 'required|date',
+                    'hold_date' => 'required|date',
                     'expiry_date' => 'required|date|after:hold_date',
                 ],$custom_messages);
                     

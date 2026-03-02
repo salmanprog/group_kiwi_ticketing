@@ -35,17 +35,13 @@
                         <div class="col-md-4">
                             <label for="hold_date" class="form-label fw-semibold">Hold Date</label>
                             <input type="date" class="form-control" id="hold_date" name="hold_date" 
-                                value="{{ $record->hold_date }}">
+                                value="{{ $record->hold_date }}" readonly>
                         </div>
 
                         <div class="col-md-4">
                             <label for="expiry_date" class="form-label fw-semibold">Expiry Date</label>
                             <input type="date" class="form-control" id="expiry_date" name="expiry_date" 
-                                value="{{ $record->expiry_date }}">
-                        </div>
-
-                        <div class="col-12 d-flex justify-content-end mt-2">
-                            <button type="submit" class="btn btn-primary">Update</button>
+                                value="{{ $record->expiry_date }}" readonly>
                         </div>
                     </form>
                 </div>

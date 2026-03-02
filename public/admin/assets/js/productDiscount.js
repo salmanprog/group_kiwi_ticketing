@@ -40,6 +40,7 @@ function editcallDiscount(button) {
                 const discount = res.item[0]; // 👈 KEY LINE
 
                 // Populate modal inputs
+                $('#editdiscountType option[value="' + discount.type + '"]').prop('selected', true);
                 $('#editdiscountName').val(discount.name);
                 $('#editdiscountAmount').val(discount.value);
 
@@ -60,6 +61,7 @@ function editcallDiscount(button) {
 function addProductDiscount() {
     const modal = $('#discountModal');
     const estimateId = $('#addDiscount').data('estimateid');
+    const discountType = $('#discountType').val();
     const csrfToken = $('#addDiscount').data('csrf');
 
     const discountName = $('#discountName').val().trim();
@@ -96,7 +98,8 @@ function addProductDiscount() {
         data: {
             _token: csrfToken,
             user_estimate_id: estimateId,
-            products: products
+            products: products,
+            discount_type: discountType
         },
         success: function(res) {
             if (res.status) {
@@ -137,6 +140,7 @@ $('#updateDiscount').on('click', function () {
 
     const discountName  = modal.find('#editdiscountName').val().trim();
     const discountValue = modal.find('#editdiscountAmount').val();
+    const discountType  = modal.find('#editdiscountType').val();
 
     if (!discountName || !discountValue || discountValue <= 0) {
         alert('Please enter valid discount details');
@@ -151,7 +155,8 @@ $('#updateDiscount').on('click', function () {
             estimate_id: estimateId,
             discount_id: discountId,
             name: discountName,
-            value: discountValue
+            value: discountValue,
+            type: discountType
         },
         success: function (res) {
 

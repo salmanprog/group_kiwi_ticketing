@@ -131,13 +131,14 @@ class EstimateTaxController extends CRUDCrontroller
 
         $estimateId = $request->input('user_estimate_id');
         $products = $request->input('products');
-        
         $taxPercent = $products[0]['tax_percent'];
         $taxName = $products[0]['tax_name'];
 
         $totalTaxAmount = 0;
         foreach ($products as $product) {
-            $totalTaxAmount += ($product['price'] * $taxPercent / 100);
+           $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
+        //    $productDetails->total_price = $productDetails->price * $productDetails->quantity;
+           $totalTaxAmount += ($productDetails->total_price * $taxPercent / 100);
         }
 
         try {
@@ -197,8 +198,10 @@ class EstimateTaxController extends CRUDCrontroller
 
         $totalTaxAmount = 0;
         foreach ($products as $product) {
-            $totalTaxAmount += ($product['price'] * $taxPercent / 100);
+            $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
+            $totalTaxAmount += ($productDetails->total_price * $taxPercent / 100);
         }
+            // dd($totalTaxAmount);
 
         try {
             // Update main tax record
