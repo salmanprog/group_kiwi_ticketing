@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Estimate, UserHoldTickets,Product,UserHoldTicketItems};
+use App\Models\{Estimate, UserHoldTickets,Product,UserHoldTicketItems,UserHoldTicketItemSeat};
 use Auth;
 use App\Services\ThirdPartyApiService;
 use Carbon\Carbon;
@@ -35,11 +35,12 @@ class UserHoldTicketsController extends CRUDCrontroller
     {
          $validator = [];
         $custom_messages = [
+            'estimate_id.unique' => 'Estimate already has a hold ticket',
         ];
         switch ($action){
             case 'POST':
                 $validator = Validator::make($this->__request->all(), [
-                    'estimate_id'             => 'required',
+                    'estimate_id'             => 'required|unique:user_hold_tickets,estimate_id',
                     'hold_date' => 'required|date',
                     'expiry_date' => 'required|date|after:hold_date',
                 ],$custom_messages);
@@ -255,9 +256,23 @@ class UserHoldTicketsController extends CRUDCrontroller
                 'user_hold_ticket_id' => $request->user_hold_ticket_id,
                 'product_id' => $product->id,
                 'name' => $product->name,
+                'slug' =>$product->slug,
                 'quantity' => $qty,
                 'price' => $product->price
             ]);
+            // dd($result['data']);
+            if($request->seats){
+                foreach($result['data'] as $seat){
+                    $seats = explode(',', $seat['sectionId']);
+                    foreach($seats as $seat_item){
+                        UserHoldTicketItemSeat::create([
+                            'user_hold_ticket_item_id' => $userHoldTicketItem->id,
+                            'sectionId' => $seat_item,
+                            'slotTime' => null
+                        ]);
+                    }
+                }
+            }
 
             // =========================
             // 5️⃣ Success Response
@@ -287,7 +302,7 @@ class UserHoldTicketsController extends CRUDCrontroller
         $record = UserHoldTickets::where('slug', $slug)->first();
 
         if (!$record) {
-            return redirect()->route('user_hold_tickets.index')
+            return redirect()->back()
                             ->with('error', 'Ticket not found.');
         }
 
@@ -305,7 +320,14 @@ class UserHoldTicketsController extends CRUDCrontroller
             // dd($response->json());
 
             if ($response->successful()) {
-                $record->delete();
+
+                // Delete related seats
+                $userHoldTicketItem = UserHoldTicketItems::where('user_hold_ticket_id', $record->id)->first();
+                if($userHoldTicketItem){
+                    UserHoldTicketItemSeat::where('user_hold_ticket_item_id', $userHoldTicketItem->id)->delete();
+                }
+                
+                $record->forceDelete();
 
                 return redirect()->back()
                                 ->with('success', 'Ticket released successfully.');

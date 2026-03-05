@@ -116,5 +116,14 @@ class ThirdPartyApiService
         );
     }
 
+    public function createOrderTicket(array $data)
+    {
+        $response = Http::acceptJson()
+            ->contentType('application/json')
+            ->post($this->baseUrl . '/Pricing/AddOrder', $data);
+
+            return $response;
+    }
+
     
 }
