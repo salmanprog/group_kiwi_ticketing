@@ -89,6 +89,7 @@ class Invoice extends JsonResource
 
                 return [
                     'id'              => $estimate->id,
+                    'estimate_id'     => $estimate->id,
                     'auth_code'       => $estimate->auth_code,
                     'slug'            => $estimate->slug,
                     'estimate_number' => $estimate->estimate_number,
