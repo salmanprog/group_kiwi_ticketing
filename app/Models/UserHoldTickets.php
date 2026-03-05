@@ -193,19 +193,19 @@ class UserHoldTickets extends Model
         // Add payment data if payment method exists
         // if (isset($request->payment_method) && !empty($request->payment_method)) {
             $payload['Payment'] = [
-                "cardholerName" => $request->cardholder_name ?? "Bradd Pitt",
-                "billingStreet" => $request->billing_street ?? "California , Florida , CA",
-                "billingZipCode" => $request->billing_zip_code ?? "12345",
-                "expDate" => $request->exp_date ?? "12/25",
-                "paymentCode" => $request->payment_code ?? "1234",
+                "cardholerName" => $request->cardholderName ?? "Bradd Pitt",
+                "billingStreet" => $request->billingStreet ?? "California , Florida , CA",
+                "billingZipCode" => $request->billingZipCode ?? "12345",
+                "expDate" => $request->expDate ?? "12/25",
+                "paymentCode" => $request->paymentCode ?? "1234",
                 "amount" => (float)($request->amount ?? 1056),
-                "StaffTip" => (float)($request->staff_tip ?? 0.0),
-                "Tax" => (float)($request->tax ?? 0.0),
-                "ServiceCharges" => (float)($request->service_charges ?? 0.0),
-                "TransactionId" => $request->transaction_id ?? "",
-                "ccNumber" => $request->cc_number ?? "Omitted",
+                "StaffTip" => (float)($request->StaffTip ?? 0.0),
+                "Tax" => (float)($request->Tax ?? 0.0),
+                "ServiceCharges" => (float)($request->ServiceCharges ?? 0.0),
+                "TransactionId" => $request->TransactionId ?? "",
+                "ccNumber" => $request->ccNumber ?? "Omitted",
                 "cvn" => $request->cvn ?? "Omitted",
-                "PaymentMethodId" => $request->payment_method_id ?? "pm_1Ss0HgEyfVF19QwA3a6viasp"
+                "PaymentMethodId" => $request->PaymentMethodId ?? "pm_1Ss0HgEyfVF19QwA3a6viasp"
             ];
         // }
 
