@@ -191,7 +191,7 @@ class UserHoldTickets extends Model
         ];
 
         // Add payment data if payment method exists
-        if (isset($request->payment_method) && !empty($request->payment_method)) {
+        // if (isset($request->payment_method) && !empty($request->payment_method)) {
             $payload['Payment'] = [
                 "cardholerName" => $request->cardholder_name ?? "Bradd Pitt",
                 "billingStreet" => $request->billing_street ?? "California , Florida , CA",
@@ -207,7 +207,7 @@ class UserHoldTickets extends Model
                 "cvn" => $request->cvn ?? "Omitted",
                 "PaymentMethodId" => $request->payment_method_id ?? "pm_1Ss0HgEyfVF19QwA3a6viasp"
             ];
-        }
+        // }
 
         // Add group subscription plan if needed
         if (isset($request->group_subscription_plan) || isset($request->subscription_start_date)) {
