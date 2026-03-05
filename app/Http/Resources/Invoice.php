@@ -133,14 +133,14 @@ class Invoice extends JsonResource
                         ];
                     }),
 
-                    'installments' => $this->installmentPlan->payments->map(function ($installment) {
+                    'installments' => $this->installmentPlan?->payments->map(function ($installment) {
                         return [
                             'id'       => $installment->id,
                             'amount'   => $installment->amount,
                             'status'   => $installment->status,
                             'due_date' => $installment->due_date,
                         ];
-                    }),
+                    }) ?? [],
                 ];
             }),
         ];
