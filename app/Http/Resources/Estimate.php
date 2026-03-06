@@ -34,7 +34,7 @@ class Estimate extends JsonResource
             'event_date'       => $this->event_date,
             'note'       => $this->note,
             'terms'       => $this->terms,
-            'status'       => $this->status,
+            'status'       => ($this->status == "sent") ? "new" : $this->status,
             'estimate_number'       => $this->estimate_number,
             'subtotal' => $subtotal,
             'total' => $total,
