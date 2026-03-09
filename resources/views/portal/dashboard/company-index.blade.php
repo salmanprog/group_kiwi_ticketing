@@ -102,10 +102,18 @@
                                 <div class="progress-summary">
                                     <div class="progress-stats">
                                         <span>Approval Rate</span>
-                                        <span class="percentage">{{round(($estimate_approved_total/($estimate_send_total+$estimate_draft_total+$estimate_approved_total+$estimate_rejected_total))*100, 1)}}%</span>
+                                        @php
+                                            $total = $estimate_send_total+$estimate_draft_total+$estimate_approved_total+$estimate_rejected_total;
+                                        @endphp
+                                        <span class="percentage">{{$total ? round(($estimate_approved_total/$total)*100, 1).'%' : '0%'}}</span>
                                     </div>
                                     <div class="progress-bar-container">
-                                        <div class="progress-bar approved-bar" style="width: {{($estimate_approved_total/($estimate_send_total+$estimate_draft_total+$estimate_approved_total+$estimate_rejected_total))*100}}%"></div>
+                                        @php
+                                            $total = $estimate_send_total+$estimate_draft_total+$estimate_approved_total+$estimate_rejected_total;
+                                        @endphp
+                                        @if($total)
+                                            <div class="progress-bar approved-bar" style="width: {{($estimate_approved_total/$total)*100}}%"></div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

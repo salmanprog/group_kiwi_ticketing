@@ -31,7 +31,7 @@ class UserHoldTickets extends Model
      * @var array
      */
     protected $fillable = [
-        'estimate_id','hold_date','expiry_date','created_at', 'updated_at', 'deleted_at','auth_code','slug'
+        'estimate_id','hold_date','expiry_date','created_at', 'updated_at', 'deleted_at','auth_code','slug','order_slug'
     ];
 
     /**
@@ -68,14 +68,14 @@ class UserHoldTickets extends Model
         $estimate = Estimate::where('id', $request['estimate_id'])->first();
         
         if (!$estimate) {
-            throw new \Exception('Estimate not found');
+            return ['error' => 'Estimate not found'];
         }
         
         $company = Company::where('id', $estimate->company_id)->first();
         $client = Client::where('client_id', $estimate->client_id)->first();
         
         if (!$client) {
-            throw new \Exception('Client not found');
+            return ['error' => 'Client not found'];
         }
         
         // Initialize purchases array
@@ -157,14 +157,17 @@ class UserHoldTickets extends Model
         // Ensure purchases is not empty
         if (empty($purchases)) {
             Log::error('No purchases generated for estimate: ' . $estimate->id);
-            throw new \Exception('No purchases items found');
+            return ['error' => 'No purchases generated for estimate: ' . $estimate->id];
         }
+
+        $installment =  \App\Models\InstallmentPlan::with('payments')->where('estimate_id', $estimate->id)->first();
+    
 
         // Build the complete payload
         $payload = [
             "AuthCode" => $request['user']->auth_code ?? null,
             "sessionId" => $session_id,
-            "OrderId" => (string)$request['estimate_id'],
+            "OrderId" => (string)$estimate->slug,
             "PromoCode" => $request->promo_code ?? "",
             "OrderSource" => $request->order_source ?? "",
             "PreviousOrderNumber" => $request->previous_order_number ?? null,
@@ -195,10 +198,10 @@ class UserHoldTickets extends Model
             $payload['Payment'] = [
                 "cardholerName" => $request->cardholderName ?? "Bradd Pitt",
                 "billingStreet" => $request->billingStreet ?? "California , Florida , CA",
-                "billingZipCode" => $request->billingZipCode ?? "12345",
-                "expDate" => $request->expDate ?? "12/25",
-                "paymentCode" => $request->paymentCode ?? "1234",
-                "amount" => (float)($request->amount ?? 1056),
+                "billingZipCode" => $request->billingZipCode ?? "90001",
+                "expDate" => $request->expDate ?? "Omitted",
+                "paymentCode" => $request->paymentCode ?? "32",
+                "amount" => (float)($installment->total_amount ?? 0.0),
                 "StaffTip" => (float)($request->StaffTip ?? 0.0),
                 "Tax" => (float)($request->Tax ?? 0.0),
                 "ServiceCharges" => (float)($request->ServiceCharges ?? 0.0),
@@ -209,17 +212,29 @@ class UserHoldTickets extends Model
             ];
         // }
 
+
+
+        // dd($installment);
+
         // Add group subscription plan if needed
-        if (isset($request->group_subscription_plan) || isset($request->subscription_start_date)) {
+        // if (isset($request->group_subscription_plan) || isset($request->subscription_start_date)) {
+        // dd($installment);
             $payload['groupSubscriptionPlan'] = [
-                "totalAmountOfContract" => (float)($request->group_subscription_plan['totalAmountOfContract'] ?? 0),
-                "initialPayment" => (float)($request->group_subscription_plan['initialPayment'] ?? 0),
-                "subscriptionStartDate" => $request->group_subscription_plan['subscriptionStartDate'] ?? $request->subscription_start_date ?? null,
-                "subscriptionEndDate" => $request->group_subscription_plan['subscriptionEndDate'] ?? $request->subscription_end_date ?? null,
-                "totalInstallments" => (int)($request->group_subscription_plan['totalInstallments'] ?? 0),
-                "invoices" => $request->group_subscription_plan['invoices'] ?? []
+                "totalAmountOfContract" => (float)($installment->total_amount ?? 0),
+                "initialPayment" => (float)($installment->total_amount ?? 0),
+                "subscriptionStartDate" => $installment->start_date ?? $request->subscription_start_date ?? null,
+                "subscriptionEndDate" => $installment->end_date ?? $request->subscription_end_date ?? null,
+                "totalInstallments" => (int)($installment->installment_count ?? 0),
+                "invoices" => ($installment->payments) ? $installment->payments->map(function($item) {
+                    return [
+                        'invoiceId' => (string) $item->id,
+                        'paymentMethod' => "online",
+                        'invoiceStatus' => $item->status,
+                        'paymentIntent' => $item->payment_intent
+                    ];
+                })->toArray() : [],
             ];
-        }
+        // }
 
         // Add EasyPayPlanContractSignature if exists
         if (isset($request->easy_pay_plan_contract_signature)) {
@@ -237,4 +252,39 @@ class UserHoldTickets extends Model
         return $payload;
     }
 
+
+    public static function createUpdateInvoicePayload($data)
+    {
+
+        $paidDate = !empty($data['paid_date'])
+            ? Carbon::parse($data['paid_date'])->toIso8601String()
+            : Carbon::now()->toIso8601String();
+
+        $dueDate = !empty($data['due_date'])
+            ? Carbon::parse($data['due_date'])->toIso8601String()
+            : null;
+
+        $payload = [
+            "subscriptionId" => $data['subscription_id'] ?? "0",
+            "subscriptionStatus" => $data['status'],
+            "subscriptionEndDate" => $dueDate,
+            "numberOfInstallments" => $data['number_of_Installments'],
+            "isSubscriptionCompleted" => false,
+            "invoices" => [
+                [
+                    "invoiceId" => $data['invoice_id'],
+                    "paymentIntentId" => $data['payment_intent_id'] ?? "",
+                    "amountPaid" => $data['amount'],
+                    "invoiceStatus" => $data['status'],
+                    "notes" => $data['notes'],
+                    "paidDate" => $paidDate,
+                    "paymentMethod" => $data['payment_method'],
+                    "amountDue" => $data['amount_due'] ?? 0,
+                    "dueDate" => $dueDate,
+                ]
+            ]
+        ];
+
+        return $payload;
+    }
 }

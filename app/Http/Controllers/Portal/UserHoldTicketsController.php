@@ -210,10 +210,11 @@ class UserHoldTicketsController extends CRUDCrontroller
             // Convert expiry date to ISO 8601 format
             $expiryDate = Carbon::parse($request->expiry_date)
                 ->toIso8601String();
+            $estimate = Estimate::where('id', $request->estimate_id)->first();
 
             $body = [
                 "SessionId" => "",
-                "OrderId" => $request->estimate_id,
+                "OrderId" => $estimate->slug,
                 "OrderSource" => "Groups",
                 "TicketHoldItem" => [
                    $params
@@ -308,8 +309,9 @@ class UserHoldTicketsController extends CRUDCrontroller
 
         try {
             // Prepare body for release API
+        $estimate = Estimate::where('id', $record->order_id)->first();
          $body = [
-                "orderId" => (string) $record->order_id,   // ensure string
+                "orderId" => (string) $estimate->slug,   // ensure string
                 "orderSource" => "Groups",
                 "date" => null,
                 "seatNo" => null,

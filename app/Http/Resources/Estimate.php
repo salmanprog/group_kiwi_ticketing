@@ -82,6 +82,16 @@ class Estimate extends JsonResource
                     'due_date' => $installment->installment_date,
                 ];
             }),
+            'tickets' => $this->tickets->map(function($ticket){
+                return [
+                    'visualId' => $ticket->visualId,
+                    'ticketType' => $ticket->ticketType,
+                    'description' => $ticket->description,
+                    'ticketDate' => $ticket->ticketDate,
+                    'ticketDisplayDate' => $ticket->ticketDisplayDate,
+                    'orderDisplayDate' => $ticket->orderDisplayDate,
+                ];
+            }),
         ];
     }
 }

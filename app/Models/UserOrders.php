@@ -95,10 +95,12 @@ class UserOrders extends Model
 
                 $dataArr = [];
 
+                if(isset($data['data']) && is_array($data['data'])) {
                 foreach ($data['data'] as $item) {
 
                     $dataArr[] = [
                         'user_order_id' => $record->id,
+                        'estimate_id' => $estimate_id,
                         'visualId' => $item['visualId'] ?? null,
                         'childVisualId' => $item['childVisualId'] ?? null,
                         'parentVisualId' => $item['parentVisualId'] ?? null,
@@ -118,6 +120,7 @@ class UserOrders extends Model
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
+                }
                 }
 
                 UserOrderTickets::insert($dataArr);
