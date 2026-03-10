@@ -499,4 +499,22 @@ class EstimateController extends CRUDCrontroller
         ]);
     }
 
+
+     public function getEstimateDates($id)
+    {
+        $estimate = Estimate::select('event_date', 'valid_until')->where('id', $id)->first();
+
+        if(!$estimate){
+            return response()->json([
+                'status' => false
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'hold_date' => $estimate->event_date ?? null,
+            'expiry_date' => $estimate->valid_until ?? null
+        ]);
+    }
+
 }

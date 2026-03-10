@@ -359,6 +359,4 @@ class UserEstimateController extends RestController
         );
     }
 
-
-
 }

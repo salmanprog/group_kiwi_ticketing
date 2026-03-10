@@ -312,3 +312,5 @@ Route::post('hold-tickets-item', [UserHoldTicketsController::class, 'storeItem']
 Route::get('hold-tickets/release/{slug}', [UserHoldTicketsController::class, 'release'])->name('hold-tickets.release');
 
 Route::post('hold-tickets/check', [UserHoldTicketsController::class, 'productCheck'])->name('hold-tickets.check');
+Route::get('/estimate/hold-dates/{id}', [EstimateController::class,'getEstimateDates'])
+    ->name('estimate.hold-dates');
