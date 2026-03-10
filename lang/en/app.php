@@ -45,4 +45,5 @@ return [
     'user_group_not_found'        => 'Invalid user group',
     'estimate_already_approved'   => 'Estimate already approved',
     'estimate_already_rejected'   => 'Estimate already rejected',
+    'ticket_not_found' => "Hold ticket not found"
 ];

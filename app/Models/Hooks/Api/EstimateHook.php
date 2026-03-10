@@ -56,7 +56,7 @@ class EstimateHook
    */
     public function hook_query_index(&$query,$request, $slug=NULL) {
         //Your code here
-        $query->with('createdBy')->with('client')->with('organization')->with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('client_id',$request['user']->id)->where('status','<>','draft');
+        $query->with('createdBy')->with('client')->with('organization')->with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->with('tickets')->where('client_id',$request['user']->id)->where('status','<>','draft');
     }
 
     /*

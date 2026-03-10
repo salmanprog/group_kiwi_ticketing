@@ -158,7 +158,7 @@ class ProductController extends CRUDCrontroller
                 ->unique('ticketType')
                 ->values();
         }
-
+        
         return view('portal.product.api-create', compact('tickets'));
     }
 

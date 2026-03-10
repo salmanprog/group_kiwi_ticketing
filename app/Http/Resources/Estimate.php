@@ -34,6 +34,7 @@ class Estimate extends JsonResource
             'event_date'       => $this->event_date,
             'note'       => $this->note,
             'terms'       => $this->terms,
+            // 'status'       => ($this->status == "sent") ? "New" : $this->status,
             'status'       => $this->status,
             'estimate_number'       => $this->estimate_number,
             'subtotal' => $subtotal,
@@ -79,6 +80,16 @@ class Estimate extends JsonResource
                     'id' => $installment->id,
                     'amount' => $installment->amount,
                     'due_date' => $installment->installment_date,
+                ];
+            }),
+            'tickets' => $this->tickets->map(function($ticket){
+                return [
+                    'visualId' => $ticket->visualId,
+                    'ticketType' => $ticket->ticketType,
+                    'description' => $ticket->description,
+                    'ticketDate' => $ticket->ticketDate,
+                    'ticketDisplayDate' => $ticket->ticketDisplayDate,
+                    'orderDisplayDate' => $ticket->orderDisplayDate,
                 ];
             }),
         ];

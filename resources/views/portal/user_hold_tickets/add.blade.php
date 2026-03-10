@@ -35,7 +35,7 @@
                                                     Estimate
                                                     <span class="required">*</span>
                                                 </label>
-                                                <select name="estimate_id" class="form-control select2" required>
+                                                <select name="estimate_id"  id="estimate_id" class="form-control select2" required>
                                                         <option value="">-- Select Estimate --</option>
                                                         @foreach ($Estimates as $Estimate)
                                                             <option value="{{ $Estimate->id }}"
@@ -49,11 +49,11 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label">
-                                                    Event Date
+                                                    Hold Date
                                                     <span class="required">*</span>
                                                 </label>
                                                 <input required type="date"  name="hold_date" class="form-control"
-                                                    value="{{ old('hold_date') }}"  
+                                                    value="{{ old('hold_date') }}"  id="hold_date"
                                                         min="{{ date('Y-m-d', strtotime('+1 day')) }}"
     >
                                             </div>
@@ -66,7 +66,7 @@
                                                     <span class="required">*</span>
                                                 </label>
                                                 <input required type="date" name="expiry_date" class="form-control"
-                                                    value="{{ old('expiry_date') }}"  
+                                                    value="{{ old('expiry_date') }}"  id="expiry_date"
                                                         min="{{ date('Y-m-d', strtotime('+1 day')) }}"
     >
                                             </div>
@@ -525,9 +525,11 @@
         </style>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     
-    @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    @endpush
+  @push('scripts')
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -575,8 +577,50 @@
                     })(jQuery);
                 
             });
+
+
+
+            $(document).ready(function(){
+
+                $('#estimate_id').on('change', function(){
+
+                    let estimateId = $(this).val();
+                    if(estimateId){
+
+                        $.ajax({
+                            url: "{{ route('estimate.hold-dates', ['id' => 'ID']) }}".replace('ID', estimateId),
+                            type: 'GET',
+                            success: function(response){
+
+                                if(response.status){
+
+                                    if(response.hold_date){
+                                        $('#hold_date').val(response.hold_date);
+                                    }
+
+                                    if(response.expiry_date){
+                                        $('#expiry_date').val(response.expiry_date);
+                                    }
+
+                                }
+
+                            },
+                            error: function(){
+                                alert('Something went wrong');
+                            }
+                        });
+
+                    }
+
+                });
+
+            });
             
         </script>
+
+@endpush
+
+
 
         
 @endsection

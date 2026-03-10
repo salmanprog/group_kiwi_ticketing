@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class UserHoldTicketItems extends Model
+class UserHoldTicketItemSeat extends Model
 {
     use SoftDeletes,CRUDGenerator;
     /**
@@ -13,7 +13,7 @@ class UserHoldTicketItems extends Model
      *
      * @var string
      */
-    protected $table = 'user_hold_ticket_items';
+    protected $table = 'user_hold_ticket_item_seats';
 
     /**
      * The primary key associated with the table.
@@ -28,7 +28,12 @@ class UserHoldTicketItems extends Model
      * @var array
      */
     protected $fillable = [
-        'user_hold_ticket_id','product_id','name','slug','quantity','price','created_at', 'updated_at', 'deleted_at','auth_code','slug','session_id','capacity_id'
+        'user_hold_ticket_item_id',
+        'sectionId',
+        'slotTime',
+        'created_at',
+        'updated_at',
+        'deleted_at'
     ];
 
     /**
@@ -55,13 +60,8 @@ class UserHoldTicketItems extends Model
     protected $__cache_expire_time = 1; //days
 
 
-    public function user_hold_ticket()
+    public function userHoldTicketItem()
     {
-        return $this->belongsTo(UserHoldTicket::class , 'user_hold_ticket_id', 'id');
-    }
-
-    public function hold_ticket_item_seats()
-    {
-        return $this->hasMany(UserHoldTicketItemSeat::class , 'user_hold_ticket_item_id', 'id');
+        return $this->belongsTo(UserHoldTicketItem::class, 'user_hold_ticket_item_id');
     }
 }

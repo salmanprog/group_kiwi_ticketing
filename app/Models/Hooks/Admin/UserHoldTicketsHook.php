@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Hooks\Admin;
-use App\Models\{CompanyUser};
+use App\Models\{CompanyUser,Estimate};
 use Auth;
 
 class UserHoldTicketsHook
@@ -36,10 +36,13 @@ class UserHoldTicketsHook
     |
     */
     public function hook_before_add($request,&$postdata)
-    {   
+    { 
+        $estimate = Estimate::where('id', $request->estimate_id)->first();
+        // dd($estimate);
         $postdata['auth_code'] = Auth::user()->auth_code;
         $postdata['slug'] = uniqid().$request->slug . time();
         $postdata['created_by'] = Auth::user()->id;
+        $postdata['order_slug'] = $estimate->slug;
     }
 
     /*

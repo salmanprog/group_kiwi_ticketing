@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Auth;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class UserHoldTickets extends Model
 {
@@ -28,7 +31,7 @@ class UserHoldTickets extends Model
      * @var array
      */
     protected $fillable = [
-        'estimate_id','hold_date','expiry_date','created_at', 'updated_at', 'deleted_at','auth_code','slug'
+        'estimate_id','hold_date','expiry_date','created_at', 'updated_at', 'deleted_at','auth_code','slug','order_slug'
     ];
 
     /**
@@ -57,5 +60,231 @@ class UserHoldTickets extends Model
     public function user_hold_ticket_items()
     {
         return $this->hasMany(UserHoldTicketItems::class , 'user_hold_ticket_id', 'id');
+    }
+
+  public static function createOrderPayload($request)
+    {
+        // Get estimate, company and client data
+        $estimate = Estimate::where('id', $request['estimate_id'])->first();
+        
+        if (!$estimate) {
+            return ['error' => 'Estimate not found'];
+        }
+        
+        $company = Company::where('id', $estimate->company_id)->first();
+        $client = Client::where('client_id', $estimate->client_id)->first();
+        
+        if (!$client) {
+            return ['error' => 'Client not found'];
+        }
+        
+        // Initialize purchases array
+        $purchases = [];
+
+        // Get hold tickets with relationships
+        $HoldTickets = UserHoldTickets::with('user_hold_ticket_items.hold_ticket_item_seats')
+            ->where('estimate_id', $estimate->id)
+            ->first();
+
+        $session_id = 0;
+        
+        if (!$HoldTickets) {
+            Log::warning('No hold tickets found for estimate: ' . $estimate->id);
+        } else {
+            // Process each hold ticket item
+            foreach ($HoldTickets->user_hold_ticket_items as $hold_ticket_item) {
+                
+                // Determine ticket type/slug
+                $ticketType = $hold_ticket_item->slug ?? $hold_ticket_item->hold_ticket_item_product_id;
+                  $purchase = [
+                        "ticketType" => $ticketType,
+                        "capacityId" => $hold_ticket_item->capacity_id,
+                        "VisualId" => null,
+                        "ParentVisualId" => null,
+                        "VisualIdStockCount" => 0,
+                        "quantity" => (int)$hold_ticket_item->quantity,
+                        "amount" => (float)$hold_ticket_item->price,
+                        "FirstName" => $client->first_name,
+                        "LastName" => $client->last_name,
+                        "IsSeasonPass" => 0,
+                        "ticketExpiryDate" => $HoldTickets['expiry_date'] ?? null,
+                        "DOB" => null,
+                        "WavierForm" => "0",
+                        "IsTicketUpgraded" => 0,
+                        "TicketUpgradedNotes" => "",
+                        "QrCodeImage" => "",
+                        "SeasonPassEmail" => "",
+                        "AccessQrCodeWithThisEmail" => null,
+                        "AccessQrCodeAssigningDateTime" => null,
+                        "IsSeaonPassRenewal" => 0,
+                        "IsTicketGiftCard" => 0
+                    ];
+
+                if ($hold_ticket_item->hold_ticket_item_seats->isEmpty()) {
+                    // Case 1: No seats - create single purchase for the quantity
+                  
+                    $purchase['sectionId'] = "0";
+                    // Add to purchases array
+                    $purchases[] = $purchase;
+                    $session_id = $hold_ticket_item->session_id;
+                    Log::info('Added purchase without seats', [
+                        'ticketType' => $ticketType,
+                        'quantity' => $hold_ticket_item->quantity
+                    ]);
+                    
+                } else {
+                    $seat_count = 0;
+                    $seats ="";
+                    // Case 2: Has seats - create one purchase per seat
+                    foreach ($hold_ticket_item->hold_ticket_item_seats as $seat) {
+                     
+                        $seat_count++;
+                        // Add each seat purchase to array
+                        $seats .= $seat->sectionId . ",";
+                    }
+                    $purchase['sectionId'] = $seats;
+                    $purchases[] = $purchase;
+                    $session_id = $hold_ticket_item->session_id;
+                    
+                    Log::info('Added purchases with seats', [
+                        'ticketType' => $ticketType,
+                        'seats_count' => count($hold_ticket_item->hold_ticket_item_seats)
+                    ]);
+                }
+            }
+        }
+
+        // Ensure purchases is not empty
+        if (empty($purchases)) {
+            Log::error('No purchases generated for estimate: ' . $estimate->id);
+            return ['error' => 'No purchases generated for estimate: ' . $estimate->id];
+        }
+
+        $installment =  \App\Models\InstallmentPlan::with('payments')->where('estimate_id', $estimate->id)->first();
+    
+
+        // Build the complete payload
+        $payload = [
+            "AuthCode" => $request['user']->auth_code ?? null,
+            "sessionId" => $session_id,
+            "OrderId" => (string)$estimate->slug,
+            "PromoCode" => $request->promo_code ?? "",
+            "OrderSource" => $request->order_source ?? "",
+            "PreviousOrderNumber" => $request->previous_order_number ?? null,
+            "IsterminalPayment" => (bool)($request->is_terminal_payment ?? true),
+            "OrderCreationWithScript" => (int)($request->order_creation_with_script ?? 0),
+            "isOfficeUse" => (bool)($request->is_office_use ?? false),
+            "StaffDiscount" => (float)($request->staff_discount ?? 0.0),
+            "IsAnyDayOrder" => (int)($request->is_any_day_order ?? 0),
+            "CompanyName" => $company->name ?? null,
+            "ImportOrders" => (int)($request->import_orders ?? 0),
+            "OrderCreationDate" => Carbon::now()->toIso8601String(),
+            "IsPaymentThroughSubscriptionPlan" => (int)($request->is_payment_through_subscription_plan ?? 0),
+            "isContractBasedGroupOrder" => (int)($request->is_contract_based_group_order ?? 0),
+            "TotalInstallments" => (int)($request->total_installments ?? 0),
+            "installmentType" => $request->installment_type ?? null,
+            "IsCashlessEnabled" => (int)($request->is_cashless_enabled ?? 0),
+            "Customer" => [
+                "firstName" => $client->first_name,
+                "lastName" => $client->last_name,
+                "email" => $client->email,
+                "phone" => $client->mobile_no ?? "-"
+            ],
+            "Purchases" => $purchases,
+        ];
+
+        // Add payment data if payment method exists
+        // if (isset($request->payment_method) && !empty($request->payment_method)) {
+            $payload['Payment'] = [
+                "cardholerName" => $request->cardholderName ?? "Bradd Pitt",
+                "billingStreet" => $request->billingStreet ?? "California , Florida , CA",
+                "billingZipCode" => $request->billingZipCode ?? "90001",
+                "expDate" => $request->expDate ?? "Omitted",
+                "paymentCode" => $request->paymentCode ?? "32",
+                "amount" => (float)($installment->total_amount ?? 0.0),
+                "StaffTip" => (float)($request->StaffTip ?? 0.0),
+                "Tax" => (float)($request->Tax ?? 0.0),
+                "ServiceCharges" => (float)($request->ServiceCharges ?? 0.0),
+                "TransactionId" => $request->TransactionId ?? "",
+                "ccNumber" => $request->ccNumber ?? "Omitted",
+                "cvn" => $request->cvn ?? "Omitted",
+                "PaymentMethodId" => $request->PaymentMethodId ?? "pm_1Ss0HgEyfVF19QwA3a6viasp"
+            ];
+        // }
+
+
+
+        // dd($installment);
+
+        // Add group subscription plan if needed
+        // if (isset($request->group_subscription_plan) || isset($request->subscription_start_date)) {
+        // dd($installment);
+            $payload['groupSubscriptionPlan'] = [
+                "totalAmountOfContract" => (float)($installment->total_amount ?? 0),
+                "initialPayment" => (float)($installment->total_amount ?? 0),
+                "subscriptionStartDate" => $installment->start_date ?? $request->subscription_start_date ?? null,
+                "subscriptionEndDate" => $installment->end_date ?? $request->subscription_end_date ?? null,
+                "totalInstallments" => (int)($installment->installment_count ?? 0),
+                "invoices" => ($installment->payments) ? $installment->payments->map(function($item) {
+                    return [
+                        'invoiceId' => (string) $item->id,
+                        'paymentMethod' => "online",
+                        'invoiceStatus' => $item->status,
+                        'paymentIntent' => $item->payment_intent
+                    ];
+                })->toArray() : [],
+            ];
+        // }
+
+        // Add EasyPayPlanContractSignature if exists
+        if (isset($request->easy_pay_plan_contract_signature)) {
+            $payload['EasyPayPlanContractSignature'] = $request->easy_pay_plan_contract_signature;
+        }
+
+        // Log the final payload for debugging
+        Log::info('Order payload created', [
+            'estimate_id' => $estimate->id,
+            'purchases_count' => count($purchases),
+            'has_payment' => isset($payload['Payment']),
+            'payload_keys' => array_keys($payload)
+        ]);
+
+        return $payload;
+    }
+
+
+    public static function createUpdateInvoicePayload($data)
+    {
+
+        $paidDate = !empty($data['paid_date'])
+            ? Carbon::parse($data['paid_date'])->toIso8601String()
+            : Carbon::now()->toIso8601String();
+
+        $dueDate = !empty($data['due_date'])
+            ? Carbon::parse($data['due_date'])->toIso8601String()
+            : null;
+
+        $payload = [
+            "subscriptionId" => $data['subscription_id'] ?? "0",
+            "subscriptionStatus" => $data['status'],
+            "subscriptionEndDate" => $dueDate,
+            "numberOfInstallments" => $data['number_of_Installments'],
+            "isSubscriptionCompleted" => false,
+            "invoices" => [
+                [
+                    "invoiceId" => $data['invoice_id'],
+                    "paymentIntentId" => $data['payment_intent_id'] ?? "",
+                    "amountPaid" => $data['amount'],
+                    "invoiceStatus" => $data['status'],
+                    "notes" => $data['notes'],
+                    "paidDate" => $paidDate,
+                    "paymentMethod" => $data['payment_method'],
+                    "amountDue" => $data['amount_due'] ?? 0,
+                    "dueDate" => $dueDate,
+                ]
+            ]
+        ];
+
+        return $payload;
     }
 }

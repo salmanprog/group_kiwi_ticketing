@@ -41,6 +41,8 @@ Route::middleware([ApiAuthorization::class])->group(function(){
     Route::middleware(['custom_auth:api'])->group(function(){
 
         Route::resource('client-estimates',UserEstimateController::class)->except(['create','delete']);
+        Route::post('add-order-ticket',[UserEstimateController::class,'addOrderTicket'])->name('api.add-order-ticket');
+        Route::post('update-order-invoice',[UserEstimateController::class,'updateInvoice'])->name('api.update-invoice');
         Route::resource('client-contracts',UserContractController::class)->except(['create','update','delete']);
         Route::resource('client-invoices',UserInvoiceController::class)->except(['create','update','delete']);
         Route::post('stripe/payment-intent',[StripeController::class,'createPaymentIntent'])->name('api.stripe-payment-intent');

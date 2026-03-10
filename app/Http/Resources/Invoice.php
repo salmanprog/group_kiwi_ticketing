@@ -89,6 +89,7 @@ class Invoice extends JsonResource
 
                 return [
                     'id'              => $estimate->id,
+                    'estimate_id'     => $estimate->id,
                     'auth_code'       => $estimate->auth_code,
                     'slug'            => $estimate->slug,
                     'estimate_number' => $estimate->estimate_number,
@@ -133,14 +134,14 @@ class Invoice extends JsonResource
                         ];
                     }),
 
-                    'installments' => $this->installmentPlan->payments->map(function ($installment) {
+                    'installments' => $this->installmentPlan?->payments->map(function ($installment) {
                         return [
                             'id'       => $installment->id,
                             'amount'   => $installment->amount,
                             'status'   => $installment->status,
                             'due_date' => $installment->due_date,
                         ];
-                    }),
+                    }) ?? [],
                 ];
             }),
         ];
