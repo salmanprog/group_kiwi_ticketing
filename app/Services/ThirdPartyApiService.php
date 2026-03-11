@@ -107,6 +107,8 @@ class ThirdPartyApiService
 
     public function getCabanaOccupancy($type, $date, $authCode = null)
     {
+        
+        // dd(json_encode($this->baseUrl));
         return \Http::get(
             $this->baseUrl . '/Pricing/GetCabanaOccupancy',
             [

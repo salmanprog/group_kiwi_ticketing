@@ -972,7 +972,7 @@
                                     @endif
                                 @endif
 
-                                <!-- @if(Session::get('companyPlatformAccess'))
+                                @if(Session::get('companyPlatformAccess'))
                                 <li class="nav-item has-submenu">
                                         <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
                                             <i class="fas fa-user"></i>
@@ -994,7 +994,7 @@
                                             @endforeach
                                         </ul>
                                     </li>
-                                @endif -->
+                                @endif
 
                                    <li data-type="child" class="nav-item">
 
@@ -1004,19 +1004,19 @@
                                             </a>
                                 </li>
 
-                                <li data-type="child" class="nav-item">
+                                <!-- <li data-type="child" class="nav-item">
                                         <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
                                             <i class="fa-solid fa-cloud"></i>
                                                 <span class="toggle-none">Other Platforms</span>
                                             <i class="fas fa-chevron-down arrow-icon"></i>
                                         </a>
-                                    <ul class="submenu">
+                                    <ul class="submenu"> -->
                                         <!-- <li class="nav-item">
                                         <a class="nav-link submenu-link" href="{{ route('get=all-company') }}">
                                         Company Report
                                         </a>
                                         </li> -->
-                                        <li class="menu-platform">
+                                        <!-- <li class="menu-platform">
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
                                             </div>
@@ -1033,7 +1033,7 @@
                                                     </span>
                                                 </div>
                                             </a>
-                                        </li>
+                                        </li> -->
                                          <!-- <li class="menu-platform">
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
@@ -1052,7 +1052,7 @@
                                                 </div>
                                             </a>
                                         </li> -->
-                                         <li class="menu-platform">
+                                         <!-- <li class="menu-platform">
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
                                             </div>
@@ -1129,7 +1129,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li>
+                                </li> -->
 
 
 

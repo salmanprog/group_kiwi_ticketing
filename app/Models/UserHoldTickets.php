@@ -93,7 +93,10 @@ class UserHoldTickets extends Model
         } else {
             // Process each hold ticket item
             foreach ($HoldTickets->user_hold_ticket_items as $hold_ticket_item) {
-                
+                if ($hold_ticket_item->session_id != '0') {
+                    $session_id = $hold_ticket_item->session_id;
+                }
+
                 // Determine ticket type/slug
                 $ticketType = $hold_ticket_item->slug ?? $hold_ticket_item->hold_ticket_item_product_id;
                   $purchase = [
@@ -106,7 +109,7 @@ class UserHoldTickets extends Model
                         "amount" => (float)$hold_ticket_item->price,
                         "FirstName" => $client->first_name,
                         "LastName" => $client->last_name,
-                        "IsSeasonPass" => 0,
+                        "IsSeasonPass" => ($hold_ticket_item->category == "Season Passes" ? 1 : 0),
                         "ticketExpiryDate" => $HoldTickets['expiry_date'] ?? null,
                         "DOB" => null,
                         "WavierForm" => "0",
@@ -126,7 +129,6 @@ class UserHoldTickets extends Model
                     $purchase['sectionId'] = "0";
                     // Add to purchases array
                     $purchases[] = $purchase;
-                    $session_id = $hold_ticket_item->session_id;
                     Log::info('Added purchase without seats', [
                         'ticketType' => $ticketType,
                         'quantity' => $hold_ticket_item->quantity
@@ -143,9 +145,7 @@ class UserHoldTickets extends Model
                         $seats .= $seat->sectionId . ",";
                     }
                     $purchase['sectionId'] = $seats;
-                    $purchases[] = $purchase;
-                    $session_id = $hold_ticket_item->session_id;
-                    
+                    $purchases[] = $purchase;                    
                     Log::info('Added purchases with seats', [
                         'ticketType' => $ticketType,
                         'seats_count' => count($hold_ticket_item->hold_ticket_item_seats)
@@ -173,7 +173,7 @@ class UserHoldTickets extends Model
             "PreviousOrderNumber" => $request->previous_order_number ?? null,
             "IsterminalPayment" => (bool)($request->is_terminal_payment ?? true),
             "OrderCreationWithScript" => (int)($request->order_creation_with_script ?? 0),
-            "isOfficeUse" => (bool)($request->is_office_use ?? false),
+            "isOfficeUse" => false,
             "StaffDiscount" => (float)($request->staff_discount ?? 0.0),
             "IsAnyDayOrder" => (int)($request->is_any_day_order ?? 0),
             "CompanyName" => $company->name ?? null,
@@ -237,8 +237,8 @@ class UserHoldTickets extends Model
         // }
 
         // Add EasyPayPlanContractSignature if exists
-        if (isset($request->easy_pay_plan_contract_signature)) {
-            $payload['EasyPayPlanContractSignature'] = $request->easy_pay_plan_contract_signature;
+        if (isset($request->signature)) {
+            $payload['EasyPayPlanContractSignature'] = $request->signature;
         }
 
         // Log the final payload for debugging

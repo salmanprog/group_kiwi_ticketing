@@ -184,10 +184,11 @@ class UserEstimateController extends RestController
         Log::info('addOrderTicket - Incoming Request', $request->all());
 
         $param_rule['estimate_id'] = 'required|max:255';
+        $param_rule['signature'] = 'required';
         
         $response = $this->__validateRequestParams($request->all(), $param_rule);
         if ($this->__is_error) {
-            Log::error('addOrderTicket - Validation Failed', $response);
+            Log::error('addOrderTicket - Validation Failed', ['response' => $response]);
             return $response;
         }
 
