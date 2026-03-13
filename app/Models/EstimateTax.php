@@ -34,6 +34,7 @@ class EstimateTax extends Model
         'is_modify',
         'created_at',
         'updated_at',
+        'amount'
     ];
 
     /**

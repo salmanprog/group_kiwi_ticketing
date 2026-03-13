@@ -608,6 +608,8 @@ $(document).off('click', '.delete-tax').on('click', '.delete-tax', function () {
     let url = $(this).data('url');
     let csrf = $(this).data('csrf');
 
+    $(this).text('Deleting...').prop('disabled', true);
+
     $('#contractLoader').show();
 
     $.ajax({

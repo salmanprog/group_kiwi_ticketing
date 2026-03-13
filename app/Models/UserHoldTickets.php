@@ -86,6 +86,7 @@ class UserHoldTickets extends Model
             ->where('estimate_id', $estimate->id)
             ->first();
 
+
         $session_id = 0;
         
         if (!$HoldTickets) {
@@ -99,6 +100,8 @@ class UserHoldTickets extends Model
 
                 // Determine ticket type/slug
                 $ticketType = $hold_ticket_item->slug ?? $hold_ticket_item->hold_ticket_item_product_id;
+                            // dd($ticketType);
+
                   $purchase = [
                         "ticketType" => $ticketType,
                         "capacityId" => $hold_ticket_item->capacity_id,
@@ -169,9 +172,9 @@ class UserHoldTickets extends Model
             "sessionId" => $session_id,
             "OrderId" => (string)$estimate->slug,
             "PromoCode" => $request->promo_code ?? "",
-            "OrderSource" => $request->order_source ?? "",
+            "OrderSource" => "Groups",
             "PreviousOrderNumber" => $request->previous_order_number ?? null,
-            "IsterminalPayment" => (bool)($request->is_terminal_payment ?? true),
+            "IsterminalPayment" => (bool) false,
             "OrderCreationWithScript" => (int)($request->order_creation_with_script ?? 0),
             "isOfficeUse" => false,
             "StaffDiscount" => (float)($request->staff_discount ?? 0.0),
@@ -180,7 +183,7 @@ class UserHoldTickets extends Model
             "ImportOrders" => (int)($request->import_orders ?? 0),
             "OrderCreationDate" => Carbon::now()->toIso8601String(),
             "IsPaymentThroughSubscriptionPlan" => (int)($request->is_payment_through_subscription_plan ?? 0),
-            "isContractBasedGroupOrder" => (int)($request->is_contract_based_group_order ?? 0),
+            "isContractBasedGroupOrder" => 1,
             "TotalInstallments" => (int)($request->total_installments ?? 0),
             "installmentType" => $request->installment_type ?? null,
             "IsCashlessEnabled" => (int)($request->is_cashless_enabled ?? 0),

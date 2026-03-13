@@ -185,7 +185,7 @@ class UserHoldTicketsController extends CRUDCrontroller
                 'user_hold_ticket_id' => $request->user_hold_ticket_id,
                 'product_id' => $product->id,
                 'name' => $product->name,
-                'slug' =>$product->slug,
+                'slug' =>$product->ticketSlug,
                 'quantity' => $request->quantity,
                 'category' => $product->ticketCategory,
                 'price' => $product->price
@@ -278,7 +278,7 @@ class UserHoldTicketsController extends CRUDCrontroller
                 'user_hold_ticket_id' => $request->user_hold_ticket_id,
                 'product_id' => $product->id,
                 'name' => $product->name,
-                'slug' =>$product->slug,
+                'slug' =>$product->ticketSlug,
                 'quantity' => $qty,
                 'price' => $product->price,
                 'category' => $product->ticketCategory,

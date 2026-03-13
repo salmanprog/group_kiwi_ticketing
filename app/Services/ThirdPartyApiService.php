@@ -121,7 +121,7 @@ class ThirdPartyApiService
 
     public function createOrderTicket(array $data)
     {
-        // dd(json_encode($data));
+        dd(json_encode($data));
         $response = Http::acceptJson()
             ->contentType('application/json')
             ->post($this->baseUrl . '/Pricing/AddOrder', $data);
