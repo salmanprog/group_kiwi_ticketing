@@ -121,7 +121,7 @@ class ThirdPartyApiService
 
     public function createOrderTicket(array $data)
     {
-        dd(json_encode($data));
+        // dd(json_encode($data));
         $response = Http::acceptJson()
             ->contentType('application/json')
             ->post($this->baseUrl . '/Pricing/AddOrder', $data);
@@ -129,21 +129,11 @@ class ThirdPartyApiService
             return $response;
     }
 
-    // public function updateOrderInvoice(string $authCode, array $data)
-    // {
-    //    $url = "https://dev.dynamicpricingbuilder.com/api/InstallmentPlan/update-subscription-invoices?authCode=".$authCode;
-    //     // dd(json_encode($data));
-    //     $response = Http::acceptJson()
-    //         ->contentType('application/json')
-    //         ->post($url, $data);
-
-    //     return $response;
-    // }
-
 
     public function updateOrderInvoice($authCode, array $data)
     {
         $url = $this->baseUrl . "/api/InstallmentPlan/update-subscription-invoices?authCode=" . $authCode;
+        // dd($data);
         $response = Http::acceptJson()
                 ->contentType('application/json')
                 ->post($url, $data);

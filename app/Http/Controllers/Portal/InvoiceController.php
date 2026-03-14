@@ -7,13 +7,17 @@ use App\Models\InstallmentPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{OrganizationUser, CompanyUser, Client, Product, Estimate, User, Invoice, InstallmentPlan};
+use App\Models\{OrganizationUser, CompanyUser, Client, Product, Estimate, User, Invoice, InstallmentPlan,UserHoldTickets};
 use Auth;
 use Illuminate\Support\Facades\Crypt;
 use DB;
+use App\Services\ThirdPartyApiService;
+
 class InvoiceController extends CRUDCrontroller
 {
-    public function __construct(Request $request)
+    protected $apiService;
+    
+    public function __construct(Request $request, ThirdPartyApiService $apiService)
     {
         parent::__construct('Invoice');
         $this->__request = $request;
@@ -22,6 +26,7 @@ class InvoiceController extends CRUDCrontroller
         $this->__createView = 'invoice.add';
         $this->__editView = 'invoice.edit';
         $this->__detailView = 'invoice.detail';
+        $this->apiService = $apiService;
     }
 
     /**
@@ -297,6 +302,7 @@ class InvoiceController extends CRUDCrontroller
 
     public function updateInvoiceStatus(Request $request)
     {
+        // dd($request);
         $invoice = Invoice::find($request->invoice_id);
         if ($invoice) {
             $invoice->status = 'paid';
@@ -305,7 +311,7 @@ class InvoiceController extends CRUDCrontroller
             $invoice->paid_amount = $request->total;
             $invoice->save();
 
-        }
+        } 
 
 
         ActivityLog::create([
@@ -324,6 +330,38 @@ class InvoiceController extends CRUDCrontroller
 
     public function updateInstallmentStatus(Request $request)
     {
+        $invoice = Invoice::where('id', $request->invoice_id)->first();
+
+          $installmentPayment = InstallmentPayment::where('id', $request->installment_id)
+            ->where('installment_plan_id', $request->plane_id)
+            ->firstOrFail();
+        $installmentPlan = InstallmentPlan::findOrFail($request->plane_id);
+
+        $payload = UserHoldTickets::createUpdateInvoicePayload([
+            'subscription_id' => $invoice->estimate_id,
+            'paymentType' => $request->payment_type,
+            'notes' => $request->notes, 
+            'paid_date' => now()->format('Y-m-d'),
+            'due_date' => $installmentPayment->due_date,
+            'subscription_id' => $invoice->estimate_id,
+            'status' => 'paid',
+            'number_of_Installments' => $installmentPlan->installment_count,
+            'invoice_id' => $request->installment_id,
+            'amount' => $installmentPayment->amount,
+            'notes' => $request->notes,
+            'payment_method' => $request->payment_type,
+            'amount_due' => $installmentPayment->amount,
+        ]);
+
+        $estimate = Estimate::where('id', $invoice->estimate_id)->first();
+        $response = $this->apiService->updateOrderInvoice(Auth::user()->auth_code, $payload);
+
+        // dd($payload);
+
+        if($response->json()['status']['errorCode'] == 1) {
+            return redirect()->back()->with('error', $response->json()['status']['errorMessage']);
+        }
+
 
         InstallmentPayment::where('id', $request->installment_id)
             ->where('installment_plan_id', $request->plane_id)
@@ -335,9 +373,7 @@ class InvoiceController extends CRUDCrontroller
                 'notes' => $request->notes,
             ]);
 
-        $installmentPayment = InstallmentPayment::where('id', $request->installment_id)
-            ->where('installment_plan_id', $request->plane_id)
-            ->firstOrFail();
+      
 
         $installmentPayment->update([
             'is_paid' => 1,
@@ -345,13 +381,11 @@ class InvoiceController extends CRUDCrontroller
             'status' => 'paid',
         ]);
 
-        $installmentPlan = InstallmentPlan::findOrFail($request->plane_id);
         $totalPayments = InstallmentPayment::where('installment_plan_id', $request->plane_id)
             ->where('is_paid', 1)
             ->count();
         // Check if plan is fully paid
 
-        $invoice = Invoice::where('id', $request->invoice_id)->first();
         $invoice->paid_amount += $installmentPayment->amount;
 
         if ($installmentPlan->installment_count == $totalPayments) {

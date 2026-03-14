@@ -268,14 +268,14 @@ class UserHoldTickets extends Model
             : null;
 
         $payload = [
-            "subscriptionId" => $data['subscription_id'] ?? "0",
+            "subscriptionId" => (string) $data['subscription_id'] ?? "0",
             "subscriptionStatus" => $data['status'],
             "subscriptionEndDate" => $dueDate,
             "numberOfInstallments" => $data['number_of_Installments'],
             "isSubscriptionCompleted" => false,
             "invoices" => [
                 [
-                    "invoiceId" => $data['invoice_id'],
+                    "stripeInvoiceId" => $data['invoice_id'],
                     "paymentIntentId" => $data['payment_intent_id'] ?? "",
                     "amountPaid" => $data['amount'],
                     "invoiceStatus" => $data['status'],

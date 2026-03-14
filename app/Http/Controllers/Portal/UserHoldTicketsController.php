@@ -332,7 +332,8 @@ class UserHoldTicketsController extends CRUDCrontroller
 
         try {
             // Prepare body for release API
-        $estimate = Estimate::where('id', $record->order_id)->first();
+        $estimate = Estimate::where('slug', $record->order_slug)->first();
+
          $body = [
                 "orderId" => (string) $estimate->slug,   // ensure string
                 "orderSource" => "Groups",
@@ -342,9 +343,8 @@ class UserHoldTicketsController extends CRUDCrontroller
             ];
 
             $response = $this->apiService->releaseTicket($body, Auth::user()->auth_code);
-            // dd($response->json());
 
-            if ($response->successful()) {
+            if ($response->json()['status']['errorCode'] == 0) {
 
                 // Delete related seats
                 $userHoldTicketItem = UserHoldTicketItems::where('user_hold_ticket_id', $record->id)->first();
@@ -356,11 +356,11 @@ class UserHoldTicketsController extends CRUDCrontroller
 
                 return redirect()->back()
                                 ->with('success', 'Ticket released successfully.');
+            }else{
+                $errorMsg = $response->json()['status']['errorMessage'] ?? 'Release API failed.';
+                return redirect()->back()
+                                ->with('error', $errorMsg);
             }
-
-            $errorMsg = $response->json()['status']['errorMessage'] ?? 'Release API failed.';
-            return redirect()->back()
-                            ->with('error', $errorMsg);
 
         } catch (\Exception $e) {
             dd($e);

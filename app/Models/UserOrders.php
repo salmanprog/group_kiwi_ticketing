@@ -83,14 +83,18 @@ class UserOrders extends Model
 
     public static function storeOrder($data,$estimate_id)
     {
+        $estimate = DB::table('user_estimate')->where('id', $estimate_id)->first();
+        if(!$estimate){
+            return null;
+        }
 
-            DB::transaction(function () use ($estimate_id, $data, &$recordList) {
+            DB::transaction(function () use ($estimate_id, $data, &$recordList,$estimate) {
 
                 $record = self::create([
                     'estimate_id' => $estimate_id,
                     'slug'        => self::generateUniqueSlug(uniqid()),
                     'session_id'  => $data['sessionId'] ?? null,
-                    'order_number' => $estimate_id,
+                    'order_number' => $estimate->slug,
                 ]);
 
                 $dataArr = [];

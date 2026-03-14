@@ -302,6 +302,7 @@ class UserEstimateController extends RestController
         $param_rule['due_date']               = 'required|date|nullable';
         $param_rule['number_of_Installments'] = 'required|numeric|nullable';
         $param_rule['payment_intent_id']      = 'required|string';
+        $param_rule['subscription_id']        = 'required|string';
         
         $response = $this->__validateRequestParams($request->all(), $param_rule);
         if ($this->__is_error) {
