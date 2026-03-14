@@ -1040,14 +1040,15 @@
                                                             <i class="fas fa-file-invoice me-1"></i>Credit Note
                                                         </a>
                                                     @else
-                                                        <span class="text-muted">--</span>
+                                                        <span class="text-muted"></span>
                                                     @endif
                                                     @if ($invoice->status == 'unpaid' && $invoice->is_installment != 1)
-                                                        <button type="button" class="btn btn-primary"
+                                                        <!-- <button type="button" class="btn btn-primary"
                                                             data-bs-toggle="modal" data-bs-target="#paymentModal{{ $invoice->id }}"
                                                             data-id="{{ $invoice->id }}">
                                                             Pay Now
-                                                        </button>
+                                                        </button> -->
+                                                        Pending
                                                     @endif
                                                     <div class="modal fade" id="paymentModal{{ $invoice->id }}" tabindex="-1"
                                                         aria-labelledby="paymentModalLabel" aria-hidden="true">
@@ -1150,7 +1151,7 @@
                                                                                         data-bs-toggle="modal"
                                                                                         data-bs-target="#paymentInstallmentModal"
                                                                                         data-id="{{ $installment->id }}">
-                                                                                        Pay Now installment
+                                                                                        Pay Now
                                                                                     </button>
                                                                                     <div class="modal fade"
                                                                                         id="paymentInstallmentModal"

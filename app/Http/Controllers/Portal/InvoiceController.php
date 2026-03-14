@@ -338,7 +338,7 @@ class InvoiceController extends CRUDCrontroller
         $installmentPlan = InstallmentPlan::findOrFail($request->plane_id);
 
         $payload = UserHoldTickets::createUpdateInvoicePayload([
-            'subscription_id' => $invoice->estimate_id,
+            'subscription_id' => 'est-eess-12',
             'paymentType' => $request->payment_type,
             'notes' => $request->notes, 
             'paid_date' => now()->format('Y-m-d'),
@@ -356,7 +356,7 @@ class InvoiceController extends CRUDCrontroller
         $estimate = Estimate::where('id', $invoice->estimate_id)->first();
         $response = $this->apiService->updateOrderInvoice(Auth::user()->auth_code, $payload);
 
-        // dd($payload);
+        // dd($response->json());
 
         if($response->json()['status']['errorCode'] == 1) {
             return redirect()->back()->with('error', $response->json()['status']['errorMessage']);

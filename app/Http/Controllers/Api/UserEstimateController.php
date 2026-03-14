@@ -353,12 +353,9 @@ class UserEstimateController extends RestController
             );
         }
 
+
         Log::info('updateInvoice - Success Response', $data);
-        return $this->__sendResponse(
-            __('app.success'),
-            $data,
-            200
-        );
+        return response()->json(['status' => 'success', 'message' => $data['status']['errorMessage'], 'data' => $data['data']]);
     }
 
 }
