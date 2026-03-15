@@ -42,7 +42,6 @@ class Auth0LoginController extends Controller
             ),
             'strategy'      => 'webapp',
         ]);
-
         return redirect($auth0->login());
     }
 
