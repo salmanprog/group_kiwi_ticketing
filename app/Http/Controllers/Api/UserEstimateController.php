@@ -271,7 +271,7 @@ class UserEstimateController extends RestController
 
         // Store order locally
         $orderData = $record->json();
-        $order = UserOrders::storeOrder($orderData, $request->estimate_id);
+        $order = UserOrders::storeOrder($orderData, $request->estimate_id,$request->signature);
         Log::info('addOrderTicket - Order Stored Locally', ['order_id' => $order->id ?? null]);
 
         $response = [

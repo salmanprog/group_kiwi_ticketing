@@ -43,7 +43,7 @@
                                        name="identifier"
                                        class="form-control"
                                        value="{{ old('identifier', $record->identifier) }}"
-                                       required>
+                                       required readonly>
                             </div>
 
                             <div class="col-md-4">

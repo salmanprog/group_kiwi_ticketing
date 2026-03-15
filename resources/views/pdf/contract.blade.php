@@ -17,7 +17,7 @@
     <p><strong>Client:</strong> {{ $estimate->client_name }}</p>
     <p><strong>Email:</strong> {{ $estimate->client_email }}</p>
     <p><strong>Date:</strong> {{ $estimate->created_at->format('F j, Y') }}</p>
-
+ 
     <h3>Items</h3>
     <table>
         <thead>
@@ -68,7 +68,7 @@
         <h3>Installments</h3>
         <ul>
             @foreach($estimate->installments as $inst)
-                <li>{{ $inst->due_date->format('F j, Y') }}: {{ number_format($inst->amount, 2) }}</li>
+                <li>{{ $inst->due_date }}: {{ number_format($inst->amount, 2) }}</li>
             @endforeach
         </ul>
     @endif

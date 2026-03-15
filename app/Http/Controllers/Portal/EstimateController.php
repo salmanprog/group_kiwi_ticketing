@@ -458,34 +458,29 @@ class EstimateController extends CRUDCrontroller
                         $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
                         $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
                        
-                        $check_mail = sendMail(
-                            $user->email,
-                            'estimate',
-                            'New Estimate',
-                            $mail_params
-                        );
-                            // $auth_code = Auth::user()->auth_code;
-                            // $toEmails = $user->email;
-                            // $templateIdentifier = 'Estimate_sent';
+                        // $check_mail = sendMail(
+                        //     $user->email,
+                        //     'estimate',
+                        //     'New Estimate',
+                        //     $mail_params
+                        // );
+                            $auth_code = Auth::user()->auth_code;
+                            $toEmails = $user->email;
+                            $templateIdentifier = 'estimate_email';
 
-                            // $data = [
-                            //     'username' => $mail_params['username'],
-                            //     'company_name' => $mail_params['company_name'],
-                            //     'link' => $mail_params['link']
-                            // ];
+                            $data = [
+                                'username' => $mail_params['username'],
+                                'company_name' => $mail_params['company_name'],
+                                'link' => $mail_params['link']
+                            ];
 
-                            // try {
-                                
-                            //     UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
-                            //     return back()->with('success', 'Email sent successfully!');
-                            // } catch (\Exception $e) {
-                            //     dd($e);
-                            //     return back()->with('error', 'Error: '.$e->getMessage());
-                            // }
-                        // dd($mail_params);
+                            try {
+                                UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+                            } catch (\Exception $e) {
+                                return back()->with('error', 'Error: '.$e->getMessage());
+                            }
                         
                     }
-                    // dd($mail_params['link']);
 
                     Estimate::where('slug', $request->slug)->update([
                         'status' => 'sent'
