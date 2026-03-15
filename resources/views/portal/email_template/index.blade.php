@@ -17,11 +17,11 @@
                                 {{-- <i class="fas fa-calendar-check"></i> --}}
                                 <h3>Email Template Listing</h3>
                             </div>
-                            <div class="header-actions">
+                            <!-- <div class="header-actions">
                                 <a class="btn btn-primary" href="{{ route('email-template.create') }}">
                                     <i class="fas fa-plus-circle"></i> Add Email Template
                                 </a>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="card-body">

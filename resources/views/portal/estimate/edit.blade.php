@@ -256,7 +256,7 @@
                                                                             height="12" viewBox="0 0 24 24" fill="none"
                                                                             stroke="currentColor" stroke-width="2"
                                                                             stroke-linecap="round" stroke-linejoin="round"
-                                                                            class="lucide lucide-trash2 lucide-trash-2"
+                                                                            class="lucide lucide-trash2 lucide-trash-2" 
                                                                             aria-hidden="true">
                                                                             <path d="M10 11v6"></path>
                                                                             <path d="M14 11v6"></path>
@@ -710,7 +710,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
                         </div>
                     </div>
                 </form>

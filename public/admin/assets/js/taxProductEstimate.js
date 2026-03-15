@@ -1,5 +1,11 @@
 $('#taxModal').on('shown.bs.modal', function (e) {
     e.preventDefault();
+       $('#taxTable tbody').html(
+                            '<tr><td colspan="5" class="text-center py-4">' +
+                            '<div class="spinner-border spinner-border-sm text-primary"></div> Loading...' +
+                            '</td></tr>'
+                        );
+
     callTax(e);
 });
 $('#editTaxModal').on('shown.bs.modal', function (e) {
@@ -7,6 +13,12 @@ $('#editTaxModal').on('shown.bs.modal', function (e) {
     const button = $(e.relatedTarget);
     const taxId = button.data('tax-id'); // from edit button in table
     $('#updateTaxBtn').data('taxid', taxId);
+    $('#editTaxTable tbody').html(
+                    '<tr><td colspan="5" class="text-center py-4">' +
+                    '<div class="spinner-border spinner-border-sm text-primary"></div> Loading...' +
+                    '</td></tr>'
+                );
+
     editcallTax(e);
 });
 function showModalMessage(modal, message, type = 'success') {
@@ -159,7 +171,12 @@ function addTax() {
     const modal = $('#taxModal');
     const estimateId = $('#addTaxBtn').data('estimateid'); // You can store estimateId in button or modal
     const csrfToken = $('#addTaxBtn').data('csrf');
+    
+    const btn = document.getElementById('addTaxBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Adding...';
 
+    // return false;
     // Collect selected products
     const products = [];
     $('#taxTable tbody tr').each(function () {
@@ -249,6 +266,10 @@ function updateTax() {
         return;
     }
 
+       const btn = document.getElementById('updateTaxBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Updating...';
+
     $.ajax({
         url: $('#updateTaxBtn').data('url'),
         type: 'POST',
@@ -281,8 +302,8 @@ $(document).on('click', '.delete-tax', function() {
     const button = $(this);
     const url = button.data('url');
     const csrfToken = button.data('csrf');
-
     if (!confirm('Are you sure you want to delete this tax?')) return;
+
 
     $.ajax({
         url: url,

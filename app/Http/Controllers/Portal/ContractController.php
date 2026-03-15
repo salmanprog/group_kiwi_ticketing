@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\{Organization, CompanyUser, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes};
 use Auth;
+use DB;
 
 class ContractController extends CRUDCrontroller
 {
@@ -430,12 +431,19 @@ class ContractController extends CRUDCrontroller
             'tax_percent' => 'required|numeric',
             'products' => 'required|array'
         ]);
-        
+         
         $get_estimate = Estimate::where('contract_id', $request->contract_id)->first();
+         $totalTaxAmount = 0;
+        foreach ($request->products as $productId) {
+           $productDetails = DB::table('user_estimate_items')->where('id', $productId)->first();
+        //    $productDetails->total_price = $productDetails->price * $productDetails->quantity;
+           $totalTaxAmount += ($productDetails->total_price * $request->tax_percent / 100);
+        }
         $insert_tax = EstimateTax::create([
                 'estimate_id' => $get_estimate->id,
                 'name'  => $request->tax_name,
                 'percent'        => $request->tax_percent,
+                'amount'        => $totalTaxAmount,
                 'is_modify'        => 1,
             ]);
 

@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class EstimateTax extends Model
+class ActivityActionLogs extends Model
 {
-    use CRUDGenerator;
+    use SoftDeletes,CRUDGenerator;
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'user_estimate_taxes';
+    protected $table = 'activity_action_logs';
 
     /**
      * The primary key associated with the table.
@@ -28,13 +28,7 @@ class EstimateTax extends Model
      * @var array
      */
     protected $fillable = [
-        'estimate_id',
-        'name',
-        'percent',
-        'is_modify',
-        'created_at',
-        'updated_at',
-        'amount'
+        'id', 'auth_code', 'action', 'method','response_time', 'url', 'payload', 'response', 'status', 'status_code', 'error_message', 'ip', 'created_at', 'updated_at', 'deleted_at'
     ];
 
     /**
@@ -59,5 +53,4 @@ class EstimateTax extends Model
      * @var string
      */
     protected $__cache_expire_time = 1; //days
-
 }

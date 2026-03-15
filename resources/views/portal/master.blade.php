@@ -193,7 +193,7 @@
 
         .static-sidebar-menu .submenu {
             display: none;
-            padding-left: 30px;
+            padding-left: 14px;
             list-style: none;
             margin: 0;
         }
@@ -972,7 +972,7 @@
                                     @endif
                                 @endif
 
-                                <!-- @if(Session::get('companyPlatformAccess'))
+                                {{-- @if(Session::get('companyPlatformAccess'))
                                 <li class="nav-item has-submenu">
                                         <a class="nav-link menu-toggle" href="javascript:void(0);" data-expanded="false">
                                             <i class="fas fa-user"></i>
@@ -994,7 +994,7 @@
                                             @endforeach
                                         </ul>
                                     </li>
-                                @endif -->
+                                @endif --}}
 
                                    <li data-type="child" class="nav-item">
 
@@ -1004,6 +1004,7 @@
                                             </a>
                                 </li>
 
+                            @if(Session::get('companyPlatformAccess'))
                                 <li data-type="child" class="nav-item">
                                         <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
                                             <i class="fa-solid fa-cloud"></i>
@@ -1011,11 +1012,42 @@
                                             <i class="fas fa-chevron-down arrow-icon"></i>
                                         </a>
                                     <ul class="submenu">
-                                        <!-- <li class="nav-item">
+                                        @foreach(Session::get('companyPlatformAccess') as $platform)
+                                        <li class="menu-platform">
+                                            <div class="icon-box">
+                                                <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
+                                            </div>
+                                            <a class="" href="https://dashboard.kiwiticketing.com/login?platform=rbac" target="_blank">
+                                                <div class="platform-text">
+                                                <span class="platform-title"> {{ $platform['platformName'] }}</span>
+                                                    <span class="platform-subtitle">
+                                                        Reporting Portal
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M15 3h6v6"></path>
+                                                            <path d="M10 14 21 3"></path>
+                                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @endif
+
+                                {{-- <li data-type="child" class="nav-item">
+                                        <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
+                                            <i class="fa-solid fa-cloud"></i>
+                                                <span class="toggle-none">Other Platforms</span>
+                                            <i class="fas fa-chevron-down arrow-icon"></i>
+                                        </a>
+                                    <ul class="submenu">
+                                        <li class="nav-item">
                                         <a class="nav-link submenu-link" href="{{ route('get=all-company') }}">
                                         Company Report
                                         </a>
-                                        </li> -->
+                                        </li>
                                         <li class="menu-platform">
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
@@ -1052,7 +1084,7 @@
                                                 </div>
                                             </a>
                                         </li>
-                                         <!-- <li class="menu-platform">
+                                          <li class="menu-platform">
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
                                             </div>
@@ -1069,8 +1101,8 @@
                                                     </span>
                                                 </div>
                                             </a>
-                                        </li> -->
-                                         <li class="menu-platform">
+                                        </li>
+                                          <li class="menu-platform">
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
                                             </div>
@@ -1147,11 +1179,11 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li>
+                                </li> --}}
 
 
 
-                                  <!-- <li data-type="child" class="nav-item">
+                                  <li data-type="child" class="nav-item">
                                         <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
                                             <i class="fa-solid fa-cloud"></i>
                                                 <span class="toggle-none">Settings</span>
@@ -1175,7 +1207,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li> -->
+                                </li>
 
 
 

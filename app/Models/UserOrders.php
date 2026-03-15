@@ -81,16 +81,26 @@ class UserOrders extends Model
         return $this->hasMany(UserOrderTickets::class, 'user_order_id', 'id');
     }
 
-    public static function storeOrder($data,$estimate_id)
+    public static function storeOrder($data,$estimate_id,$signature)
     {
+        $estimate = DB::table('user_estimate')->where('id', $estimate_id)->first();
+        
+        if(!$estimate){
+            return null;
+        }
 
-            DB::transaction(function () use ($estimate_id, $data, &$recordList) {
+        DB::table('user_estimate')->where('id', $estimate_id)->update(['signature' => $signature]);
+        DB::table('contracts')->where('id', $estimate->contract_id)->update(['signature' => $signature]);
+
+        
+
+            DB::transaction(function () use ($estimate_id, $data, &$recordList,$estimate) {
 
                 $record = self::create([
                     'estimate_id' => $estimate_id,
                     'slug'        => self::generateUniqueSlug(uniqid()),
                     'session_id'  => $data['sessionId'] ?? null,
-                    'order_number' => $estimate_id,
+                    'order_number' => $estimate->slug,
                 ]);
 
                 $dataArr = [];

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ActivityActionLogs;
+use App\Services\ActivityActionLogger;
 
 class ThirdPartyApiService
 {
@@ -77,21 +79,66 @@ class ThirdPartyApiService
     public function holdTicket(string $date, array $body, string $authCode)
     {
         // dd(json_encode($body));
-        return Http::withQueryParameters([
+        $startTime = microtime(true);
+
+        $response = Http::withQueryParameters([
                 'date' => $date,
                 'AuthCode' => $authCode,
             ])
             ->acceptJson()
             ->post($this->baseUrl . '/Pricing/TicketHold', $body);
+
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+
+              ActivityActionLogger::log([
+                'auth_code' => $authCode,
+                'action' => 'hold_ticket',
+                'method' => 'POST',
+                'url' => $this->baseUrl . '/Pricing/TicketHold',
+                'payload' => json_encode($body),
+                'response' => json_encode($response->json()),
+                'status' => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+                'status_code' => $response->status(),
+                'error_message' => $response->json()['status']['errorCode'] === 0 
+                    ? null 
+                    : $response->json()['status']['errorMessage'],
+                'ip' => request()->ip(),
+                'response_time' => $responseTime,
+            ]);
+
+        return $response;
+
     }
 
     public function releaseTicket(array $body, string $authCode)
     {
-        return Http::acceptJson()
+        $startTime = microtime(true);
+
+        $response = Http::acceptJson()
         ->withQueryParameters(['AuthCode' => $authCode]) 
         ->post($this->baseUrl . '/Pricing/ReleaseHoldsByOrder', [
             'request' => $body 
         ]);
+        
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ActivityActionLogger::log([
+            'auth_code' => $authCode,
+            'action' => 'release_ticket',
+            'method' => 'POST',
+            'url' => $this->baseUrl . '/Pricing/ReleaseHoldsByOrder',
+            'payload' => json_encode($body),
+            'response' => json_encode($response->json()),
+            'status' => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+            'status_code' => $response->status(),
+            'error_message' => $response->json()['status']['errorCode'] === 0 
+                ? null 
+                : $response->json()['status']['errorMessage'],
+            'ip' => request()->ip(),
+            'response_time' => $responseTime,
+        ]);
+        
+        return $response;
     }
 
     public function getAllProductPrice(array $params = [], $authCode = null)
@@ -107,6 +154,8 @@ class ThirdPartyApiService
 
     public function getCabanaOccupancy($type, $date, $authCode = null)
     {
+        
+        // dd(json_encode($this->baseUrl));
         return \Http::get(
             $this->baseUrl . '/Pricing/GetCabanaOccupancy',
             [
@@ -127,21 +176,11 @@ class ThirdPartyApiService
             return $response;
     }
 
-    // public function updateOrderInvoice(string $authCode, array $data)
-    // {
-    //    $url = "https://dev.dynamicpricingbuilder.com/api/InstallmentPlan/update-subscription-invoices?authCode=".$authCode;
-    //     // dd(json_encode($data));
-    //     $response = Http::acceptJson()
-    //         ->contentType('application/json')
-    //         ->post($url, $data);
-
-    //     return $response;
-    // }
-
 
     public function updateOrderInvoice($authCode, array $data)
     {
         $url = $this->baseUrl . "/api/InstallmentPlan/update-subscription-invoices?authCode=" . $authCode;
+        // dd($data);
         $response = Http::acceptJson()
                 ->contentType('application/json')
                 ->post($url, $data);
