@@ -367,9 +367,7 @@ class Auth0LoginController extends Controller
 
     public function generateEmailTemplate($user){
 
-        $emailTemplate = EmailTemplate::where('auth_code', $user->auth_code)
-            ->where('identifier', 'welcome_email')
-            ->first();
+        $emailTemplate = EmailTemplate::where('auth_code', $user->auth_code)->first();
 
         if(!empty($emailTemplate)) {
             return true;
