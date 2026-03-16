@@ -479,12 +479,16 @@ class EstimateController extends CRUDCrontroller
                     $user = User::where('email', $getClientEmail->email)->first();
                     $getCompany = CompanyUser::getCompany(Auth::user()->id);
                     if ($user) {
-                        $mail_params['company_name'] = $getCompany->name;
+                        $companyDetails = session('companyDetails');
+                        $mail_params['company_name'] = $companyDetails['companyName'] ?? $getCompany->name;
                         $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
-                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email)]) : env('CLIENT_URL');
+                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email)]) : $companyDetails['companyDomain'];
                         $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
                         $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
-                       
+                        // if($companyDetails) {
+                        //     $mail_params['link'] = $companyDetails['companyDomain'];
+                        // }
+                        // dd($user->email);
                         // $check_mail = sendMail(
                         //     $user->email,
                         //     'estimate',
@@ -493,6 +497,7 @@ class EstimateController extends CRUDCrontroller
                         // );
                             $auth_code = Auth::user()->auth_code;
                             $toEmails = $user->email;
+                            // $toEmails = 'ali@yopmail.com';
                             $templateIdentifier = 'estimate_email';
 
                             $data = [

@@ -179,8 +179,7 @@ class UserHoldTicketsController extends CRUDCrontroller
 
         $product = Product::where('slug', $request->product_slug)->first();
         $seats = $request->seats ? implode(',', $request->seats) : null;
-        if($product->hasSeats == '1')
-        {
+        if($product->hasSeats == '1'){
             if(!$seats) {
                 return response()->json([
                     'status'  => false,

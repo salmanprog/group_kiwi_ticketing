@@ -172,7 +172,6 @@ class Auth0LoginController extends Controller
             if (!$auth0User || empty($auth0User['email'])) {
                 redirect($auth0->login());
             }
-
             session()->put([
                 'auth0_id_token'     => $idToken,
                 'auth0_access_token' => $accessToken,
@@ -202,10 +201,10 @@ class Auth0LoginController extends Controller
             }
 
             $externalData = $externalApiResponse->json();
-            // dd($externalData);
             // dd($externalData['data']['userDetails']);
             session()->put([
                 'companyPlatformAccess' => $externalData['data']['companyPlatformAccess'] ?? null,
+                'companyDetails' => $externalData['data']['companyDetails'] ?? null,
             ]);
 
             // Only proceed when API returns success (errorCode 0)

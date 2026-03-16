@@ -134,36 +134,36 @@ class EstimateHook
         $contractEstimates = ContractEmail::where('auth_code', $estimate->auth_code)->get();
         $company = \App\Models\Company::find($estimate->company_id);
 
-            // $pdf = Pdf::loadView('pdf.contract', compact('estimate'));
-            // $fileName = 'contracts/contract_'.$estimate->id.'.pdf';
-            // Storage::disk('public')->put($fileName, $pdf->output());
-            // $pdf_link = asset('storage/'.$fileName);
-            // $link = $pdf_link;
-
+            $pdf = Pdf::loadView('pdf.contract', compact('estimate'));
+            $fileName = 'contracts/contract_'.$estimate->id.'_'.uniqid().'.pdf';
+            Storage::disk('public')->put($fileName, $pdf->output());
+            $pdf_link = asset('storage/'.$fileName);
+            $link = $pdf_link;
+            // dd($link);
 
             // dd($contractEstimates);
-        // if($contractEstimates->count() > 0){
+        if($contractEstimates->count() > 0){
 
-        //     foreach($contractEstimates as $contractEstimate){
+            foreach($contractEstimates as $contractEstimate){
                 
-        //         $auth_code = $estimate->auth_code;
-        //         $toEmails = $contractEstimate->email;
-        //         $templateIdentifier = 'contract_email';
+                $auth_code = $estimate->auth_code;
+                $toEmails = $contractEstimate->email;
+                $templateIdentifier = 'contract_email';
 
-        //         $data = [
-        //             'username' => $contractEstimate->name,
-        //             'company_name' => $company->name,
-        //             'link' => $link
-        //         ];
+                $data = [
+                    'username' => $contractEstimate->name,
+                    'company_name' => $company->name,
+                    'link' => $link
+                ];
 
-        //         try {
-        //             UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
-        //         } catch (\Exception $e) {
-        //             return back()->with('error', 'Error: '.$e->getMessage());
-        //         }
-        //     }
+                try {
+                    UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+                } catch (\Exception $e) {
+                    return back()->with('error', 'Error: '.$e->getMessage());
+                }
+            }
 
-        // } 
+        } 
 
 
 
