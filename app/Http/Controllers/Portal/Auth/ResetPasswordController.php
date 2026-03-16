@@ -70,7 +70,7 @@ class ResetPasswordController extends Controller
         $checkRequest = User::getClientVerfiy($email);
         if( !isset($checkRequest->id) ){
             // $url = route('admin.login') . '?auth_token=zekkmdvhkm';
-            $url = route('client.login');
+            $url = 'https://estimates-kiwi-ticketing.vercel.app/';
             return redirect($url)->with('error','Invalid request');
         }
 
