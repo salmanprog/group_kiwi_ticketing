@@ -184,10 +184,11 @@ class UserEstimateController extends RestController
         Log::info('addOrderTicket - Incoming Request', $request->all());
 
         $param_rule['estimate_id'] = 'required|max:255';
+        $param_rule['signature'] = 'required';
         
         $response = $this->__validateRequestParams($request->all(), $param_rule);
         if ($this->__is_error) {
-            Log::error('addOrderTicket - Validation Failed', $response);
+            Log::error('addOrderTicket - Validation Failed', ['response' => $response]);
             return $response;
         }
 
@@ -270,7 +271,7 @@ class UserEstimateController extends RestController
 
         // Store order locally
         $orderData = $record->json();
-        $order = UserOrders::storeOrder($orderData, $request->estimate_id);
+        $order = UserOrders::storeOrder($orderData, $request->estimate_id,$request->signature);
         Log::info('addOrderTicket - Order Stored Locally', ['order_id' => $order->id ?? null]);
 
         $response = [
@@ -301,6 +302,7 @@ class UserEstimateController extends RestController
         $param_rule['due_date']               = 'required|date|nullable';
         $param_rule['number_of_Installments'] = 'required|numeric|nullable';
         $param_rule['payment_intent_id']      = 'required|string';
+        $param_rule['subscription_id']        = 'required|string';
         
         $response = $this->__validateRequestParams($request->all(), $param_rule);
         if ($this->__is_error) {
@@ -351,12 +353,9 @@ class UserEstimateController extends RestController
             );
         }
 
+
         Log::info('updateInvoice - Success Response', $data);
-        return $this->__sendResponse(
-            __('app.success'),
-            $data,
-            200
-        );
+        return response()->json(['status' => 'success', 'message' => $data['status']['errorMessage'], 'data' => $data['data']]);
     }
 
 }

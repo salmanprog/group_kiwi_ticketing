@@ -214,6 +214,9 @@ $('#addProductsBtn').on('click', function (e) {
         return;
     }
 
+    
+    $(this).text('Saving...').prop('disabled', true);
+
     let url = $(this).data('url');       
     let csrfToken = $(this).data('csrf'); 
     let estimateId = $(this).data('estimateid');
@@ -302,6 +305,8 @@ $(document).on('click', '.edit-item', function() {
 // Submit edited item
 $('#editProductForm').on('submit', function(e){
     e.preventDefault();
+    let btn = $('#saveChangesBtn');
+    btn.prop('disabled', true).text('Saving...');
     let modal = $('#editProductModal');
     let csrfToken = modal.data('csrf');
     let estimateId = $(this).data('estimateid');
@@ -321,6 +326,7 @@ $('#editProductForm').on('submit', function(e){
         data: formData,
         success: function(res){
             showModalMessage(modal, res.message, 'success');
+            btn.prop('disabled', false).text('Save Changes');
 
             // Update table row
             let row = $('#productTable tbody tr[data-id="'+res.item.id+'"]');
@@ -389,6 +395,12 @@ $(document).on('click', '.remove-item', function(){
     let csrf = btn.data('csrf');
     let itemId = btn.data('id');
     let estimateId = btn.data('estimateid');
+    
+    let row = $(this).closest('tr');
+    let deleteBtn = row.find('.cust-btn-delete');
+
+    deleteBtn.prop('disabled', true);
+    deleteBtn.html('<i class="fa fa-spinner fa-spin"></i> Deleting...');
 
     $.ajax({
         url: url,
@@ -453,6 +465,7 @@ $(document).on('click', '.save-note', function () {
 $(document).on('click', '.send-to-client', function () {
 
     const btn = $(this);
+    btn.prop('disabled', true).text('Saving...');
     const url = btn.data('url');
     const csrf = btn.data('csrf');
     const estimateId = btn.data('estimateid');

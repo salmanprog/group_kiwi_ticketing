@@ -25,7 +25,7 @@ class EmailTemplateHook
         //Your code here
         // $getCompany = CompanyUser::getCompany(Auth::user()->id); 
         //$query->where('company_id', $getCompany->id);
-        // $query->where('auth_code', Auth::user()->auth_code);
+        $query->where('auth_code', Auth::user()->auth_code);
     }
 
     /*

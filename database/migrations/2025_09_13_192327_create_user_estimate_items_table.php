@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_estimate_items', function (Blueprint $table) {
             $table->id(); 
-            $table->foreignId('user_estimate_id')->constrained('user_estimates')->onDelete('cascade');
+            $table->foreignId('user_estimate_id')->constrained('user_estimate')->onDelete('cascade');
             $table->string('name', 255);
             $table->integer('quantity');
             $table->string('unit', 255);

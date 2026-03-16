@@ -45,7 +45,8 @@ class ThirdPartyApiMiddleware
 
             if ($idToken) {
                 $apiUrl = env('THIRD_PARTY_API_BASE_URL') . '/api/Auth0Management/UserLogin';
-                // dd(env('THIRD_PARTY_DOMAIN_URL'));
+
+
                 $response = Http::timeout(60)
                     ->withHeaders(['Accept' => 'application/json'])
                     ->post($apiUrl . '?' . http_build_query([
@@ -66,7 +67,7 @@ class ThirdPartyApiMiddleware
                     }
                 }
             }
-
+            // dd($apiData);
             // ------------------- Permission Check -------------------
                 // dd($apiData);
 

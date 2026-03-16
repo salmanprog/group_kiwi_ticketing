@@ -43,7 +43,7 @@ class EmailTemplateController extends CRUDCrontroller
             case 'PUT':
                 $validator = Validator::make($this->__request->all(), [
                     '_method' => 'required|in:PUT',
-                    'name' => 'required|min:2|max:50',
+                    'content' => 'required',
                 ]);
                 break;
         }

@@ -262,6 +262,7 @@ $(document).ready(function(){
             selectedSeats.push($(this).data('seat'));
         });
 
+
         if($btn.data('has-seats') == 'true') {
             if(selectedSeats.length != quantity){
                 Toastify({

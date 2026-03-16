@@ -36,13 +36,14 @@ class UserHoldTicketsController extends CRUDCrontroller
          $validator = [];
         $custom_messages = [
             'estimate_id.unique' => 'Estimate already has a hold ticket',
+            'expiry_date.before' => 'Expiry date must be before hold date',
         ];
         switch ($action){
             case 'POST':
                 $validator = Validator::make($this->__request->all(), [
                     'estimate_id'             => 'required|unique:user_hold_tickets,estimate_id',
                     'hold_date' => 'required|date',
-                    'expiry_date' => 'required|date|after:hold_date',
+                    'expiry_date' => 'required|date|before:hold_date',
                 ],$custom_messages);
                     
                 break;
@@ -177,6 +178,27 @@ class UserHoldTicketsController extends CRUDCrontroller
         ]);
 
         $product = Product::where('slug', $request->product_slug)->first();
+        if($product->ticketCategory == "Anyday" || $product->ticketCategory == "Season Passes") {
+              $userHoldTicketItem = UserHoldTicketItems::create([
+                'capacity_id' => 0,
+                'session_id' => 0,
+                'user_hold_ticket_id' => $request->user_hold_ticket_id,
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'slug' =>$product->ticketSlug,
+                'quantity' => $request->quantity,
+                'category' => $product->ticketCategory,
+                'price' => $product->price
+            ]);
+
+              return response()->json([
+                'status'  => true,
+                'message' => 'Ticket held successfully',
+                'data'    => $userHoldTicketItem
+            ]);
+
+
+        }
 
         $seats = $request->seats ? implode(',', $request->seats) : null;
 
@@ -211,7 +233,6 @@ class UserHoldTicketsController extends CRUDCrontroller
             $expiryDate = Carbon::parse($request->expiry_date)
                 ->toIso8601String();
             $estimate = Estimate::where('id', $request->estimate_id)->first();
-
             $body = [
                 "SessionId" => "",
                 "OrderId" => $estimate->slug,
@@ -257,9 +278,11 @@ class UserHoldTicketsController extends CRUDCrontroller
                 'user_hold_ticket_id' => $request->user_hold_ticket_id,
                 'product_id' => $product->id,
                 'name' => $product->name,
-                'slug' =>$product->slug,
+                'slug' =>$product->ticketSlug,
                 'quantity' => $qty,
-                'price' => $product->price
+                'price' => $product->price,
+                'category' => $product->ticketCategory,
+
             ]);
             // dd($result['data']);
             if($request->seats){
@@ -309,7 +332,8 @@ class UserHoldTicketsController extends CRUDCrontroller
 
         try {
             // Prepare body for release API
-        $estimate = Estimate::where('id', $record->order_id)->first();
+        $estimate = Estimate::where('slug', $record->order_slug)->first();
+
          $body = [
                 "orderId" => (string) $estimate->slug,   // ensure string
                 "orderSource" => "Groups",
@@ -319,9 +343,8 @@ class UserHoldTicketsController extends CRUDCrontroller
             ];
 
             $response = $this->apiService->releaseTicket($body, Auth::user()->auth_code);
-            // dd($response->json());
 
-            if ($response->successful()) {
+            if ($response->json()['status']['errorCode'] == 0) {
 
                 // Delete related seats
                 $userHoldTicketItem = UserHoldTicketItems::where('user_hold_ticket_id', $record->id)->first();
@@ -333,11 +356,11 @@ class UserHoldTicketsController extends CRUDCrontroller
 
                 return redirect()->back()
                                 ->with('success', 'Ticket released successfully.');
+            }else{
+                $errorMsg = $response->json()['status']['errorMessage'] ?? 'Release API failed.';
+                return redirect()->back()
+                                ->with('error', $errorMsg);
             }
-
-            $errorMsg = $response->json()['status']['errorMessage'] ?? 'Release API failed.';
-            return redirect()->back()
-                            ->with('error', $errorMsg);
 
         } catch (\Exception $e) {
             dd($e);

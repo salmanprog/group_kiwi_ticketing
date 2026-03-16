@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use App\Models\{User,CompanyAdmin,CompanyUser,Company};
+use App\Models\{User,CompanyAdmin,CompanyUser,Company,EmailTemplate};
 
 class Auth0LoginController extends Controller
 {
@@ -229,6 +229,9 @@ class Auth0LoginController extends Controller
             $user = User::where('email', $email)
                 ->where('auth_code', $authCode)
                 ->first();
+            
+            
+            self::generateEmailTemplate($user);
            
             if (!$user) {
                  
@@ -358,5 +361,45 @@ class Auth0LoginController extends Controller
             'client'   => redirect()->route('client.dashboard'),
             default    => redirect()->route('dashboard'),
         };
+    }
+
+
+    public function generateEmailTemplate($user){
+
+        $emailTemplate = EmailTemplate::where('auth_code', $user->auth_code)->first();
+
+        if(!empty($emailTemplate)) {
+            return true;
+        }else{
+            
+          $estimateBody = file_get_contents(resource_path('views/email/estimate.blade.php'));
+          $contractBody = file_get_contents(resource_path('views/email/contract_email.blade.php'));
+
+            $defaultEmail = [
+                [
+                'slug' => 'estimate-email-'.$user->auth_code,
+                'auth_code' => $user->auth_code,
+                'identifier' => 'estimate_email',
+                'to_emails' => $user->email,
+                'subject' => 'Your Visit Estimate',
+                'content' => $estimateBody,
+                'status' => 1
+                ],
+                [
+                'slug' => 'contract-email-'.$user->auth_code,
+                'auth_code' => $user->auth_code,
+                'identifier' => 'contract_email',
+                'to_emails' => $user->email,
+                'subject' => 'Your Visit Contract',
+                'content' => $contractBody,
+                'status' => 1
+                ]
+            ];
+
+            EmailTemplate::insert($defaultEmail);
+            
+            return true;
+        }
+        
     }
 }
