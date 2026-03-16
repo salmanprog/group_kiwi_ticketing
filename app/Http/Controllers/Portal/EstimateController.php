@@ -448,6 +448,17 @@ class EstimateController extends CRUDCrontroller
             ]);
         }
 
+        $holdTicket = DB::table('user_hold_tickets')
+        ->where('estimate_id', $request->estimate_id)
+        ->join('user_hold_ticket_items', 'user_hold_tickets.id', '=', 'user_hold_ticket_items.user_hold_ticket_id')
+        ->first();
+        if(!$holdTicket) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please hold ticket first'
+            ]);
+        }
+
         $status = ($request->status == 'draft') ? "draft" : 'revised';
 
         $estimate = Estimate::where('slug', $request->slug)->first();
