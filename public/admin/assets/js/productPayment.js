@@ -30,10 +30,27 @@ $(document).ready(function() {
     });
 
     // Remove Row
-    $container.on('click', '.btn-remove', function() {
-        $(this).closest('.installment-row').remove();
-        calculateBalance();
-    });
+        $container.on('click', '.btn-remove', function() {
+            $(this).closest('.installment-row').remove();
+            let id = $(this).closest('.installment-row').data('id');
+            calculateBalance();
+
+            //    if(id){
+            //     let deleteUrl = $('#installments-container').data('delete-installment-url');
+            //     alert(deleteUrl);
+            //     $.ajax({
+            //         url: deleteUrl,
+            //         type: 'POST',
+            //         data: {
+            //             id: id,
+            //             _token: $('meta[name="csrf-token"]').attr('content')
+            //         },
+            //         success: function(res){
+            //             console.log('Deleted');
+            //         }
+            //     });
+            // }
+        });
 
     // Update remaining on input change
     $container.on('input', '.inst-amount', function() {

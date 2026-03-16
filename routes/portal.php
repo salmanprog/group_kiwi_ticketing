@@ -249,6 +249,9 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
     Route::post('/estimate-installment/{estimate}/payment-save', [EstimateInstallmentController::class, 'savePaymentSchedule'])
     ->name('estimate.installments.save');
 
+Route::post('/estimate-installment', [EstimateInstallmentController::class, 'deletePaymentSchedule'])
+    ->name('estimate.installments.delete');
+
     Route::post('/estimate/note/save', [EstimateController::class, 'saveNote'])
     ->name('estimate.note.save');
 

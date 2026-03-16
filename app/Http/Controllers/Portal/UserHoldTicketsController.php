@@ -178,6 +178,16 @@ class UserHoldTicketsController extends CRUDCrontroller
         ]);
 
         $product = Product::where('slug', $request->product_slug)->first();
+        $seats = $request->seats ? implode(',', $request->seats) : null;
+        if($product->hasSeats == '1')
+        {
+            if(!$seats) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Seats are required for this ticket',
+                ]);
+            }
+        }
         if($product->ticketCategory == "Anyday" || $product->ticketCategory == "Season Passes") {
               $userHoldTicketItem = UserHoldTicketItems::create([
                 'capacity_id' => 0,
@@ -200,7 +210,6 @@ class UserHoldTicketsController extends CRUDCrontroller
 
         }
 
-        $seats = $request->seats ? implode(',', $request->seats) : null;
 
         if ($request->seats) {
             $seatQty = count($request->seats);

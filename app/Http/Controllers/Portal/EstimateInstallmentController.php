@@ -158,6 +158,18 @@ class EstimateInstallmentController extends CRUDCrontroller
         ]);
     }
 
+    public function deletePaymentSchedule(Request $request, $estimateId)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+        EstimateInstallment::where('id',$request->id)->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Payment schedule deleted successfully!'
+        ]);
+    }
+
     public function modifysavePaymentSchedule(Request $request, $estimateId)
     {
         $request->validate([

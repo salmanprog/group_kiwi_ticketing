@@ -434,7 +434,7 @@
 
                                         <div id="dynamicInputsContainer">
                                             @foreach($installments as $inst)
-                                                <div class="row mb-2 installment-row">
+                                                <div class="row mb-2 installment-row" data-id="{{ $inst->id }}">
                                                     <div class="col-md-5">
                                                         <input type="number" 
                                                             name="installments[{{$loop->index}}][amount]" 
@@ -450,7 +450,7 @@
                                                             min="{{ date('Y-m-d') }}" required>
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <button type="button" class="btn btn-danger w-100 btn-remove">
+                                                        <button type="button" class="btn btn-danger w-100 btn-remove" data-delete-installment-url="{{ route('estimate.installments.delete') }}">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="12"
                                                                     height="12" viewBox="0 0 24 24" fill="none"
                                                                     stroke="currentColor" stroke-width="2"
