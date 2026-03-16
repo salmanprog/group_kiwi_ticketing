@@ -1,7 +1,8 @@
 $(document).ready(function() {
     const $container = $('#dynamicInputsContainer');
-    let installmentIndex = 0;
+    // let installmentIndex = 0;
     const $errorBox = $('#installmentError');
+    let installmentIndex = $('#dynamicInputsContainer .installment-row').length - 1;
 
     // Add Row
     $('#addRowBtn').on('click', function() {

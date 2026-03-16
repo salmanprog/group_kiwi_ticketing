@@ -125,6 +125,8 @@ class EstimateInstallmentController extends CRUDCrontroller
             'installments.*.date' => 'required|date',
         ]);
 
+       
+
         $estimate = EstimateInstallment::where('estimate_id',$estimateId)->delete();
 
         // Remove old installments (soft delete)
