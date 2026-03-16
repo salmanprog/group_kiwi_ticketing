@@ -41,6 +41,7 @@ class Estimate extends JsonResource
             'total' => $total,
             'discount_total' => $discountAmount,
             'tax_total' => $taxTotal,
+            'signature' => $this->signature,
             'createdBy' => new PublicUser($this->createdBy),
             'client' => new PublicUser($this->client),
             'organization' => new PublicUser($this->organization),
