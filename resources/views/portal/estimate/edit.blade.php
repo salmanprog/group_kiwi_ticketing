@@ -7,8 +7,7 @@
 .toast-error {
     background: #cf3434ff !important;
     color: #fff !important;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 14px;
     padding: 16px 20px;
     border-radius: 6px;
 }
