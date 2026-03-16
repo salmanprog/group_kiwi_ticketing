@@ -431,8 +431,24 @@ class EstimateController extends CRUDCrontroller
             'estimate_id' => 'required',
             'slug' => 'required|string',
         ]);
-        
-         $status = ($request->status == 'draft') ? "draft" : 'revised';
+
+         $products = DB::table('user_estimate_items')->where('user_estimate_id',$request->estimate_id)->count();
+        if($products == 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please add products first'
+            ]);
+        }
+
+        $EstimateInstallment = EstimateInstallment::where('estimate_id',$request->estimate_id)->count();
+        if($EstimateInstallment == 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please add payment plan first'
+            ]);
+        }
+
+        $status = ($request->status == 'draft') ? "draft" : 'revised';
 
         $estimate = Estimate::where('slug', $request->slug)->first();
                     $estimate->issue_date = $request->issue_date;
