@@ -478,11 +478,12 @@ class EstimateController extends CRUDCrontroller
                     $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('auth_code', Auth::user()->auth_code)->first();
                     $user = User::where('email', $getClientEmail->email)->first();
                     $getCompany = CompanyUser::getCompany(Auth::user()->id);
+                    // dd($getCompany->login_url);
                     if ($user) {
                         $companyDetails = session('companyDetails');
                         $mail_params['company_name'] = $companyDetails['companyName'] ?? $getCompany->name;
                         $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
-                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email)]) : $companyDetails['companyDomain'];
+                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email),'login_url' => Crypt::encrypt($getCompany->login_url)]) : $getCompany->login_url;
                         $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
                         $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
                         // if($companyDetails) {

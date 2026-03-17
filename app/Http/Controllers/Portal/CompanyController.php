@@ -165,11 +165,7 @@ class CompanyController extends CRUDCrontroller
 
     public function editCompanyProfile()
     {
-
-        // dd(Auth::user());
-
         $getCompany = CompanyUser::getCompany(Auth::user()->id);
-
         $this->__data['company'] = $getCompany;
         return $this->__cbAdminView('company.company-profile',$this->__data); 
     }
@@ -186,6 +182,7 @@ class CompanyController extends CRUDCrontroller
             'state'            => 'required|min:2|max:50',
             'zip'              => 'required|min:2|max:10',
             'country'          => 'required|min:2|max:50',
+            'login_url'        => 'required|url',
         ]);
 
         if ($validator->fails()) {
@@ -194,7 +191,6 @@ class CompanyController extends CRUDCrontroller
                         ->withInput();
         }
         $company = Company::where('id',$request->company_id)->first();
-        // dd($company);
         $company->name = $request->name;
         $company->email = $request->email;
         $company->mobile_no = $request->mobile_no;
@@ -204,6 +200,8 @@ class CompanyController extends CRUDCrontroller
         $company->state = $request->state;
         $company->zip = $request->zip;
         $company->country = $request->country;
+        $company->login_url = $request->login_url;
+        $company->auth_code = Auth::user()->auth_code;
         $company->save();
         return redirect()->back()->with('success', 'Company updated successfully');
     }

@@ -96,7 +96,7 @@ use App\Http\Controllers\Portal\UserHoldTicketsController;
 
     Route::match(['get', 'post'], 'forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('admin.forgot-password');
     Route::match(['get', 'post'], 'reset-password/{any}', [ResetPasswordController::class, 'resetPassword'])->name('admin.reset-password');
-    Route::match(['get', 'post'], 'create-password/{any}', [ResetPasswordController::class, 'createPassword'])->name('admin.create-password');
+    Route::match(['get', 'post'], 'create-password/{any}/{login_url}', [ResetPasswordController::class, 'createPassword'])->name('admin.create-password');
 
 // });
 

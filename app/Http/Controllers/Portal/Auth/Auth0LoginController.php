@@ -246,6 +246,7 @@ class Auth0LoginController extends Controller
                     'description' => 'Created via Auth0',
                     'website' => 'https://www.google.com',
                     'address' => '—',
+                    'auth_code' => $authCode,
                 ]);
 
                 $companyAdmin = CompanyAdmin::create([
