@@ -279,6 +279,7 @@ class Auth0LoginController extends Controller
                 $user->auth_code = $authCode;
                 $user->image_url = $userDetails['image'] ?? $auth0User['picture'] ?? null;
                 $user->save();
+                self::generateEmailTemplate($user);
             }
 
             Auth::login($user, true);
