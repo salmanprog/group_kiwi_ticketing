@@ -111,6 +111,7 @@ Route::middleware(['auth_client:web'])->group(function () {
     Route::post('estimate-reject', [EstimateController::class, 'rejectEstimate'])->name('estimates.reject');
     Route::resource('estimate', EstimateController::class);
 });
+Route::get('hold-tickets/ajax-listing', [UserHoldTicketsController::class, 'ajaxListing'])->name('hold-tickets.ajax-listing');
 
 // -------------------------------------------------------------------------
 // Auth0 / portal routes: custom_auth + third_party_api
@@ -277,6 +278,7 @@ Route::post('/estimate-installment', [EstimateInstallmentController::class, 'del
 
     Route::post('/contract/modify/save', [ContractController::class, 'saveModifiedContract'])
         ->name('contract.modify.save');
+   Route::resource('hold-tickets', UserHoldTicketsController::class);    
 
 
 });
@@ -309,8 +311,6 @@ Route::resource('email-template', EmailTemplateController::class);
 Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->name('smtp-config.view');
 Route::post('smtp-config-update', [EmailTemplateController::class, 'createOrupdate'])->name('user-smtp.createOrupdate');
 
-Route::get('hold-tickets/ajax-listing', [UserHoldTicketsController::class, 'ajaxListing'])->name('hold-tickets.ajax-listing');
-Route::resource('hold-tickets', UserHoldTicketsController::class);    
 Route::post('hold-tickets-item', [UserHoldTicketsController::class, 'storeItem'])->name('hold-tickets-item');    
 Route::get('hold-tickets/release/{slug}', [UserHoldTicketsController::class, 'release'])->name('hold-tickets.release');
 

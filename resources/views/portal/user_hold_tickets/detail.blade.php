@@ -19,15 +19,15 @@
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <label style="font-weight:600;">Estimate</label>
-                        <input type="text" class="form-control" value="{{ $Estimates->slug }}" readonly>
+                        <input type="text" class="form-control" value="{{ ($Estimates) ? $Estimates->slug : '' }}" readonly>
                     </div>
                     <div class="col-md-4">
                         <label style="font-weight:600;">Hold Date</label>
-                        <input type="date" class="form-control" value="{{ $record->hold_date }}" readonly>
+                        <input type="date" class="form-control" value="{{ ($record->hold_date) ? $record->hold_date : '' }}" readonly>
                     </div>
                     <div class="col-md-4">
                         <label style="font-weight:600;">Expiry Date</label>
-                        <input type="date" class="form-control" value="{{ $record->expiry_date }}" readonly>
+                        <input type="date" class="form-control" value="{{ ($record->expiry_date) ? $record->expiry_date : '' }}" readonly>
                     </div>
                 </div>
 

@@ -630,6 +630,7 @@
                                 'update-stripe-key'   => 'portal.update-stripe-key',
                                 'company-profile'     => 'company-profile',
                                 'contract-emails'     => 'contract-emails',
+                                'hold-tickets'        => 'hold-tickets.index',
                             ];
 
                             // ====================== Recursive Submenu Renderer ======================
@@ -996,13 +997,13 @@
                                     </li>
                                 @endif --}}
 
-                                   <li data-type="child" class="nav-item">
+                                   <!-- <li data-type="child" class="nav-item">
 
                                         <a class="nav-link" href="{{ route('hold-tickets.index') }}">
                                                 <i class="fas fa-calendar-alt"></i>
                                                 <span class="toggle-none">Hold Tickets</span>
                                             </a>
-                                </li>
+                                </li> -->
 
                             @if(Session::get('companyPlatformAccess'))
                                 <li data-type="child" class="nav-item">

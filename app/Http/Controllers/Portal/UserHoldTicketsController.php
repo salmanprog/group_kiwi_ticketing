@@ -155,8 +155,9 @@ class UserHoldTicketsController extends CRUDCrontroller
 
     public function show($slug)
     {
-         $this->__data['record'] = UserHoldTickets::with('user_hold_ticket_items')->where('auth_code',  Auth::user()->auth_code)->where('slug', $slug)->first();
-        $this->__data['Estimates'] = Estimate::where('id',  $this->__data['record']->estimate_id)->first();
+        
+        $this->__data['record'] = UserHoldTickets::with('user_hold_ticket_items')->where('auth_code',  Auth::user()->auth_code)->where('slug', $slug)->first();
+        $this->__data['Estimates'] = ($this->__data['record']) ? Estimate::where('id',  $this->__data['record']->estimate_id)->first() : [];
         $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
 
         return view('portal.user_hold_tickets.detail', $this->__data);
