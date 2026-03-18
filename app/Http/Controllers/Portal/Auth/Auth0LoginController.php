@@ -230,7 +230,6 @@ class Auth0LoginController extends Controller
                 ->first();
             
             
-            self::generateEmailTemplate($user);
            
             if (!$user) {
                  
@@ -264,6 +263,7 @@ class Auth0LoginController extends Controller
                     'image_url' => $userDetails['image'] ?? $auth0User['picture'] ?? null,
                     'status' => (int) ($userDetails['status'] ?? 1),
                 ]);
+                self::generateEmailTemplate($companyAdmin);
 
                 CompanyUser::create([
                     'company_id' => $company->id,
