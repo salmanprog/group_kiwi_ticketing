@@ -336,14 +336,13 @@ class InvoiceController extends CRUDCrontroller
             ->where('installment_plan_id', $request->plane_id)
             ->firstOrFail();
         $installmentPlan = InstallmentPlan::findOrFail($request->plane_id);
-
+        $estimate = Estimate::where('id', $invoice->estimate_id)->first();
         $payload = UserHoldTickets::createUpdateInvoicePayload([
-            'subscription_id' => 'est-eess-12',
             'paymentType' => $request->payment_type,
             'notes' => $request->notes, 
             'paid_date' => now()->format('Y-m-d'),
             'due_date' => $installmentPayment->due_date,
-            'subscription_id' => $invoice->estimate_id,
+            'subscription_id' => $estimate->slug,
             'status' => 'paid',
             'number_of_Installments' => $installmentPlan->installment_count,
             'invoice_id' => $request->installment_id,
@@ -352,7 +351,6 @@ class InvoiceController extends CRUDCrontroller
             'payment_method' => $request->payment_type,
             'amount_due' => $installmentPayment->amount,
         ]);
-
         $estimate = Estimate::where('id', $invoice->estimate_id)->first();
         $response = $this->apiService->updateOrderInvoice(Auth::user()->auth_code, $payload);
 

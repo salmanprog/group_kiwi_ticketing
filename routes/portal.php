@@ -96,7 +96,7 @@ use App\Http\Controllers\Portal\UserHoldTicketsController;
 
     Route::match(['get', 'post'], 'forgot-password', [ForgotPasswordController::class, 'forgotPassword'])->name('admin.forgot-password');
     Route::match(['get', 'post'], 'reset-password/{any}', [ResetPasswordController::class, 'resetPassword'])->name('admin.reset-password');
-    Route::match(['get', 'post'], 'create-password/{any}', [ResetPasswordController::class, 'createPassword'])->name('admin.create-password');
+    Route::match(['get', 'post'], 'create-password/{any}/{login_url}', [ResetPasswordController::class, 'createPassword'])->name('admin.create-password');
 
 // });
 
@@ -111,6 +111,7 @@ Route::middleware(['auth_client:web'])->group(function () {
     Route::post('estimate-reject', [EstimateController::class, 'rejectEstimate'])->name('estimates.reject');
     Route::resource('estimate', EstimateController::class);
 });
+Route::get('hold-tickets/ajax-listing', [UserHoldTicketsController::class, 'ajaxListing'])->name('hold-tickets.ajax-listing');
 
 // -------------------------------------------------------------------------
 // Auth0 / portal routes: custom_auth + third_party_api
@@ -249,6 +250,9 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
     Route::post('/estimate-installment/{estimate}/payment-save', [EstimateInstallmentController::class, 'savePaymentSchedule'])
     ->name('estimate.installments.save');
 
+Route::post('/estimate-installment', [EstimateInstallmentController::class, 'deletePaymentSchedule'])
+    ->name('estimate.installments.delete');
+
     Route::post('/estimate/note/save', [EstimateController::class, 'saveNote'])
     ->name('estimate.note.save');
 
@@ -274,6 +278,7 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
     Route::post('/contract/modify/save', [ContractController::class, 'saveModifiedContract'])
         ->name('contract.modify.save');
+   Route::resource('hold-tickets', UserHoldTicketsController::class);    
 
 
 });
@@ -306,8 +311,6 @@ Route::resource('email-template', EmailTemplateController::class);
 Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->name('smtp-config.view');
 Route::post('smtp-config-update', [EmailTemplateController::class, 'createOrupdate'])->name('user-smtp.createOrupdate');
 
-Route::get('hold-tickets/ajax-listing', [UserHoldTicketsController::class, 'ajaxListing'])->name('hold-tickets.ajax-listing');
-Route::resource('hold-tickets', UserHoldTicketsController::class);    
 Route::post('hold-tickets-item', [UserHoldTicketsController::class, 'storeItem'])->name('hold-tickets-item');    
 Route::get('hold-tickets/release/{slug}', [UserHoldTicketsController::class, 'release'])->name('hold-tickets.release');
 

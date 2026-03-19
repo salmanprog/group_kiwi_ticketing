@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\URL;
 
 class PublicUser extends JsonResource
 {
-    /**
+   /**
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -19,7 +19,7 @@ class PublicUser extends JsonResource
     {
        return [
            'id'               => $this->id,
-           'name'             => $this->name,
+           'name'             => $this->first_name . ' ' . $this->last_name,
            'slug'             => $this->slug,
            'email'             => $this->email,
            'mobile_no'        => $this->mobile_no,

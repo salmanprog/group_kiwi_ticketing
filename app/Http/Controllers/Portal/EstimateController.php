@@ -431,8 +431,35 @@ class EstimateController extends CRUDCrontroller
             'estimate_id' => 'required',
             'slug' => 'required|string',
         ]);
-        
-         $status = ($request->status == 'draft') ? "draft" : 'revised';
+
+         $products = DB::table('user_estimate_items')->where('user_estimate_id',$request->estimate_id)->count();
+        if($products == 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please add products first'
+            ]);
+        }
+
+        $EstimateInstallment = EstimateInstallment::where('estimate_id',$request->estimate_id)->count();
+        if($EstimateInstallment == 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please add payment plan first'
+            ]);
+        }
+
+        $holdTicket = DB::table('user_hold_tickets')
+        ->where('estimate_id', $request->estimate_id)
+        ->join('user_hold_ticket_items', 'user_hold_tickets.id', '=', 'user_hold_ticket_items.user_hold_ticket_id')
+        ->first();
+        if(!$holdTicket) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please hold ticket first'
+            ]);
+        }
+
+        $status = ($request->status == 'draft') ? "draft" : 'revised';
 
         $estimate = Estimate::where('slug', $request->slug)->first();
                     $estimate->issue_date = $request->issue_date;
@@ -451,13 +478,18 @@ class EstimateController extends CRUDCrontroller
                     $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('auth_code', Auth::user()->auth_code)->first();
                     $user = User::where('email', $getClientEmail->email)->first();
                     $getCompany = CompanyUser::getCompany(Auth::user()->id);
+                    // dd($getCompany->login_url);
                     if ($user) {
-                        $mail_params['company_name'] = $getCompany->name;
+                        $companyDetails = session('companyDetails');
+                        $mail_params['company_name'] = $companyDetails['companyName'] ?? $getCompany->name;
                         $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
-                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email)]) : env('CLIENT_URL');
+                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email),'login_url' => Crypt::encrypt($getCompany->login_url)]) : $getCompany->login_url;
                         $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
                         $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
-                       
+                        // if($companyDetails) {
+                        //     $mail_params['link'] = $companyDetails['companyDomain'];
+                        // }
+                        // dd($user->email);
                         // $check_mail = sendMail(
                         //     $user->email,
                         //     'estimate',
@@ -466,6 +498,7 @@ class EstimateController extends CRUDCrontroller
                         // );
                             $auth_code = Auth::user()->auth_code;
                             $toEmails = $user->email;
+                            // $toEmails = 'ali@yopmail.com';
                             $templateIdentifier = 'estimate_email';
 
                             $data = [

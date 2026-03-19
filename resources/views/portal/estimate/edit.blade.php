@@ -3,7 +3,16 @@
 @section('content')
 @push('stylesheets')
         <link href="{{ asset('admin/assets/scss/Estimate-style.css') }}" rel="stylesheet" type="text/css">
-    @endpush
+<style>
+.toast-error {
+    background: #cf3434ff !important;
+    color: #fff !important;
+    font-size: 14px;
+    padding: 16px 20px;
+    border-radius: 6px;
+}
+</style>
+@endpush
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <section class="main-content">
@@ -425,7 +434,7 @@
 
                                         <div id="dynamicInputsContainer">
                                             @foreach($installments as $inst)
-                                                <div class="row mb-2 installment-row">
+                                                <div class="row mb-2 installment-row" data-id="{{ $inst->id }}">
                                                     <div class="col-md-5">
                                                         <input type="number" 
                                                             name="installments[{{$loop->index}}][amount]" 
@@ -441,7 +450,7 @@
                                                             min="{{ date('Y-m-d') }}" required>
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <button type="button" class="btn btn-danger w-100 btn-remove">
+                                                        <button type="button" class="btn btn-danger w-100 btn-remove" data-delete-installment-url="{{ route('estimate.installments.delete') }}">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="12"
                                                                     height="12" viewBox="0 0 24 24" fill="none"
                                                                     stroke="currentColor" stroke-width="2"
@@ -966,17 +975,39 @@ $(document).ready(function () {
                 btn.find('.btn-schedule-loading').hide();
                 btn.find('.btn-schedule-text').show();
                 if (res.status === true) {
+                    Toastify({
+                            text: res.message,
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right",
+                            className: "toast-success"
+                        }).showToast();
                     msgEl.text(res.message || 'Payment schedule saved successfully!').addClass('text-success').show();
                 } else {
+                    Toastify({
+                            text: res.message,
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right",
+                            className: "toast-error"
+                        }).showToast();
                     msgEl.text(res.message || 'Something went wrong.').addClass('text-danger').show();
                 }
             },
             error: function(xhr) {
+
                 btn.prop('disabled', false);
                 btn.find('.btn-schedule-loading').hide();
                 btn.find('.btn-schedule-text').show();
                 var res = (xhr.responseJSON || {});
                 msgEl.text(res.message || (xhr.responseText || 'Request failed.')).addClass('text-danger').show();
+                 Toastify({
+                            text: res.message,
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right",
+                            className: "toast-error"
+                        }).showToast();
             }
         });
     });

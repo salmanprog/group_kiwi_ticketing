@@ -30,6 +30,7 @@ class ThirdPartyApiMiddleware
         'update-invoice-status' => 'portal.update-invoice-status',
         'company-profile'    => 'company-profile',
         'contract-emails'    => 'contract-emails',
+        'hold-tickets'       => 'hold-tickets',
     ];
 
     public function handle($request, Closure $next)
@@ -53,7 +54,7 @@ class ThirdPartyApiMiddleware
                         'userTokenId' => $idToken,
                         'domain'      => env('THIRD_PARTY_DOMAIN_URL'),
                     ]));
-
+                // dd($response->json());
                 // dd($response->body());
                 if ($response->successful()) {
                     $data = json_decode($response->body(), true);
@@ -69,10 +70,11 @@ class ThirdPartyApiMiddleware
             }
             // dd($apiData);
             // ------------------- Permission Check -------------------
+                // dd($apiData);
 
             if ($apiData && isset($apiData['platform'][0]['categories'])) {
                 $allowedSlugs = $this->getAllowedSlugs($apiData['platform'][0]['categories']);
-
+                // dd($allowedSlugs);
                 // Convert slugs to route names
                 $allowedRoutes = [];
                 foreach ($allowedSlugs as $slug) {
@@ -83,7 +85,7 @@ class ThirdPartyApiMiddleware
 
                 $currentRouteName = $request->route() ? $request->route()->getName() : null;
                 $currentPath = $request->path(); // e.g., portal/organization/ajax-listing
-                
+                // dd($allowedRoutes);
                 // Skip checking no-permission route to avoid loop
                 if ($currentRouteName && $currentRouteName !== 'no-permission') {
                     // Check if current route matches exactly OR starts with a base route

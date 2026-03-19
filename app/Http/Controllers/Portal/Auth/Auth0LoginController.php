@@ -42,7 +42,6 @@ class Auth0LoginController extends Controller
             ),
             'strategy'      => 'webapp',
         ]);
-
         return redirect($auth0->login());
     }
 
@@ -173,7 +172,6 @@ class Auth0LoginController extends Controller
             if (!$auth0User || empty($auth0User['email'])) {
                 redirect($auth0->login());
             }
-
             session()->put([
                 'auth0_id_token'     => $idToken,
                 'auth0_access_token' => $accessToken,
@@ -203,10 +201,10 @@ class Auth0LoginController extends Controller
             }
 
             $externalData = $externalApiResponse->json();
-            // dd($externalData);
             // dd($externalData['data']['userDetails']);
             session()->put([
                 'companyPlatformAccess' => $externalData['data']['companyPlatformAccess'] ?? null,
+                'companyDetails' => $externalData['data']['companyDetails'] ?? null,
             ]);
 
             // Only proceed when API returns success (errorCode 0)
@@ -232,7 +230,6 @@ class Auth0LoginController extends Controller
                 ->first();
             
             
-            self::generateEmailTemplate($user);
            
             if (!$user) {
                  
@@ -248,6 +245,7 @@ class Auth0LoginController extends Controller
                     'description' => 'Created via Auth0',
                     'website' => 'https://www.google.com',
                     'address' => '—',
+                    'auth_code' => $authCode,
                 ]);
 
                 $companyAdmin = CompanyAdmin::create([
@@ -265,6 +263,7 @@ class Auth0LoginController extends Controller
                     'image_url' => $userDetails['image'] ?? $auth0User['picture'] ?? null,
                     'status' => (int) ($userDetails['status'] ?? 1),
                 ]);
+                self::generateEmailTemplate($companyAdmin);
 
                 CompanyUser::create([
                     'company_id' => $company->id,
@@ -280,6 +279,7 @@ class Auth0LoginController extends Controller
                 $user->auth_code = $authCode;
                 $user->image_url = $userDetails['image'] ?? $auth0User['picture'] ?? null;
                 $user->save();
+                self::generateEmailTemplate($user);
             }
 
             Auth::login($user, true);

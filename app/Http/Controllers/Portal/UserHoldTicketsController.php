@@ -155,8 +155,9 @@ class UserHoldTicketsController extends CRUDCrontroller
 
     public function show($slug)
     {
-         $this->__data['record'] = UserHoldTickets::with('user_hold_ticket_items')->where('auth_code',  Auth::user()->auth_code)->where('slug', $slug)->first();
-        $this->__data['Estimates'] = Estimate::where('id',  $this->__data['record']->estimate_id)->first();
+        
+        $this->__data['record'] = UserHoldTickets::with('user_hold_ticket_items')->where('auth_code',  Auth::user()->auth_code)->where('slug', $slug)->first();
+        $this->__data['Estimates'] = ($this->__data['record']) ? Estimate::where('id',  $this->__data['record']->estimate_id)->first() : [];
         $this->__data['products'] = Product::where('auth_code',  Auth::user()->auth_code)->get();
 
         return view('portal.user_hold_tickets.detail', $this->__data);
@@ -178,6 +179,15 @@ class UserHoldTicketsController extends CRUDCrontroller
         ]);
 
         $product = Product::where('slug', $request->product_slug)->first();
+        $seats = $request->seats ? implode(',', $request->seats) : null;
+        if($product->hasSeats == '1'){
+            if(!$seats) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Seats are required for this ticket',
+                ]);
+            }
+        }
         if($product->ticketCategory == "Anyday" || $product->ticketCategory == "Season Passes") {
               $userHoldTicketItem = UserHoldTicketItems::create([
                 'capacity_id' => 0,
@@ -200,7 +210,6 @@ class UserHoldTicketsController extends CRUDCrontroller
 
         }
 
-        $seats = $request->seats ? implode(',', $request->seats) : null;
 
         if ($request->seats) {
             $seatQty = count($request->seats);

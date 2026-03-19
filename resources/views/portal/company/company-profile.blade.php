@@ -113,6 +113,16 @@
                                         </div>
                                     </div>
 
+                                     <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Client Login Url <span
+                                                    class="required">*</span></label>
+                                            <input required type="text" name="login_url"
+                                                value="{{ $company->login_url }}" class="form-control"
+                                                placeholder="Enter login url">
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 

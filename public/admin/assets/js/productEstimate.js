@@ -497,8 +497,29 @@ $(document).on('click', '.send-to-client', function () {
                 .text(res.message)
                 .fadeIn();
 
-            // Optional: update print preview instantly
-            window.location.reload();
+            if(res.status == true) {
+                // Optional: update print preview instantly
+                btn.prop('disabled', false).text('Send to Client');
+                                  Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
+                window.location.reload();
+                
+            }else{
+                 Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+                btn.prop('disabled', false).text('Send to Client');
+            }
+
         },
         error: function () {
             $('#formMessage')
@@ -506,6 +527,15 @@ $(document).on('click', '.send-to-client', function () {
                 .addClass('text-danger')
                 .text('Failed to sending client')
                 .fadeIn();
+                
+                  Toastify({
+                    text: 'Failed to sending client',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+                btn.prop('disabled', false).text('Send to Client');
         }
     });
 });

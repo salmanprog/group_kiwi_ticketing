@@ -119,28 +119,54 @@ class EstimateInstallmentController extends CRUDCrontroller
 
     public function savePaymentSchedule(Request $request, $estimateId)
     {
+        if(!$request->has('installments')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No installments provided. Payment not saved'
+            ], 400);
+        }
+        
         $request->validate([
             'installments' => 'required|array',
             'installments.*.amount' => 'required|numeric|min:0.01',
             'installments.*.date' => 'required|date',
         ]);
 
+       
+
         $estimate = EstimateInstallment::where('estimate_id',$estimateId)->delete();
 
         // Remove old installments (soft delete)
         //$estimate->installments()->delete();
 
-        foreach ($request->installments as $inst) {
-            EstimateInstallment::create([
+        // Use parallel processing to create installments
+        $installments = array_map(function($inst) use ($estimateId) {
+            return [
                 'estimate_id' => $estimateId,
                 'amount' => $inst['amount'],
                 'installment_date' => $inst['date'],
-            ]);
-        }
+            ];
+        }, $request->installments);
+
+        collect($installments)->chunk(100)->each(function($chunk) {
+            EstimateInstallment::insert($chunk->toArray());
+        });
 
         return response()->json([
             'status' => true,
             'message' => 'Payment schedule saved successfully!'
+        ]);
+    }
+
+    public function deletePaymentSchedule(Request $request, $estimateId)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+        EstimateInstallment::where('id',$request->id)->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Payment schedule deleted successfully!'
         ]);
     }
 
