@@ -112,6 +112,7 @@ Route::middleware(['auth_client:web'])->group(function () {
     Route::resource('estimate', EstimateController::class);
 });
 Route::get('hold-tickets/ajax-listing', [UserHoldTicketsController::class, 'ajaxListing'])->name('hold-tickets.ajax-listing');
+Route::get('email-template/ajax-listing', [EmailTemplateController::class, 'ajaxListing'])->name('email-template.ajax-listing');
 
 // -------------------------------------------------------------------------
 // Auth0 / portal routes: custom_auth + third_party_api
@@ -279,6 +280,8 @@ Route::post('/estimate-installment', [EstimateInstallmentController::class, 'del
     Route::post('/contract/modify/save', [ContractController::class, 'saveModifiedContract'])
         ->name('contract.modify.save');
    Route::resource('hold-tickets', UserHoldTicketsController::class);    
+   Route::resource('email-template', EmailTemplateController::class);
+Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->name('smtp-config.view');
 
 
 });
@@ -306,9 +309,6 @@ Route::post('update-invoice-status', [InvoiceController::class, 'updateInvoiceSt
 Route::post('update-installment-status', [InvoiceController::class, 'updateInstallmentStatus'])->name('update-installment-status');
 
 
-Route::get('email-template/ajax-listing', [EmailTemplateController::class, 'ajaxListing'])->name('email-template.ajax-listing');
-Route::resource('email-template', EmailTemplateController::class);
-Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->name('smtp-config.view');
 Route::post('smtp-config-update', [EmailTemplateController::class, 'createOrupdate'])->name('user-smtp.createOrupdate');
 
 Route::post('hold-tickets-item', [UserHoldTicketsController::class, 'storeItem'])->name('hold-tickets-item');    

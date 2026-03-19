@@ -631,6 +631,8 @@
                                 'company-profile'     => 'company-profile',
                                 'contract-emails'     => 'contract-emails',
                                 'hold-tickets'        => 'hold-tickets.index',
+                                'smtp-config'         => 'smtp-config.view',
+                                'email-template'      => 'email-template.index',
                             ];
 
                             // ====================== Recursive Submenu Renderer ======================
@@ -1014,7 +1016,7 @@
                                 </li>
                             @endif
 
-                                  <li data-type="child" class="nav-item">
+                                  <!-- <li data-type="child" class="nav-item">
                                         <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
                                             <i class="fa-solid fa-cloud"></i>
                                                 <span class="toggle-none">Settings</span>
@@ -1038,7 +1040,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li>
+                                </li> -->
 
 
 
