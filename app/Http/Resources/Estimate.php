@@ -44,7 +44,7 @@ class Estimate extends JsonResource
             'signature' => $this->signature,
             'createdBy' => new PublicUser($this->createdBy),
             'client' => new PublicUser($this->client),
-            'organization' => new PublicUser($this->organization),
+            'organization' => $this->organization,
             'items' => $this->items->map(function($item) {
                 return [
                     'id' => $item->id,
