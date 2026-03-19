@@ -633,6 +633,7 @@
                                 'hold-tickets'        => 'hold-tickets.index',
                                 'smtp-config'         => 'smtp-config.view',
                                 'email-template'      => 'email-template.index',
+                                'terms-and-conditions' => 'portal.terms-and-conditions',
                             ];
 
                             // ====================== Recursive Submenu Renderer ======================

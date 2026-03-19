@@ -32,7 +32,8 @@ class ThirdPartyApiMiddleware
         'contract-emails'    => 'contract-emails',
         'hold-tickets'       => 'hold-tickets',
         'smtp-config'        => 'smtp-config.view',
-        'email-template' =>'email-template.index'
+        'email-template'     => 'email-template.index',
+        'terms-and-conditions' =>'portal.terms-and-conditions',
     ];
 
     public function handle($request, Closure $next)
