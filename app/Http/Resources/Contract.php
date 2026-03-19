@@ -35,6 +35,7 @@ class Contract extends JsonResource
             'discount_total' => $discountAmount,
             'tax_total' => $taxTotal,
             'signature' => $this->signature,
+            'company' => $this->company,
 
             // Users
             'client' => new PublicUser($this->whenLoaded('client')),
