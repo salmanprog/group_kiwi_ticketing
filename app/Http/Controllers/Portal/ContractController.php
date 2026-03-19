@@ -602,7 +602,7 @@ class ContractController extends CRUDCrontroller
 
     public function saveModifiedContract(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         // Validate inputs
         $request->validate([
             'cont_id' => 'required',
