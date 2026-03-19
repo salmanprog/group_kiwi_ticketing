@@ -332,7 +332,7 @@ class Auth0LoginController extends Controller
          
         // Redirect to Auth0 logout
         return redirect(
-        $auth0->logout(env('THIRD_PARTY_DOMAIN_URL'))
+        $auth0->logout(env('THIRD_PARTY_DOMAIN_LOGOUT_URL'))
     );
     }
 
