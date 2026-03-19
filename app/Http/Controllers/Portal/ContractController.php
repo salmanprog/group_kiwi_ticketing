@@ -398,11 +398,12 @@ class ContractController extends CRUDCrontroller
             'contract_id' => 'required',
             'product_id' => 'required',
         ]);
-        
         $get_estimate = Estimate::where('contract_id', $request->contract_id)->first();
         $get_estimate_tax = EstimateTax::where('estimate_id', $get_estimate->id)->first();
         $delete_estimate_item = EstimateItem::where('user_estimate_id', $get_estimate->id)->where('id', $request->product_id)->delete();
-        $delete_estimate_item_tax = UserEstimateItemTax::where('estimate_tax_id', $get_estimate_tax->id)->where('user_estimate_item_id', $request->product_id)->delete();
+        if($get_estimate_tax){
+            $delete_estimate_item_tax = UserEstimateItemTax::where('estimate_tax_id', $get_estimate_tax->id)->where('user_estimate_item_id', $request->product_id)->delete();
+        }
 
        $contract = Contract::with([
             'estimates' => function ($estimateQuery) {  
