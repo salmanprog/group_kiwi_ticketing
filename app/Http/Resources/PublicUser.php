@@ -19,7 +19,7 @@ class PublicUser extends JsonResource
     {
        return [
            'id'               => $this->id,
-           'name'             => $this->first_name . ' ' . $this->last_name,
+           'name'             => ($this->name) ? $this->name : $this->first_name . ' ' . $this->last_name,
            'slug'             => $this->slug,
            'email'             => $this->email,
            'mobile_no'        => $this->mobile_no,
