@@ -207,6 +207,7 @@ class Auth0LoginController extends Controller
                 'companyDetails' => $externalData['data']['companyDetails'] ?? null,
             ]);
 
+
             // Only proceed when API returns success (errorCode 0)
             if (($externalData['errorCode'] ?? null) !== 0) {
                 logger()->warning('Auth0 UserLogin API error', [
