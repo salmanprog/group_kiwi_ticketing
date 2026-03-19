@@ -92,8 +92,10 @@ class ResetPasswordController extends Controller
         $checkRequest = User::getClientVerfiy($email);
         if( !isset($checkRequest->id) ){
             // $url = route('admin.login') . '?auth_token=zekkmdvhkm';
-            $url = route('admin.login');
-            return redirect($url)->with('error','Invalid request');
+            // $url = route('admin.login');
+            // return redirect($url)->with('error','Invalid request');
+            return 'no client found';
+
         }
         $user = User::where('email', $checkRequest->email)->first();
         if ($user) {
