@@ -233,6 +233,7 @@ class Invoice extends Model
                     'gratuity' => $item->gratuity,
                     'accepted_by_client' => 1,
                     'invoice_id' => $invoice->id,
+                    'product_id' => $item->product_id,
                 ]);
             }
 

@@ -6,13 +6,8 @@ RewriteRule (.*) /public/$1 [L]
 
 
 ==============================htaccess end------------------------------------
-ALTER TABLE `user_estimate_items` ADD `is_modify` INT(11) NOT NULL DEFAULT '0' AFTER `total_price`;
-ALTER TABLE `user_estimate_taxes` ADD `is_modify` INT(11) NOT NULL DEFAULT '0' AFTER `amount`;
-ALTER TABLE `user_estimate_installments` ADD `is_modify` INT(11) NOT NULL DEFAULT '0' AFTER `installment_date`;
-ALTER TABLE `contracts` ADD `confirmed_with_client` INT(11) NOT NULL DEFAULT '0' AFTER `is_accept`;
-
-
-
+ALTER TABLE `contract_items` ADD `product_id` INT NOT NULL AFTER `id`;
+ALTER TABLE `organizations` CHANGE `event_history_id` `event_history_id` BIGINT(20) UNSIGNED NULL DEFAULT '0';
 
 kiwiticketing
 u2-nqewjfywa1fd@c1102859.sgvps.net

@@ -223,8 +223,8 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
 
     Route::post('/estimate-products/add', [EstimateItemController::class, 'productAdd'])
     ->name('estimate.products.add');
-    Route::post('/estimate-products/update', [EstimateItemController::class, 'updateItem'])
-    ->name('estimate.products.update');
+    Route::post('/estimate-products/update', [EstimateItemController::class, 'updateItem'])->name('estimate.products.update');
+    Route::post('/estimate-products/update-description', [EstimateItemController::class, 'updateItemDescription'])->name('estimate.products.update-description');
     Route::post('/estimate-products/delete', [EstimateItemController::class, 'deleteItem'])
     ->name('estimate.products.delete');
     Route::get('/estimate-products/get', [EstimateItemController::class, 'getItem'])->name('estimate.products.get');

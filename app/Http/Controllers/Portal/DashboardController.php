@@ -163,7 +163,7 @@ class DashboardController extends Controller
 
         $contracts = DB::table('contracts')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            // ->where('company_id', $companyId)
+            ->where('auth_code', Auth::user()->auth_code)
             ->whereYear('created_at', Carbon::now()->year)
             ->groupBy('month')
             ->pluck('total', 'month')
@@ -171,7 +171,7 @@ class DashboardController extends Controller
 
         $estimates = DB::table('user_estimate')
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-            // ->where('company_id', $companyId)s
+            ->where('auth_code', Auth::user()->auth_code)
             ->whereYear('created_at', Carbon::now()->year)
             ->whereNotIn('status', ['draft', 'rejected'])
             ->groupBy('month')

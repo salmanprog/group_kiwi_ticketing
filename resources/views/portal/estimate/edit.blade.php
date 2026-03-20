@@ -11,6 +11,44 @@
     padding: 16px 20px;
     border-radius: 6px;
 }
+
+.editable-description {
+    cursor: pointer;
+}
+.editable-description:hover {
+    background: #f8f9fa;
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ccc;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 8px;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.editable-description.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
 </style>
 @endpush
 
@@ -228,7 +266,14 @@
                                                                     </small>
                                                                 @endif
                                                             </td>
-                                                            <td>{{ $item->description }}</td>
+                                                            <!-- <td>{{ $item->description }}</td> -->
+                                                             <td class="editable-description" 
+                                                                data-id="{{ $item->id }}"
+                                                                data-url="{{ route('estimate.products.update-description') }}"
+                                                                data-csrf="{{ csrf_token() }}">
+                                                                
+                                                                <span class="desc-text">{{ $item->description }}</span>
+                                                            </td>
                                                             <td>{{ $item->quantity }}</td>
                                                             <td>${{ number_format($item->price, 2) }}</td>
                                                             <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
@@ -632,7 +677,7 @@
                             </h5>
                         </div>
                         <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">&times;</button>
+                            aria-label="Close">&times;</button> 
                     </div>
 
                     <div class="modal-body forref-height">

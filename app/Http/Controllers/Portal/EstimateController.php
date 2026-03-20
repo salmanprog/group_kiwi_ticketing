@@ -483,7 +483,7 @@ class EstimateController extends CRUDCrontroller
                         $companyDetails = session('companyDetails');
                         $mail_params['company_name'] = $companyDetails['companyName'] ?? $getCompany->name;
                         $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
-                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email),'login_url' => Crypt::encrypt($getCompany->login_url)]) : $getCompany->login_url;
+                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email),'login_url' => Crypt::encrypt($getCompany->login_url)]) : (($getCompany->login_url) ? $getCompany->login_url : config('constants.client_login_url'));
                         $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
                         $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
                         // if($companyDetails) {
@@ -506,11 +506,14 @@ class EstimateController extends CRUDCrontroller
                                 'company_name' => $mail_params['company_name'],
                                 'link' => $mail_params['link']
                             ];
-
+                            
                             try {
                                 UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
                             } catch (\Exception $e) {
-                                return back()->with('error', 'Error: '.$e->getMessage());
+                                return response()->json([
+                                        'status' => false,
+                                        'message' => 'Error: '.$e->getMessage()
+                                    ]);
                             }
                         
                     }

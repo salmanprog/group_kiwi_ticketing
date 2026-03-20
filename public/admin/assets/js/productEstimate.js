@@ -186,7 +186,7 @@ function updateTotals() {
     $('#remainingTotalInput').val(remainingTotal.toFixed(2));
     $('#total_amount').val(remainingTotal.toFixed(2));
 }
-
+ 
 
 
 // Add products dynamically
@@ -214,8 +214,9 @@ $('#addProductsBtn').on('click', function (e) {
         return;
     }
 
-    
-    $(this).text('Saving...').prop('disabled', true);
+    let btn = $(this);
+
+    btn.text('Saving...').prop('disabled', true);
 
     let url = $(this).data('url');       
     let csrfToken = $(this).data('csrf'); 
@@ -230,6 +231,8 @@ $('#addProductsBtn').on('click', function (e) {
             products: products
         },
         success: function (res) {
+            btn.text('Add Products').prop('disabled', false);
+
             if(res.status){
                 // Close modal
                 $('#productModal').modal('hide');
@@ -277,6 +280,7 @@ $('#addProductsBtn').on('click', function (e) {
             }
         },
         error: function(err){
+            btn.text('Add Products').prop('disabled', false);
             console.error(err.responseText);
             showModalMessage($('#productModal'), 'Something went wrong', 'danger');
         }
@@ -500,7 +504,7 @@ $(document).on('click', '.send-to-client', function () {
             if(res.status == true) {
                 // Optional: update print preview instantly
                 btn.prop('disabled', false).text('Send to Client');
-                                  Toastify({
+                Toastify({
                     text: res.message,
                     duration: 3000,
                     gravity: "top",
@@ -539,6 +543,86 @@ $(document).on('click', '.send-to-client', function () {
         }
     });
 });
+
+$(document).on('click', '.editable-description', function () {
+    let td = $(this);
+
+    // prevent multiple inputs
+    if (td.find('input').length) return;
+
+    let text = td.find('.desc-text').text().trim();
+
+    td.html(`<input type="text" class="form-control desc-input" value="${text}" />`);
+
+    td.find('input').focus();
+});
+let isSaving = false;
+
+$(document).on('blur', '.desc-input', function () {
+    if (!isSaving) {
+        saveDescription($(this));
+    }
+});
+
+$(document).on('keypress', '.desc-input', function (e) {
+    if (e.which === 13) {
+        isSaving = true;
+        saveDescription($(this));
+        $(this).blur(); // trigger blur safely
+    }
+});
+
+
+function saveDescription(input) {
+    let td = input.closest('td');
+    let newValue = input.val();
+
+    let id = td.data('id');
+    let url = td.data('url');
+    let csrf = td.data('csrf');
+
+    // ✅ Show loader + disable input
+    input.prop('disabled', true);
+
+    td.addClass('loading');
+    td.append(`<span class="spinner"></span>`);
+
+    $.ajax({
+        url: url,
+        method: "POST",
+        data: {
+            _token: csrf,
+            id: id,
+            description: newValue
+        },
+        success: function (res) {
+
+            td.removeClass('loading');
+            td.html(`<span class="desc-text fade-in">${newValue}</span>`);
+
+            Toastify({
+                text: res.message || "Updated",
+                duration: 2000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#2ecc71" }
+            }).showToast();
+        },
+        error: function () {
+
+            td.removeClass('loading');
+            td.html(`<span class="desc-text fade-in">${newValue}</span>`);
+
+            Toastify({
+                text: "Update failed",
+                duration: 2000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#e74c3c" }
+            }).showToast();
+        }
+    });
+}
 
 
 // Initialize totals on page load

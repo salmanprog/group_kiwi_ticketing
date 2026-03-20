@@ -48,7 +48,7 @@ $(document).ready(function() {
 
             // Clear table
             let tbody = $('#md_productTable tbody');
-            tbody.empty();
+            tbody.empty(); 
 
             if (!response.estimates || response.estimates.length === 0) {
                 tbody.append(`<tr class="no-items">
@@ -138,7 +138,6 @@ $(document).on('click', 'button[data-bs-target="#modifyContractModal"]', functio
     let url = $(this).data('url');
 
     $('#contractLoader').show();
-
     $.ajax({
         url: url,
         type: 'GET',
@@ -447,8 +446,14 @@ $('#contracteditTaxForm').on('submit', function(e){
             $('#contractLoader').hide();
 
             $('#editTaxModal').modal('hide');
-
-            alert('Tax updated successfully.');
+               Toastify({
+                    text: "Tax updated successfully",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
+            
 
             // Reload modify contract modal
             reloadModifyContract($('input[name="contract_id"]').val());
@@ -565,7 +570,15 @@ $(document).on('submit', '#contractTaxForm', function (e) {
         });
 
     if (selectedProducts.length === 0) {
-        alert('Please select at least one product.');
+         Toastify({
+                text: "Please select at least one product",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: {
+                    background: "linear-gradient(to right, #ae121fff, #ff7f71ff)" 
+                }
+            }).showToast();
         return;
     }
 
@@ -584,6 +597,12 @@ $(document).on('submit', '#contractTaxForm', function (e) {
         success: function (response) {
             $('#contractLoader').hide();
             //alert('Tax applied successfully.');
+             Toastify({
+                text: "Tax applied successfully",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+            }).showToast();
             $('#taxModal').modal('hide');
             $('#modifyContractModal').modal('hide');
             reloadModifyContract(contractId);
@@ -943,7 +962,21 @@ $('#modifypaymentScheduleForm').on('submit', function(e) {
             btn.find('.btn-schedule-text').show();
             if (res.status === true) {
                 msgEl.text(res.message || 'Payment schedule saved successfully!').addClass('text-success').show();
+                    Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
             } else {
+                Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
                 msgEl.text(res.message || 'Something went wrong.').addClass('text-danger').show();
             }
         },
@@ -980,12 +1013,28 @@ $('#clientConfirmationForm').on('submit', function(e) {
             if(res.status === true) {
                 // Show success message (you can add a div #contractMessages in modal for this)
                 $('#contractMessages').html(`<div class="alert alert-success">${res.message || 'Contract saved successfully!'}</div>`);
+                Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
 
                 // Optionally, close modal after a short delay
                 setTimeout(() => {
                     $('#modifyContractModal').modal('hide');
                 }, 1000);
             } else {
+              Toastify({
+                text: res.message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: {
+                    background: "linear-gradient(to right, #ae121fff, #ff7f71ff)" 
+                }
+            }).showToast();
                 $('#contractMessages').html(`<div class="alert alert-danger">${res.message || 'Something went wrong!'}</div>`);
             }
         },

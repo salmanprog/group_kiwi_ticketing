@@ -35,7 +35,7 @@ class UserMailer
 
         $smtp = DB::table('user_smtp_settings')->where('auth_code', $auth_code)->first();
         if (!$smtp) {
-            throw new \Exception("SMTP configuration not found for this user.");
+            throw new \Exception("SMTP configuration not found. Please configure SMTP settings first.");
         }
 
         // Apply dynamic SMTP config temporarily

@@ -53,4 +53,15 @@ class Product extends Model
      * @var string
      */
     protected $__cache_expire_time = 1; //days
+
+    public static function generateUniqueSlug($name)
+    {
+        $slug = strtolower(str_replace(' ', '-', $name));
+        $count = 1;
+        while (self::where('slug', $slug)->exists()) {
+            $slug = strtolower(str_replace(' ', '-', $name)) . '-' . $count;
+            $count++;
+        }
+        return $slug;
+    }
 }

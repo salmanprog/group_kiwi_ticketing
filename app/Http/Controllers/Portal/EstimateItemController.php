@@ -203,6 +203,23 @@ class EstimateItemController extends CRUDCrontroller
         ]);
     }
 
+     public function updateItemDescription(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'description' => 'required|string',
+        ]);
+
+        $item = EstimateItem::findOrFail($request->id);
+        $item->description = $request->description;
+        $item->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Description updated successfully'
+        ]);
+    }
+
     public function deleteItem(Request $request)
     {
         $request->validate([

@@ -11,5 +11,6 @@ return [
     'AES_SECRET'        => '6fa979f20126cb08aa645a8f495f6d85', // 32 characters
     'AES_IV'            => 'I8zyA4lVhMCaJ5Kg', // 16 characters
     'storage_url'       => env('APP_STORAGE_URL'),
+    'client_login_url'  => 'https://group.kiwiticketing.com/',
 
 ];

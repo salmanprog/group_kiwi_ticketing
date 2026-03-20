@@ -177,7 +177,7 @@ class ProductController extends CRUDCrontroller
         $ticketName = $isNewTicket ? $request->newTicketName : $request->ticketName;
         $ticketId   = $request->ticketId;
 
-        if (Product::where('name', $ticketName)->exists()) {
+        if (Product::where('name', $ticketName)->where('auth_code', Auth::user()->auth_code)->exists()) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Ticket name already exists. Please choose a different name.');
@@ -193,7 +193,7 @@ class ProductController extends CRUDCrontroller
             'price'       => $validated['ticketPrice'],
             'unit'        => 'Ticket',
             'status'      => '1',
-            'slug'        => strtolower(str_replace(' ', '-', $ticketName)),
+            'slug'        => Product::generateUniqueSlug($ticketName),
             'venueId'     => ($request->venueId) ? $request->venueId : 0,
             'ticketSlug'  => ($request->ticketSlug) ? $request->ticketSlug : '',
             'ticketCategory' => ($request->ticketCategory) ? $request->ticketCategory : '',

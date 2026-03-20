@@ -250,7 +250,18 @@ class ContractController extends CRUDCrontroller
         // $this->__data['estimates'] = Estimate::with('client')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
         $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->get();
         $this->__data['estimates'] = Estimate::with('client')->get();
-        // dd($this->_data['contracts']);
+        $this->__data['cabana'] = DB::table('contract_items')
+                                                ->join('company_products', 'contract_items.product_id', '=', 'company_products.id')
+                                                ->join('contracts', 'contract_items.contract_id', '=', 'contracts.id')
+                                                ->where('company_products.hasSeats', 1)
+                                                ->select(
+                                                    'contract_items.*',
+                                                    'contracts.event_date',
+                                                    'contracts.slug as contract_slug',
+                                                    'company_products.id as product_id'
+                                                )
+                                                ->get();
+        // dd($this->_data['contracts']); 
         // $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id','>', 0)->get();
         return $this->__cbAdminView('contract.event-calander', $this->__data);
     }
@@ -603,6 +614,26 @@ class ContractController extends CRUDCrontroller
     public function saveModifiedContract(Request $request)
     {
         // dd($request->all());
+
+        $estimatecheck = Estimate::where('contract_id', $request->cont_id)->first();
+
+        $estimateItemValidation = EstimateItem::where('user_estimate_id', $estimatecheck->id)->where('is_modify', 1)->first();
+        // dd($estimateItemValidation);
+        if(empty($estimateItemValidation)){
+            return response()->json([
+                'status' => false,
+                'message' => 'Please add at least one product',
+            ]);
+        }
+
+        $estimateInstallmentValidation = EstimateInstallment::where('estimate_id', $estimatecheck->id)->where('is_modify', 1)->first();
+        if(empty($estimateInstallmentValidation)){
+               return response()->json([
+                    'status' => false,
+                    'message' => 'Please add at least one installment',
+                ]);
+        }
+
         // Validate inputs
         $request->validate([
             'cont_id' => 'required',

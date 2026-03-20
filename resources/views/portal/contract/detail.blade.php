@@ -762,7 +762,7 @@
                                     data-bs-target="#modifyContractModal">
                                     <i class="fas fa-plus me-1"></i>Modify Contract
                                 </button>
-                            </div>
+                            </div> 
                         @endif
                     </div>
                 </div>

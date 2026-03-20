@@ -237,17 +237,18 @@ class Auth0LoginController extends Controller
                 $name = trim(($userDetails['firstName'] ?? '') . ' ' . ($userDetails['lastName'] ?? '')) ?: ($auth0User['name'] ?? $email);
                 
                 $username = CompanyAdmin::generateUniqueUserName($name);
-                $company = Company::create([
-                    'name' => $companyName ?? $name,
-                    'slug' => Company::generateUniqueSlug(uniqid()),
-                    'email' => $email,
-                    'image_url' => $companyDetails['logo'] ?? $userDetails['image'] ?? $auth0User['picture'] ?? null,
-                    'mobile_no' => '1' . substr(md5($email), 0, 10),
-                    'description' => 'Created via Auth0',
-                    'website' => 'https://www.google.com',
-                    'address' => '—',
-                    'auth_code' => $authCode,
-                ]);
+                $company = Company::updateOrCreate(
+                    ['auth_code' => $authCode],
+                    [
+                        'name' => $companyName ?? $name,
+                        'slug' => $authCode,
+                        'email' => $email,
+                        'image_url' => $companyDetails['logo'] ?? $userDetails['image'] ?? $auth0User['picture'] ?? null,
+                        'mobile_no' => '1' . substr(md5($email), 0, 10),
+                        'address' => $companyDetails['address'] ?? 'no address',
+                        'description' => $companyDetails['description'] ?? 'no description',
+                    ]
+                );
 
                 $companyAdmin = CompanyAdmin::create([
                     'user_group_id' => 2,
@@ -264,15 +265,16 @@ class Auth0LoginController extends Controller
                     'image_url' => $userDetails['image'] ?? $auth0User['picture'] ?? null,
                     'status' => (int) ($userDetails['status'] ?? 1),
                 ]);
-                self::generateEmailTemplate($companyAdmin);
-
-                CompanyUser::create([
+                  CompanyUser::create([
                     'company_id' => $company->id,
                     'user_id' => $companyAdmin->id,
                     'user_type' => 'Admin',
                     'created_by' => 2,
                     'created_at' => Carbon::now(),
                 ]);
+                self::generateEmailTemplate($companyAdmin);
+
+              
 
                 $user = $companyAdmin;
             } else {

@@ -529,7 +529,7 @@
                 value: parseFloat(discount.value) || 0,
                 type: discount.type
             }));
-        }
+        } 
 
 
         function addRow() {

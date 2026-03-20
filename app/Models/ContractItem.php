@@ -25,6 +25,7 @@ class ContractItem extends Model
         'product_price',
         'taxes',
         'gratuity',
+        'product_id',
     ];
 
     public function contract()
