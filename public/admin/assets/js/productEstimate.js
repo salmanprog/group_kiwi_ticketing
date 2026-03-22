@@ -382,8 +382,8 @@ $('#editProductForm').on('submit', function(e){
 
 
             setTimeout(() => modal.modal('hide'), 1000);
-            window.location.reload();
             updateTotals();
+            window.location.reload();
         },
         error: function(err){
             showModalMessage(modal, 'Something went wrong', 'danger');
