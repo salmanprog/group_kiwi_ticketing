@@ -382,6 +382,7 @@ $('#editProductForm').on('submit', function(e){
 
 
             setTimeout(() => modal.modal('hide'), 1000);
+            window.location.reload();
             updateTotals();
         },
         error: function(err){
