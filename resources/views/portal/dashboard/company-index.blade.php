@@ -138,7 +138,7 @@
                     <div class="card-header">
                         <h5>Estimates Amount</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body"> 
                         <ul>
                             <li><span>Pending </span>${{$estimate_send_total}}</li>
                             <li><span>Draft </span>${{$estimate_draft_total}}</li>

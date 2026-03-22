@@ -102,7 +102,7 @@ class DashboardController extends Controller
         ======================= */
         $data['widgets'] = [
             'manager' => [
-                'title' => 'Accounts',
+                'title' => 'Accounts', 
                 // 'count' => DB::table('users')
                 //     ->join('company_users', 'company_users.user_id', '=', 'users.id')
                 //     ->where('users.user_type', 'manager')
@@ -213,10 +213,10 @@ class DashboardController extends Controller
         ======================= */
         $data['estimate_chart'] = CmsWidget::getStatusPieChart('user_estimate');
         $data['contract_chart'] = CmsWidget::getStatusPieChart('contracts');
-        $estimates_sent = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'sent')->get();
-        $estimates_approved = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'approved')->get();
-        $estimates_draft = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'draft')->get();
-        $estimates_rejected = Estimate::with(['items.itemTaxes','discounts'])->where('status', 'rejected')->get();
+        $estimates_sent = Estimate::with(['items.itemTaxes','discounts'])->where('auth_code', Auth::user()->auth_code)->where('status', 'sent')->get();
+        $estimates_approved = Estimate::with(['items.itemTaxes','discounts'])->where('auth_code', Auth::user()->auth_code)->where('status', 'approved')->get();
+        $estimates_draft = Estimate::with(['items.itemTaxes','discounts'])->where('auth_code', Auth::user()->auth_code)->where('status', 'draft')->get();
+        $estimates_rejected = Estimate::with(['items.itemTaxes','discounts'])->where('auth_code', Auth::user()->auth_code)->where('status', 'rejected')->get();
         $estimate_send_total = (float) number_format($estimates_sent->sum('final_total'), 2, '.', '');
         $estimate_approved_total = (float) number_format($estimates_approved->sum('final_total'), 2, '.', '');
         $estimate_draft_total = (float) number_format($estimates_draft->sum('final_total'), 2, '.', '');
