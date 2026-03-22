@@ -119,6 +119,8 @@ class EstimateInstallmentController extends CRUDCrontroller
 
     public function savePaymentSchedule(Request $request, $estimateId)
     {
+        $estimate = EstimateInstallment::where('estimate_id',$estimateId)->delete();
+
         if(!$request->has('installments')) {
             return response()->json([
                 'status' => false,
@@ -133,9 +135,6 @@ class EstimateInstallmentController extends CRUDCrontroller
         ]);
 
        
-
-        $estimate = EstimateInstallment::where('estimate_id',$estimateId)->delete();
-
         // Remove old installments (soft delete)
         //$estimate->installments()->delete();
 
