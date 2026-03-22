@@ -546,7 +546,7 @@ $(document).on('click', '.send-to-client', function () {
 
 $(document).on('click', '.editable-description', function () {
     let td = $(this);
-
+    alert(td);
     // prevent multiple inputs
     if (td.find('input').length) return;
 
