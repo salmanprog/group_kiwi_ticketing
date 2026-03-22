@@ -998,7 +998,7 @@
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">
                                             </div>
-                                            <a class="" href="https://dashboard.kiwiticketing.com/login?platform=rbac" target="_blank">
+                                            <a class="" href="{{ $platform['domin'] }}" target="_blank">
                                                 <div class="platform-text">
                                                 <span class="platform-title"> {{ $platform['platformName'] }}</span>
                                                     <span class="platform-subtitle">
