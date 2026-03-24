@@ -286,6 +286,7 @@ Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->n
 
 });
 
+    Route::get('send-ticket-list/{slug}', [ContractController::class, 'sendOrdersTicket'])->name('contract.send-ticket-list');
 
 
 Route::post('/account/notes/save', [AccountActivityLogController::class, 'saveOrganizationNotes'])

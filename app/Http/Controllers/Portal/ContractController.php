@@ -8,11 +8,13 @@ use Illuminate\Validation\Rule;
 use App\Models\{Organization, CompanyUser, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes};
 use Auth;
 use DB;
+use App\Services\ThirdPartyApiService;
 
 class ContractController extends CRUDCrontroller
 {
+    protected $apiService;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, ThirdPartyApiService $apiService)
     {
         parent::__construct('Contract');
         $this->__request = $request;
@@ -20,6 +22,7 @@ class ContractController extends CRUDCrontroller
         $this->__indexView = 'contract.index';
         // $this->__createView = 'contractss.edit';
         $this->__detailView = 'contract.detail';
+        $this->apiService = $apiService;
     }
 
     /**
@@ -248,8 +251,8 @@ class ContractController extends CRUDCrontroller
 
         // $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
         // $this->__data['estimates'] = Estimate::with('client')->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->get();
-        $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->get();
-        $this->__data['estimates'] = Estimate::with('client')->get();
+        $this->__data['contracts'] = Contract::with('organization', 'userestimates', 'userestimates.items')->where('auth_code', Auth::user()->auth_code)->get();
+        $this->__data['estimates'] = Estimate::with('client')->where('auth_code', Auth::user()->auth_code)->get();
         $this->__data['cabana'] = DB::table('contract_items')
                                                 ->join('company_products', 'contract_items.product_id', '=', 'company_products.id')
                                                 ->join('contracts', 'contract_items.contract_id', '=', 'contracts.id')
@@ -260,6 +263,7 @@ class ContractController extends CRUDCrontroller
                                                     'contracts.slug as contract_slug',
                                                     'company_products.id as product_id'
                                                 )
+                                                ->where('contracts.auth_code', Auth::user()->auth_code)
                                                 ->get();
         // dd($this->_data['contracts']); 
         // $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id','>', 0)->get();
@@ -786,6 +790,27 @@ class ContractController extends CRUDCrontroller
     }
 
 
+    public function sendOrdersTicket(Request $request, $slug)
+    {
+        $contract = Contract::where('slug', $slug)->first();
+        $estimate = Estimate::where('contract_id',$contract->id)->first();
+        // $tickets = DB::table('user_order_tickets')
+        //                         ->join('user_orders', 'user_order_tickets.user_order_id', '=', 'user_orders.id')
+        //                         ->where('user_orders.order_number', $estimate->slug)
+        //                         ->get();
+        $status = $request->get('status', 'NotSent');
+        if (!$status) {
+            $status = 'NotSent'; 
+        }
+        $tickets = $this->apiService->queryOrderSendList($estimate->slug, $status, $estimate->auth_code);
+    //    dd($tickets);
+        
+        return $this->__cbAdminView('contract.send-orders-ticket', [
+            'tickets' => $tickets,
+            'slug' => $slug,
+        ]);
+ 
+    }
 
 
 }

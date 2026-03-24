@@ -187,5 +187,48 @@ class ThirdPartyApiService
 
         return $response;
     }
+
+    public function queryOrderSendList($orderId, $filter = 'Sent', $authCode = null)
+    {
+        $startTime = microtime(true);
+        $response = Http::withHeaders([
+                'accept' => '*/*',
+            ])
+            ->get($this->baseUrl . '/Pricing/QueryOrder2', [
+                'authCode' => $authCode ?? $this->authCode,
+                'orderId' => $orderId,
+                'qrSentViaEmailFilter' => $filter,
+            ]);
+
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+        if($response['status']['errorCode'] === 0) {
+            return $response['data']['tickets'] ?? [];
+        }else{
+            ActivityActionLogger::log([
+                'auth_code' => $authCode,
+                'action' => 'query_order_send_list',
+                'method' => 'GET',
+                'url' => $this->baseUrl . '/Pricing/QueryOrder2',
+                'payload' => json_encode([
+                    [
+                        'authCode' => $authCode ?? $this->authCode,
+                        'orderId' => $orderId,
+                        'qrSentViaEmailFilter' => $filter,
+                    ]
+                ]),
+                'response' => json_encode($response->json()),
+                'status' => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+                'status_code' => $response->status(),
+                'error_message' => $response->json()['status']['errorCode'] === 0 
+                    ? null 
+                    : $response->json()['status']['errorMessage'],
+                'ip' => request()->ip(),
+                'response_time' => $responseTime,
+            ]);
+            return [];
+        }
+
+        return null;
+    }
     
 }

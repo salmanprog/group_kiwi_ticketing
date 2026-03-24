@@ -18,6 +18,7 @@
                 <div class="calendar-legend mt-4">
                     <span class="legend-item"><span class="legend-color contracts"></span> Contracts</span>
                     <span class="legend-item"><span class="legend-color estimates"></span> Estimates</span>
+                    <span class="legend-item"><span class="legend-color cabana"></span> Cabana</span>
                 </div>
             </div>
         </div>

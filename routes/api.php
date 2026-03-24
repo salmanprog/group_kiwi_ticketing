@@ -62,6 +62,7 @@ Route::middleware([ApiAuthorization::class])->group(function(){
         Route::post('notification/send',[NotificationController::class,'sendNotification'])->name('api.send-notification');
         Route::post('notification/setting',[NotificationController::class,'saveNotificationSetting'])->name('api.notification-settings');
         Route::get('notification/setting',[NotificationController::class,'getNotificationSetting'])->name('api.notification-setting');
+        Route::get('send-ticket-list',[UserContractController::class,'sendOrdersTicket'])->name('api.send-ticket-list');
 
     });
 });

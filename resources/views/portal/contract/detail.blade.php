@@ -5,6 +5,7 @@
         <link href="{{ asset('admin/assets/scss/invoice-tables.css') }}" rel="stylesheet" type="text/css">
     @endpush
 
+
     <style>
         :root {
             --primary-color: #A0C242;
@@ -610,6 +611,11 @@
                 <div class="contract-header">
                     <div class="contract-title">
                         <i class="fas fa-file-contract me-2"></i>Contract
+                    </div>
+                    <div class="contract-title">
+                        <a href="{{ route('contract.send-ticket-list', $record->slug) }}" class="btn btn-primary">
+                            <i class="fas fa-ticket-alt me-2"></i>Send Ticket
+                        </a>
                     </div>
 
                     @if (session('success'))
