@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Company;
+use DB;
 
 class Invoice extends JsonResource
 {
@@ -18,10 +19,12 @@ class Invoice extends JsonResource
 
 
         $getCompanyAdmin = Company::getCompanyAdmin($this->company_id);
+
+        $companyAccount = DB::table('company_account_config')->where('company_id', $this->company_id)->first();
         $stripeKeyStatus = [
-            'test_publishable_key' => $getCompanyAdmin->test_publishable_key,
-            'live_publishable_key' => $getCompanyAdmin->live_publishable_key,
-            'stripe_key_status' => $getCompanyAdmin->stripe_key_status,
+            'test_publishable_key' => $companyAccount?->test_publishable_key ?? null,
+            'live_publishable_key' => $companyAccount?->live_publishable_key ?? null,
+            'stripe_key_status' => $companyAccount?->stripe_key_status ?? null,
         ];
 
         $estimate = $this->estimate;

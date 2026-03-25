@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\CompanyAdmin;
 use App\Services\ThirdPartyApiService;
+use DB;
 
 class CompanyAdminController extends CRUDCrontroller
 {
@@ -276,6 +277,8 @@ class CompanyAdminController extends CRUDCrontroller
             return self::_submitStripeKey($request);
 
         $data['page_title'] = 'Profile';
+        $data['stripe'] = DB::table('company_account_config')->where('auth_code',Auth::user()->auth_code)->first();
+        // dd($data);
         return $this->__cbAdminView('cms_users.stripe-key',$data);
     }
 

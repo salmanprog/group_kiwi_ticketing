@@ -193,22 +193,28 @@ class StripeController extends RestController
 
 
         $company = Company::getCompanyAdmin($request->company_id);
-          if ($company->stripe_key_status == 'test') {
-            if (!$company->test_publishable_key || !$company->test_secret_key) {
-                return $this->__sendError('Company Stripe test keys not set.', [], 400);
+        $companyAccount = DB::table('company_account_config')->where('company_id', $request->company_id)->first();
+        // dd($companyAccount);
+        if($companyAccount == null)
+        {
+            return $this->__sendError('Company Account not set up.', [], 400);
+        }
+        if ($companyAccount->stripe_key_status == 'test') {
+            if (!$companyAccount->test_publishable_key || !$companyAccount->test_secret_key) {
+                return $this->__sendError('Company Account not set up.', [], 400);
             }
         } else {
-            if (!$company->live_publishable_key || !$company->live_secret_key) {
-                return $this->__sendError('Company Stripe live keys not set.', [], 400);
+            if (!$companyAccount->live_publishable_key || !$companyAccount->live_secret_key) {
+                return $this->__sendError('Company Account not set up.', [], 400);
             }
         }
                
         
         try {
-            if ($company->stripe_key_status == 'test') { 
-                Stripe::setApiKey($company->test_secret_key);
+            if ($companyAccount->stripe_key_status == 'test') { 
+                Stripe::setApiKey($companyAccount->test_secret_key);
             } else {
-                Stripe::setApiKey($company->live_secret_key);
+                Stripe::setApiKey($companyAccount->live_secret_key);
             }
 
             if($request->invoice_type == 'invoice') {

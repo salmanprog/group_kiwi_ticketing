@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Crypt;
+use DB;
 
 class User extends Authenticatable
 {
@@ -372,14 +373,35 @@ class User extends Authenticatable
 
     public static function updateStripeKeys($request)
     {
-        $user = self::find(Auth::user()->id);
-        if ($request['stripe_key_status'] == 'live') {
-            $user->live_publishable_key = $request['live_publishable_key'];
-            $user->live_secret_key = $request['live_secret_key'];
-        } else if ($request['stripe_key_status'] == 'test') {
-            $user->test_publishable_key = $request['test_publishable_key'];
-            $user->test_secret_key = $request['test_secret_key'];
-        }
-        $user->save();
+        $data = [
+                'stripe_key_status' => $request['stripe_key_status'],
+                'updated_at' => now(),
+            ];
+
+            // Get single company_id
+            $companyId = Company::where('auth_code', Auth::user()->auth_code)->value('id');
+
+            // Only set created_at if inserting
+            $exists = DB::table('company_account_config')
+                ->where('auth_code', Auth::user()->auth_code)
+                ->exists();
+
+            if (!$exists) {
+                $data['created_at'] = now();
+                $data['company_id'] = $companyId;
+            }
+
+            if ($request['stripe_key_status'] == 'live') {
+                $data['live_publishable_key'] = $request['live_publishable_key'];
+                $data['live_secret_key'] = $request['live_secret_key'];
+            } else {
+                $data['test_publishable_key'] = $request['test_publishable_key'];
+                $data['test_secret_key'] = $request['test_secret_key'];
+            }
+
+            DB::table('company_account_config')->updateOrInsert(
+                ['auth_code' => Auth::user()->auth_code],
+                $data
+            );
     }
 }

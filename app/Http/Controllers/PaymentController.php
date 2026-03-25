@@ -42,6 +42,9 @@ class PaymentController
             return back()->with('error', 'Company not found.');
         }
 
+        $companyAccount = DB::table('company_account_config')->where('company_id', $invoice->company_id)->first();
+        // dd($companyAccount);
+
         if ($company->stripe_key_status == 'test') {
             if (!$company->test_publishable_key || !$company->test_secret_key) {
                 return back()->with('error', 'Company Stripe test keys not set.');
