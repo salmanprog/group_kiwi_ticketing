@@ -185,6 +185,8 @@ $(document).ready(function() {
                         }
                     }).showToast();
                 }
+
+                window.location.reload()
             },
             error: function(xhr) {
                 if(xhr.status === 422) {
