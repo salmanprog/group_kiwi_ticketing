@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Organization, CompanyUser, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes};
+use App\Models\{Organization,Company,CompanyUser, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes};
 use Auth;
 use DB;
 use App\Services\ThirdPartyApiService;
+use App\Services\UserMailer;
+
 
 class ContractController extends CRUDCrontroller
 {
@@ -848,17 +850,61 @@ class ContractController extends CRUDCrontroller
 
         try {
             $qrCodes = $tickets->pluck('visualId')->toArray();
-            // $qrCodes = [
-            //     '123lskdfmk',
-            //     '101-240326222343328-187466-688011'
-            // ];
+            $qrCodes = [
+                '123lskdfmk',
+                '101-240326222343328-187466-688011'
+            ];
             $authCode = Auth::user()->auth_code; // or pass as needed
             // dd($qrCodes);
             $apiResponse = $this->apiService->sendTicketToRecipient($qrCodes, $recipientName, $recipientEmail, $authCode);
             // dd($apiResponse->json());
             if($apiResponse['status']['errorCode'] == 2){
-                return response()->json(['message' => 'Failed to send tickets. ' . $apiResponse['status']['errorMessage']], 500);
+                return response()->json(['message' => $apiResponse['status']['errorMessage']], 500);
             }
+
+
+            if($apiResponse['status']['errorCode'] == 0)
+            {
+                 
+                 $auth_code = Auth::user()->auth_code;
+                $toEmails = $recipientEmail;
+                $templateIdentifier = 'ticket_email_send';
+                // Initialize empty string
+                $ticketList = '';
+
+                // Loop through tickets and append HTML for each
+                foreach ($tickets as $ticket) {
+                    $ticketList .= '
+                        <div class="ticket">
+                            <h5>Ticket - ' . ($ticket->type ?? 'General') . '</h5>
+                            <img src="https://quickchart.io/qr?text=' . $ticket->visualId . '&margin=2&size=100" alt="Ticket QR Code">
+                            <p>' . $ticket->visualId . '</p>
+                            <p>' . ($ticket->ticketType ?? 'General Admission') . '</p>
+                            <p>' . ($ticket->ticketDisplayDate ?? date('m-d-Y')) . '</p>
+                        </div>
+                    ';
+                }
+
+
+                $companyName = Company::where('auth_code',Auth::user()->auth_code)->first(); 
+                $data = [
+                    'username' => $recipientName,
+                    'company_name' => $companyName->name,
+                    'ticketList' => $ticketList
+                ];
+                
+                
+                try {
+                    UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+                } catch (\Exception $e) {
+                    return false;
+                }
+
+            }
+
+
+
+
 
             // You can log or handle $apiResponse if needed
         } catch (\Exception $e) {

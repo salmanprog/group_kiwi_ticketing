@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Libraries\Sms\Sms;
 use App\Models\User;
 use App\Models\Estimate;
-use App\Models\Contract;
+use App\Models\{Contract,Company};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Validator;
@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\RestController;
 use App\Services\ThirdPartyApiService;
 use DB;
+
+use App\Services\UserMailer;
 
 class UserContractController extends RestController
 {
@@ -237,9 +239,12 @@ class UserContractController extends RestController
         $authCode = $contract->auth_code;
 
         // 1. Fetch tickets from DB
+      
         $tickets = DB::table('user_order_tickets')
-                    ->whereIn('visualId', $ticketIds)
-                    ->get();
+                            ->whereIn('visualId', $ticketIds)
+                            ->get();
+
+        $companyName = Company::where('auth_code',$contract->auth_code)->first();
 
         if ($tickets->isEmpty()) {
             return response()->json(['message' => 'No valid tickets found.'], 404);
@@ -248,9 +253,49 @@ class UserContractController extends RestController
         try {
             $qrCodes = $tickets->pluck('visualId')->toArray();
             $apiResponse = $this->apiService->sendTicketToRecipient($qrCodes, $recipientName, $recipientEmail, $authCode);
-            DB::table('user_order_tickets')
-                ->whereIn('visualId', $ticketIds)
-                ->update(['status' => 1]);
+            $responseJson = $apiResponse->json();
+
+            if($apiResponse['status']['errorCode'] == 0)
+            {
+                   DB::table('user_order_tickets')
+                    ->whereIn('visualId', $ticketIds)
+                    ->update(['status' => 1]);
+                 $auth_code = $contract->auth_code;
+                $toEmails = $recipientEmail;
+                $templateIdentifier = 'ticket_email_send';
+                // Initialize empty string
+                $ticketList = '';
+
+                // Loop through tickets and append HTML for each
+                foreach ($tickets as $ticket) {
+                    $ticketList .= '
+                        <div class="ticket">
+                            <h5>Ticket - ' . ($ticket->type ?? 'General') . '</h5>
+                            <img src="https://quickchart.io/qr?text=' . $ticket->visualId . '&margin=2&size=100" alt="Ticket QR Code">
+                            <p>' . $ticket->visualId . '</p>
+                            <p>' . ($ticket->ticketType ?? 'General Admission') . '</p>
+                            <p>' . ($ticket->ticketDisplayDate ?? date('m-d-Y')) . '</p>
+                        </div>
+                    ';
+                }
+
+
+                
+                $data = [
+                    'username' => $recipientName,
+                    'company_name' => $companyName->name,
+                    'ticketList' => $ticketList
+                ];
+                
+                
+                try {
+                    UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+                } catch (\Exception $e) {
+                    return false;
+                }
+
+            }
+           
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

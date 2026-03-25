@@ -196,7 +196,8 @@
                 },
                 success: function(response){
                     $('#sendTicketModal').modal('hide');
-                    window.location.reload();
+                    console.log(response.message)
+                    // window.location.reload();
                     Toastify({
                         text: response.message || 'Tickets sent successfully!',
                         duration: 3000,
@@ -206,6 +207,7 @@
                     }).showToast();
                 },
                 error: function(xhr){
+                    console.log(xhr)
                     let errors = xhr.responseJSON?.errors;
                     let errorMsg = '';
                     if(errors){
@@ -213,7 +215,7 @@
                             errorMsg += val + '\n';
                         });
                     } else {
-                        errorMsg = 'Failed to send tickets.';
+                        errorMsg = xhr;
                     }
 
                     Toastify({

@@ -378,6 +378,7 @@ class Auth0LoginController extends Controller
             
           $estimateBody = file_get_contents(resource_path('views/email/estimate.blade.php'));
           $contractBody = file_get_contents(resource_path('views/email/contract_email.blade.php'));
+          $ticketEmailSend = file_get_contents(resource_path('views/email/ticket_email_send.blade.php')); 
 
             $defaultEmail = [
                 [
@@ -397,7 +398,16 @@ class Auth0LoginController extends Controller
                 'subject' => 'Your Visit Contract',
                 'content' => $contractBody,
                 'status' => 1
-                ]
+                ],
+                [
+                'slug' => 'ticket-email-send-'.$user->auth_code,
+                'auth_code' => $user->auth_code,
+                'identifier' => 'ticket_email_send',
+                'to_emails' => $user->email,
+                'subject' => 'Ticket issue',
+                'content' => $ticketEmailSend,
+                'status' => 1
+                ],
             ];
 
             EmailTemplate::insert($defaultEmail);
