@@ -191,7 +191,7 @@ class CmsWidget extends Model
         // Query to count estimates grouped by status
         $statusCounts = DB::table($table)
             ->select($whereColum, DB::raw('COUNT(*) as count'))
-            // ->where('company_id', $companyId)
+            ->where('auth_code', Auth::user()->auth_code)
             ->groupBy($whereColum)
             ->pluck('count', $whereColum)
             ->toArray();

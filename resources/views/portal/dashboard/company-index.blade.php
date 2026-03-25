@@ -65,7 +65,7 @@
                                 <div class="header-content">
                                     <h5 class="card-title">Estimates Amount</h5>
                                     <span class="badge">Total: ${{$estimate_send_total + $estimate_draft_total + $estimate_approved_total + $estimate_rejected_total}}</span>
-                                </div>
+                                </div> 
                             </div>
                             <div class="card-body">
                                 <ul class="estimate-list">
