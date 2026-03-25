@@ -35,6 +35,7 @@ class Contract extends Model
         'is_accept',
         'confirmed_with_client',
         'terms_and_condition',
+        'ticket_enable',
     ];
 
     public static function generateUniqueSlug()

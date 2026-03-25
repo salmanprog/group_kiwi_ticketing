@@ -22,6 +22,7 @@ class Contract extends JsonResource
 
         return [
             'id' => $this->id,
+            'ticket_enable' => $this->ticket_enable,
             'auth_code' => $this->auth_code,
             'slug' => $this->slug,
             'contract_number' => $this->contract_number, 

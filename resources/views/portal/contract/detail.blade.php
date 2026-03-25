@@ -618,6 +618,19 @@
                         </a>
                     </div>
 
+                    @if($record->ticket_enable == 0)
+                    <div class="contract-title">
+                        <a href="{{ route('contract.client-ticket-enable', $record->slug) }}" class="btn btn-primary">
+                            <i class="fas fa-ticket-alt me-2"></i>Client Ticket Enable
+                        </a>
+                    </div>
+                    @else
+                    <div class="contract-title">
+                        <a href="{{ route('contract.client-ticket-disable', $record->slug) }}" class="btn btn-danger">
+                            <i class="fas fa-ticket-alt me-2"></i>Client Ticket Disable
+                        </a>
+                    </div>
+                    @endif
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show">
                             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}

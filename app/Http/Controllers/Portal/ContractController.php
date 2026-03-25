@@ -889,4 +889,32 @@ class ContractController extends CRUDCrontroller
     }
 
 
+    public function clientTicketEnable($slug)
+    {
+        $contract = Contract::where('slug', $slug)->first();
+        if (!$contract) {
+            return redirect()->back()->with('error', 'Contract not found.');
+        }
+        
+        $contract->ticket_enable = '1';
+        $contract->save();
+        
+        return redirect()->back()->with('success', 'Ticket enable updated successfully.');
+    }
+
+
+    public function clientTicketDisable($slug)
+    {
+        $contract = Contract::where('slug', $slug)->first();
+        if (!$contract) {
+            return redirect()->back()->with('error', 'Contract not found.');
+        }
+        
+        $contract->ticket_enable = '0';
+        $contract->save();
+        
+        return redirect()->back()->with('success', 'Ticket disable updated successfully.');
+    }
+
+
 }
