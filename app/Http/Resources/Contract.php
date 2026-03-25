@@ -58,7 +58,7 @@ class Contract extends JsonResource
                             'name'     => $item->name,
                             'quantity' => $item->quantity,
                             'unit'     => $item->unit,
-                            'price'    => $item->product_price,
+                            'price'    => $item->price,
                             'total'    => $item->total_price,
                             'taxes'    => $item->itemTaxes->map(function ($tax) use ($item) {
                                 return [

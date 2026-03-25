@@ -51,7 +51,7 @@ class Estimate extends JsonResource
                     'id' => $item->id,
                     'name' => $item->name,
                     'quantity' => $item->quantity,
-                    'price' => $item->product_price,
+                    'price' => $item->price,
                     'total' => $item->total_price,
                     'taxes' => $item->itemTaxes->map(function($tax) {
                         return [

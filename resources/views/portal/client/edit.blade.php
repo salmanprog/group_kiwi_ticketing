@@ -285,7 +285,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 Ticket Rate
-                                                <span class="required">*</span>
+                                                <!-- <span class="required">*</span> -->
                                             </label>
                                             <input required type="text" name="ticket_rate"
                                                 value="{{ $record->ticket_rate }}" class="form-control"
@@ -297,7 +297,7 @@
                                         <div class="form-group">
                                             <label class="form-label">
                                                 Catering Menu
-                                                <span class="required">*</span>
+                                                <!-- <span class="required">*</span> -->
                                             </label>
                                             <input required type="text" name="catering_menu"
                                                 value="{{ $record->catering_menu }}" class="form-control"

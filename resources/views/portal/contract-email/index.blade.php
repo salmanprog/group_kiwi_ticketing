@@ -57,8 +57,8 @@
                                 </thead>
                                 <tbody class="for-fbold">
                                     @if($data->isEmpty())
-                                        <tr>
-                                            <td colspan="3" class="text-center">No contract emails found</td>
+                                        <tr id="no-data-row">
+                                            <td colspan="4" class="text-center">No contract emails found</td>
                                         </tr>
                                     @else
                                     @foreach($data as $item)
@@ -154,17 +154,36 @@ $(document).ready(function() {
             data: formData,
             success: function(response) {
                 if(response.success) {
-                    alert(response.message); // or use toast
+                     Toastify({
+                            text: response.message,
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right"
+                        }).showToast();
                     contractModal.hide();
 
-                    // Optionally, append new row to table without reload
+                    $('#no-data-row').remove();
+
                     $('table tbody').prepend(
                         `<tr>
                             <td>${response.data.name}</td>
                             <td>${response.data.email}</td>
                             <td>${response.data.created_at}</td>
+                            <td>
+                                <a href="{{ route('contract-email.delete', ':id') }}".replace(':id', response.data.id) class="btn btn-danger">Delete</a>
+                            </td>
                         </tr>`
                     );
+                }else{
+                    Toastify({
+                        text: response.message,
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "linear-gradient(to right, #ff7f71ff, #ae121fff)" 
+                        }
+                    }).showToast();
                 }
             },
             error: function(xhr) {

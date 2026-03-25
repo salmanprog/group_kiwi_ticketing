@@ -210,6 +210,7 @@ class EstimateController extends CRUDCrontroller
             ->where('slug', $slug)
             ->first();
         
+        $this->__data['estimate_user'] = Client::where('client_id', $record->client_id)->first();
         $this->__data['estimate'] = $record;
         $this->__data['logs'] = DB::table('user_activity_logs')->select('users.name as user_name', 'user_activity_logs.*')
             ->join('users', 'users.id', '=', 'user_activity_logs.user_id')

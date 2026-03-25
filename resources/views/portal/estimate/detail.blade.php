@@ -70,10 +70,10 @@
                             </div>
                             @if ($estimate->invoices)
                                 @if ($estimate->invoices->status == 'unpaid' && Auth::user()->user_type != 'client')
-                                    <a href="{{ route('estimate.edit', ['estimate' => $estimate->slug]) }}"
+                                    <!-- <a href="{{ route('estimate.edit', ['estimate' => $estimate->slug]) }}"
                                         class="edit-link">
                                         <i class="fas fa-pencil-alt me-1"></i>Edit
-                                    </a>
+                                    </a> -->
                                 @endif
                             @endif
                         </div>
@@ -83,22 +83,54 @@
                     <div class="address-section">
                         <div class="address-box">
                             <h4><i class="fas fa-building me-2"></i>From</h4>
-                            <p>
-                                <strong>{{ $estimate->company->name ?? 'Company Name' }}</strong><br>
-                                {{ $estimate->company->address ?? 'Company Address' }}<br>
-                                </i>Email: {{ $estimate->company->email ?? '-' }}<br>
-                                Phone: {{ $estimate->company->phone ?? '-' }}
-                            </p>
+                             <p>
+                        <strong>{{ $estimate->company->name }}</strong><br>
+                        <strong>Email:</strong> {{ $estimate->company->email }}
+                        <br>
+                        <strong>Phone:</strong> {{ $estimate->company->mobile_no }}
+                        @if($estimate->company->address || $estimate->company->address_2)
+                            <br>
+                            <strong>Address:</strong>
+                        @endif
+
+                        @if($estimate->company->address)
+                            {{ $estimate->company->address }}<br>
+                        @endif
+
+                        @if($estimate->company->address_2)
+                            {{ $estimate->company->address_2 }}<br>
+                        @endif
+
+                        @if($estimate->company->city || $estimate->company->state || $estimate->company->zip)
+                            {{ $estimate->company->city }}
+                            @if($estimate->company->state), {{ $estimate->company->state }}@endif
+                            @if($estimate->company->zip) {{ $estimate->company->zip }}@endif
+                            <br>
+                        @endif
+
+                        @if($estimate->company->country)
+                            {{ $estimate->company->country }}
+                        @endif
+                    </p>
                         </div>
 
                         <div class="address-box">
                             <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
-                            <p>
-                                <strong>{{ $estimate->organization->name ?? 'Client Name' }}</strong><br>
-                                {{ $estimate->organization->address_one ?? 'Client Address' }}<br>
-                                Email: {{ $estimate->organization->email ?? '-' }}<br>
-                                Phone: {{ $estimate->organization->phone ?? '-' }}
-                            </p>
+                             <p>
+                        <strong> Account Name: {{ $estimate->organization_name }}</strong><br>
+                        @if($estimate_user->first_name)
+                        <strong>Contact Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
+                        <br>
+                        @endif
+                        @if($estimate_user->email)
+                        <strong>Contact Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
+                        <br>
+                        @endif
+                        @if($estimate_user->mobile_no)
+                        <strong>Contact Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
+                        <br>
+                        @endif
+                    </p>
                         </div>
                     </div>
                     <div class="estimate-info">
@@ -154,7 +186,7 @@
                                                                                 Apply Taxes: 
                                                                                 @foreach($item->itemTaxes as $tax)
                                                                                     {{ $tax->name }}@if(!$loop->last), @endif
-                                                                                @endforeach
+                                                                                @endforeach 
                                                                     </small>
                                                                 @endif
                                                             </td>
@@ -187,6 +219,10 @@
 
                                                                     <small class="fw-semibold">
                                                                         {{ $tax->name }} ({{ $tax->percent }}%)
+
+                                                                         ${{
+                                                                            bcdiv($tax->amount, 1, 2)
+                                                                        }}
                                                                     </small>
 
                                                                                                                                    </div>

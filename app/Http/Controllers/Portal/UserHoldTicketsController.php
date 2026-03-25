@@ -9,6 +9,8 @@ use App\Models\{Estimate, UserHoldTickets,Product,UserHoldTicketItems,UserHoldTi
 use Auth;
 use App\Services\ThirdPartyApiService;
 use Carbon\Carbon;
+use DB;
+
 class UserHoldTicketsController extends CRUDCrontroller
 {
     protected $apiService;
@@ -280,7 +282,9 @@ class UserHoldTicketsController extends CRUDCrontroller
             $session_id = ($result['sessionId']) ? $result['sessionId'] : 0;
             $capacity_id = $result['data'][0]['capacityId'];
 
-            $product = Product::where('slug', $request->product_slug)->first();
+           $product = Product::where('slug', $request->product_slug)->first();
+           $estimateItem = DB::table('user_estimate_items')->where('user_estimate_id', $request->estimate_id)->where('product_id', $product->id)->first();
+           // dd($estimateItem);
            $userHoldTicketItem = UserHoldTicketItems::create([
                 'capacity_id' => $capacity_id,
                 'session_id' => $session_id,
@@ -289,7 +293,7 @@ class UserHoldTicketsController extends CRUDCrontroller
                 'name' => $product->name,
                 'slug' =>$product->ticketSlug,
                 'quantity' => $qty,
-                'price' => $product->price,
+                'price' => ($estimateItem) ? $estimateItem->price : $product->price,
                 'category' => $product->ticketCategory,
 
             ]);

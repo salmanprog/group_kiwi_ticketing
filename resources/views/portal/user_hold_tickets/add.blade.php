@@ -77,7 +77,7 @@
 
                                 <div class="form-actions">
                                     <button type="submit" class="btn btn-primary">
-                                        Create User Hold Tickets
+                                        Create Hold
                                     </button>
                                     <button type="reset" class="btn btn-secondary">
                                         Reset Form

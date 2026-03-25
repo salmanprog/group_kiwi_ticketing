@@ -187,6 +187,8 @@ class UserHoldTickets extends Model
             "TotalInstallments" => (int)($request->total_installments ?? 0),
             "installmentType" => $request->installment_type ?? null,
             "IsCashlessEnabled" => (int)($request->is_cashless_enabled ?? 0),
+            "campaignName"=> "kiwigroup",
+            "campaignSlug"=>"kiwi-group",
             "Customer" => [
                 "firstName" => $client->first_name,
                 "lastName" => $client->last_name,
@@ -233,7 +235,8 @@ class UserHoldTickets extends Model
                         'invoiceId' => (string) $item->id,
                         'paymentMethod' => "online",
                         'invoiceStatus' => $item->status,
-                        'paymentIntent' => $item->payment_intent
+                        'paymentIntent' => $item->due_date,
+                        "invoiceSubmissionDate"=>$item->due_date ,
                     ];
                 })->toArray() : [],
             ];

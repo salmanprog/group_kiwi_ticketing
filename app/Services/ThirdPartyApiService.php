@@ -168,12 +168,32 @@ class ThirdPartyApiService
 
     public function createOrderTicket(array $data)
     {
-        // dd(json_encode($data));
+        $startTime = microtime(true);
+        // dd(json_encode($data['AuthCode']));
         $response = Http::acceptJson()
             ->contentType('application/json')
             ->post($this->baseUrl . '/Pricing/AddOrder', $data);
 
-            return $response;
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+
+        // Log activity
+        ActivityActionLogger::log([
+            'auth_code'    => $data['AuthCode'],
+            'action'       => 'create_order_ticket',
+            'method'       => 'POST',
+            'url'          => $this->baseUrl . '/Pricing/AddOrder',
+            'payload'      => json_encode($data),
+            'response'     => json_encode($response->json()),
+            'status'       => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+            'status_code'  => $response->status(),
+            'error_message'=> $response->json()['status']['errorCode'] === 0 
+                                ? null 
+                                : $response->json()['status']['errorMessage'] ?? null,
+            'ip'           => request()->ip(),
+            'response_time'=> $responseTime,
+        ]);
+        
+        return $response;
     }
 
 

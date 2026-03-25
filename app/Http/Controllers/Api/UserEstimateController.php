@@ -243,7 +243,7 @@ class UserEstimateController extends RestController
 
         // Call API to create order ticket
         Log::info('addOrderTicket - Calling API createOrderTicket', $payload);
-        $record = $this->apiService->createOrderTicket($payload);
+        $record = $this->apiService->createOrderTicket($payload); 
 
         Log::info('addOrderTicket - API Response', [
             'status' => $record->status(),

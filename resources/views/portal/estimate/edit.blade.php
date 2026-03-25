@@ -143,10 +143,10 @@
                 <div class="address-box">
                     <h4><i class="fas fa-user me-2"></i> Invoice To</h4>
                     <p>
-                        <strong>{{ $record->organization_name }}</strong><br>
-                        {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }}
-                        <br>
-                        {{-- <strong>Email:</strong> --}}
+                        <strong> Account Name: {{ $record->organization_name }}</strong><br>
+                         <!-- Account Name: {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }} -->
+                        <!-- <br> -->
+                        <!-- {{-- <strong>Email:</strong> --}}
                         {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
                         <br>
                         {{-- <strong>Phone:</strong> --}}
@@ -154,7 +154,7 @@
                         <br>
                         {{-- <strong>Address:</strong>  --}}
                         {{ $record->organization_address_one }}
-                           <br>
+                           <br> -->
 
                         @if($estimate_user->first_name)
                         <strong>Contact Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
@@ -347,7 +347,7 @@
                                                                     <small class="fw-semibold">
                                                                         {{ $tax->name }} ({{ $tax->percent }}%)
 
-                                                                        {{
+                                                                       ${{
                                                                             bcdiv($tax->amount, 1, 2)
                                                                         }}
                                                                     </small>

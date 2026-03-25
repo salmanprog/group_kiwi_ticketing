@@ -138,6 +138,7 @@ class Invoice extends Model
     public static function generateInvoice($request, $estimate, $contract,$auth_code=null)
     {
         $estimate = Estimate::with('items', 'taxes', 'discounts', 'company', 'organization', 'client','installments')->where('slug', $request->slug)->first();
+        // dd($estimate->items);
           DB::beginTransaction();
 
             $slug = self::generateInvoiceNumber();
@@ -229,7 +230,7 @@ class Invoice extends Model
                     'price' => $item->price,
                     'total_price' => $item->total_price,
                     'taxes' => $item->tax,
-                    'product_price' => $item->product_price,
+                    'product_price' => $item->price,
                     'gratuity' => $item->gratuity,
                     'accepted_by_client' => 1,
                     'invoice_id' => $invoice->id,

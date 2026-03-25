@@ -148,10 +148,10 @@ class EstimateHook
                         'name' => $product['name'],
                         'quantity' => $product['quantity'],
                         'price' => $product['price'],
-                        'product_price'=> $product['product_total_price'],
+                        'product_price'=> $product['price'],
                         'tax'=> $product['tax'],
                         'gratuity'=> $product['gratuity'],
-                        'total_price' => ($product['product_total_price'] * $product['quantity']),
+                        'total_price' => ($product['price'] * $product['quantity']),
                         'unit' => 'each',
                     ]);
                 }

@@ -470,7 +470,7 @@ $(document).on('click', '.save-note', function () {
 $(document).on('click', '.send-to-client', function () {
 
     const btn = $(this);
-    btn.prop('disabled', true).text('Saving...');
+    btn.prop('disabled', true).text('Sanding to client...');
     const url = btn.data('url');
     const csrf = btn.data('csrf');
     const estimateId = btn.data('estimateid');
