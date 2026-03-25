@@ -898,6 +898,15 @@ class ContractController extends CRUDCrontroller
         
         $contract->ticket_enable = '1';
         $contract->save();
+
+          \App\Models\ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $contract->id,
+                'description' => 'Ticket enable updated by ' . auth()->user()->name,
+                'user_id' => auth()->user()->id,
+                'old_data' => json_encode($contract->toArray()),
+                'new_data' => json_encode($contract->toArray()),
+            ]);
         
         return redirect()->back()->with('success', 'Ticket enable updated successfully.');
     }
@@ -912,6 +921,15 @@ class ContractController extends CRUDCrontroller
         
         $contract->ticket_enable = '0';
         $contract->save();
+
+          \App\Models\ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $contract->id,
+                'description' => 'Ticket disable updated by ' . auth()->user()->name,
+                'user_id' => auth()->user()->id,
+                'old_data' => json_encode($contract->toArray()),
+                'new_data' => json_encode($contract->toArray()),
+            ]);
         
         return redirect()->back()->with('success', 'Ticket disable updated successfully.');
     }
