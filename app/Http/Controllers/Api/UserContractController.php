@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RestController;
 use App\Services\ThirdPartyApiService;
+use DB;
 
 class UserContractController extends RestController
 {
@@ -207,6 +208,57 @@ class UserContractController extends RestController
             'data' => $tickets,
         ]);
         
+    }
+
+    public function sendTicketEmail(Request $request)
+    {
+        $request     = $this->__request;
+        $param_rule['ticket_ids']   = 'required|array';
+        $param_rule['ticket_ids.*'] = 'string';
+        $param_rule['name'] = 'required|string|max:255';
+        $param_rule['email'] = 'required|email';
+        $param_rule['contract_slug'] = 'required|string';
+
+        $response = $this->__validateRequestParams($request->all(),$param_rule);
+        if( $this->__is_error )
+            return $response;
+
+        $contract = Contract::where('slug', $request->contract_slug)->first();
+        if(!$contract) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Contract not found',
+            ], 404);
+        }
+
+        $ticketIds = $request->ticket_ids;
+        $recipientName = $request->name;
+        $recipientEmail = $request->email;
+        $authCode = $contract->auth_code;
+
+        // 1. Fetch tickets from DB
+        $tickets = DB::table('user_order_tickets')
+                    ->whereIn('visualId', $ticketIds)
+                    ->get();
+
+        if ($tickets->isEmpty()) {
+            return response()->json(['message' => 'No valid tickets found.'], 404);
+        }
+
+        try {
+            $qrCodes = $tickets->pluck('visualId')->toArray();
+            $apiResponse = $this->apiService->sendTicketToRecipient($qrCodes, $recipientName, $recipientEmail, $authCode);
+            DB::table('user_order_tickets')
+                ->whereIn('visualId', $ticketIds)
+                ->update(['status' => 1]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+        return response()->json([
+            'status' => 200,
+            'message' => $apiResponse['status']['errorMessage'],
+            'data' => [],
+        ]);
     }
 
 }

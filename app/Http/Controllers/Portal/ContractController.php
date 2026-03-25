@@ -812,5 +812,81 @@ class ContractController extends CRUDCrontroller
  
     }
 
+    public function ajaxsendOrdersTicket($slug)
+    {
+        $contract = Contract::where('slug', $slug)->first();
+        $estimate = Estimate::where('contract_id',$contract->id)->first();
+        $status = 'NotSent';
+        $tickets = $this->apiService->queryOrderSendList($estimate->slug, $status, $estimate->auth_code);
+
+        return response()->json(['tickets' => $tickets]);
+
+    }
+
+
+   public function sendTicketEmail(Request $request)
+    {
+        $request->validate([
+            'ticket_ids' => 'required|array',
+            'ticket_ids.*' => 'string', // assuming visualId is string
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+        ]);
+
+        $ticketIds = $request->ticket_ids;
+        $recipientName = $request->name;
+        $recipientEmail = $request->email;
+
+        // // 1. Fetch tickets from DB
+        $tickets = DB::table('user_order_tickets')
+                    ->whereIn('visualId', $ticketIds)
+                    ->get();
+
+        if ($tickets->isEmpty()) {
+            return response()->json(['message' => 'No valid tickets found.'], 404);
+        }
+
+        try {
+            $qrCodes = $tickets->pluck('visualId')->toArray();
+            // $qrCodes = [
+            //     '123lskdfmk',
+            //     '101-240326222343328-187466-688011'
+            // ];
+            $authCode = Auth::user()->auth_code; // or pass as needed
+            // dd($qrCodes);
+            $apiResponse = $this->apiService->sendTicketToRecipient($qrCodes, $recipientName, $recipientEmail, $authCode);
+            // dd($apiResponse->json());
+            if($apiResponse['status']['errorCode'] == 2){
+                return response()->json(['message' => 'Failed to send tickets. ' . $apiResponse['status']['errorMessage']], 500);
+            }
+
+            // You can log or handle $apiResponse if needed
+        } catch (\Exception $e) {
+            \Log::error('DynamicPricing API failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to send tickets. ' . $e->getMessage()], 500);
+        }
+
+        // 2. Update status to "Sent"
+        DB::table('user_order_tickets')
+            ->whereIn('visualId', $ticketIds)
+            ->update(['status' => 1]);
+
+        // try {
+        //     $auth_code = Auth::user()->auth_code;
+        //     $templateIdentifier = 'ticket_email';
+        //     $data = [
+        //         'name' => $recipientName,
+        //         'email' => $recipientEmail,
+        //         'tickets' => $tickets
+        //     ];
+        //     UserMailer::sendTemplate($auth_code, $recipientEmail, $templateIdentifier, $data);
+        // } catch (\Exception $e) {
+        //     // Log the error but don't fail the request
+        //     \Log::error('Failed to send ticket email: ' . $e->getMessage());
+        // }
+    
+        return response()->json(['message' => $apiResponse['status']['errorMessage']]);
+    }
+
 
 }

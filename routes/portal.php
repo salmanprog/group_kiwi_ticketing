@@ -289,6 +289,10 @@ Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->n
     Route::get('send-ticket-list/{slug}', [ContractController::class, 'sendOrdersTicket'])->name('contract.send-ticket-list');
 
 
+    Route::get('/ajax-tickets/{slug}', [ContractController::class, 'ajaxsendOrdersTicket'])->name('contract.ajax-tickets');
+Route::post('/send-ticket-email', [ContractController::class, 'sendTicketEmail'])->name('contract.send-ticket-email');
+
+
 Route::post('/account/notes/save', [AccountActivityLogController::class, 'saveOrganizationNotes'])
     ->name('account.notes.save');
 

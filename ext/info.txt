@@ -11,6 +11,8 @@ ALTER TABLE `organizations` CHANGE `event_history_id` `event_history_id` BIGINT(
 
 ALTER TABLE `user_order_tickets` ADD `status` ENUM('1','0') NULL DEFAULT '0' AFTER `id`;
 
+ALTER TABLE `contracts` ADD `ticket_enable` ENUM('0','1') NOT NULL DEFAULT '0' AFTER `id`;
+
 kiwiticketing
 u2-nqewjfywa1fd@c1102859.sgvps.net
 18765

@@ -230,5 +230,48 @@ class ThirdPartyApiService
 
         return null;
     }
+
+
+    public function sendTicketToRecipient(array $qrCodes, string $recipientName, string $recipientEmail, string $authCode)
+    {
+        $startTime = microtime(true);
+
+        // Prepare payload
+        $body = [
+            'authCode'       => $authCode,
+            'qrCodes'      => $qrCodes,
+            'recipientName'  => $recipientName,
+            'recipientEmail' => $recipientEmail,
+        ];
+
+        // Make POST request
+        $response = Http::acceptJson()
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'accept'       => '*/*',
+            ])
+            ->post($this->baseUrl . '/Pricing/RecordGroupRecipient', $body);
+
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+
+        // Log activity
+        ActivityActionLogger::log([
+            'auth_code'    => $authCode,
+            'action'       => 'send_ticket_to_recipient',
+            'method'       => 'POST',
+            'url'          => $this->baseUrl . '/Pricing/RecordGroupRecipient',
+            'payload'      => json_encode($body),
+            'response'     => json_encode($response->json()),
+            'status'       => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+            'status_code'  => $response->status(),
+            'error_message'=> $response->json()['status']['errorCode'] === 0 
+                                ? null 
+                                : $response->json()['status']['errorMessage'] ?? null,
+            'ip'           => request()->ip(),
+            'response_time'=> $responseTime,
+        ]);
+
+        return $response;
+    }
     
 }
