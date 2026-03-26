@@ -23,6 +23,12 @@ class Organization extends JsonResource
            'slug'             => $this->slug,
            'email'             => $this->email,
            'mobile_no'        => $this->phone,
+           'department'            => $this->department,
+           'country'          => $this->country,
+           'city'          => $this->city,
+           'address'          => $this->address,
+           'state'          => $this->state,
+           'zip'          => $this->zip,
        ];
     }
 }
