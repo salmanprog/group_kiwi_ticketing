@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\PublicUser;
 use App\Http\Resources\Organization;
+use Carbon\Carbon;
 
 class Estimate extends JsonResource
 {
@@ -25,6 +26,14 @@ class Estimate extends JsonResource
         $discountPercent = $this->discounts->sum(fn($discount) => $discount->value);
         $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
         $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100); 
+          $isEstimateExpire = false;
+
+        if ($this->status == 'sent') {
+            if (Carbon::now() > $this->valid_until) {
+                $isEstimateExpire = true;
+            }
+        }
+
 
         return [
             'id'         => $this->id,
@@ -43,6 +52,7 @@ class Estimate extends JsonResource
             'discount_total' => $discountAmount,
             'tax_total' => $taxTotal,
             'signature' => $this->signature,
+            'is_estimate_expire'=> $isEstimateExpire,
             'company' => $this->company,
             'createdBy' => new PublicUser($this->createdBy),
             'client' => new PublicUser($this->client),
