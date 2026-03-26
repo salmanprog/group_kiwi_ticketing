@@ -39,7 +39,7 @@ class Estimate extends JsonResource
             if (Carbon::now() > $this->valid_until) {
                 $status = 'Expired';
             }
-        }
+        } 
 
         return [
             'id'         => $this->id,

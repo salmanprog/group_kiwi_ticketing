@@ -95,7 +95,14 @@ class EstimateController extends CRUDCrontroller
                 break;
 
             case 'sent':
+                
                 $status = (Auth::user()->user_type == 'client') ? '<span class="btn btn-xs btn-info">New</span>' : '<span class="btn btn-xs btn-info">Sent</span>';
+                if ($record->status == 'sent') {
+                    if (Carbon::now() > $record->valid_until) {
+                        $status = '<span class="btn btn-xs btn-danger">Expired</span>';
+                    }
+                }
+
                 break;
             case 'approved':
                 $status = '<span class="btn btn-xs btn-success">Approved</span>';

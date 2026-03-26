@@ -51,12 +51,16 @@
                             Estimate
                         </div>
                         <div class="estimate-meta">
-                            <span class="estimate-number">#{{ $estimate->estimate_number }}</span>
+                            <span class="estimate-number">#{{ strtoupper($estimate->estimate_number) }}</span>
                             <span class="status {{ $estimate->status }}">
                                 @if ($estimate->status == 'sent')
-                                    @if ($estimate->status == 'sent')
+                                    @if ($estimate->status == 'sent' && \Carbon\Carbon::now() > $estimate->valid_until)
+                                         <span class="status expired">
+                                    <i class="fas fa-exclamation-triangle me-1"></i> Expired
+                                </span>
+                                    @elseif ($estimate->status == 'sent') 
                                         New
-                                    @endif
+                                    @endif 
                                 @else
                                     {{ strtoupper($estimate->status) }}
                                     {{ $estimate->is_adjusted == '1' ? '( + Adjusted)' : '' }}

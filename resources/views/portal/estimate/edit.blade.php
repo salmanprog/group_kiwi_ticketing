@@ -81,9 +81,15 @@
                         @break
 
                         @case('sent')
-                            <span class="status sent">
-                                <i class="fas fa-paper-plane me-1"></i> Sent
-                            </span>
+                            @if ($estimate->status == 'sent' && \Carbon\Carbon::now() > $estimate->valid_until)
+                                <span class="status expired">
+                                    <i class="fas fa-exclamation-triangle me-1"></i> Expired
+                                </span>
+                            @else
+                                <span class="status sent">
+                                    <i class="fas fa-paper-plane me-1"></i> Sent
+                                </span>
+                            @endif
                         @break
 
                         @case('approved')
