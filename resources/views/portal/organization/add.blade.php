@@ -44,7 +44,7 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="form-label">Department</label>
+                                            <label class="form-label">Department <span class="required">*</span></label>
                                             <input type="text" name="department" class="form-control"
                                                 value="{{ old('department') }}">
                                         </div>
@@ -65,7 +65,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label class="form-label">Address</label>
+                                                <label class="form-label">Address <span class="required">*</span></label>
                                                 <input type="text" name="address_one" class="form-control"
                                                     value="{{ old('address_one') }}">
                                             </div>
@@ -79,28 +79,28 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">City</label>
+                                                <label class="form-label">City <span class="required">*</span></label>
                                                 <input type="text" name="city" class="form-control"
                                                     value="{{ old('city') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">State</label>
+                                                <label class="form-label">State <span class="required">*</span></label>
                                                 <input type="text" name="state" class="form-control"
                                                     value="{{ old('state') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">Zip</label>
+                                                <label class="form-label">Zip <span class="required">*</span></label>
                                                 <input type="text" name="zip" class="form-control"
                                                     value="{{ old('zip') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">Country</label>
+                                                <label class="form-label">Country <span class="required">*</span></label>
                                                 <input type="text" name="country" class="form-control"
                                                     value="{{ old('country') }}">
                                             </div>
@@ -155,7 +155,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">Organization Type</label>
+                                                <label class="form-label">Organization Type <span class="required">*</span></label>
                                                 <select name="organization_type_id" class="form-control select2">
                                                     <option value="">-- Select Type --</option>
                                                     @foreach ($organization_types as $organization_type)
@@ -186,7 +186,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">Group Type</label>
+                                                <label class="form-label">Group Type <span class="required">*</span></label>
                                                 <select name="event_type_id" class="form-control">
                                                     <option value="">-- Select Group Type --</option>
                                                     @foreach ($organization_events as $event)

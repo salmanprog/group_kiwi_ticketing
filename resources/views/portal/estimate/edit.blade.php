@@ -143,7 +143,7 @@
                 <div class="address-box">
                     <h4><i class="fas fa-user me-2"></i> Invoice To</h4>
                     <p>
-                        <strong> Account Name: {{ $record->organization_name }}</strong><br>
+                        <strong>{{ $record->organization_name }}</strong><br>
                          <!-- Account Name: {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }} -->
                         <!-- <br> -->
                         <!-- {{-- <strong>Email:</strong> --}}
@@ -157,15 +157,15 @@
                            <br> -->
 
                         @if($estimate_user->first_name)
-                        <strong>Contact Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
+                        <strong>Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
                         <br>
                         @endif
                         @if($estimate_user->email)
-                        <strong>Contact Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
+                        <strong>Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
                         <br>
                         @endif
                         @if($estimate_user->mobile_no)
-                        <strong>Contact Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
+                        <strong>Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
                         <br>
                         @endif
                     </p>
@@ -220,11 +220,22 @@
                                 @endif
                                 <div class="form-group">
                                     <label for="expiration_date">Expiry Date</label>
-                                    <input required type="date" name="expiration_date" class="form-control"
-                                        value="{{ $record->valid_until }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}">
+                                   <input 
+                                        required 
+                                        type="date" 
+                                        id="expiration_date" 
+                                        name="expiration_date" 
+                                        class="form-control"
+                                        data-id="{{ $record->slug }}"
+                                        value="{{ $record->valid_until }}" 
+                                        min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                    >
+
                                     <div class="print-value">
                                         <strong>Expiry Date:</strong>
-                                        {{ \Carbon\Carbon::parse($record->valid_until)->format('F j, Y') }}
+                                        <span id="expiry_text">
+                                            {{ \Carbon\Carbon::parse($record->valid_until)->format('F j, Y') }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -1110,6 +1121,30 @@ $(document).ready(function () {
             ['insert', ['link']],
             ['view', ['codeview']]
         ]
+    });
+});
+
+
+$(document).on('change', '#expiration_date', function () {
+    let date = $(this).val();
+    let id = $(this).data('id');
+    $.ajax({
+        url: '{{ route("update-expiry-date") }}',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            slug: id,
+            expiration_date: date
+        },
+        success: function (response) {
+            if (response.status) {
+                // Update UI text
+                $('#expiry_text').text(response.formatted_date);
+            }
+        },
+        error: function () {
+            alert('Something went wrong');
+        }
     });
 });
 

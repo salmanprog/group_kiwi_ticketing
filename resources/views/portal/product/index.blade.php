@@ -108,6 +108,7 @@
     @push('scripts')
         <script>
             let ajax_listing_url = `{{ route('product.ajax-listing') }}`;
+            // alert(ajax_listing_url);
         </script>
         <script src="{{ asset('admin/assets/lib/datatables/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('admin/assets/lib/datatables/dataTables.responsive.min.js') }}"></script>

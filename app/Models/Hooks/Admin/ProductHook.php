@@ -30,7 +30,7 @@ class ProductHook
         // ->join('company_product_category','company_product_category.id','company_products.company_product_category_id');
         //$query->where('company_products.company_id', $getCompany->id);
         $query->where('company_products.auth_code', Auth::user()->auth_code);
-            
+            // dd('working');
         if( !empty($request['keyword']) ){
             $keyword = $request['keyword'];
             $query->where(function($where) use ($keyword){

@@ -496,11 +496,11 @@ $(document).on('click', '.send-to-client', function () {
             status: status,
         },
         success: function (res) {
-            $('#formMessage')
-                .removeClass('text-danger text-success')
-                .addClass(res.status ? 'text-success' : 'text-danger')
-                .text(res.message)
-                .fadeIn();
+            // $('#formMessage')
+            //     .removeClass('text-danger text-success')
+            //     .addClass(res.status ? 'text-success' : 'text-danger')
+            //     .text(res.message)
+            //     .fadeIn();
 
             if(res.status == true) {
                 // Optional: update print preview instantly

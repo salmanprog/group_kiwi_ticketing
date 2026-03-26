@@ -171,11 +171,8 @@ Route::middleware(['custom_auth:web', 'third_party_api'])->group(function () {
     Route::get('product/api/create', [ProductController::class, 'createApi'])->name('product.api.create');
     Route::post('product/api/store', [ProductController::class, 'storeApi'])->name('product.api.store');
 
-    Route::get('product/api/{id}/edit', [ProductController::class, 'editApi'])
-        ->name('product.api.edit');
-
-    Route::post('product/api/{id}', [ProductController::class, 'updateApi'])
-        ->name('product.api.update');
+    Route::get('product/api/{id}/edit', [ProductController::class, 'editApi'])->name('product.api.edit');
+    Route::post('product/api/{id}', [ProductController::class, 'updateApi'])->name('product.api.update');
 
     Route::resource('product', ProductController::class);
 
@@ -322,3 +319,5 @@ Route::get('hold-tickets/release/{slug}', [UserHoldTicketsController::class, 're
 Route::post('hold-tickets/check', [UserHoldTicketsController::class, 'productCheck'])->name('hold-tickets.check');
 Route::get('/estimate/hold-dates/{id}', [EstimateController::class,'getEstimateDates'])
     ->name('estimate.hold-dates');
+
+Route::post('/update-expiry-date', [EstimateController::class, 'updateExpiryDate'])->name('update-expiry-date');

@@ -10,6 +10,7 @@ use Auth;
 use Illuminate\Support\Facades\Crypt;
 use DB;
 use App\Services\UserMailer;
+use Carbon\Carbon;
 
 
 class EstimateController extends CRUDCrontroller
@@ -449,6 +450,16 @@ class EstimateController extends CRUDCrontroller
             ]);
         }
 
+        $estimate = Estimate::where('slug', $request->slug)->first();
+        if($estimate->valid_until == null)
+        {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please update expiry date'
+            ]); 
+        }
+
+
         $holdTicket = DB::table('user_hold_tickets')
         ->where('estimate_id', $request->estimate_id)
         ->join('user_hold_ticket_items', 'user_hold_tickets.id', '=', 'user_hold_ticket_items.user_hold_ticket_id')
@@ -460,16 +471,17 @@ class EstimateController extends CRUDCrontroller
             ]);
         }
 
+
         $status = ($request->status == 'draft') ? "draft" : 'revised';
 
-        $estimate = Estimate::where('slug', $request->slug)->first();
-                    $estimate->issue_date = $request->issue_date;
-                    $estimate->valid_until = $request->valid_until;
-                    $estimate->is_installment = $request->is_installment;
-                    $estimate->is_adjusted = $request->status;
-                    //$estimate->status = 'sent';
-                    $estimate->is_adjusted = 1;
-                    $estimate->save();
+      
+        $estimate->issue_date = $request->issue_date;
+        $estimate->valid_until = $request->valid_until;
+        $estimate->is_installment = $request->is_installment;
+        $estimate->is_adjusted = $request->status;
+        //$estimate->status = 'sent';
+        $estimate->is_adjusted = 1;
+        $estimate->save();
 
         
         if(Auth::user()->user_type != 'client') {
@@ -482,7 +494,7 @@ class EstimateController extends CRUDCrontroller
                     // dd($getCompany->login_url);
                     if ($user) {
                         $companyDetails = session('companyDetails');
-                        $mail_params['company_name'] = $companyDetails['companyName'] ?? $getCompany->name;
+                        $mail_params['company_name'] = $getCompany->name;
                         $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
                         $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email),'login_url' => Crypt::encrypt($getCompany->login_url)]) : (($getCompany->login_url) ? $getCompany->login_url : config('constants.client_login_url'));
                         $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
@@ -546,6 +558,23 @@ class EstimateController extends CRUDCrontroller
             'status' => true,
             'hold_date' => $estimate->event_date ?? null,
             'expiry_date' => $estimate->valid_until ?? null
+        ]);
+    }
+
+    public function updateExpiryDate(Request $request)
+    {
+        $request->validate([
+            'slug' => 'required|exists:user_estimate,slug',
+            'expiration_date' => 'required|date|after:today',
+        ]);
+
+        $estimate = Estimate::where('slug', $request->slug)->first();
+        $estimate->valid_until = $request->expiration_date;
+        $estimate->save();
+
+        return response()->json([
+            'status' => true,
+            'formatted_date' => Carbon::parse($estimate->valid_until)->format('F j, Y')
         ]);
     }
 

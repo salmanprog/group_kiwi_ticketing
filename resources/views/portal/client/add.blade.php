@@ -198,7 +198,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Email</label>
+                                            <label class="form-label">Email<span class="required">*</span>
+                                            </label>
                                             <input required type="email" name="email" class="form-control"
                                                 value="{{ old('email') }}" >
                                         </div>
