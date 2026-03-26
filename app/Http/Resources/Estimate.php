@@ -26,7 +26,8 @@ class Estimate extends JsonResource
         $discountPercent = $this->discounts->sum(fn($discount) => $discount->value);
         $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
         $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100); 
-          $isEstimateExpire = false;
+        $isEstimateExpire = false;
+        $status = $this->status;
 
         if ($this->status == 'sent') {
             if (Carbon::now() > $this->valid_until) {
@@ -34,6 +35,11 @@ class Estimate extends JsonResource
             }
         }
 
+         if ($this->status == 'sent') {
+            if (Carbon::now() > $this->valid_until) {
+                $status = 'Expired';
+            }
+        }
 
         return [
             'id'         => $this->id,
@@ -45,7 +51,7 @@ class Estimate extends JsonResource
             'note'       => $this->note,
             'terms'       => $this->terms,
             // 'status'       => ($this->status == "sent") ? "New" : $this->status,
-            'status'       => $this->status,
+            'status'       => $status,
             'estimate_number'       => $this->estimate_number,
             'subtotal' => $subtotal,
             'total' => $total,
