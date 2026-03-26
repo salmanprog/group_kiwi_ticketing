@@ -37,7 +37,6 @@
                                         <input type="text" class="form-control" name="saleChannel"
                                             value="{{ $ticket['saleChannel'] ?? '' }}" disabled>
                                     </div>
-
                                     <div class="col-md-6">
                                         <label class="form-label">Price</label>
                                         <input type="number" step="0.01" name="ticketPrice" class="form-control"

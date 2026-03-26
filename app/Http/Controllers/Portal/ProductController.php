@@ -258,7 +258,7 @@ class ProductController extends CRUDCrontroller
         
         $ticket = collect($response->json()['getAllProductPrice']['data'])
             ->firstWhere('ticketSlug', $slug);
-        $get_product = Product::where('slug', $slug)->first();
+        $get_product = Product::where('ticketSlug', $slug)->first();
         abort_if(!$ticket, 404);
 
         // dd($ticket);
@@ -287,18 +287,20 @@ class ProductController extends CRUDCrontroller
         }
 
         // Local DB update or create
-        $product = Product::updateOrCreate(
-            ['slug' => $ticket['ticketSlug'] ?? strtolower(str_replace(' ', '-', $validated['ticketName']))],
-            [
-                'company_id'                  => $company->id,
-                'company_product_category_id' => 0, // you can set default or dynamic category
-                'name'                        => $validated['ticketName'],
-                'description'                 => $request->description,
-                'price'                       => $validated['ticketPrice'],
-                'unit'                        => 'Ticket',
-                'status'                      => '1',
-            ]
-        );
+        $product = Product::where('ticketSlug', $id)->first();
+        if (!$product) {
+            return redirect()->back()->with('error', 'Product not found.');
+        }
+        // dd($validated['ticketPrice']);
+        $product->update([
+            'company_id'                  => $company->id,
+            'company_product_category_id' => 0, // you can set default or dynamic category
+            'name'                        => $validated['ticketName'],
+            'description'                 => $request->description,
+            'price'                       => $validated['ticketPrice'],
+            'unit'                        => 'Ticket',
+            'status'                      => '1',
+        ]);
 
         // dd($validated['ticketPrice']);
 
