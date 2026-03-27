@@ -7710,6 +7710,13 @@ a.btn.btn-xs.btn-info:hover {
   cursor: pointer;
 }
 
+.c-select-wrapper select.form-select {
+    width: 100%;
+    border: 1px solid #dde6e9;
+    color: #555;
+    padding: 7px 5px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
 

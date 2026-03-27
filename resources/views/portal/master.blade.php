@@ -535,7 +535,7 @@
                                 </button>
                             </a>
 
-                            <p class="mb-0" style="font-size: 1.25rem;line-height: 1.75rem;font-weight: 700;color: #1f2937;">Kiwi Groups</p>
+                            <p class="mb-0" style="font-size: 1.25rem;line-height: 1.75rem;font-weight: 700;color: #1f2937;font-family: 'Poppins', sans-serif;">Kiwi Groups</p>
                         </div>
 
                         
