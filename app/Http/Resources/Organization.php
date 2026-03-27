@@ -26,7 +26,8 @@ class Organization extends JsonResource
            'department'            => $this->department,
            'country'          => $this->country,
            'city'          => $this->city,
-           'address'          => $this->address,
+           'address'          => $this->address_one,
+           'address_two'          => $this->address_two,
            'state'          => $this->state,
            'zip'          => $this->zip,
        ];
