@@ -50,7 +50,7 @@ class ContractHook
         $query->with([
                         'organization',
                         'company',
-                        'client',
+                        'client', 
                         'estimates.items.itemTaxes',   // nested: items -> itemTaxes
                         'estimates.taxes',             // estimate -> taxes
                         'estimates.discounts',          // estimate -> discounts

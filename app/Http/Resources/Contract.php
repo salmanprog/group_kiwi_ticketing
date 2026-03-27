@@ -35,7 +35,7 @@ class Contract extends JsonResource
             'subtotal' => $subtotal,
             'total' => $total,
             'discount_total' => $discountAmount, 
-            'tax_total' => $taxTotal,
+            'tax_total' => $taxTotal, 
             'signature' => $this->signature,
             'company' => $this->company,
 
