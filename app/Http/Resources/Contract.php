@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\PublicUser;
+use App\Http\Resources\Organization;
 
 class Contract extends JsonResource
 {
@@ -33,14 +34,14 @@ class Contract extends JsonResource
             'is_accept' => $this->is_accept,
             'subtotal' => $subtotal,
             'total' => $total,
-            'discount_total' => $discountAmount,
+            'discount_total' => $discountAmount, 
             'tax_total' => $taxTotal,
             'signature' => $this->signature,
             'company' => $this->company,
 
             // Users
-            'client' => new PublicUser($this->whenLoaded('client')),
-            'organization' => new PublicUser($this->whenLoaded('organization')),
+            'client' => new PublicUser($this->client),
+            'organization' => new Organization($this->organization),
 
             // Contract Items
             'details' => $this->estimates->map(function ($estimate) {
