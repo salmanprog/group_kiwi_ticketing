@@ -447,11 +447,29 @@ $(document).on('click', '.save-note', function () {
             terms_and_condition:terms_and_condition
         },
         success: function (res) {
-            $('#formMessage')
-                .removeClass('text-danger text-success')
-                .addClass(res.status ? 'text-success' : 'text-danger')
-                .text(res.message)
-                .fadeIn();
+            // $('#formMessage')
+            //     .removeClass('text-danger text-success')
+            //     .addClass(res.status ? 'text-success' : 'text-danger')
+            //     .text(res.message)
+            //     .fadeIn(); 
+            
+            if(res.status == true) {
+                Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
+            }else{
+                Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+            }
 
             // Optional: update print preview instantly
             $('.print-value').html('<strong>Note:</strong> ' + note);

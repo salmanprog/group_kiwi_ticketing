@@ -580,7 +580,7 @@
                                             <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
                                         </button>
 
-                                        <div id="formMessage" class="mt-2" style="display:none;"></div>
+                                        <!-- <div id="formMessage" class="mt-2" style="display:none;"></div> -->
                                     </div>
                                 </div>
                             </div>
