@@ -134,12 +134,13 @@ class EstimateHook
         $contractEstimates = ContractEmail::where('auth_code', $estimate->auth_code)->get();
         $company = \App\Models\Company::find($estimate->company_id);
 
+        
             $pdf = Pdf::loadView('pdf.contract', compact('estimate'));
             $fileName = 'contracts/contract_'.$estimate->id.'_'.uniqid().'.pdf';
             Storage::disk('public')->put($fileName, $pdf->output());
-            $pdf_link = asset('storage/'.$fileName);
-            $link = $pdf_link;
-            // dd($link);
+
+            // Get full storage path
+            $attachmentPath = storage_path('app/public/'.$fileName);
 
             // dd($contractEstimates);
         if($contractEstimates->count() > 0){
@@ -152,12 +153,11 @@ class EstimateHook
 
                 $data = [
                     'username' => $contractEstimate->name,
-                    'company_name' => $company->name,
-                    'link' => $link
+                    'company_name' => $company->name
                 ];
 
                 try {
-                    UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+                    UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data, $attachmentPath);
                 } catch (\Exception $e) {
                     return back()->with('error', 'Error: '.$e->getMessage());
                 }
