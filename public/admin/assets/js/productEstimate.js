@@ -453,7 +453,7 @@ $(document).on('click', '.save-note', function () {
             //     .text(res.message)
             //     .fadeIn(); 
             
-            if(res.status == true) {
+            if(res.status) {
                 Toastify({
                     text: res.message,
                     duration: 3000,
