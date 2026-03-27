@@ -601,7 +601,7 @@
         .spc {
             float: right;
         }
-    </style>
+    </style> 
 
     <section class="main-content">
         <div class="container">
@@ -708,7 +708,7 @@
                         <p>
                             <strong>{{ $record->client->name }}</strong><br>
                             <i class="fas fa-envelope me-1"></i> {{ $record->client->email ?? '-' }}<br>
-                            <i class="fas fa-phone me-1"></i> {{ $record->client->mobile_no ?? '-' }}
+                            <i class="fas fa-phone me-1"></i> {{ $record->client->mobile_no ?? '-' }}  
                         </p>
                     </div>
                 </div>

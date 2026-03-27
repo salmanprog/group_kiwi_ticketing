@@ -527,11 +527,11 @@ $(document).on('click', '.send-to-client', function () {
 
         },
         error: function () {
-            $('#formMessage')
-                .removeClass('text-success')
-                .addClass('text-danger')
-                .text('Failed to sending client')
-                .fadeIn();
+            // $('#formMessage')
+            //     .removeClass('text-success')
+            //     .addClass('text-danger')
+            //     .text('Failed to sending client')
+            //     .fadeIn();
                 
                   Toastify({
                     text: 'Failed to sending client',
