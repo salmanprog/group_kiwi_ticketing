@@ -614,10 +614,85 @@
             gap: 10px;
         }
 
-        .btn.btn-danger{
+        .btn.btn-danger {
             font-weight: 600;
             font-size: 14px;
             padding: 9px 20px;
+        }
+
+
+        /* Radio Button Styles with #9FC23F */
+        .form-check-input {
+            width: 1.2em;
+            height: 1.2em;
+            cursor: pointer;
+            border: 2px solid #ced4da;
+            transition: all 0.2s ease;
+        }
+
+        .form-check-input:checked {
+            background-color: #9FC23F !important;
+            border-color: #9FC23F !important;
+        }
+
+        .form-check-input:focus {
+            border-color: #9FC23F !important;
+            box-shadow: 0 0 0 0.2rem rgba(159, 194, 63, 0.25);
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .btn-primary {
+            background-color: #9FC23F  !important;
+            border-color: #9FC23F !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #8aae36;
+            border-color: #8aae36;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #000;
+        }
+
+        .modal-content {
+            border-radius: 12px;
+        }
+
+        .modal-header.bg-warning {
+            background-color: #ffc107 !important;
+            color: #000;
+        }
+
+        .modal-sm{
+            width: 400px !important;
+        }
+
+        /* Animations */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
         }
     </style>
 
@@ -632,7 +707,7 @@
                             <i class="fas fa-file-contract me-2"></i>Contract
                         </div>
                         <div class="sdt">
-                            <div class="contract-title">
+                            {{-- <div class="contract-title">
                                 <a href="{{ route('contract.send-ticket-list', $record->slug) }}" class="btn btn-primary">
                                     <i class="fas fa-ticket-alt me-2"></i>Send Ticket
                                 </a>
@@ -652,7 +727,82 @@
                                         <i class="fas fa-ticket-alt me-2"></i>Client Ticket Disable
                                     </a>
                                 </div>
-                            @endif
+                            @endif --}}
+
+                            <div class="contract-title">
+                                <button type="button" class="btn btn-primary" id="deliverTicketBtn">
+                                    <i class="fas fa-ticket-alt me-2"></i>Deliver Ticket
+                                </button>
+                            </div>
+
+                            <div class="modal fade" id="confirmationModal" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                <i class="fas fa-ticket-alt me-2"></i>Deliver Ticket
+                                            </h5>
+                                            <button type="button" class="btn-close" id="modalCloseBtn" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="delivery-options mb-4">
+                                                <h6 class="mb-3">Select Delivery Option:</h6>
+                                                
+                                                <div class="form-check mb-3">
+                                                    <input class="form-check-input" type="radio" name="deliveryOption" id="bocaPrinting" value="boca">
+                                                    <label class="form-check-label fw-bold" for="bocaPrinting">
+                                                        Enable Boca Printing
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="form-check mb-3">
+                                                    <input class="form-check-input" type="radio" name="deliveryOption" id="customerDistribution" value="customer">
+                                                    <label class="form-check-label fw-bold" for="customerDistribution">
+                                                        Enable Customer Distribution
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" id="cancelBtn">
+                                                <i class="fas fa-times me-1"></i>Cancel
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="confirmDeliverBtn">
+                                                <i class="fas fa-check me-1"></i>Confirm Delivery
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Second Confirmation Modal for Boca Printing -->
+                            <div class="modal fade" id="bocaConfirmModal" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>Confirmation Required
+                                            </h5>
+                                            <button type="button" class="btn-close" id="bocaConfirmCloseBtn" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <i class="fas fa-question-circle fa-3x mb-3" style="color: #9FC23F;"></i>
+                                            <h5>Are you sure you want to do that?</h5>
+                                            <p class="text-muted">Enabling Boca Printing will send the ticket to Boca printer. This action cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer justify-content-end">
+                                            <button type="button" class="btn btn-secondary" id="bocaNoBtn">
+                                                <i class="fas fa-times me-1"></i>No, Cancel
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="bocaYesBtn">
+                                                <i class="fas fa-check me-1"></i>Yes, Proceed
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                     </div>
 
@@ -712,75 +862,81 @@
                     <div class="address-box">
                         <h4><i class="fas fa-building me-2"></i>From</h4>
                         <!-- <p>
+                                <strong>{{ $record->company->name }}</strong><br>
+                                {{ $record->company->address }}<br>
+                                <i class="fas fa-envelope me-1"></i> {{ $record->company->email }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ $record->company->mobile_no }}
+                            </p> -->
+                        <p>
                             <strong>{{ $record->company->name }}</strong><br>
-                            {{ $record->company->address }}<br>
-                            <i class="fas fa-envelope me-1"></i> {{ $record->company->email }}<br>
-                            <i class="fas fa-phone me-1"></i> {{ $record->company->mobile_no }}
-                        </p> -->
-                          <p>
-                        <strong>{{ $record->company->name }}</strong><br>
-                        <strong>Email:</strong> {{ $record->company->email }}
-                        <br>
-                        <strong>Phone:</strong> {{ $record->company->mobile_no }}
-                        @if($record->company->address || $record->company->address_2)
+                            <strong>Email:</strong> {{ $record->company->email }}
                             <br>
-                            <strong>Address:</strong>
-                        @endif
+                            <strong>Phone:</strong> {{ $record->company->mobile_no }}
+                            @if ($record->company->address || $record->company->address_2)
+                                <br>
+                                <strong>Address:</strong>
+                            @endif
 
-                        @if($record->company->address)
-                            {{ $record->company->address }}<br>
-                        @endif
+                            @if ($record->company->address)
+                                {{ $record->company->address }}<br>
+                            @endif
 
-                        @if($record->company->address_2)
-                            {{ $record->company->address_2 }}<br>
-                        @endif
+                            @if ($record->company->address_2)
+                                {{ $record->company->address_2 }}<br>
+                            @endif
 
-                        @if($record->company->city || $record->company->state || $record->company->zip)
-                            {{ $record->company->city }}
-                            @if($record->company->state), {{ $record->company->state }}@endif
-                            @if($record->company->zip) {{ $record->company->zip }}@endif
-                            <br>
-                        @endif
+                            @if ($record->company->city || $record->company->state || $record->company->zip)
+                                {{ $record->company->city }}
+                                @if ($record->company->state)
+                                    , {{ $record->company->state }}
+                                @endif
+                                @if ($record->company->zip)
+                                    {{ $record->company->zip }}
+                                @endif
+                                <br>
+                            @endif
 
-                        @if($record->company->country)
-                            {{ $record->company->country }}
-                        @endif
-                    </p>
+                            @if ($record->company->country)
+                                {{ $record->company->country }}
+                            @endif
+                        </p>
                     </div>
 
                     <!-- <div class="address-box">
-                                                    <h4><i class="fas fa-users me-2"></i>Organization</h4>
-                                                    <p>
-                                                        <strong>{{ $record->organization->id ?? '-' }}</strong><br>
-                                                        <i class="fas fa-envelope me-1"></i> {{ optional($record->organization)->email ?? '-' }}<br>
-                                                        <i class="fas fa-phone me-1"></i> {{ optional($record->organization)->mobile_no ?? '-' }}
-                                                    </p>
-                                                </div> -->
+                                                        <h4><i class="fas fa-users me-2"></i>Organization</h4>
+                                                        <p>
+                                                            <strong>{{ $record->organization->id ?? '-' }}</strong><br>
+                                                            <i class="fas fa-envelope me-1"></i> {{ optional($record->organization)->email ?? '-' }}<br>
+                                                            <i class="fas fa-phone me-1"></i> {{ optional($record->organization)->mobile_no ?? '-' }}
+                                                        </p>
+                                                    </div> -->
 
                     <div class="address-box">
                         <h4><i class="fas fa-user me-2"></i>Invioce To</h4>
                         <!-- <p>
-                            <strong>{{ $record->client->name }}</strong><br>
-                            <i class="fas fa-envelope me-1"></i> {{ $record->client->email ?? '-' }}<br>
-                            <i class="fas fa-phone me-1"></i> {{ $record->client->mobile_no ?? '-' }}  
-                        </p> -->
-                           <p>
-                        <strong>{{ $record->organization->name }}</strong><br>
+                                <strong>{{ $record->client->name }}</strong><br>
+                                <i class="fas fa-envelope me-1"></i> {{ $record->client->email ?? '-' }}<br>
+                                <i class="fas fa-phone me-1"></i> {{ $record->client->mobile_no ?? '-' }}
+                            </p> -->
+                        <p>
+                            <strong>{{ $record->organization->name }}</strong><br>
 
 
-                        @if($estimate_user->first_name)
-                        <strong>Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
-                        <br>
-                        @endif
-                        @if($estimate_user->email)
-                        <strong>Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
-                        <br>
-                        @endif
-                        @if($estimate_user->mobile_no)
-                        <strong>Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
-                        <br>
-                        @endif
-                    </p>
+                            @if ($estimate_user->first_name)
+                                <strong>Name:</strong>
+                                {{ $estimate_user->first_name ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
+                                <br>
+                            @endif
+                            @if ($estimate_user->email)
+                                <strong>Email:</strong> {{ $estimate_user->email ? $estimate_user->email : 'N/A' }}
+                                <br>
+                            @endif
+                            @if ($estimate_user->mobile_no)
+                                <strong>Phone:</strong>
+                                {{ $estimate_user->mobile_no ? $estimate_user->mobile_no : 'N/A' }}
+                                <br>
+                            @endif
+                        </p>
                     </div>
                 </div>
 
@@ -910,45 +1066,45 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <!-- <table class="table table-hover">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Item Name</th>
-                                                                <th>Price</th>
-                                                                <th>Quantity</th>
-                                                                <th>Total Price</th>
-                                                                <th>Accepted By client</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @if ($record->items && $record->items->count())
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Item Name</th>
+                                                                    <th>Price</th>
+                                                                    <th>Quantity</th>
+                                                                    <th>Total Price</th>
+                                                                    <th>Accepted By client</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @if ($record->items && $record->items->count())
     @foreach ($record->items as $item)
     <tr>
-                                                                        <td>{{ $item->name }}  @if ($item->is_modified == 1)
+                                                                            <td>{{ $item->name }}  @if ($item->is_modified == 1)
     <span class="badge bg-warning">M</span>
     @endif
-                        </td>
-                                                                        <td class="fw-semibold">${{ number_format((float) ($item->price ?? 0), 2) }}</td>
-                                                                        <td>{{ $item->quantity ?? 0 }}</td>
-                                                                        <td class="fw-semibold">${{ number_format((float) ($item->total_price ?? 0), 2) }}</td>
-                                                                        <td>
-                                                                            @if ($item->is_accepted_by_client == 1)
+                            </td>
+                                                                            <td class="fw-semibold">${{ number_format((float) ($item->price ?? 0), 2) }}</td>
+                                                                            <td>{{ $item->quantity ?? 0 }}</td>
+                                                                            <td class="fw-semibold">${{ number_format((float) ($item->total_price ?? 0), 2) }}</td>
+                                                                            <td>
+                                                                                @if ($item->is_accepted_by_client == 1)
     <span class="badge bg-success">Yes</span>
 @else
     <span class="badge bg-danger">No</span>
     @endif
-                                                                        </td>
-                                                                    </tr>
+                                                                            </td>
+                                                                        </tr>
     @endforeach
 @else
     <tr>
-                                                                    <td colspan="9" class="text-center text-muted py-4">
-                                                                        <i class="fas fa-inbox fa-2x mb-2"></i><br>
-                                                                        <em>No products found.</em>
-                                                                    </td>
-                                                                </tr>
+                                                                        <td colspan="9" class="text-center text-muted py-4">
+                                                                            <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                                                            <em>No products found.</em>
+                                                                        </td>
+                                                                    </tr>
     @endif
-                                                        </tbody>
-                                                    </table> -->
+                                                            </tbody>
+                                                        </table> -->
                             <table class="table product-table" id="productTable">
                                 <thead>
                                     <tr>
@@ -1136,10 +1292,10 @@
                                                     @endif
                                                     @if ($invoice->status == 'unpaid' && $invoice->is_installment != 1)
                                                         <!-- <button type="button" class="btn btn-primary"
-                                                                    data-bs-toggle="modal" data-bs-target="#paymentModal{{ $invoice->id }}"
-                                                                    data-id="{{ $invoice->id }}">
-                                                                    Pay Now
-                                                                </button> -->
+                                                                        data-bs-toggle="modal" data-bs-target="#paymentModal{{ $invoice->id }}"
+                                                                        data-id="{{ $invoice->id }}">
+                                                                        Pay Now
+                                                                    </button> -->
                                                         Pending
                                                     @endif
                                                     <div class="modal fade" id="paymentModal{{ $invoice->id }}"
@@ -1434,10 +1590,10 @@
                                     <tr>
                                         <td class="text-nowrap">{{ $log->created_at->format('M d, Y H:i') }}</td>
                                         <!-- <td>
-                                                                            <span class="badge bg-light text-dark border">
-                                                                                {{ $log->user_name ?? 'System' }}
-                                                                            </span>
-                                                                        </td> -->
+                                                                                    <span class="badge bg-light text-dark border">
+                                                                                        {{ $log->user_name ?? 'System' }}
+                                                                                    </span>
+                                                                                </td> -->
                                         <td class="text-truncate" style="max-width: 300px;">
                                             {{ $log->description }}
                                         </td>
@@ -1476,55 +1632,55 @@
             @endif
 
             <!-- <div class="card">
-                                                                        <div class="card-header">
-                                                                            {{-- <i class="fas fa-clipboard-list me-2"></i> --}}
-                                                                            Terms & Notes
-                                                                        </div>
-                                                                        <div class="card-body">
-                                                                            <h5 class="fw-bold theme-text mb-3">Terms</h5>
-                                                                            <p class="mb-4">{!! $record->terms_and_condition ?: 'No terms specified.' !!}</p>
+                                                                                <div class="card-header">
+                                                                                    {{-- <i class="fas fa-clipboard-list me-2"></i> --}}
+                                                                                    Terms & Notes
+                                                                                </div>
+                                                                                <div class="card-body">
+                                                                                    <h5 class="fw-bold theme-text mb-3">Terms</h5>
+                                                                                    <p class="mb-4">{!! $record->terms_and_condition ?: 'No terms specified.' !!}</p>
 
-                                                                            <h5 class="fw-bold theme-text mb-3">Notes</h5>
-                                                                            <p>{!! $record->notes ?: 'No notes available.' !!}</p>
-                                                                        </div>
-                                                                    </div> -->
+                                                                                    <h5 class="fw-bold theme-text mb-3">Notes</h5>
+                                                                                    <p>{!! $record->notes ?: 'No notes available.' !!}</p>
+                                                                                </div>
+                                                                            </div> -->
 
 
 
             <!-- Company Edit Section -->
             @if (Auth::user()->user_type == 'company')
                 <!-- <div class="card">
-                                                                            <div class="card-header">
-                                                                                {{-- <i class="fas fa-edit me-2"></i> --}}
-                                                                                Edit Contract Details
-                                                                            </div>
-                                                                            <div class="card-body">
-                                                                                <form action="{{ route('contract.update-contract', $record->slug) }}" method="POST">
-                                                                                    @csrf
-                                                                                    <div class="row">
-                                                                                        <div class="col-md-12 mb-3">
-                                                                                            <label class="form-label">Event Date</label>
-                                                                                            <input type="date" class="form-control" value="{{ $record->event_date }}"
-                                                                                                name="event_date" required>
-                                                                                        </div>
+                                                                                    <div class="card-header">
+                                                                                        {{-- <i class="fas fa-edit me-2"></i> --}}
+                                                                                        Edit Contract Details
                                                                                     </div>
+                                                                                    <div class="card-body">
+                                                                                        <form action="{{ route('contract.update-contract', $record->slug) }}" method="POST">
+                                                                                            @csrf
+                                                                                            <div class="row">
+                                                                                                <div class="col-md-12 mb-3">
+                                                                                                    <label class="form-label">Event Date</label>
+                                                                                                    <input type="date" class="form-control" value="{{ $record->event_date }}"
+                                                                                                        name="event_date" required>
+                                                                                                </div>
+                                                                                            </div>
 
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label">Terms</label>
-                                                                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
+                                                                                            <div class="mb-3">
+                                                                                                <label class="form-label">Terms</label>
+                                                                                                <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
+                                                                                            </div>
+
+                                                                                            <div class="mb-3">
+                                                                                                <label class="form-label">Notes</label>
+                                                                                                <textarea name="notes" rows="3" class="form-control" placeholder="Enter any additional notes...">{{ $record->notes }}</textarea>
+                                                                                            </div>
+
+                                                                                            <button type="submit" class="btn btn-primary">
+                                                                                                <i class="fas fa-save me-1"></i>Save Changes
+                                                                                            </button>
+                                                                                        </form>
                                                                                     </div>
-
-                                                                                    <div class="mb-3">
-                                                                                        <label class="form-label">Notes</label>
-                                                                                        <textarea name="notes" rows="3" class="form-control" placeholder="Enter any additional notes...">{{ $record->notes }}</textarea>
-                                                                                    </div>
-
-                                                                                    <button type="submit" class="btn btn-primary">
-                                                                                        <i class="fas fa-save me-1"></i>Save Changes
-                                                                                    </button>
-                                                                                </form>
-                                                                            </div>
-                                                                        </div> -->
+                                                                                </div> -->
             @endif
 
             <!-- Client Actions -->
@@ -1553,7 +1709,8 @@
                                 </form>
                             </div>
                         @else
-                            <div class="alert {{ $record->is_accept == 'accepted' ? 'alert-success' : 'alert-danger' }} mb-0">
+                            <div
+                                class="alert {{ $record->is_accept == 'accepted' ? 'alert-success' : 'alert-danger' }} mb-0">
                                 <i
                                     class="fas {{ $record->is_accept == 'accepted' ? 'fa-check-circle' : 'fa-times-circle' }} me-2"></i>
                                 Contract has been {{ $record->is_accept == 'accepted' ? 'accepted' : 'rejected' }}.
@@ -1697,9 +1854,9 @@
                                                     <th id="md_tax_amount">$0.00</th>
                                                 </tr>
                                                 <!-- <tr id="discount_row">
-                                                        <th colspan="4" class="text-end">Discount:</th>
-                                                        <th id="discount_amount">$0.00</th>
-                                                    </tr> -->
+                                                                <th colspan="4" class="text-end">Discount:</th>
+                                                                <th id="discount_amount">$0.00</th>
+                                                            </tr> -->
                                                 <tr>
                                                     <th colspan="4" class="text-end">Total:</th>
                                                     <th id="md_total">$0.00</th>
@@ -1828,9 +1985,9 @@
                                                     <th id="md_tax_amount">$0.00</th>
                                                 </tr>
                                                 <!-- <tr id="discount_row">
-                                                                                        <th colspan="4" class="text-end">Discount:</th>
-                                                                                        <th id="discount_amount">$0.00</th>
-                                                                                    </tr> -->
+                                                                                                <th colspan="4" class="text-end">Discount:</th>
+                                                                                                <th id="discount_amount">$0.00</th>
+                                                                                            </tr> -->
                                                 <tr>
                                                     <th colspan="4" class="text-end">Total:</th>
                                                     <th id="md_tx_total">$0.00</th>
@@ -1905,9 +2062,9 @@
                                                     <th id="md_edit_tax_amount">$0.00</th>
                                                 </tr>
                                                 <!-- <tr id="discount_row">
-                                                                                        <th colspan="4" class="text-end">Discount:</th>
-                                                                                        <th id="discount_amount">$0.00</th>
-                                                                                    </tr> -->
+                                                                                                <th colspan="4" class="text-end">Discount:</th>
+                                                                                                <th id="discount_amount">$0.00</th>
+                                                                                            </tr> -->
                                                 <tr>
                                                     <th colspan="4" class="text-end">Total:</th>
                                                     <th id="md_edit_tx_total">$0.00</th>
@@ -2022,5 +2179,284 @@
                         });
                 });
             });
+
+            (function() {
+                'use strict';
+                
+                document.addEventListener('DOMContentLoaded', function() {
+                    // DOM Elements
+                    const deliverBtn = document.getElementById('deliverTicketBtn');
+                    const modal = document.getElementById('confirmationModal');
+                    const bocaConfirmModal = document.getElementById('bocaConfirmModal');
+                    const closeBtn = document.getElementById('modalCloseBtn');
+                    const cancelBtn = document.getElementById('cancelBtn');
+                    const confirmBtn = document.getElementById('confirmDeliverBtn');
+                    const bocaRadio = document.getElementById('bocaPrinting');
+                    const customerRadio = document.getElementById('customerDistribution');
+                    
+                    // Boca confirmation modal buttons
+                    const bocaYesBtn = document.getElementById('bocaYesBtn');
+                    const bocaNoBtn = document.getElementById('bocaNoBtn');
+                    const bocaConfirmCloseBtn = document.getElementById('bocaConfirmCloseBtn');
+                    
+                    let modalInstance = null;
+                    let bocaModalInstance = null;
+                    let pendingAction = null; // Store pending action
+                    
+                    // Initialize modals if Bootstrap is available
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        if (modal) modalInstance = new bootstrap.Modal(modal);
+                        if (bocaConfirmModal) bocaModalInstance = new bootstrap.Modal(bocaConfirmModal);
+                    }
+                    
+                    // Function to close main modal
+                    function closeModal() {
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        } else if (modal) {
+                            modal.style.display = 'none';
+                            modal.classList.remove('show');
+                            document.body.classList.remove('modal-open');
+                            const backdrop = document.querySelector('.modal-backdrop');
+                            if (backdrop) backdrop.remove();
+                        }
+                    }
+                    
+                    // Function to open main modal
+                    function openModal() {
+                        if (modalInstance) {
+                            modalInstance.show();
+                        } else if (modal) {
+                            modal.style.display = 'block';
+                            modal.classList.add('show');
+                            document.body.classList.add('modal-open');
+                            if (!document.querySelector('.modal-backdrop')) {
+                                const backdrop = document.createElement('div');
+                                backdrop.className = 'modal-backdrop fade show';
+                                document.body.appendChild(backdrop);
+                                backdrop.addEventListener('click', closeModal);
+                            }
+                        }
+                    }
+                    
+                    // Function to open Boca confirmation modal
+                    function openBocaConfirmModal() {
+                        if (bocaModalInstance) {
+                            bocaModalInstance.show();
+                        } else if (bocaConfirmModal) {
+                            bocaConfirmModal.style.display = 'block';
+                            bocaConfirmModal.classList.add('show');
+                            document.body.classList.add('modal-open');
+                            if (!document.querySelector('.modal-backdrop')) {
+                                const backdrop = document.createElement('div');
+                                backdrop.className = 'modal-backdrop fade show';
+                                document.body.appendChild(backdrop);
+                                backdrop.addEventListener('click', closeBocaConfirmModal);
+                            }
+                        }
+                    }
+                    
+                    // Function to close Boca confirmation modal
+                    function closeBocaConfirmModal() {
+                        if (bocaModalInstance) {
+                            bocaModalInstance.hide();
+                        } else if (bocaConfirmModal) {
+                            bocaConfirmModal.style.display = 'none';
+                            bocaConfirmModal.classList.remove('show');
+                            const backdrops = document.querySelectorAll('.modal-backdrop');
+                            if (backdrops.length > 1) {
+                                backdrops[backdrops.length - 1].remove();
+                            }
+                        }
+                    }
+                    
+                    // Reset modal state
+                    function resetModalState() {
+                        if (bocaRadio) bocaRadio.checked = false;
+                        if (customerRadio) customerRadio.checked = false;
+                    }
+                    
+                    // Enable Boca Printing (actual function)
+                    function enableBocaPrinting() {
+                        showNotification('Enabling Boca Printing...', 'info');
+                        
+                        setTimeout(() => {
+                            showNotification('✅ Boca Printing enabled successfully!', 'success');
+                            updateTicketStatus('boca_printing');
+                            logActivity('Boca Printing enabled for ticket');
+                        }, 1000);
+                    }
+                    
+                    // Enable Customer Distribution
+                    function enableCustomerDistribution() {
+                        showNotification('Enabling Customer Distribution...', 'info');
+                        
+                        setTimeout(() => {
+                            showNotification('✅ Customer Distribution enabled successfully!', 'success');
+                            updateTicketStatus('customer_distribution');
+                            logActivity('Customer Distribution enabled for ticket');
+                        }, 1000);
+                    }
+                    
+                    function updateTicketStatus(mode) {
+                        const statusBadge = document.querySelector('.ticket-status');
+                        if (statusBadge) {
+                            if (mode === 'boca_printing') {
+                                statusBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="fas fa-print me-1"></i>Boca Printing Enabled</span>';
+                            } else {
+                                statusBadge.innerHTML = '<span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Customer Distribution Enabled</span>';
+                            }
+                        }
+                    }
+                    
+                    function logActivity(message) {
+                        console.log('[Activity Log]', message);
+                    }
+                    
+                    function showNotification(message, type) {
+                        const notification = document.createElement('div');
+                        notification.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+                                <span>${message}</span>
+                            </div>
+                        `;
+                        
+                        Object.assign(notification.style, {
+                            position: 'fixed',
+                            top: '20px',
+                            right: '20px',
+                            padding: '12px 20px',
+                            backgroundColor: type === 'success' ? '#28a745' : '#9FC23F',
+                            color: 'white',
+                            borderRadius: '8px',
+                            zIndex: '10000',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            animation: 'slideInRight 0.3s ease'
+                        });
+                        
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.animation = 'fadeOut 0.3s ease';
+                            setTimeout(() => {
+                                if (notification.parentNode) {
+                                    notification.parentNode.removeChild(notification);
+                                }
+                            }, 300);
+                        }, 3000);
+                        
+                        notification.addEventListener('click', () => {
+                            if (notification.parentNode) {
+                                notification.parentNode.removeChild(notification);
+                            }
+                        });
+                    }
+                    
+                    // Open main modal when Deliver Ticket button is clicked
+                    if (deliverBtn) {
+                        deliverBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            resetModalState();
+                            openModal();
+                        });
+                    }
+                    
+                    // Close main modal buttons
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            closeModal();
+                        });
+                    }
+                    
+                    if (cancelBtn) {
+                        cancelBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            closeModal();
+                        });
+                    }
+                    
+                    // ESC key handler
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') {
+                            if (modal && modal.style.display === 'block') {
+                                closeModal();
+                            }
+                            if (bocaConfirmModal && bocaConfirmModal.style.display === 'block') {
+                                closeBocaConfirmModal();
+                            }
+                        }
+                    });
+                    
+                    // Click outside to close
+                    if (modal) {
+                        modal.addEventListener('click', function(e) {
+                            if (e.target === modal) {
+                                closeModal();
+                            }
+                        });
+                    }
+                    
+                    if (bocaConfirmModal) {
+                        bocaConfirmModal.addEventListener('click', function(e) {
+                            if (e.target === bocaConfirmModal) {
+                                closeBocaConfirmModal();
+                            }
+                        });
+                    }
+                    
+                    // Confirm Delivery button handler
+                    if (confirmBtn) {
+                        confirmBtn.addEventListener('click', function() {
+                            const isBocaSelected = bocaRadio ? bocaRadio.checked : false;
+                            const isCustomerSelected = customerRadio ? customerRadio.checked : false;
+                            
+                            if (!isBocaSelected && !isCustomerSelected) {
+                                showNotification('Please select a delivery option first!', 'error');
+                                return;
+                            }
+                            
+                            if (isBocaSelected) {
+                                // Boca Printing selected - Show confirmation popup
+                                closeModal(); // Close main modal
+                                openBocaConfirmModal(); // Open confirmation modal
+                            } else if (isCustomerSelected) {
+                                // Customer Distribution - Direct action
+                                enableCustomerDistribution();
+                                closeModal();
+                            }
+                        });
+                    }
+                    
+                    // Boca confirmation modal - YES button
+                    if (bocaYesBtn) {
+                        bocaYesBtn.addEventListener('click', function() {
+                            closeBocaConfirmModal();
+                            enableBocaPrinting();
+                        });
+                    }
+                    
+                    // Boca confirmation modal - NO button
+                    if (bocaNoBtn) {
+                        bocaNoBtn.addEventListener('click', function() {
+                            closeBocaConfirmModal();
+                            // Re-open main modal so user can select again
+                            openModal();
+                        });
+                    }
+                    
+                    // Boca confirmation modal - Close button
+                    if (bocaConfirmCloseBtn) {
+                        bocaConfirmCloseBtn.addEventListener('click', function() {
+                            closeBocaConfirmModal();
+                            openModal();
+                        });
+                    }
+                });
+            })();
         </script>
     @endsection
