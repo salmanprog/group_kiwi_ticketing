@@ -7377,6 +7377,24 @@ a.btn.btn-xs.btn-info:hover {
   color: #78350f;
 }
 
+.event-cabana {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 0.375rem;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: #e8f0fe;
+  color: #78350f;
+  border: 1px solid #fef3c7;
+  margin-bottom: 6px;
+}
+
+.event-cabana .fc-event-title.fc-sticky {
+  color: #2553ca;
+}
+
 .modal {
   backdrop-filter: blur(10px);
 }

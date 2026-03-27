@@ -595,11 +595,29 @@
                 font-size: 13px;
             }
         }
+
         .fbd-f .modal-footer {
             border: 0;
         }
+
         .spc {
             float: right;
+        }
+
+        .sdt-h {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sdt {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn.btn-danger{
+            font-weight: 600;
+            font-size: 14px;
+            padding: 9px 20px;
         }
     </style>
 
@@ -609,28 +627,35 @@
 
                 <!-- Contract s -->
                 <div class="contract-header">
-                    <div class="contract-title">
-                        <i class="fas fa-file-contract me-2"></i>Contract
-                    </div>
-                    <div class="contract-title">
-                        <a href="{{ route('contract.send-ticket-list', $record->slug) }}" class="btn btn-primary">
-                            <i class="fas fa-ticket-alt me-2"></i>Send Ticket
-                        </a>
+                    <div class="sdt-h">
+                        <div class="contract-title">
+                            <i class="fas fa-file-contract me-2"></i>Contract
+                        </div>
+                        <div class="sdt">
+                            <div class="contract-title">
+                                <a href="{{ route('contract.send-ticket-list', $record->slug) }}" class="btn btn-primary">
+                                    <i class="fas fa-ticket-alt me-2"></i>Send Ticket
+                                </a>
+                            </div>
+
+                            @if ($record->ticket_enable == 0)
+                                <div class="contract-title">
+                                    <a href="{{ route('contract.client-ticket-enable', $record->slug) }}"
+                                        class="btn btn-primary">
+                                        <i class="fas fa-ticket-alt me-2"></i>Client Ticket Enable
+                                    </a>
+                                </div>
+                            @else
+                                <div class="contract-title">
+                                    <a href="{{ route('contract.client-ticket-disable', $record->slug) }}"
+                                        class="btn btn-danger">
+                                        <i class="fas fa-ticket-alt me-2"></i>Client Ticket Disable
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
-                    @if($record->ticket_enable == 0)
-                    <div class="contract-title">
-                        <a href="{{ route('contract.client-ticket-enable', $record->slug) }}" class="btn btn-primary">
-                            <i class="fas fa-ticket-alt me-2"></i>Client Ticket Enable
-                        </a>
-                    </div>
-                    @else
-                    <div class="contract-title">
-                        <a href="{{ route('contract.client-ticket-disable', $record->slug) }}" class="btn btn-danger">
-                            <i class="fas fa-ticket-alt me-2"></i>Client Ticket Disable
-                        </a>
-                    </div>
-                    @endif
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show">
                             <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
@@ -695,13 +720,13 @@
                     </div>
 
                     <!-- <div class="address-box">
-                                            <h4><i class="fas fa-users me-2"></i>Organization</h4>
-                                            <p>
-                                                <strong>{{ $record->organization->id ?? '-' }}</strong><br>
-                                                <i class="fas fa-envelope me-1"></i> {{ optional($record->organization)->email ?? '-' }}<br>
-                                                <i class="fas fa-phone me-1"></i> {{ optional($record->organization)->mobile_no ?? '-' }}
-                                            </p>
-                                        </div> -->
+                                                    <h4><i class="fas fa-users me-2"></i>Organization</h4>
+                                                    <p>
+                                                        <strong>{{ $record->organization->id ?? '-' }}</strong><br>
+                                                        <i class="fas fa-envelope me-1"></i> {{ optional($record->organization)->email ?? '-' }}<br>
+                                                        <i class="fas fa-phone me-1"></i> {{ optional($record->organization)->mobile_no ?? '-' }}
+                                                    </p>
+                                                </div> -->
 
                     <div class="address-box">
                         <h4><i class="fas fa-user me-2"></i>Invioce To</h4>
@@ -781,7 +806,7 @@
                                     data-bs-target="#modifyContractModal">
                                     <i class="fas fa-plus me-1"></i>Modify Contract
                                 </button>
-                            </div> 
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -839,45 +864,45 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <!-- <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Item Name</th>
-                                                        <th>Price</th>
-                                                        <th>Quantity</th>
-                                                        <th>Total Price</th>
-                                                        <th>Accepted By client</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if ($record->items && $record->items->count())
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Item Name</th>
+                                                                <th>Price</th>
+                                                                <th>Quantity</th>
+                                                                <th>Total Price</th>
+                                                                <th>Accepted By client</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if ($record->items && $record->items->count())
     @foreach ($record->items as $item)
     <tr>
-                                                                <td>{{ $item->name }}  @if ($item->is_modified == 1)
+                                                                        <td>{{ $item->name }}  @if ($item->is_modified == 1)
     <span class="badge bg-warning">M</span>
     @endif
-                </td>
-                                                                <td class="fw-semibold">${{ number_format((float) ($item->price ?? 0), 2) }}</td>
-                                                                <td>{{ $item->quantity ?? 0 }}</td>
-                                                                <td class="fw-semibold">${{ number_format((float) ($item->total_price ?? 0), 2) }}</td>
-                                                                <td>
-                                                                    @if ($item->is_accepted_by_client == 1)
+                        </td>
+                                                                        <td class="fw-semibold">${{ number_format((float) ($item->price ?? 0), 2) }}</td>
+                                                                        <td>{{ $item->quantity ?? 0 }}</td>
+                                                                        <td class="fw-semibold">${{ number_format((float) ($item->total_price ?? 0), 2) }}</td>
+                                                                        <td>
+                                                                            @if ($item->is_accepted_by_client == 1)
     <span class="badge bg-success">Yes</span>
 @else
     <span class="badge bg-danger">No</span>
     @endif
-                                                                </td>
-                                                            </tr>
+                                                                        </td>
+                                                                    </tr>
     @endforeach
 @else
     <tr>
-                                                            <td colspan="9" class="text-center text-muted py-4">
-                                                                <i class="fas fa-inbox fa-2x mb-2"></i><br>
-                                                                <em>No products found.</em>
-                                                            </td>
-                                                        </tr>
+                                                                    <td colspan="9" class="text-center text-muted py-4">
+                                                                        <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                                                        <em>No products found.</em>
+                                                                    </td>
+                                                                </tr>
     @endif
-                                                </tbody>
-                                            </table> -->
+                                                        </tbody>
+                                                    </table> -->
                             <table class="table product-table" id="productTable">
                                 <thead>
                                     <tr>
@@ -917,30 +942,32 @@
                                                                 @foreach ($item->itemTaxes as $tax)
                                                                     {"id":{{ $tax->id }},"name":"{{ $tax->name }}","percent":{{ $tax->percentage }}}@if (!$loop->last),@endif @endforeach
                                                             ]'>
-                                                                Apply Taxes:
-                                                                @foreach($item->itemTaxes as $tax)
-                                                                    {{ $tax->name }}@if(!$loop->last), @endif
-                                                                @endforeach
-                                                            </small>
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ ($item->description) ?? 'N/A' }}</td>
-                                                    <td>{{ $item->quantity }}</td>
-                                                    <td>${{ number_format($item->price, 2) }}</td>
-                                                    <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr class="no-items">
-                                                <td colspan="5" class="text-center">No products added yet.</td>
+                                                            Apply Taxes:
+                                                            @foreach ($item->itemTaxes as $tax)
+                                                                {{ $tax->name }}@if (!$loop->last)
+                                                                    ,
+                                                                @endif
+                                                            @endforeach
+                                                        </small>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $item->description ?? 'N/A' }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>${{ number_format($item->price, 2) }}</td>
+                                                <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
                                             </tr>
-                                        @endif
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="3" class="">Subtotal:</th>
-                                            <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
+                                        @endforeach
+                                    @else
+                                        <tr class="no-items">
+                                            <td colspan="5" class="text-center">No products added yet.</td>
                                         </tr>
+                                    @endif
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" class="">Subtotal:</th>
+                                        <th id="subtotal">${{ number_format($subtotal, 2) }}</th>
+                                    </tr>
 
                                     @if ($estimate && $estimate->taxes->count())
                                         <tr>
@@ -1063,14 +1090,15 @@
                                                     @endif
                                                     @if ($invoice->status == 'unpaid' && $invoice->is_installment != 1)
                                                         <!-- <button type="button" class="btn btn-primary"
-                                                            data-bs-toggle="modal" data-bs-target="#paymentModal{{ $invoice->id }}"
-                                                            data-id="{{ $invoice->id }}">
-                                                            Pay Now
-                                                        </button> -->
+                                                                    data-bs-toggle="modal" data-bs-target="#paymentModal{{ $invoice->id }}"
+                                                                    data-id="{{ $invoice->id }}">
+                                                                    Pay Now
+                                                                </button> -->
                                                         Pending
                                                     @endif
-                                                    <div class="modal fade" id="paymentModal{{ $invoice->id }}" tabindex="-1"
-                                                        aria-labelledby="paymentModalLabel" aria-hidden="true">
+                                                    <div class="modal fade" id="paymentModal{{ $invoice->id }}"
+                                                        tabindex="-1" aria-labelledby="paymentModalLabel"
+                                                        aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <form action="{{ route('update-invoice-status') }}"
                                                                 method="POST">
@@ -1360,10 +1388,10 @@
                                     <tr>
                                         <td class="text-nowrap">{{ $log->created_at->format('M d, Y H:i') }}</td>
                                         <!-- <td>
-                                                            <span class="badge bg-light text-dark border">
-                                                                {{ $log->user_name ?? 'System' }}
-                                                            </span>
-                                                        </td> -->
+                                                                            <span class="badge bg-light text-dark border">
+                                                                                {{ $log->user_name ?? 'System' }}
+                                                                            </span>
+                                                                        </td> -->
                                         <td class="text-truncate" style="max-width: 300px;">
                                             {{ $log->description }}
                                         </td>
@@ -1402,55 +1430,55 @@
             @endif
 
             <!-- <div class="card">
-                                                        <div class="card-header">
-                                                            {{-- <i class="fas fa-clipboard-list me-2"></i> --}}
-                                                            Terms & Notes
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <h5 class="fw-bold theme-text mb-3">Terms</h5>
-                                                            <p class="mb-4">{!! $record->terms_and_condition ?: 'No terms specified.' !!}</p>
+                                                                        <div class="card-header">
+                                                                            {{-- <i class="fas fa-clipboard-list me-2"></i> --}}
+                                                                            Terms & Notes
+                                                                        </div>
+                                                                        <div class="card-body">
+                                                                            <h5 class="fw-bold theme-text mb-3">Terms</h5>
+                                                                            <p class="mb-4">{!! $record->terms_and_condition ?: 'No terms specified.' !!}</p>
 
-                                                            <h5 class="fw-bold theme-text mb-3">Notes</h5>
-                                                            <p>{!! $record->notes ?: 'No notes available.' !!}</p>
-                                                        </div>
-                                                    </div> -->
+                                                                            <h5 class="fw-bold theme-text mb-3">Notes</h5>
+                                                                            <p>{!! $record->notes ?: 'No notes available.' !!}</p>
+                                                                        </div>
+                                                                    </div> -->
 
 
 
             <!-- Company Edit Section -->
             @if (Auth::user()->user_type == 'company')
                 <!-- <div class="card">
-                                                            <div class="card-header">
-                                                                {{-- <i class="fas fa-edit me-2"></i> --}}
-                                                                Edit Contract Details
-                                                            </div>
-                                                            <div class="card-body">
-                                                                <form action="{{ route('contract.update-contract', $record->slug) }}" method="POST">
-                                                                    @csrf
-                                                                    <div class="row">
-                                                                        <div class="col-md-12 mb-3">
-                                                                            <label class="form-label">Event Date</label>
-                                                                            <input type="date" class="form-control" value="{{ $record->event_date }}"
-                                                                                name="event_date" required>
-                                                                        </div>
-                                                                    </div>
+                                                                            <div class="card-header">
+                                                                                {{-- <i class="fas fa-edit me-2"></i> --}}
+                                                                                Edit Contract Details
+                                                                            </div>
+                                                                            <div class="card-body">
+                                                                                <form action="{{ route('contract.update-contract', $record->slug) }}" method="POST">
+                                                                                    @csrf
+                                                                                    <div class="row">
+                                                                                        <div class="col-md-12 mb-3">
+                                                                                            <label class="form-label">Event Date</label>
+                                                                                            <input type="date" class="form-control" value="{{ $record->event_date }}"
+                                                                                                name="event_date" required>
+                                                                                        </div>
+                                                                                    </div>
 
-                                                                    <div class="mb-3">
-                                                                        <label class="form-label">Terms</label>
-                                                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
-                                                                    </div>
+                                                                                    <div class="mb-3">
+                                                                                        <label class="form-label">Terms</label>
+                                                                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter contract terms...">{{ $record->terms_and_condition }}</textarea>
+                                                                                    </div>
 
-                                                                    <div class="mb-3">
-                                                                        <label class="form-label">Notes</label>
-                                                                        <textarea name="notes" rows="3" class="form-control" placeholder="Enter any additional notes...">{{ $record->notes }}</textarea>
-                                                                    </div>
+                                                                                    <div class="mb-3">
+                                                                                        <label class="form-label">Notes</label>
+                                                                                        <textarea name="notes" rows="3" class="form-control" placeholder="Enter any additional notes...">{{ $record->notes }}</textarea>
+                                                                                    </div>
 
-                                                                    <button type="submit" class="btn btn-primary">
-                                                                        <i class="fas fa-save me-1"></i>Save Changes
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        </div> -->
+                                                                                    <button type="submit" class="btn btn-primary">
+                                                                                        <i class="fas fa-save me-1"></i>Save Changes
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div> -->
             @endif
 
             <!-- Client Actions -->
@@ -1492,142 +1520,146 @@
             </div>
             </div>
 
-  <div class="modal fade" id="modifyContractModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg" style="max-width: 90%">
-        <form id="contractForm" action="{{ route('contract.modify.product') }}" method="POST">
-            @csrf
-            <input type="hidden" name="contract_id" value="{{ $record->id }}">
-            
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modify Contract</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div id="contractMessages"></div>
-                <div class="modal-body">
-                    
-                    <div class="row align-items-end mb-4 border-bottom pb-3">
-                        <div class="product-selection-section">
-                            <div class="row g-3 align-items-end">
-                                <!-- Product Dropdown -->
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label fw-semibold text-dark mb-2">
-                                            <i class="fas fa-box me-1 text-primary"></i>Select Product
-                                        </label>
-                                        <select id="product" name="product" class="form-select shadow-sm">
-                                            <option value="" data-price="0">Choose a product...</option>
-                                            @foreach ($products as $product)
-                                                <option value="{{ $product->id }}" data-price="{{ $product->price }}"
-                                                    data-name="{{ $product->name }}">
-                                                    {{ $product->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <input type="hidden" id="product_name" name="product_name" value="">
-                                    </div>
-                                </div>
+            <div class="modal fade" id="modifyContractModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="max-width: 90%">
+                    <form id="contractForm" action="{{ route('contract.modify.product') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="contract_id" value="{{ $record->id }}">
 
-                                <!-- Quantity Input -->
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label class="form-label fw-semibold text-dark mb-2">
-                                            <i class="fas fa-sort-amount-up me-1 text-primary"></i>Quantity
-                                        </label>
-                                        <input type="number" id="product_qty" name="product_qty" 
-                                            class="form-control shadow-sm" 
-                                            value="1" min="1" placeholder="Enter qty">
-                                    </div>
-                                </div>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Modify Contract</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div id="contractMessages"></div>
+                            <div class="modal-body">
 
-                                <!-- Price Display -->
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label class="form-label fw-semibold text-dark mb-2">
-                                            <i class="fas fa-tag me-1 text-primary"></i>Unit Price
-                                        </label>
-                                        <div class="input-group shadow-sm">
-                                            <span class="input-group-text bg-light border-end-0">$</span>
-                                            <input type="text" id="product_price" name="product_price" 
-                                                class="form-control bg-light" 
-                                                readonly value="0.00" placeholder="0.00">
+                                <div class="row align-items-end mb-4 border-bottom pb-3">
+                                    <div class="product-selection-section">
+                                        <div class="row g-3 align-items-end">
+                                            <!-- Product Dropdown -->
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="form-label fw-semibold text-dark mb-2">
+                                                        <i class="fas fa-box me-1 text-primary"></i>Select Product
+                                                    </label>
+                                                    <select id="product" name="product" class="form-select shadow-sm">
+                                                        <option value="" data-price="0">Choose a product...</option>
+                                                        @foreach ($products as $product)
+                                                            <option value="{{ $product->id }}"
+                                                                data-price="{{ $product->price }}"
+                                                                data-name="{{ $product->name }}">
+                                                                {{ $product->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <input type="hidden" id="product_name" name="product_name"
+                                                        value="">
+                                                </div>
+                                            </div>
+
+                                            <!-- Quantity Input -->
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class="form-label fw-semibold text-dark mb-2">
+                                                        <i class="fas fa-sort-amount-up me-1 text-primary"></i>Quantity
+                                                    </label>
+                                                    <input type="number" id="product_qty" name="product_qty"
+                                                        class="form-control shadow-sm" value="1" min="1"
+                                                        placeholder="Enter qty">
+                                                </div>
+                                            </div>
+
+                                            <!-- Price Display -->
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class="form-label fw-semibold text-dark mb-2">
+                                                        <i class="fas fa-tag me-1 text-primary"></i>Unit Price
+                                                    </label>
+                                                    <div class="input-group shadow-sm">
+                                                        <span class="input-group-text bg-light border-end-0">$</span>
+                                                        <input type="text" id="product_price" name="product_price"
+                                                            class="form-control bg-light" readonly value="0.00"
+                                                            placeholder="0.00">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Action Buttons -->
+                                            <div class="col-md-4">
+                                                <div class="d-flex flex-column gap-2">
+                                                    <!-- Add to List Button -->
+                                                    <button type="submit"
+                                                        class="btn btn-primary py-2 px-4 fw-semibold shadow-sm">
+                                                        <i class="fas fa-plus-circle me-2"></i>Add to List
+                                                    </button>
+
+                                                    <!-- Tax Button Row -->
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <button class="btn btn-outline-secondary btn-sm flex-grow-1 py-2"
+                                                            type="button" data-bs-toggle="modal" data-bs-target="#taxModal"
+                                                            data-id="{{ $record->id }}"
+                                                            data-url="{{ route('contract.modify.details', $record->id) }}"
+                                                            data-csrf="{{ csrf_token() }}">
+                                                            <i class="fas fa-percentage me-1"></i>Add Tax / Discount
+                                                        </button>
+
+                                                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill border">
+                                                            <i class="fas fa-info-circle me-1 text-info"></i>Optional
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Optional: Quick Summary Line -->
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <div class="d-flex justify-content-end align-items-center gap-3">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>Products will be added to list below
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Action Buttons -->
-                                <div class="col-md-4">
-                                    <div class="d-flex flex-column gap-2">
-                                        <!-- Add to List Button -->
-                                        <button type="submit" class="btn btn-primary py-2 px-4 fw-semibold shadow-sm">
-                                            <i class="fas fa-plus-circle me-2"></i>Add to List
-                                        </button>
-                                        
-                                        <!-- Tax Button Row -->
-                                        <div class="d-flex align-items-center gap-2">
-                                            <button class="btn btn-outline-secondary btn-sm flex-grow-1 py-2" 
-                                                    type="button" data-bs-toggle="modal"
-                                                    data-bs-target="#taxModal" data-id="{{ $record->id }}"
-                                                    data-url="{{ route('contract.modify.details', $record->id) }}"
-                                                    data-csrf="{{ csrf_token() }}">
-                                                <i class="fas fa-percentage me-1"></i>Add Tax / Discount
-                                            </button>
-                                            
-                                            <span class="badge bg-light text-dark px-3 py-2 rounded-pill border">
-                                                <i class="fas fa-info-circle me-1 text-info"></i>Optional
-                                            </span>
+                                    <div id="contractLoader"
+                                        style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:1000;text-align:center;padding-top:50px;">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Optional: Quick Summary Line -->
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <div class="d-flex justify-content-end align-items-center gap-3">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i>Products will be added to list below
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="contractLoader" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.7);z-index:1000;text-align:center;padding-top:50px;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table product-table" id="md_productTable">
-                                <thead>
-                                    <tr>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Product Price</th>
-                                        <th>Total</th>
-                                        <th class="no-print">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th colspan="4" class="text-end">Subtotal:</th>
-                                        <th id="md_subtotal">$0.00</th>
-                                    </tr>
-                                    <tr id="tax_row">
-                                        <th colspan="4" class="text-end">Tax:</th>
-                                        <th id="md_tax_amount">$0.00</th>
-                                    </tr>
-                                    <!-- <tr id="discount_row">
-                                        <th colspan="4" class="text-end">Discount:</th>
-                                        <th id="discount_amount">$0.00</th>
-                                    </tr> -->
-                                    <tr>
-                                        <th colspan="4" class="text-end">Total:</th>
-                                        <th id="md_total">$0.00</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    <div class="table-responsive">
+                                        <table class="table product-table" id="md_productTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Product Price</th>
+                                                    <th>Total</th>
+                                                    <th class="no-print">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="4" class="text-end">Subtotal:</th>
+                                                    <th id="md_subtotal">$0.00</th>
+                                                </tr>
+                                                <tr id="tax_row">
+                                                    <th colspan="4" class="text-end">Tax:</th>
+                                                    <th id="md_tax_amount">$0.00</th>
+                                                </tr>
+                                                <!-- <tr id="discount_row">
+                                                        <th colspan="4" class="text-end">Discount:</th>
+                                                        <th id="discount_amount">$0.00</th>
+                                                    </tr> -->
+                                                <tr>
+                                                    <th colspan="4" class="text-end">Total:</th>
+                                                    <th id="md_total">$0.00</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
 
                                     </div>
                     </form>
@@ -1659,7 +1691,8 @@
                                     <input type="hidden" name="remaining_total" id="remaining_total" value="0">
                                 </div>
                             </div>
-                            <button type="submit" id="savemodifyPaymentScheduleBtn" class="btn btn-warning btn-sm no-print spc">
+                            <button type="submit" id="savemodifyPaymentScheduleBtn"
+                                class="btn btn-warning btn-sm no-print spc">
                                 <span class="btn-schedule-text">Save Payment Schedule</span>
                                 <span class="btn-schedule-loading" style="display:none;">
                                     <span class="schedule-spinner"></span> Saving…
@@ -1667,7 +1700,8 @@
                             </button>
                         </form>
                     </div>
-                    <form id="clientConfirmationForm" method="POST" action="{{ route('contract.modify.save') }}" class="fbd-f">
+                    <form id="clientConfirmationForm" method="POST" action="{{ route('contract.modify.save') }}"
+                        class="fbd-f">
                         <input type="hidden" name="cont_id" id="cont_id" value="{{ $record->id }}">
                         <div class="mt-4 pt-3 border-top">
                             <label class="form-label font-weight-bold">Client Confirmation Status</label>
@@ -1748,9 +1782,9 @@
                                                     <th id="md_tax_amount">$0.00</th>
                                                 </tr>
                                                 <!-- <tr id="discount_row">
-                                                                        <th colspan="4" class="text-end">Discount:</th>
-                                                                        <th id="discount_amount">$0.00</th>
-                                                                    </tr> -->
+                                                                                        <th colspan="4" class="text-end">Discount:</th>
+                                                                                        <th id="discount_amount">$0.00</th>
+                                                                                    </tr> -->
                                                 <tr>
                                                     <th colspan="4" class="text-end">Total:</th>
                                                     <th id="md_tx_total">$0.00</th>
@@ -1825,9 +1859,9 @@
                                                     <th id="md_edit_tax_amount">$0.00</th>
                                                 </tr>
                                                 <!-- <tr id="discount_row">
-                                                                        <th colspan="4" class="text-end">Discount:</th>
-                                                                        <th id="discount_amount">$0.00</th>
-                                                                    </tr> -->
+                                                                                        <th colspan="4" class="text-end">Discount:</th>
+                                                                                        <th id="discount_amount">$0.00</th>
+                                                                                    </tr> -->
                                                 <tr>
                                                     <th colspan="4" class="text-end">Total:</th>
                                                     <th id="md_edit_tx_total">$0.00</th>

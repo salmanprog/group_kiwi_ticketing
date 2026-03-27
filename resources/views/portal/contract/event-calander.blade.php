@@ -420,20 +420,7 @@ function openCabanaModal(cabana, date) {
     padding: 10px; 
 }
 
-.event-cabana {
-    background-color: rgba(90, 196, 148, 1)important;  /* matches legend */
-    color: #fff !important;
-    border-radius: 2px;
-    font-weight: 600;
-    text-align: center;
-    padding: 2px 4px;
-}
 
-.event-cabana:hover {
-    transform: scale(1.03);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
 
 .for-fonts-css span.badge-cabana {
     background-color: orange;

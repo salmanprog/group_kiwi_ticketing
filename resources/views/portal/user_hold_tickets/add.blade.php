@@ -391,7 +391,7 @@
             .select2-container--default .select2-selection--single .select2-selection__rendered {
                 color: #2c3e50 !important;
                 font-size: 0.95rem !important;
-                padding: 5px 15px !important;
+                padding: 5px 0px !important;
                 line-height: 16px !important;
                 font-weight: 500 !important;
             }

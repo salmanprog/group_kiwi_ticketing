@@ -143,6 +143,11 @@
     padding-top: 90px;
 }
 
+.form-check-input {
+    margin-top: 7px;
+    margin-left: 0rem;
+}
+
 .card {
     border: none;
     border-radius: 12px;
