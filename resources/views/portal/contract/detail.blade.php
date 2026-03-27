@@ -686,12 +686,41 @@
                 <div class="address-section">
                     <div class="address-box">
                         <h4><i class="fas fa-building me-2"></i>From</h4>
-                        <p>
+                        <!-- <p>
                             <strong>{{ $record->company->name }}</strong><br>
                             {{ $record->company->address }}<br>
                             <i class="fas fa-envelope me-1"></i> {{ $record->company->email }}<br>
                             <i class="fas fa-phone me-1"></i> {{ $record->company->mobile_no }}
-                        </p>
+                        </p> -->
+                          <p>
+                        <strong>{{ $record->company->name }}</strong><br>
+                        <strong>Email:</strong> {{ $record->company->email }}
+                        <br>
+                        <strong>Phone:</strong> {{ $record->company->mobile_no }}
+                        @if($record->company->address || $record->company->address_2)
+                            <br>
+                            <strong>Address:</strong>
+                        @endif
+
+                        @if($record->company->address)
+                            {{ $record->company->address }}<br>
+                        @endif
+
+                        @if($record->company->address_2)
+                            {{ $record->company->address_2 }}<br>
+                        @endif
+
+                        @if($record->company->city || $record->company->state || $record->company->zip)
+                            {{ $record->company->city }}
+                            @if($record->company->state), {{ $record->company->state }}@endif
+                            @if($record->company->zip) {{ $record->company->zip }}@endif
+                            <br>
+                        @endif
+
+                        @if($record->company->country)
+                            {{ $record->company->country }}
+                        @endif
+                    </p>
                     </div>
 
                     <!-- <div class="address-box">
@@ -705,11 +734,28 @@
 
                     <div class="address-box">
                         <h4><i class="fas fa-user me-2"></i>Invioce To</h4>
-                        <p>
+                        <!-- <p>
                             <strong>{{ $record->client->name }}</strong><br>
                             <i class="fas fa-envelope me-1"></i> {{ $record->client->email ?? '-' }}<br>
                             <i class="fas fa-phone me-1"></i> {{ $record->client->mobile_no ?? '-' }}  
-                        </p>
+                        </p> -->
+                           <p>
+                        <strong>{{ $record->organization->name }}</strong><br>
+
+
+                        @if($estimate_user->first_name)
+                        <strong>Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
+                        <br>
+                        @endif
+                        @if($estimate_user->email)
+                        <strong>Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
+                        <br>
+                        @endif
+                        @if($estimate_user->mobile_no)
+                        <strong>Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
+                        <br>
+                        @endif
+                    </p>
                     </div>
                 </div>
 
