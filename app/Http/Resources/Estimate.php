@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\PublicUser;
 use App\Http\Resources\Organization;
+use Carbon\Carbon;
 
 class Estimate extends JsonResource
 {
@@ -25,6 +26,20 @@ class Estimate extends JsonResource
         $discountPercent = $this->discounts->sum(fn($discount) => $discount->value);
         $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
         $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100); 
+        $isEstimateExpire = false;
+        $status = $this->status;
+
+        if ($this->status == 'sent') {
+            if (Carbon::now() > $this->valid_until) {
+                $isEstimateExpire = true;
+            }
+        }
+
+         if ($this->status == 'sent') {
+            if (Carbon::now() > $this->valid_until) {
+                $status = 'Expired';
+            }
+        } 
 
         return [
             'id'         => $this->id,
@@ -36,13 +51,15 @@ class Estimate extends JsonResource
             'note'       => $this->note,
             'terms'       => $this->terms,
             // 'status'       => ($this->status == "sent") ? "New" : $this->status,
-            'status'       => $this->status,
+            'status'       => $status,
             'estimate_number'       => $this->estimate_number,
             'subtotal' => $subtotal,
             'total' => $total,
             'discount_total' => $discountAmount,
             'tax_total' => $taxTotal,
             'signature' => $this->signature,
+            'is_estimate_expire'=> $isEstimateExpire,
+            'company' => $this->company,
             'createdBy' => new PublicUser($this->createdBy),
             'client' => new PublicUser($this->client),
             'organization' => new Organization($this->organization),

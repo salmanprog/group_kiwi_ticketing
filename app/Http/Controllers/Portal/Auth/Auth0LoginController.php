@@ -315,7 +315,7 @@ class Auth0LoginController extends Controller
     }
     public function logout()
     {
-        // Logout locally
+        // Logout locally 
         auth()->logout();
 
         // Create Auth0 instance
@@ -334,7 +334,7 @@ class Auth0LoginController extends Controller
          
         // Redirect to Auth0 logout
         return redirect(
-        $auth0->logout(env('THIRD_PARTY_DOMAIN_URL'))
+        $auth0->logout(env('THIRD_PARTY_DOMAIN_LOGOUT_URL'))
     );
     }
 

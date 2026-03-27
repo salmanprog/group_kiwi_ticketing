@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{ProductCategory,CompanyUser,Product};
+use App\Models\{ProductCategory,CompanyUser,Company,Product};
 use App\Services\ThirdPartyApiService;
 use Auth;
 
@@ -81,7 +81,7 @@ class ProductController extends CRUDCrontroller
      */
     public function dataTableRecords($record)
     {
-        $options  = '<a href="'. route('product.api.edit',$record->slug) .'" title="Edit" class="btn btn-xs btn-primary"><i class="fa fa-pencil"></i></a>';
+        $options  = '<a href="'. route('product.api.edit',$record->ticketSlug) .'" title="Edit" class="btn btn-xs btn-primary"><i class="fa fa-pencil"></i></a>';
         //$options .= '<a title="Delete" class="btn btn-xs btn-danger _delete_record" data-slug="'.$record->slug.'"><i class="fa fa-trash" ></i></a>';
         return [
             //$record->category_name,
@@ -258,7 +258,7 @@ class ProductController extends CRUDCrontroller
         
         $ticket = collect($response->json()['getAllProductPrice']['data'])
             ->firstWhere('ticketSlug', $slug);
-        $get_product = Product::where('slug', $slug)->first();
+        $get_product = Product::where('ticketSlug', $slug)->first();
         abort_if(!$ticket, 404);
 
         // dd($ticket);
@@ -281,40 +281,47 @@ class ProductController extends CRUDCrontroller
             return redirect()->back()->with('error', 'Ticket not found.');
         }
 
-        $company = CompanyUser::getCompany(Auth::user()->id);
-
-        // Local DB update or create
-        $product = Product::updateOrCreate(
-            ['slug' => $ticket['ticketSlug'] ?? strtolower(str_replace(' ', '-', $validated['ticketName']))],
-            [
-                'company_id'                  => $company->id,
-                'company_product_category_id' => 0, // you can set default or dynamic category
-                'name'                        => $validated['ticketName'],
-                'description'                 => $request->description,
-                'price'                       => $validated['ticketPrice'],
-                'unit'                        => 'Ticket',
-                'status'                      => '1',
-            ]
-        );
-
-        // API update
-        $apiParams = [
-            'AuthCode'    => Auth::user()->auth_code,
-            'TicketName'  => $validated['ticketName'],
-            'TicketPrice' => $validated['ticketPrice'],
-            'UserId'      => 'dev',
-            'TicketType'  => $validated['ticketType'] ?? $ticket['ticketType'] ?? 'Tickets',
-            'SaleChannel' => $validated['saleChannel'] ?? $ticket['saleChannel'] ?? 'Groups',
-            'ticketSlug'  => $ticket['ticketSlug'],
-        ];
-
-        $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams, Auth::user()->auth_code);
-
-        if ($apiResponse->failed()) {
-            return redirect()->back()->with('error', 'Local DB updated, but failed to sync API.');
+        $company = Company::where('auth_code',Auth::user()->auth_code)->first();
+        if(!$company){
+            return redirect()->back()->with('error', 'Company not found.');
         }
 
-        return redirect()->back()->with('success', 'Ticket updated locally and synced with API.');
+        // Local DB update or create
+        $product = Product::where('ticketSlug', $id)->first();
+        if (!$product) {
+            return redirect()->back()->with('error', 'Product not found.');
+        }
+        // dd($validated['ticketPrice']);
+        $product->update([
+            'company_id'                  => $company->id,
+            'company_product_category_id' => 0, // you can set default or dynamic category
+            'name'                        => $validated['ticketName'],
+            'description'                 => $request->description,
+            'price'                       => $validated['ticketPrice'],
+            'unit'                        => 'Ticket',
+            'status'                      => '1',
+        ]);
+
+        // dd($validated['ticketPrice']);
+
+        // API update
+        // $apiParams = [
+        //     'AuthCode'    => Auth::user()->auth_code,
+        //     'TicketName'  => $validated['ticketName'],
+        //     'TicketPrice' => $validated['ticketPrice'],
+        //     'UserId'      => 'dev',
+        //     'TicketType'  => $validated['ticketType'] ?? $ticket['ticketType'] ?? 'Tickets',
+        //     'SaleChannel' => $validated['saleChannel'] ?? $ticket['saleChannel'] ?? 'Groups',
+        //     'ticketSlug'  => $ticket['ticketSlug'],
+        // ];
+
+        // $apiResponse = $this->apiService->get('StaticTicketPricing/AddTicketPricing', $apiParams, Auth::user()->auth_code);
+
+        // if ($apiResponse->failed()) {
+        //     return redirect()->back()->with('error', 'Local DB updated, but failed to sync API.');
+        // }
+
+        return redirect()->back()->with('success', 'Ticket updated locally');
     }
 
 

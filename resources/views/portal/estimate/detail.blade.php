@@ -51,12 +51,16 @@
                             Estimate
                         </div>
                         <div class="estimate-meta">
-                            <span class="estimate-number">#{{ $estimate->estimate_number }}</span>
+                            <span class="estimate-number">#{{ strtoupper($estimate->estimate_number) }}</span>
                             <span class="status {{ $estimate->status }}">
                                 @if ($estimate->status == 'sent')
-                                    @if ($estimate->status == 'sent')
+                                    @if ($estimate->status == 'sent' && \Carbon\Carbon::now() > $estimate->valid_until)
+                                         <span class="status expired">
+                                    <i class="fas fa-exclamation-triangle me-1"></i> Expired
+                                </span>
+                                    @elseif ($estimate->status == 'sent') 
                                         New
-                                    @endif
+                                    @endif 
                                 @else
                                     {{ strtoupper($estimate->status) }}
                                     {{ $estimate->is_adjusted == '1' ? '( + Adjusted)' : '' }}
@@ -112,22 +116,22 @@
                             {{ $estimate->company->country }}
                         @endif
                     </p>
-                        </div>
+                        </div> 
 
                         <div class="address-box">
                             <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
                              <p>
-                        <strong> Account Name: {{ $estimate->organization_name }}</strong><br>
+                        <strong>{{ $estimate->organization->name }}</strong><br>
                         @if($estimate_user->first_name)
-                        <strong>Contact Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
+                        <strong>Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
                         <br>
                         @endif
                         @if($estimate_user->email)
-                        <strong>Contact Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
+                        <strong>Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
                         <br>
                         @endif
                         @if($estimate_user->mobile_no)
-                        <strong>Contact Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
+                        <strong>Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
                         <br>
                         @endif
                     </p>

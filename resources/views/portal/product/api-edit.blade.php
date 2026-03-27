@@ -23,7 +23,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Ticket Name</label>
                                         <input type="text" class="form-control" name="ticketName"
-                                            value="{{ old('ticketName', $ticket['ticketType'] ?? '') }}" required>
+                                            value="{{ old('ticketName', $ticket['ticketType'] ?? '') }}" required readonly>
                                     </div>
 
                                     <div class="col-md-6" style="display: none;">
@@ -37,11 +37,10 @@
                                         <input type="text" class="form-control" name="saleChannel"
                                             value="{{ $ticket['saleChannel'] ?? '' }}" disabled>
                                     </div>
-
                                     <div class="col-md-6">
                                         <label class="form-label">Price</label>
                                         <input type="number" step="0.01" name="ticketPrice" class="form-control"
-                                            value="{{ old('ticketPrice', $ticket['price'] ?? '') }}" required>
+                                            value="{{ old('ticketPrice', $get_product->price ?? '') }}" required>
                                     </div>
                                     <div class="col-md-12 mt-3">
                                         <div class="form-group">

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Organization,Company,CompanyUser, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes};
+use App\Models\{Organization,Company,CompanyUser,Client, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes};
 use Auth;
 use DB;
 use App\Services\ThirdPartyApiService;
@@ -195,11 +195,12 @@ class ContractController extends CRUDCrontroller
                                             'discounts',
                                             'installments',
                                         ]);
-                                    }
+                                    } 
 
                                 ])
                                 ->where('slug', $slug)
                                 ->first();
+        $this->__data['estimate_user'] = Client::where('client_id', $this->__data['record']->client_id)->first();
 
         if (Auth::user()->user_type == 'client') {
             $this->__data['products'] = [];
