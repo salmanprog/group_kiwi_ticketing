@@ -11,7 +11,7 @@
 
                 {{-- HEADER --}}
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0 fw-bold">Edit Email Template</h4>
+                    <h4 class="mb-0 fw-bold et-head">Edit Email Template</h4>
 
                     <div>
                         <button type="button" id="fullscreenBtn" class="btn btn-dark btn-sm me-2">
@@ -60,7 +60,7 @@
                                 </small>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-4 c-select-wrapper">
                                 <label class="form-label fw-semibold">Status</label>
                                 <select name="status" class="form-select">
                                     <option value="1" {{ $record->status == 1 ? 'selected' : '' }}>
@@ -147,6 +147,35 @@
     height: 70vh;
 }
 
+.btn-primary {
+    background: #9FC23F !important;
+    border: 1px solid #fff !important;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    border: 1px solid #ffffff !important;
+    background-color: #8ab02e !important;
+}
+
+.et-head{
+    margin: 0;
+    font-weight: 700;
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.form-control:focus {
+    border-color: #9fc23f !important;
+}
 /* PANELS */
 .editor-panel,
 .preview-panel {
