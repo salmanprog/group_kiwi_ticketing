@@ -34,14 +34,8 @@ class UserMailer
         $body = self::replacePlaceholders($template->content, $data);
 
         $smtp = DB::table('user_smtp_settings')->where('auth_code', $auth_code)->first();
-
-           if (
-        $smtp &&
-        !empty($smtp->mail_host) &&
-        !empty($smtp->mail_username) &&
-        !empty($smtp->mail_password) &&
-        !empty($smtp->$smtp->mail_port)
-            ) {
+        // dd($smtp);
+        if ($smtp) {
                 // ✅ USE CUSTOM SMTP
                 Config::set('mail.mailers.user_smtp', [
                     'transport' => 'smtp',
