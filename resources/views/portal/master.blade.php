@@ -1303,7 +1303,18 @@
                 $(this).find('.arrow-icon').css('transform', 'rotate(180deg)');
             });
         });
+
+
+        $(document).ready(function() {
+            // Re-initialize all dropdowns
+            $('.dropdown-toggle').dropdown();
+            
+            // Or specifically your dropdown
+            $('.avtar-dropdown .dropdown-toggle').dropdown();
+        });
     </script>
+
+    
 
     @stack('scripts')
 </body>

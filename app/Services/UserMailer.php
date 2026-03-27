@@ -34,24 +34,67 @@ class UserMailer
         $body = self::replacePlaceholders($template->content, $data);
 
         $smtp = DB::table('user_smtp_settings')->where('auth_code', $auth_code)->first();
-        if (!$smtp) {
-            throw new \Exception("SMTP configuration not found. Please configure SMTP settings first.");
-        }
 
-        // Apply dynamic SMTP config temporarily
-        Config::set('mail.mailers.user_smtp', [
-            'transport' => 'smtp',
-            'host' => $smtp->mail_host,
-            'port' => $smtp->mail_port,
-            'encryption' => $smtp->mail_encryption ?: null,
-            'username' => $smtp->mail_username,
-            'password' => $smtp->mail_password,
-            'timeout' => null,
-            'auth_mode' => null,
-        ]);
+           if (
+        $smtp &&
+        !empty($smtp->mail_host) &&
+        !empty($smtp->mail_username) &&
+        !empty($smtp->mail_password) &&
+        !empty($smtp->$smtp->mail_port)
+            ) {
+                // ✅ USE CUSTOM SMTP
+                Config::set('mail.mailers.user_smtp', [
+                    'transport' => 'smtp',
+                    'host' => $smtp->mail_host,
+                    'port' => $smtp->mail_port,
+                    'encryption' => $smtp->mail_encryption ?: null,
+                    'username' => $smtp->mail_username,
+                    'password' => $smtp->mail_password,
+                    'timeout' => null,
+                ]);
+
+                Config::set('mail.from.address', $smtp->mail_no_replay);
+                Config::set('mail.from.name', 'No Reply');
+
+                \Log::info('Using CUSTOM SMTP');
+
+            } else {
+                // ✅ FALLBACK → SENDGRID
+                Config::set('mail.mailers.user_smtp', [
+                    'transport' => 'smtp',
+                    'host' => env('SENDGRID_HOST', 'smtp.sendgrid.net'),
+                    'port' => env('SENDGRID_PORT', 587),
+                    'encryption' => env('SENDGRID_ENCRYPTION', 'tls'),
+                    'username' => env('SENDGRID_USERNAME', 'apikey'),
+                    'password' => env('SENDGRID_PASSWORD'),
+                    'timeout' => null,
+                ]);
+
+                Config::set('mail.from.address', env('SENDGRID_FROM'));
+                Config::set('mail.from.name', env('SENDGRID_FROM_NAME', 'System'));
+
+                \Log::info('Using SENDGRID FALLBACK');
+            }
+        // if (!$smtp) {
+        //     throw new \Exception("SMTP configuration not found. Please configure SMTP settings first.");
+        // }
+
+        // // Apply dynamic SMTP config temporarily
+        // Config::set('mail.mailers.user_smtp', [
+        //     'transport' => 'smtp',
+        //     'host' => $smtp->mail_host,
+        //     'port' => $smtp->mail_port,
+        //     'encryption' => $smtp->mail_encryption ?: null,
+        //     'username' => $smtp->mail_username,
+        //     'password' => $smtp->mail_password,
+        //     'timeout' => null,
+        //     'auth_mode' => null,
+        // ]);
 
         // Send email using dynamic SMTP
-        Mail::mailer('user_smtp')->send(new class($toEmails, $subject, $body, $smtp->mail_no_replay) extends Mailable {
+        $fromEmail = ($smtp) ? $smtp->mail_no_replay : env('SENDGRID_FROM');
+        // dd($fromEmail);
+        Mail::mailer('user_smtp')->send(new class($toEmails, $subject, $body, $fromEmail) extends Mailable {
             public $toEmails;
             public $subject;
             public $body;
