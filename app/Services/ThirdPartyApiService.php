@@ -15,7 +15,7 @@ class ThirdPartyApiService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.third_party.api_base_url');
+        $this->baseUrl = config('services.third_party.api_base_dev_env');
         //$this->authCode = config('services.third_party.auth_code');
         $this->authCode = Auth::user()?->auth_code;
         $this->auth0UserId = Auth::user()?->auth0_id;
@@ -57,7 +57,7 @@ class ThirdPartyApiService
 
     public function updateUserPassword($password, $confirmPassword)
     {
-        $apiUrl = env('THIRD_PARTY_API_BASE_URL').'/api/Auth0Management/ChangeAuth0UserPassword';
+        $apiUrl = env('THIRD_PARTY_DEV_API_BASE_URL').'/api/Auth0Management/ChangeAuth0UserPassword';
 
        $response = Http::withHeaders([
                     'accept' => '/',
