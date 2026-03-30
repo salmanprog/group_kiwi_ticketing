@@ -940,7 +940,7 @@ class ContractController extends CRUDCrontroller
     {
         $contract = Contract::where('slug', $slug)->first();
         if (!$contract) {
-            return redirect()->back()->with('error', 'Contract not found.');
+            return response()->json(['message' => 'Contract not found.'], 404);
         }
         
         $contract->ticket_enable = '1';
@@ -955,7 +955,7 @@ class ContractController extends CRUDCrontroller
                 'new_data' => json_encode($contract->toArray()),
             ]);
         
-        return redirect()->back()->with('success', 'Ticket enable updated successfully.');
+        return response()->json(['message' => 'Ticket enabled successfully.'], 200);
     }
 
 
@@ -979,6 +979,44 @@ class ContractController extends CRUDCrontroller
             ]);
         
         return redirect()->back()->with('success', 'Ticket disable updated successfully.');
+    }
+
+
+    public function printTicket(Request $request){
+        
+        $contract = Contract::where('slug',$request->slug)->first();
+        if(!$contract){
+            return response()->json(['message' => 'Contract not found.'], 404);
+        }
+        $estimate = Estimate::where('contract_id',$contract->id)->first();
+        if(!$estimate){
+            return response()->json(['message' => 'estimate not found.'], 404);
+        }
+
+
+        $orderNumber = $estimate->slug;
+        $isAllowedForPrinting = 1;
+
+        $apiResponse = $this->apiService->UpdateOrderSettings($orderNumber,$isAllowedForPrinting,Auth::user()->auth_code);
+        if($apiResponse->json()['errorCode'] == 1){
+            return response()->json(['message' => $apiResponse->json()['errorMessage']]);
+        }
+        
+        $contract->isAllowedForPrinting = '1';
+        $contract->save();
+
+         \App\Models\ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $contract->id,
+                'description' => 'Ticket printed updated by ' . auth()->user()->name,
+                'user_id' => auth()->user()->id,
+                'old_data' => json_encode($contract->toArray()),
+                'new_data' => json_encode($contract->toArray()),
+            ]);
+        
+        
+        return response()->json(['message' => ($apiResponse->json()['errorMessage']) ? $apiResponse->json()['errorMessage'] : 'Ticket printed successfully.'],200);
+
     }
 
 

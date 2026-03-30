@@ -707,33 +707,32 @@
                             <i class="fas fa-file-contract me-2"></i>Contract
                         </div>
                         <div class="sdt">
-                            {{-- <div class="contract-title">
+                            <!-- <div class="contract-title">
                                 <a href="{{ route('contract.send-ticket-list', $record->slug) }}" class="btn btn-primary">
                                     <i class="fas fa-ticket-alt me-2"></i>Send Ticket
                                 </a>
-                            </div>
+                            </div> -->
 
-                            @if ($record->ticket_enable == 0)
-                                <div class="contract-title">
-                                    <a href="{{ route('contract.client-ticket-enable', $record->slug) }}"
-                                        class="btn btn-primary">
-                                        <i class="fas fa-ticket-alt me-2"></i>Client Ticket Enable
-                                    </a>
-                                </div>
+                        @if ($record->ticket_enable == 1 || $record->isAllowedForPrinting == 1)
+
+                                @if($record->ticket_enable == 1)
+                                    <span class="badge" style="padding: 10px; background-color: #9FC23F; color: white; border-radius: 50px;">Ticket Enabled from client side</span>
+
+                                @endif
+
+                                @if($record->isAllowedForPrinting == 1)
+                                    <span class="badge" style="padding: 10px; background-color: #9FC23F; color: white; border-radius: 50px;">Enable Printing</span>
+                                @endif
+
                             @else
                                 <div class="contract-title">
-                                    <a href="{{ route('contract.client-ticket-disable', $record->slug) }}"
-                                        class="btn btn-danger">
-                                        <i class="fas fa-ticket-alt me-2"></i>Client Ticket Disable
-                                    </a>
+                                    <button type="button" class="btn btn-primary" id="deliverTicketBtn">
+                                        <i class="fas fa-ticket-alt mr-2"></i>Deliver Ticket
+                                    </button>
                                 </div>
-                            @endif --}}
+                            @endif
 
-                            <div class="contract-title">
-                                <button type="button" class="btn btn-primary" id="deliverTicketBtn">
-                                    <i class="fas fa-ticket-alt me-2"></i>Deliver Ticket
-                                </button>
-                            </div>
+                           
 
                             <div class="modal fade" id="confirmationModal" tabindex="-1">
                                 <div class="modal-dialog modal-lg">
@@ -742,21 +741,21 @@
                                             <h5 class="modal-title">
                                                 <i class="fas fa-ticket-alt me-2"></i>Deliver Ticket
                                             </h5>
-                                            <button type="button" class="btn-close" id="modalCloseBtn" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" id="modalCloseBtn" aria-label="Close" onclick="closeModal('confirmationModal')"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="delivery-options mb-4">
                                                 <h6 class="mb-3">Select Delivery Option:</h6>
                                                 
                                                 <div class="form-check mb-3">
-                                                    <input class="form-check-input" type="radio" name="deliveryOption" id="bocaPrinting" value="boca">
+                                                    <input class="form-check-input" type="radio" name="deliveryOption" id="bocaPrinting" value="printing">
                                                     <label class="form-check-label fw-bold" for="bocaPrinting">
                                                         Enable Boca Printing
                                                     </label>
                                                 </div>
                                                 
                                                 <div class="form-check mb-3">
-                                                    <input class="form-check-input" type="radio" name="deliveryOption" id="customerDistribution" value="customer">
+                                                    <input class="form-check-input" type="radio" name="deliveryOption" id="customerDistribution" value="customer_ticket_enabled">
                                                     <label class="form-check-label fw-bold" for="customerDistribution">
                                                         Enable Customer Distribution
                                                     </label>
@@ -764,7 +763,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" id="cancelBtn">
+                                            <button type="button" class="btn btn-secondary" id="cancelBtn" onclick="closeModal('confirmationModal')">
                                                 <i class="fas fa-times me-1"></i>Cancel
                                             </button>
                                             <button type="button" class="btn btn-primary" id="confirmDeliverBtn">
@@ -783,18 +782,23 @@
                                             <h5 class="modal-title">
                                                 <i class="fas fa-exclamation-triangle me-2"></i>Confirmation Required
                                             </h5>
-                                            <button type="button" class="btn-close" id="bocaConfirmCloseBtn" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" id="bocaConfirmCloseBtn" aria-label="Close" onclick="closeModal('bocaConfirmModal')"></button>
                                         </div>
                                         <div class="modal-body text-center">
                                             <i class="fas fa-question-circle fa-3x mb-3" style="color: #9FC23F;"></i>
                                             <h5>Are you sure you want to do that?</h5>
                                             <p class="text-muted">Enabling Boca Printing will send the ticket to Boca printer. This action cannot be undone.</p>
                                         </div>
+                                          <div id="bocaLoader" style="display:none;">
+                                                <div class="spinner-border text-primary mb-3"></div>
+                                                <h5>Processing...</h5>
+                                                <p>Please wait while we print tickets</p>
+                                            </div>
                                         <div class="modal-footer justify-content-end">
-                                            <button type="button" class="btn btn-secondary" id="bocaNoBtn">
+                                            <button type="button" class="btn btn-secondary" id="bocaNoBtn" onclick="closeModal('bocaConfirmModal')">
                                                 <i class="fas fa-times me-1"></i>No, Cancel
                                             </button>
-                                            <button type="button" class="btn btn-primary" id="bocaYesBtn">
+                                            <button type="button" class="btn btn-primary" id="bocaYesBtn" onclick="printTickets()">
                                                 <i class="fas fa-check me-1"></i>Yes, Proceed
                                             </button>
                                         </div>
@@ -2087,7 +2091,8 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 
 
@@ -2180,283 +2185,149 @@
                 });
             });
 
-            (function() {
-                'use strict';
-                
-                document.addEventListener('DOMContentLoaded', function() {
-                    // DOM Elements
-                    const deliverBtn = document.getElementById('deliverTicketBtn');
-                    const modal = document.getElementById('confirmationModal');
-                    const bocaConfirmModal = document.getElementById('bocaConfirmModal');
-                    const closeBtn = document.getElementById('modalCloseBtn');
-                    const cancelBtn = document.getElementById('cancelBtn');
-                    const confirmBtn = document.getElementById('confirmDeliverBtn');
-                    const bocaRadio = document.getElementById('bocaPrinting');
-                    const customerRadio = document.getElementById('customerDistribution');
-                    
-                    // Boca confirmation modal buttons
-                    const bocaYesBtn = document.getElementById('bocaYesBtn');
-                    const bocaNoBtn = document.getElementById('bocaNoBtn');
-                    const bocaConfirmCloseBtn = document.getElementById('bocaConfirmCloseBtn');
-                    
-                    let modalInstance = null;
-                    let bocaModalInstance = null;
-                    let pendingAction = null; // Store pending action
-                    
-                    // Initialize modals if Bootstrap is available
-                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                        if (modal) modalInstance = new bootstrap.Modal(modal);
-                        if (bocaConfirmModal) bocaModalInstance = new bootstrap.Modal(bocaConfirmModal);
+ </script>
+
+
+
+<script>
+    $('#deliverTicketBtn').on('click', function () {
+        $('#confirmationModal').modal('show');
+    });
+
+
+
+    $('#confirmDeliverBtn').on('click', function () {
+
+    let selected = $('input[name="deliveryOption"]:checked').val();
+    let btn = $(this);
+
+    if (!selected) {
+          Toastify({
+                text: "Please select a delivery option",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: {
+                    background: "linear-gradient(to right, #bd9436ff, #bbc40aff)" 
+                }
+            }).showToast();
+        return;
+    }
+
+
+    if (selected === 'printing') {
+        
+        $('#bocaConfirmModal').modal('show');
+
+    } else if (selected === 'customer_ticket_enabled') {
+
+        btn.prop('disabled', true);
+        btn.text('enabling...');
+
+        $.ajax({
+            url: `{{ route('contract.client-ticket-enable', $record->slug) }}`,
+            type: 'GET',
+            success: function(response) {
+                btn.prop('disabled', false);
+                btn.html('<i class="fas fa-check me-1"></i>Confirm Delivery');
+                // console.log(response)
+                Toastify({
+                    text: response.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    style: {
+                    background: "linear-gradient(to right, #36bd44ff, #28b309ff)" 
                     }
-                    
-                    // Function to close main modal
-                    function closeModal() {
-                        if (modalInstance) {
-                            modalInstance.hide();
-                        } else if (modal) {
-                            modal.style.display = 'none';
-                            modal.classList.remove('show');
-                            document.body.classList.remove('modal-open');
-                            const backdrop = document.querySelector('.modal-backdrop');
-                            if (backdrop) backdrop.remove();
-                        }
+                }).showToast();
+              
+                $('#confirmationModal').modal('hide');
+                window.location.reload();
+            },
+            error: function(error) {
+                btn.prop('disabled', false);
+                btn.html('<i class="fas fa-check me-1"></i>Confirm Delivery');
+                console.log(error);
+                Toastify({
+                    text: error.responseJSON.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    style: {
+                        background: "linear-gradient(to right, #ae121fff, #ff7f71ff)" 
                     }
-                    
-                    // Function to open main modal
-                    function openModal() {
-                        if (modalInstance) {
-                            modalInstance.show();
-                        } else if (modal) {
-                            modal.style.display = 'block';
-                            modal.classList.add('show');
-                            document.body.classList.add('modal-open');
-                            if (!document.querySelector('.modal-backdrop')) {
-                                const backdrop = document.createElement('div');
-                                backdrop.className = 'modal-backdrop fade show';
-                                document.body.appendChild(backdrop);
-                                backdrop.addEventListener('click', closeModal);
-                            }
-                        }
-                    }
-                    
-                    // Function to open Boca confirmation modal
-                    function openBocaConfirmModal() {
-                        if (bocaModalInstance) {
-                            bocaModalInstance.show();
-                        } else if (bocaConfirmModal) {
-                            bocaConfirmModal.style.display = 'block';
-                            bocaConfirmModal.classList.add('show');
-                            document.body.classList.add('modal-open');
-                            if (!document.querySelector('.modal-backdrop')) {
-                                const backdrop = document.createElement('div');
-                                backdrop.className = 'modal-backdrop fade show';
-                                document.body.appendChild(backdrop);
-                                backdrop.addEventListener('click', closeBocaConfirmModal);
-                            }
-                        }
-                    }
-                    
-                    // Function to close Boca confirmation modal
-                    function closeBocaConfirmModal() {
-                        if (bocaModalInstance) {
-                            bocaModalInstance.hide();
-                        } else if (bocaConfirmModal) {
-                            bocaConfirmModal.style.display = 'none';
-                            bocaConfirmModal.classList.remove('show');
-                            const backdrops = document.querySelectorAll('.modal-backdrop');
-                            if (backdrops.length > 1) {
-                                backdrops[backdrops.length - 1].remove();
-                            }
-                        }
-                    }
-                    
-                    // Reset modal state
-                    function resetModalState() {
-                        if (bocaRadio) bocaRadio.checked = false;
-                        if (customerRadio) customerRadio.checked = false;
-                    }
-                    
-                    // Enable Boca Printing (actual function)
-                    function enableBocaPrinting() {
-                        showNotification('Enabling Boca Printing...', 'info');
-                        
-                        setTimeout(() => {
-                            showNotification('✅ Boca Printing enabled successfully!', 'success');
-                            updateTicketStatus('boca_printing');
-                            logActivity('Boca Printing enabled for ticket');
-                        }, 1000);
-                    }
-                    
-                    // Enable Customer Distribution
-                    function enableCustomerDistribution() {
-                        showNotification('Enabling Customer Distribution...', 'info');
-                        
-                        setTimeout(() => {
-                            showNotification('✅ Customer Distribution enabled successfully!', 'success');
-                            updateTicketStatus('customer_distribution');
-                            logActivity('Customer Distribution enabled for ticket');
-                        }, 1000);
-                    }
-                    
-                    function updateTicketStatus(mode) {
-                        const statusBadge = document.querySelector('.ticket-status');
-                        if (statusBadge) {
-                            if (mode === 'boca_printing') {
-                                statusBadge.innerHTML = '<span class="badge bg-warning text-dark"><i class="fas fa-print me-1"></i>Boca Printing Enabled</span>';
-                            } else {
-                                statusBadge.innerHTML = '<span class="badge bg-info"><i class="fas fa-envelope me-1"></i>Customer Distribution Enabled</span>';
-                            }
-                        }
-                    }
-                    
-                    function logActivity(message) {
-                        console.log('[Activity Log]', message);
-                    }
-                    
-                    function showNotification(message, type) {
-                        const notification = document.createElement('div');
-                        notification.innerHTML = `
-                            <div class="d-flex align-items-center">
-                                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
-                                <span>${message}</span>
-                            </div>
-                        `;
-                        
-                        Object.assign(notification.style, {
-                            position: 'fixed',
-                            top: '20px',
-                            right: '20px',
-                            padding: '12px 20px',
-                            backgroundColor: type === 'success' ? '#28a745' : '#9FC23F',
-                            color: 'white',
-                            borderRadius: '8px',
-                            zIndex: '10000',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            cursor: 'pointer',
-                            animation: 'slideInRight 0.3s ease'
-                        });
-                        
-                        document.body.appendChild(notification);
-                        
-                        setTimeout(() => {
-                            notification.style.animation = 'fadeOut 0.3s ease';
-                            setTimeout(() => {
-                                if (notification.parentNode) {
-                                    notification.parentNode.removeChild(notification);
-                                }
-                            }, 300);
-                        }, 3000);
-                        
-                        notification.addEventListener('click', () => {
-                            if (notification.parentNode) {
-                                notification.parentNode.removeChild(notification);
-                            }
-                        });
-                    }
-                    
-                    // Open main modal when Deliver Ticket button is clicked
-                    if (deliverBtn) {
-                        deliverBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            resetModalState();
-                            openModal();
-                        });
-                    }
-                    
-                    // Close main modal buttons
-                    if (closeBtn) {
-                        closeBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            closeModal();
-                        });
-                    }
-                    
-                    if (cancelBtn) {
-                        cancelBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            closeModal();
-                        });
-                    }
-                    
-                    // ESC key handler
-                    document.addEventListener('keydown', function(e) {
-                        if (e.key === 'Escape') {
-                            if (modal && modal.style.display === 'block') {
-                                closeModal();
-                            }
-                            if (bocaConfirmModal && bocaConfirmModal.style.display === 'block') {
-                                closeBocaConfirmModal();
-                            }
-                        }
-                    });
-                    
-                    // Click outside to close
-                    if (modal) {
-                        modal.addEventListener('click', function(e) {
-                            if (e.target === modal) {
-                                closeModal();
-                            }
-                        });
-                    }
-                    
-                    if (bocaConfirmModal) {
-                        bocaConfirmModal.addEventListener('click', function(e) {
-                            if (e.target === bocaConfirmModal) {
-                                closeBocaConfirmModal();
-                            }
-                        });
-                    }
-                    
-                    // Confirm Delivery button handler
-                    if (confirmBtn) {
-                        confirmBtn.addEventListener('click', function() {
-                            const isBocaSelected = bocaRadio ? bocaRadio.checked : false;
-                            const isCustomerSelected = customerRadio ? customerRadio.checked : false;
-                            
-                            if (!isBocaSelected && !isCustomerSelected) {
-                                showNotification('Please select a delivery option first!', 'error');
-                                return;
-                            }
-                            
-                            if (isBocaSelected) {
-                                // Boca Printing selected - Show confirmation popup
-                                closeModal(); // Close main modal
-                                openBocaConfirmModal(); // Open confirmation modal
-                            } else if (isCustomerSelected) {
-                                // Customer Distribution - Direct action
-                                enableCustomerDistribution();
-                                closeModal();
-                            }
-                        });
-                    }
-                    
-                    // Boca confirmation modal - YES button
-                    if (bocaYesBtn) {
-                        bocaYesBtn.addEventListener('click', function() {
-                            closeBocaConfirmModal();
-                            enableBocaPrinting();
-                        });
-                    }
-                    
-                    // Boca confirmation modal - NO button
-                    if (bocaNoBtn) {
-                        bocaNoBtn.addEventListener('click', function() {
-                            closeBocaConfirmModal();
-                            // Re-open main modal so user can select again
-                            openModal();
-                        });
-                    }
-                    
-                    // Boca confirmation modal - Close button
-                    if (bocaConfirmCloseBtn) {
-                        bocaConfirmCloseBtn.addEventListener('click', function() {
-                            closeBocaConfirmModal();
-                            openModal();
-                        });
-                    }
-                });
-            })();
-        </script>
-    @endsection
+                }).showToast();
+            }
+        });
+
+    }
+
+});
+
+function CloseBocaConfirmModal(){
+    $('#bocaConfirmModal').modal('hide');
+}
+
+
+function printTickets(){
+
+    let slug = '{{ $record->slug }}';
+
+    let btn = $('#bocaYesBtn');
+    btn.prop('disabled', true);
+    btn.text('processing...');
+
+
+    $.ajax({
+        url: `{{ route('contract.print-tickets') }}`,
+        type: 'POST',
+        data: {
+            slug: slug
+        },
+        success: function(response) {
+            btn.prop('disabled', false);
+            btn.text('Yes, Proceed');
+            // console.log(response)
+            Toastify({
+                text: response.message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: {
+                    background: "linear-gradient(to right, #36bd44ff, #28b309ff)" 
+                }
+            }).showToast();
+           
+            window.location.reload();
+        },
+        error: function(error) {
+            btn.prop('disabled', false);
+            btn.text('Yes, Proceed');
+            console.log(error);
+            Toastify({
+                text: error.responseJSON.message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: {
+                    background: "linear-gradient(to right, #ae121fff, #ff7f71ff)" 
+                }
+            }).showToast();
+        }
+    });
+
+}
+
+
+function closeModal(modalId) {
+    $('#' + modalId).modal('hide');
+}
+
+</script>
+
+
+
+
+
+
+  @endsection

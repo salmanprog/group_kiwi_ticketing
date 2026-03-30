@@ -293,5 +293,49 @@ class ThirdPartyApiService
 
         return $response;
     }
+
+    public function UpdateOrderSettings(string $orderNumber, int $isAllowedForPrinting, string $authCode)
+    {
+        $startTime = microtime(true);
+
+        // Prepare payload
+        $body = [
+            'orderNumber'  => $orderNumber,
+            'isAllowedForPrinting' => $isAllowedForPrinting,
+        ];
+
+        // Make POST request
+        $response = Http::acceptJson()
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'accept'       => '*/*',
+            ])
+            ->post($this->baseUrl . '/api/OrderSettings/UpdateOrderSettings?authCode=' . $authCode, $body);
+
+            
+        // dd($response->json());
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+
+        // Log activity
+        ActivityActionLogger::log([
+            'auth_code'    => $authCode,
+            'action'       => 'update_order_settings',
+            'method'       => 'POST',
+            'url'          => $this->baseUrl . '/Pricing/UpdateOrderSettings',
+            'payload'      => json_encode($body),
+            'response'     => json_encode($response->json()),
+            'status'       => $response->json()['errorCode'] === 0 ? 'success' : 'error',
+            'status_code'  => $response->status(),
+            'error_message'=> $response->json()['errorCode'] === 0 
+                                ? null 
+                                : $response->json()['errorMessage'] ?? null,
+            'ip'           => request()->ip(),
+            'response_time'=> $responseTime,
+        ]);
+
+        return $response;
+    }
+
+
     
 }

@@ -283,8 +283,8 @@ Route::get('smtp-config', [EmailTemplateController::class, 'smtpConfigView'])->n
 
 });
 
-Route::get('send-ticket-list/{slug}', [ContractController::class, 'sendOrdersTicket'])->name('contract.send-ticket-list');
-Route::get('/ajax-tickets/{slug}', [ContractController::class, 'ajaxsendOrdersTicket'])->name('contract.ajax-tickets');
+Route::get('send-ticket-list/{slug}', [ContractController::class, 'sendOrdersTicket'])->name('contract.send-ticket-list'); 
+Route::get('/ajax-tickets/{slug}', [ContractController::class, 'ajaxsendOrdersTicket'])->name('contract.ajax-tickets'); 
 Route::post('/send-ticket-email', [ContractController::class, 'sendTicketEmail'])->name('contract.send-ticket-email');
 Route::get('client-ticket-enable/{slug}', [ContractController::class, 'clientTicketEnable'])->name('contract.client-ticket-enable');
 Route::get('client-ticket-disable/{slug}', [ContractController::class, 'clientTicketDisable'])->name('contract.client-ticket-disable');
@@ -321,3 +321,4 @@ Route::get('/estimate/hold-dates/{id}', [EstimateController::class,'getEstimateD
     ->name('estimate.hold-dates');
 
 Route::post('/update-expiry-date', [EstimateController::class, 'updateExpiryDate'])->name('update-expiry-date');
+Route::post('/print-ticket', [ContractController::class, 'printTicket'])->name('contract.print-tickets');

@@ -36,6 +36,7 @@ class Contract extends Model
         'confirmed_with_client',
         'terms_and_condition',
         'ticket_enable',
+        'isAllowedForPrinting'
     ];
 
     public static function generateUniqueSlug()
