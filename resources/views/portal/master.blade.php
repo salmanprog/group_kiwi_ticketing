@@ -593,6 +593,7 @@
 
                         <!-- Static Sidebar Navigation Menu - Working Version -->
                         <div class="static-sidebar-menu" style="margin-top: 20px;">
+                           
                         @php
                             // ====================== Variables ======================
                             $thirdPartyApiData = $thirdPartyApiData ?? [];
@@ -601,7 +602,8 @@
                             $userRoles     = $thirdPartyApiData['userRoles'] ?? [];
                             $platforms     = $thirdPartyApiData['platform'] ?? [];
                             $permissions   = $thirdPartyApiData['permissionDetails'] ?? [];
-
+                            $companyPlatformAccess = session('companyPlatformAccess') ?? [];
+                            $otherPlatforms = collect($companyPlatformAccess)->filter(fn($p) => $p['platformId'] != config('services.third_party.platform_id'));
                             // Dashboard routes by user type
                             $dashboards = [
                                 'admin'    => 'admin.dashboard',
@@ -865,9 +867,12 @@
                                     </li>
 
                                     {{-- API-driven categories (SideMenu only) --}}
-                                    @if(!empty($platforms) && isset($platforms[0]['categories']))
-                                @foreach($platforms[0]['categories'] as $category)
-
+                                    @php 
+                                        $platformPages = session('platformPages', []) ?? [];
+                                    @endphp
+                            @if(!empty($platformPages))
+                                @foreach($platformPages as $category)
+                                    
                                     @if($category['menuPosition'] !== 'SideMenu')
                                         @continue
                                     @endif
@@ -943,7 +948,7 @@
 
                                 @endforeach
                                 {{-- ====================== Profile Dropdown ====================== --}}
-                                @foreach($platforms[0]['categories'] as $category)
+                                @foreach($platformPages as $category)
                                     @if($category['menuPosition'] !== 'ProfileMenu')
                                         @continue
                                     @endif
@@ -985,7 +990,7 @@
                                 </li> -->
 
 
-                            @if(Session::get('companyPlatformAccess'))
+                            @if($otherPlatforms)
                                 <li data-type="child" class="nav-item">
                                         <a class="nav-link menu-toggle has-dtex-tr" href="javascript:void(0);" data-expanded="false">
                                             <i class="fa-solid fa-cloud"></i>
@@ -993,7 +998,7 @@
                                             <i class="fas fa-chevron-down arrow-icon"></i>
                                         </a>
                                     <ul class="submenu">
-                                        @foreach(Session::get('companyPlatformAccess') as $platform)
+                                        @foreach($otherPlatforms as $platform)
                                         <li class="menu-platform">
                                             <div class="icon-box">
                                                 <img src="https://users.kiwiticketing.com/assets/images/favicon.svg" alt="">

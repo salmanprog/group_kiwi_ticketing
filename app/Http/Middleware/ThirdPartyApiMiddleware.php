@@ -59,6 +59,7 @@ class ThirdPartyApiMiddleware
                     ]));
                 // dd($response->json());
                 // dd($response->body());
+                // dd($platform['platformPages']);
                 if ($response->successful()) {
                     $data = json_decode($response->body(), true);
                     if (($data['errorCode'] ?? null) === 0) {
@@ -98,20 +99,29 @@ class ThirdPartyApiMiddleware
                         ->toArray();
                 }
                 session()->put('userPermissions', $permissions);
-                // $allowedSlugs = $this->getAllowedSlugs($platform['categories'] ?? []);
 
-                // dd($permissions);
                 // Convert slugs to route names
-                $allowedRoutes = [];
-                foreach ($allowedSlugs as $slug) {
-                    if (isset($this->routeMap[$slug])) {
-                        $allowedRoutes[] = $this->routeMap[$slug];
+                $allowedSlugs = [];
+                if (!empty($platform['platformPages'])) {
+                    foreach ($platform['platformPages'] as $category) {
+                        $allowedSlugs = array_merge(
+                            $allowedSlugs,
+                            $this->getAllowedSlugs($category['subCategories'] ?? [])
+                        );
+                        if (!empty($category['pages'])) {
+                            foreach ($category['pages'] as $page) {
+                                if (($page['pageStatus'] ?? '') === 'publish') {
+                                    $allowedSlugs[] = $page['pageSlug'];
+                                }
+                            }
+                        }
                     }
                 }
 
+
+
                 $currentRouteName = $request->route() ? $request->route()->getName() : null;
                 $currentPath = $request->path(); // e.g., portal/organization/ajax-listing
-                // dd($allowedRoutes);
                 // Skip checking no-permission route to avoid loop
                 if ($currentRouteName && $currentRouteName !== 'no-permission') {
                     // Check if current route matches exactly OR starts with a base route
