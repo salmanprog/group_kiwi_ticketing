@@ -68,17 +68,39 @@ class ThirdPartyApiMiddleware
                             'companyPlatformAccess'     => $apiData['companyPlatformAccess'] ?? null,
                         ]);
                         view()->share('thirdPartyApiData', $apiData);
+
+                        if (isset($apiData['companyPlatformAccess']['platformPages'])) {
+                            session()->put('platformPages', $apiData['companyPlatformAccess']['platformPages']);
+                        } else {
+                            $platform = collect($apiData['companyPlatformAccess'])
+                                ->firstWhere('platformId', config('services.third_party.platform_id'));
+                            if ($platform) {
+                                session()->put('platformPages', $platform['platformPages'] ?? []);
+                            }
+                        }
+
                     }
                 }
             }
 
-            // dd($apiData);
             // ------------------- Permission Check -------------------
-                // dd($apiData);
+            // dd($apiData);
 
-            if ($apiData && isset($apiData['platform'][0]['categories'])) {
-                $allowedSlugs = $this->getAllowedSlugs($apiData['platform'][0]['categories']);
-                // dd($allowedSlugs);
+            if ($apiData) {
+                $platformId = config('services.third_party.platform_id');
+                $platform = collect($apiData['companyPlatformAccess'] ?? [])
+                    ->firstWhere('platformId', $platformId);
+                $permissions = [];
+                if ($platform && isset($platform['permissions']) && is_array($platform['permissions'])) {
+                    $permissions = collect($platform['permissions'])
+                        ->pluck('permissionName')
+                        ->map(fn($name) => strtolower(trim($name)))
+                        ->toArray();
+                }
+                session()->put('userPermissions', $permissions);
+                // $allowedSlugs = $this->getAllowedSlugs($platform['categories'] ?? []);
+
+                // dd($permissions);
                 // Convert slugs to route names
                 $allowedRoutes = [];
                 foreach ($allowedSlugs as $slug) {

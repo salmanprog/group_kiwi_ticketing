@@ -70,6 +70,7 @@ class Estimate extends JsonResource
                     'quantity' => $item->quantity,
                     'price' => $item->price,
                     'total' => $item->total_price,
+                    'description' => $item->description,
                     'taxes' => $item->itemTaxes->map(function($tax) {
                         return [
                             'name' => $tax->name,
