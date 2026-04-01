@@ -136,76 +136,29 @@ body {
 </tr>
 </thead>
 <tbody>
-@if($estimate && $estimate->items->count())
-    @foreach($estimate->items as $item)
-        <tr data-id="{{ $item->id }}">
-            <td class="center">
-                {{ $item->name }}
-                <br>
-                @if($item->itemTaxes && $item->itemTaxes->count())
-                    <small class="text-muted d-block" data-taxes='{!! json_encode($item->itemTaxes->map(function ($tax) { return ['id' => $tax->id, 'name' => $tax->name, 'percent' => $tax->percentage]; })) !!}'>
-                        Apply Taxes: 
-                        {{ $item->itemTaxes->pluck('name')->implode(', ') }} 
-                    </small>
-                @endif
-            </td>
-            <td class="item-description center">{{ $item->description }}</td>
-            <td class="center">{{ $item->quantity }}</td>
-            <td class="right">${{ number_format($item->price, 2) }}</td>
-            <td class="right">${{ number_format($item->total_price, 2) }}</td>
-        </tr>
-    @endforeach
-@else
-    <tr class="no-items">
-        <td colspan="5" class="text-center">No products added yet.</td>
-    </tr>
-@endif
+@foreach($estimate->items as $item)
+<tr>
+  <td class="center">{{ $item->name ?? 'N/A' }}</td>
+  <td class="item-description center">{{ $item->description ?? 'N/A' }}</td>
+  <td class="center">{{ number_format($item->quantity ?? 0) }}</td>
+  <td class="right">{{ number_format($item->price ?? 0, 2) }}</td>
+  <td class="right">{{ number_format($item->total_price ?? 0, 2) }}</td>
+</tr>
+@endforeach
 </tbody>
 </table>
 
 <!-- Summary -->
 <div class="summary-modern">
   <table>
-    
-    <!-- Subtotal -->
     <tr>
       <td class="label">Subtotal</td>
       <td class="amount">{{ number_format($estimate->subtotal ?? 0, 2) }}</td>
     </tr>
-
-    <!-- Taxes -->
-    @if($estimate && $estimate->taxes->count())
-        
-        <!-- Total Tax -->
-        <tr>
-          <td class="label">Tax</td>
-          <td class="amount">
-            {{ number_format($estimate->taxes->sum('amount'), 2) }}
-          </td>
-        </tr>
-
-        <!-- Individual Taxes -->
-        <!-- @foreach($estimate->taxes as $tax)
-        <tr>
-          <td class="label" style="padding-left:20px; font-size:11px;">
-            {{ $tax->name }} ({{ $tax->percent }}%)
-          </td>
-          <td class="amount" style="font-size:11px;">
-            {{ number_format($tax->amount, 2) }}
-          </td>
-        </tr>
-        @endforeach -->
-
-    @endif
-
-    <!-- Total -->
     <tr>
       <td class="label total-label">Total</td>
-      <td class="amount total-amount">
-        {{ number_format($estimate->total ?? 0, 2) }}
-      </td>
+      <td class="amount total-amount">{{ number_format($estimate->total ?? 0, 2) }}</td>
     </tr>
-
   </table>
 </div>
 
