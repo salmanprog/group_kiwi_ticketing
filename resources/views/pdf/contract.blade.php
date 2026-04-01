@@ -7,7 +7,7 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif !important;
   font-size: 12px;
   color: #1a1a1a;
   padding: 40px;
@@ -142,7 +142,7 @@ body {
   <td class="item-description">{{ $item->description ?? 'N/A' }}</td>
   <td class="center">{{ number_format($item->quantity ?? 0) }}</td>
   <td class="right">{{ number_format($item->price ?? 0, 2) }}</td>
-  <td class="right">{{ number_format($item->total ?? 0, 2) }}</td>
+  <td class="right">{{ number_format($item->total_price ?? 0, 2) }}</td>
 </tr>
 @endforeach
 </tbody>
