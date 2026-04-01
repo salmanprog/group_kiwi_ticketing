@@ -409,6 +409,23 @@ function openCabanaModal(cabana, date) {
 @endpush
 
 <style>
+    .event-visitor {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 0.375rem;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: #fee8e8;
+  color: #78350f;
+  border: 1px solid #fef3c7;
+  margin-bottom: 6px;
+}
+ 
+.event-visitor .fc-event-title.fc-sticky {
+  color: #ca2525;
+}
 .main-content { 
     background: #f8faf9; 
     font-family: "Poppins", sans-serif; 
