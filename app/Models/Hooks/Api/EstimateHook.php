@@ -164,7 +164,7 @@ class EstimateHook
 
         $invoice = Invoice::generateInvoice($request, $estimate, $contract,$request['user']->auth_code); 
 
-          $company = \App\Models\Company::where('auth_code', $estimate->auth_code)->first();
+        $company = \App\Models\Company::where('auth_code', $estimate->auth_code)->first();
         $organization = \App\Models\Organization::where('id', $estimate->organization_id)->first();
         $client = \App\Models\User::where('id', $estimate->client_id)->first();
         $contractEstimates = \App\Models\ContractEmail::where('auth_code', $estimate->auth_code)->get();
@@ -201,7 +201,7 @@ class EstimateHook
 
         } 
 
-        
+
         }elseif($params['status'] == 'rejected'){
             $estimate->update(['subtotal' => $subtotal,'total' => $total,'discount_total' => $discountAmount,'tax_total' => $taxTotal,'status' => 'rejected']);
 

@@ -210,12 +210,12 @@ body {
 </div>
 
 <!-- Signature -->
-<div class="section-title-modern">Signature</div>
+<!-- <div class="section-title-modern">Signature</div>
 @if(!empty($estimate->signature))
     <img src="data:image/png;base64,{{ $estimate->signature }}" alt="Signature" style="width:150px; height:auto;">
 @else
     <div>N/A</div>
-@endif
+@endif -->
 
 <!-- Notes -->
 <!-- Note Section -->
