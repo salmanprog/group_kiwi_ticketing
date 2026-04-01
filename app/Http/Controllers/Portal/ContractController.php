@@ -268,7 +268,23 @@ class ContractController extends CRUDCrontroller
                                                 )
                                                 ->where('contracts.auth_code', Auth::user()->auth_code)
                                                 ->get();
-        // dd($this->_data['contracts']); 
+            $this->__data['visitors'] = DB::table('contract_items')
+                                            ->join('company_products', 'contract_items.product_id', '=', 'company_products.id')
+                                            ->join('contracts', 'contract_items.contract_id', '=', 'contracts.id')
+                                            ->where('company_products.ticketCategory', '!=', 'Food Addons')
+                                            ->select(
+                                                'company_products.id as product_id',
+                                                'contracts.slug as contract_slug',
+                                                'contracts.event_date',
+                                                DB::raw('SUM(contract_items.quantity) as total_quantity')
+                                            )
+                                            ->groupBy(
+                                                'company_products.id',
+                                                'contracts.slug',
+                                                'contracts.event_date'
+                                            )
+                                            ->get();
+        // dd($this->__data['visitors']); 
         // $this->__data['organizations'] = Organization::where('status', 1)->where('company_id', CompanyUser::getCompany(Auth::user()->id)->id)->where('client_id','>', 0)->get();
         return $this->__cbAdminView('contract.event-calander', $this->__data);
     }

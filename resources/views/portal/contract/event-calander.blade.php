@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const contracts = @json($contracts);
     const estimates = @json($estimates);
     const cabana = @json($cabana);
+    const visitors = @json($visitors);
 
     let grouped = {};
 
@@ -159,7 +160,8 @@ document.addEventListener('DOMContentLoaded', function() {
             grouped[date] = {
                 contracts: [],
                 estimates: [],
-                cabana: []
+                cabana: [],
+               visitors: [] // ✅ should be array
             };
         }
     }
@@ -185,6 +187,25 @@ document.addEventListener('DOMContentLoaded', function() {
         grouped[cab.event_date].cabana.push(cab);
     });
 
+  visitors.forEach(visitor => {
+    if (!visitor.event_date) return;
+
+    initDate(visitor.event_date);
+
+    // ✅ ensure visitors is an array
+    if (!Array.isArray(grouped[visitor.event_date].visitors)) {
+        grouped[visitor.event_date].visitors = [];
+    }
+
+    grouped[visitor.event_date].visitors.push(visitor);
+
+    // sum total_quantity safely
+    if (!grouped[visitor.event_date].visitors_total) {
+        grouped[visitor.event_date].visitors_total = 0;
+    }
+    grouped[visitor.event_date].visitors_total += Number(visitor.total_quantity || 0);
+});
+
     // ✅ Create events
     let events = [];
 
@@ -192,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cCount = grouped[date].contracts.length;
         const eCount = grouped[date].estimates.length;
         const cabanaCount = grouped[date].cabana.length;
+        const visitorTotal = grouped[date].visitors_total || 0;
 
         if (cCount > 0) {
             events.push({
@@ -225,6 +247,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 extendedProps: {
                     type: 'cabana',
                     items: grouped[date].cabana
+                }
+            });
+        }
+        
+       if (visitorTotal > 0) {
+            events.push({
+                title: `Visitors: ${visitorTotal}`,
+                start: date,
+                className: 'event-visitor',
+                extendedProps: {
+                    type: 'visitor',
+                    items: grouped[date].visitors
                 }
             });
         }

@@ -134,8 +134,44 @@ class EstimateHook
         $contractEstimates = ContractEmail::where('auth_code', $estimate->auth_code)->get();
         $company = \App\Models\Company::find($estimate->company_id);
 
+    
+        $contract = Contract::find($estimate->contract_id);
+
+        if (!$contract) {
+            $contractSlug = Contract::generateUniqueSlug();
+            $contract = new Contract([
+                'slug' => $contractSlug,
+                'auth_code' => $request['user']->auth_code,
+                'contract_number' => $contractSlug,
+                'client_id' => $estimate->client_id,
+                'company_id' => $estimate->company_id,
+                'organization_id' => $estimate->organization_id,
+                'status' => 'active',
+                'event_date' => $estimate->event_date,
+                'total' => $estimate->total,
+                'terms' => $estimate->terms,
+                'is_accept' => 1,
+                'notes' => $estimate->note,
+                'terms_and_condition' => $estimate->terms_and_condition,
+            ]);
+        } else {
+            $contract->total += $estimate->total;
+        }
+
+        $contract->save();
+
+        $estimate->update(['contract_id' => $contract->id]);
+
+        $invoice = Invoice::generateInvoice($request, $estimate, $contract,$request['user']->auth_code); 
+
+          $company = \App\Models\Company::where('auth_code', $estimate->auth_code)->first();
+        $organization = \App\Models\Organization::where('id', $estimate->organization_id)->first();
+        $client = \App\Models\User::where('id', $estimate->client_id)->first();
+        $contractEstimates = \App\Models\ContractEmail::where('auth_code', $estimate->auth_code)->get();
+        $company = \App\Models\Company::find($estimate->company_id);
+        $contractNumber = $estimate->id;
         
-            $pdf = Pdf::loadView('pdf.contract', compact('estimate'));
+            $pdf = Pdf::loadView('pdf.contract', compact('estimate','contract','company','organization','client'));
             $fileName = 'contracts/contract_'.$estimate->id.'_'.uniqid().'.pdf';
             Storage::disk('public')->put($fileName, $pdf->output());
 
@@ -165,36 +201,7 @@ class EstimateHook
 
         } 
 
-
-
-        $contract = Contract::find($estimate->contract_id);
-
-        if (!$contract) {
-            $contractSlug = Contract::generateUniqueSlug();
-            $contract = new Contract([
-                'slug' => $contractSlug,
-                'auth_code' => $request['user']->auth_code,
-                'contract_number' => $contractSlug,
-                'client_id' => $estimate->client_id,
-                'company_id' => $estimate->company_id,
-                'organization_id' => $estimate->organization_id,
-                'status' => 'active',
-                'event_date' => $estimate->event_date,
-                'total' => $estimate->total,
-                'terms' => $estimate->terms,
-                'is_accept' => 1,
-                'notes' => $estimate->note,
-                'terms_and_condition' => $estimate->terms_and_condition,
-            ]);
-        } else {
-            $contract->total += $estimate->total;
-        }
-
-        $contract->save();
-
-        $estimate->update(['contract_id' => $contract->id]);
-
-        $invoice = Invoice::generateInvoice($request, $estimate, $contract,$request['user']->auth_code); 
+        
         }elseif($params['status'] == 'rejected'){
             $estimate->update(['subtotal' => $subtotal,'total' => $total,'discount_total' => $discountAmount,'tax_total' => $taxTotal,'status' => 'rejected']);
 
