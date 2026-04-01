@@ -211,11 +211,11 @@ body {
 
 <!-- Signature -->
 <div class="section-title-modern">Signature</div>
-<!-- @if(!empty($contract->signature))
+@if(!empty($contract->signature))
     <img src="data:image/png;base64,{{ $contract->signature }}" alt="Signature" style="width:150px; height:auto;">
 @else
     <div>N/A</div>
-@endif -->
+@endif
 
 <!-- Notes -->
 <!-- Note Section -->
