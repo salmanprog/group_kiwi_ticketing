@@ -938,13 +938,27 @@ class ContractController extends CRUDCrontroller
 
     public function clientTicketEnable($slug)
     {
-        $contract = Contract::where('slug', $slug)->first();
+        $contract = Contract::with('client')->where('slug', $slug)->first();
         if (!$contract) {
             return response()->json(['message' => 'Contract not found.'], 404);
         }
         
         $contract->ticket_enable = '1';
         $contract->save();
+
+
+           $companyName = Company::where('auth_code',Auth::user()->auth_code)->first(); 
+            $data = [
+                'username' => $contract->client->name,
+                'company_name' => $companyName->name,
+            ];
+            
+            
+            try {
+                UserMailer::sendTemplate($contract->auth_code, $contract->client->email, 'enable_ticket_email', $data);
+            } catch (\Exception $e) {
+                return false;
+            }
 
           \App\Models\ActivityLog::create([
                 'module' => 'contract',

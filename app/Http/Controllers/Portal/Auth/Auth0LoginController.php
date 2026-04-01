@@ -368,52 +368,125 @@ class Auth0LoginController extends Controller
     }
 
 
-    public function generateEmailTemplate($user){
+     public function generateEmailTemplate($user){
 
-        $emailTemplate = EmailTemplate::where('auth_code', $user->auth_code)->first();
+            $emailTemplates = EmailTemplate::where('auth_code', $user->auth_code)
+                ->pluck('identifier')
+                ->toArray();
 
-        if(!empty($emailTemplate)) {
-            return true;
-        }else{
-            
-          $estimateBody = file_get_contents(resource_path('views/email/estimate.blade.php'));
-          $contractBody = file_get_contents(resource_path('views/email/contract_email.blade.php'));
-          $ticketEmailSend = file_get_contents(resource_path('views/email/ticket_email_send.blade.php')); 
+            // Load blade files
+            $estimateBody = file_get_contents(resource_path('views/email/estimate.blade.php'));
+            $contractBody = file_get_contents(resource_path('views/email/contract_email.blade.php'));
+            $ticketEmailSend = file_get_contents(resource_path('views/email/ticket_email_send.blade.php')); 
+            $enableTicketEmailBody = file_get_contents(resource_path('views/email/enable_ticket_email.blade.php'));
 
+            // Define all templates
             $defaultEmail = [
                 [
-                'slug' => 'estimate-email-'.$user->auth_code,
-                'auth_code' => $user->auth_code,
-                'identifier' => 'estimate_email',
-                'to_emails' => $user->email,
-                'subject' => 'Your Visit Estimate',
-                'content' => $estimateBody,
-                'status' => 1
+                    'identifier' => 'estimate_email',
+                    'subject' => 'Your Visit Estimate',
+                    'content' => $estimateBody,
                 ],
                 [
-                'slug' => 'contract-email-'.$user->auth_code,
-                'auth_code' => $user->auth_code,
-                'identifier' => 'contract_email',
-                'to_emails' => $user->email,
-                'subject' => 'Your Visit Contract',
-                'content' => $contractBody,
-                'status' => 1
+                    'identifier' => 'contract_email',
+                    'subject' => 'Your Visit Contract',
+                    'content' => $contractBody,
                 ],
                 [
-                'slug' => 'ticket-email-send-'.$user->auth_code,
-                'auth_code' => $user->auth_code,
-                'identifier' => 'ticket_email_send',
-                'to_emails' => $user->email,
-                'subject' => 'Ticket issue',
-                'content' => $ticketEmailSend,
-                'status' => 1
+                    'identifier' => 'ticket_email_send',
+                    'subject' => 'Ticket issue',
+                    'content' => $ticketEmailSend,
+                ],
+                [
+                    'identifier' => 'enable_ticket_email',
+                    'subject' => 'Enable Ticket',
+                    'content' => $enableTicketEmailBody,
                 ],
             ];
 
-            EmailTemplate::insert($defaultEmail);
-            
+            // Filter only missing templates
+            $newTemplates = [];
+
+            foreach ($defaultEmail as $template) {
+                if (!in_array($template['identifier'], $emailTemplates)) {
+                    $newTemplates[] = [
+                        'slug' => $template['identifier'] . '-' . $user->auth_code,
+                        'auth_code' => $user->auth_code,
+                        'identifier' => $template['identifier'],
+                        'to_emails' => $user->email,
+                        'subject' => $template['subject'],
+                        'content' => $template['content'],
+                        'status' => 1
+                    ];
+                }
+            }
+
+            // Insert only missing ones
+            if (!empty($newTemplates)) {
+                EmailTemplate::insert($newTemplates);
+            }
+
             return true;
-        }
         
     }
+
+
+    // public function generateEmailTemplate($user){
+
+    //     $emailTemplate = EmailTemplate::where('auth_code', $user->auth_code)->first();
+
+    //     if(!empty($emailTemplate)) {
+    //         return true;
+    //     }else{
+            
+    //       $estimateBody = file_get_contents(resource_path('views/email/estimate.blade.php'));
+    //       $contractBody = file_get_contents(resource_path('views/email/contract_email.blade.php'));
+    //       $ticketEmailSend = file_get_contents(resource_path('views/email/ticket_email_send.blade.php')); 
+    //       $enableTicketEmailBody = file_get_contents(resource_path('views/email/enable_ticket_email.blade.php'));
+
+    //         $defaultEmail = [
+    //             [
+    //             'slug' => 'estimate-email-'.$user->auth_code,
+    //             'auth_code' => $user->auth_code,
+    //             'identifier' => 'estimate_email',
+    //             'to_emails' => $user->email,
+    //             'subject' => 'Your Visit Estimate',
+    //             'content' => $estimateBody,
+    //             'status' => 1
+    //             ],
+    //             [
+    //             'slug' => 'contract-email-'.$user->auth_code,
+    //             'auth_code' => $user->auth_code,
+    //             'identifier' => 'contract_email',
+    //             'to_emails' => $user->email,
+    //             'subject' => 'Your Visit Contract',
+    //             'content' => $contractBody,
+    //             'status' => 1
+    //             ],
+    //             [
+    //             'slug' => 'ticket-email-send-'.$user->auth_code,
+    //             'auth_code' => $user->auth_code,
+    //             'identifier' => 'ticket_email_send',
+    //             'to_emails' => $user->email,
+    //             'subject' => 'Ticket issue',
+    //             'content' => $ticketEmailSend,
+    //             'status' => 1
+    //             ],
+    //             [
+    //             'slug' => 'enable-ticket-email-'.$user->auth_code,
+    //             'auth_code' => $user->auth_code,
+    //             'identifier' => 'enable_ticket_email',
+    //             'to_emails' => $user->email,
+    //             'subject' => 'Enable Ticket',
+    //             'content' => $enableTicketEmailBody,
+    //             'status' => 1
+    //             ],
+    //         ];
+
+    //         EmailTemplate::insert($defaultEmail);
+            
+    //         return true;
+    //     }
+        
+    // }
 }
