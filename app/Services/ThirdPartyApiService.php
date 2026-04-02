@@ -350,8 +350,8 @@ class ThirdPartyApiService
     
    private function sendOrderFailedEmail(array $payload, array $response, string $errorMessage, string $companyName)
     {
-        $adminEmail = 'dev@ideaseat.com';
-
+        // $adminEmail = 'dev@ideaseat.com';
+        $adminEmail = 'ali@yopmail.com';
         $data = [
             'company_name' => $companyName,
             'error_message' => $errorMessage,
