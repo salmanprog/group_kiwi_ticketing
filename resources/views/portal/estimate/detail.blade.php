@@ -189,7 +189,7 @@
                                                                                                 ]'>
                                                                                 Apply Taxes: 
                                                                                 @foreach($item->itemTaxes as $tax)
-                                                                                    {{ $tax->name }}@if(!$loop->last), @endif
+                                                                                    {{ $tax->name }}% @if(!$loop->last), @endif
                                                                                 @endforeach 
                                                                     </small>
                                                                 @endif
@@ -241,7 +241,7 @@
                                                 <tr class="fw-bold discount-row">
                                                     @foreach($estimate->discounts as $discount)
                                                         <th colspan="4" class="">
-                                                            Discount ( {{ $discount->name }} )
+                                                            Discount ( {{ $discount->name }} {{$discount->value}} {{($discount->type == 'fixed') ? '$' : '%'}} )
                                                         </th>
                                                        <th style="display:none" class="discount_percent" data-discount-type="{{ $discount->type }}">
                                                             {{ $discount->value }} {{($discount->type == 'fixed') ? '$' : '%'}}

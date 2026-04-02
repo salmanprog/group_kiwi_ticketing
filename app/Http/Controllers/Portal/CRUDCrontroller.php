@@ -83,6 +83,9 @@ class CRUDCrontroller extends Controller
         $data   = $this->__request->all();
         $record = $this->loadModel()->createRecord($this->__request,$data);
         $current_route = explode('.',\Route::currentRouteName());
+        if($current_route[0] == 'media'){
+           return redirect()->route('media.index')->with('success',$this->__success_store_message);
+        }
         return redirect()
             ->route($current_route[0] . '.edit',[ str_replace('-','_',Str::singular($current_route[0])) => $record->slug ])
             ->with('success',$this->__success_store_message);

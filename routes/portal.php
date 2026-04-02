@@ -34,6 +34,7 @@ use Auth0\Laravel\Facade\Auth0;
 use App\Http\Controllers\Portal\ContractEmailController;
 use App\Http\Controllers\Portal\EmailTemplateController;
 use App\Http\Controllers\Portal\UserHoldTicketsController;
+use App\Http\Controllers\Portal\MediaController;
 
 
 /*
@@ -322,3 +323,6 @@ Route::get('/estimate/hold-dates/{id}', [EstimateController::class,'getEstimateD
 
 Route::post('/update-expiry-date', [EstimateController::class, 'updateExpiryDate'])->name('update-expiry-date');
 Route::post('/print-ticket', [ContractController::class, 'printTicket'])->name('contract.print-tickets');
+
+Route::get('media/ajax-listing', [MediaController::class, 'ajaxListing'])->name('media.ajax-listing');
+Route::resource('media', MediaController::class);

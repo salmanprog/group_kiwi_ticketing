@@ -981,13 +981,12 @@
                                     @endif
                                 @endif
 
-                                   <!-- <li data-type="child" class="nav-item">
-
-                                        <a class="nav-link" href="{{ route('hold-tickets.index') }}">
-                                                <i class="fas fa-calendar-alt"></i>
-                                                <span class="toggle-none">Hold Tickets</span>
+                                <li data-type="child" class="nav-item">
+                                        <a class="nav-link" href="{{ route('media.index') }}">
+                                                <i class="fas fa-images"></i>
+                                                <span class="toggle-none">Media</span>
                                             </a>
-                                </li> -->
+                                </li>
 
 
                             @if($otherPlatforms)
