@@ -67,8 +67,13 @@ function addProductDiscount() {
     const discountName = $('#discountName').val().trim();
     const discountValue = parseFloat($('#discountAmount').val());
 
+    
+    const btn = $('#addDiscount');
+    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+
     if (!discountName || isNaN(discountValue) || discountValue <= 0) {
         showModalMessage(modal, 'Please provide valid discount name and value', 'danger');
+        btn.prop('disabled', false).html('Update Discount');
         return;
     }
 
@@ -78,6 +83,7 @@ function addProductDiscount() {
         const productId = $(this).data('id');
         const priceText = $(this).find('.item-total').text().replace('$', '').replace(',', '');
         const price = parseFloat(priceText) || 0;
+        
 
         products.push({
             id: productId,
@@ -89,6 +95,7 @@ function addProductDiscount() {
 
     if (products.length === 0) {
         showModalMessage(modal, 'No products found to apply discount', 'danger');
+        btn.prop('disabled', false).html('Update Discount');
         return;
     }
 
@@ -103,7 +110,13 @@ function addProductDiscount() {
         },
         success: function(res) {
             if (res.status) {
-                showModalMessage(modal, res.message, 'success');
+                Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
                 // Close modal and refresh totals
                 setTimeout(() => modal.modal('hide'), 1000);
 
@@ -114,7 +127,15 @@ function addProductDiscount() {
                 //updateTotals();
                 
             } else {
-                showModalMessage(modal, res.message, 'danger');
+                   Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+                //showModalMessage(modal, res.message, 'danger');
+                btn.prop('disabled', false).html('Update Discount');
             }
             //window.location.reload();
         },
@@ -123,6 +144,14 @@ function addProductDiscount() {
             if (xhr.responseJSON && xhr.responseJSON.errors) {
                 msg = Object.values(xhr.responseJSON.errors).map(arr => arr.join('<br>')).join('<br>');
             }
+            btn.prop('disabled', false).html('Update Discount');
+               Toastify({
+                    text: msg,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
             showModalMessage(modal, msg, 'danger');
         }
     });
@@ -141,9 +170,13 @@ $('#updateDiscount').on('click', function () {
     const discountName  = modal.find('#editdiscountName').val().trim();
     const discountValue = modal.find('#editdiscountAmount').val();
     const discountType  = modal.find('#editdiscountType').val();
+    const btn = $('#updateDiscount');
+    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+    
 
     if (!discountName || !discountValue || discountValue <= 0) {
         alert('Please enter valid discount details');
+        btn.prop('disabled', false).html('Update Discount');
         return;
     }
 
@@ -161,8 +194,13 @@ $('#updateDiscount').on('click', function () {
         success: function (res) {
 
             if (res.status) {
-                alert('Discount updated successfully');
-
+                Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
                 // Close modal
                 modal.modal('hide');
 
@@ -171,12 +209,24 @@ $('#updateDiscount').on('click', function () {
                 // OR call updateTotals();
 
             } else {
-                alert(res.message || 'Update failed');
+                Toastify({
+                    text: res.message || 'Update failed',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
             }
         },
         error: function (err) {
             console.error(err.responseText);
-            alert('Something went wrong');
+            Toastify({
+                text: 'Something went wrong',
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                className: "toast-error"
+            }).showToast();
         }
     });
 });
@@ -199,18 +249,37 @@ $(document).on('click', '.delete-discount', function () {
         success: function (res) {
             if (res.status) {
                 // Remove discount row from table
+                Toastify({
+                    text: res.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
                 button.closest('tr').remove();
 
                 // Recalculate totals
                 //updateTotals();
                 location.reload();
             } else {
-                alert(res.message || 'Something went wrong');
+                Toastify({
+                    text: res.message || 'Something went wrong',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
             }
         },
         error: function (err) {
             console.error(err.responseText);
-            alert('Error deleting discount');
+            Toastify({
+                text: 'Error deleting discount',
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                className: "toast-error"
+            }).showToast();
         }
     });
 });
