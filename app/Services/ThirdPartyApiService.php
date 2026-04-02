@@ -4,8 +4,10 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\ActivityActionLogs;
 use App\Services\ActivityActionLogger;
+use Illuminate\Support\Facades\Mail;
 
 class ThirdPartyApiService
 {
@@ -93,7 +95,7 @@ class ThirdPartyApiService
               ActivityActionLogger::log([
                 'auth_code' => $authCode,
                 'action' => 'hold_ticket',
-                'method' => 'POST',
+                'method' => 'POST', 
                 'url' => $this->baseUrl . '/Pricing/TicketHold',
                 'payload' => json_encode($body),
                 'response' => json_encode($response->json()),
@@ -105,6 +107,11 @@ class ThirdPartyApiService
                 'ip' => request()->ip(),
                 'response_time' => $responseTime,
             ]);
+
+        // if($response->json()['status']['errorCode'] !== 0) {
+            // $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
+            // $this->sendOrderFailedEmail($body, $response->json(),'Ticket Hold Failed', $companyName);
+        // }
 
         return $response;
 
@@ -192,6 +199,11 @@ class ThirdPartyApiService
             'ip'           => request()->ip(),
             'response_time'=> $responseTime,
         ]);
+
+        if($response->json()['status']['errorCode'] !== 0) {
+            $companyName = DB::table('company')->where('auth_code', $data['AuthCode'])->value('name') ?? 'Unknown Company';
+            $this->sendOrderFailedEmail($data, $response->json(),'Order Add Failed', $companyName);
+        }
         
         return $response;
     }
@@ -334,6 +346,23 @@ class ThirdPartyApiService
         ]);
 
         return $response;
+    }
+    
+   private function sendOrderFailedEmail(array $payload, array $response, string $errorMessage, string $companyName)
+    {
+        $adminEmail = 'dev@ideaseat.com';
+
+        $data = [
+            'company_name' => $companyName,
+            'error_message' => $errorMessage,
+            'payload' => $payload,
+            'response' => $response,
+        ];
+
+        Mail::send('email.order_failed', $data, function($message) use ($adminEmail) {
+            $message->to($adminEmail)
+                    ->subject('Order Creation Failed');
+        });
     }
 
 
