@@ -158,12 +158,12 @@ class CRUDCrontroller extends Controller
     public function destroy($slug)
     {
         //check permission
-        if(modulePermission()->is_delete != 1){
-            if( $this->__request->ajax() )
-                return response()->json(['code' => 400,'message' => __('app.permission_denied')],400);
-            else
-                return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
-        }
+        // if(modulePermission()->is_delete != 1){
+        //     if( $this->__request->ajax() )
+        //         return response()->json(['code' => 400,'message' => __('app.permission_denied')],400);
+        //     else
+        //         return redirect()->route('admin.dashboard')->with('error',__('app.permission_denied'));
+        // }
         //before render create view hook
         if(method_exists($this,'beforeDeleteLoadModel')){
             $response = $this->beforeDeleteLoadModel($slug);
