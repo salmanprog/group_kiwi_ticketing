@@ -327,9 +327,14 @@ class EstimateController extends CRUDCrontroller
                 $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
             );
 
-            $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->value);
-            $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
-            $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
+           $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->type == 'percent' ? $discount->value : 0);
+            $discountAmountFixed = $estimate->discounts->sum(fn($discount) => $discount->type == 'fixed' ? $discount->value : 0);
+
+            $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100)) - $discountAmountFixed;
+
+            $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100) + $discountAmountFixed; 
+
+            // dd($total);
 
             // echo "Subtotal: $subtotal\n";
             // echo "Tax: $taxTotal\n";
@@ -436,6 +441,7 @@ class EstimateController extends CRUDCrontroller
 
     public function sendToClient(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'estimate_id' => 'required',
             'slug' => 'required|string',

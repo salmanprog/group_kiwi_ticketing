@@ -130,7 +130,7 @@ class EstimateDiscountController extends CRUDCrontroller
         $products = $request->input('products');
         $discountType = $request->input('discount_type', 'percent');
 
-        // // Calculate total discount amount
+        // // Calculate total discount amount 
         $totalDiscount = 0;
         foreach ($products as $product) {
             // if ($product['discount_type'] === 'percent') {

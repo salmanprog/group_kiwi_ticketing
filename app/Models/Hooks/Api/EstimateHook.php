@@ -122,9 +122,17 @@ class EstimateHook
         $taxTotal = $estimate->items->sum(fn($item) => 
             $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
         );
-        $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->value);
-        $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
-        $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100); 
+        // $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->value);
+        // $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
+        // $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100); 
+
+        $discountPercent = $estimate->discounts->sum(fn($discount) => $discount->type == 'percent' ? $discount->value : 0);
+        $discountAmountFixed = $estimate->discounts->sum(fn($discount) => $discount->type == 'fixed' ? $discount->value : 0);
+
+        $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100)) - $discountAmountFixed;
+
+        $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100) + $discountAmountFixed; 
+
 
         if($params['status'] == 'approved'){
         
