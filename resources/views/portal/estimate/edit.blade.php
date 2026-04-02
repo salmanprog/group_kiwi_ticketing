@@ -428,7 +428,7 @@
                                                         <th class="discount_percent" data-discount-type="{{ $discount->type }}">
                                                             {{ $discount->value }} {{($discount->type == 'fixed') ? '$' : '%'}}
                                                         </th>
-                                                        <th></th>
+                                                        <th id='discount_amount_show'></th>
                                                     @endforeach
                                                 </tr>
                                                 @endif

@@ -163,6 +163,9 @@ function updateTotals() {
         totalDiscount += discountAmount;
 
     });
+    // alert(totalDiscount);
+    $('#discount_amount_show').text('-$' + totalDiscount.toFixed(2));
+    $('#discount_percent_details').text('-$' + totalDiscount.toFixed(2));
 
     // 3️⃣ Gratuity (optional)
     gratuityAmount = parseFloat(((subtotal + totalTax - totalDiscount) * gratuityRate).toFixed(2));

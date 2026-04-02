@@ -241,12 +241,13 @@
                                                 <tr class="fw-bold discount-row">
                                                     @foreach($estimate->discounts as $discount)
                                                         <th colspan="4" class="">
-                                                            Discount {{ $discount->name }}
+                                                            Discount ( {{ $discount->name }} )
                                                         </th>
-                                                        <th class="discount_percent">
-                                                            {{ $discount->value }} %
+                                                       <th style="display:none" class="discount_percent" data-discount-type="{{ $discount->type }}">
+                                                            {{ $discount->value }} {{($discount->type == 'fixed') ? '$' : '%'}}
                                                         </th>
-                                                        {{-- <th></th> --}}
+                                                       
+                                                        <th id="discount_amount_show"></th> 
                                                     @endforeach
                                                 </tr>
                                                 @endif
