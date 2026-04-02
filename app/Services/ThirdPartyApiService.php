@@ -110,7 +110,7 @@ class ThirdPartyApiService
 
         // if($response->json()['status']['errorCode'] !== 0) {
             $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
-            $this->sendOrderFailedEmail($body, $response->json(),'Ticket Hold Failed', $companyName);
+            $this->sendOrderFailedEmail($body, $response,'Ticket Hold Failed', $companyName);
         // }
 
         return $response;
@@ -202,7 +202,7 @@ class ThirdPartyApiService
 
         if($response->json()['status']['errorCode'] !== 0) {
             $companyName = DB::table('company')->where('auth_code', $data['AuthCode'])->value('name') ?? 'Unknown Company';
-            $this->sendOrderFailedEmail($data, $response->json(),'Order Add Failed', $companyName);
+            $this->sendOrderFailedEmail($data, $response,'Order Add Failed', $companyName);
         }
         
         return $response;
