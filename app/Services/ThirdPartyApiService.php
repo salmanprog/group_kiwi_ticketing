@@ -108,10 +108,10 @@ class ThirdPartyApiService
                 'response_time' => $responseTime,
             ]);
 
-        // if($response->json()['status']['errorCode'] !== 0) {
-            // $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
-            // $this->sendOrderFailedEmail($body, $response->json(),'Ticket Hold Failed', $companyName);
-        // }
+        if($response->json()['status']['errorCode'] !== 0) {
+            $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
+            $this->sendOrderFailedEmail($body, $response->json(),'Ticket Hold Failed', $companyName);
+        }
 
         return $response;
 
@@ -144,6 +144,11 @@ class ThirdPartyApiService
             'ip' => request()->ip(),
             'response_time' => $responseTime,
         ]);
+
+         if($response->json()['status']['errorCode'] !== 0) {
+            $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
+            $this->sendOrderFailedEmail($body, $response->json(),'Release Ticket Failed', $companyName);
+        }
         
         return $response;
     }
@@ -217,6 +222,10 @@ class ThirdPartyApiService
                 ->contentType('application/json')
                 ->post($url, $data);
 
+          if($response->json()['status']['errorCode'] !== 0) {
+            $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
+            $this->sendOrderFailedEmail($data, $response->json(),'Update Order Invoice Failed', $companyName);
+        }
         return $response;
     }
 
@@ -302,6 +311,11 @@ class ThirdPartyApiService
             'ip'           => request()->ip(),
             'response_time'=> $responseTime,
         ]);
+
+          if($response->json()['status']['errorCode'] !== 0) {
+            $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
+            $this->sendOrderFailedEmail($body, $response->json(),'Send Ticket to Recipient Failed', $companyName);
+        }
 
         return $response;
     }
