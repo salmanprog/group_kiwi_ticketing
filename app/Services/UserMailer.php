@@ -80,25 +80,27 @@ class UserMailer
         $fromEmail = ($smtp) ? $smtp->mail_no_replay : env('SENDGRID_FROM');
 
         // Send email using dynamic SMTP
-        Mail::mailer('user_smtp')->send(new class($toEmails, $subject, $body, $fromEmail, $attachmentPath) extends Mailable {
+        Mail::mailer('user_smtp')->send(new class($toEmails, $subject, $body, $fromEmail, $attachmentPath, $companyName) extends Mailable {
             public $toEmails;
             public $subject;
             public $body;
             public $fromEmail;
             public $attachmentPath;
+            public $companyName;
 
-            public function __construct($toEmails, $subject, $body, $fromEmail, $attachmentPath = null)
+            public function __construct($toEmails, $subject, $body, $fromEmail, $attachmentPath = null, $companyName = null)
             {
                 $this->toEmails = is_array($toEmails) ? $toEmails : explode(',', $toEmails);
                 $this->subject = $subject;
                 $this->body = $body;
                 $this->fromEmail = $fromEmail;
                 $this->attachmentPath = $attachmentPath;
+                $this->companyName = $companyName;
             }
 
             public function build()
             {
-                $mail = $this->from($this->fromEmail, $companyName)
+                $mail = $this->from($this->fromEmail, $this->companyName)
                              ->subject($this->subject)
                              ->html($this->body)
                              ->to($this->toEmails);
