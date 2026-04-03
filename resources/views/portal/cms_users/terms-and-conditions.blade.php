@@ -50,8 +50,8 @@
 
                             {{-- Form Actions --}}
                             <div class="form-actions">
-                                <button type="reset" class="btn btn-light border" style="color: #333;">Reset Changes</button>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="reset" class="btn btn-secondary" style="color: #333;">Reset Changes</button>
+                                <button type="submit" class="btn btn-outline">
                                     <i class="fas fa-save me-2"></i> Update Terms
                                 </button>
                             </div>
@@ -68,6 +68,28 @@
 
     {{-- Additional Styles for the Editor --}}
     <style>
+        .btn-secondary {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+        .btn-outline {
+            background: #9FC23F !important;
+            border: 1px solid #fff !important;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
         /* Ensuring the editor box fits your theme */
         .ck-editor__editable_inline {
             min-height: 300px;
@@ -82,6 +104,13 @@
             background: #f8faf9 !important;
             border-top-left-radius: 6px !important;
             border-top-right-radius: 6px !important;
+        }
+
+        .card-header h3{
+            margin: 0;
+            font-weight: 600;
+            font-size: 18px;
+            color: #1f2937;
         }
     </style>
 

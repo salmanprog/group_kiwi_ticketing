@@ -220,9 +220,9 @@
                                             <li class="list-group-item">
                                                 <div class="d-flex justify-content-between">
                                                     <div>
-                                                        <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
+                                                        <small style="font-size: 10px;">{{ ucfirst($log->createdBy->name ?? 'Activity') }}</small>
                                                         <div class="text-muted small">
-                                                            {{ $log->notesTextarea ?? '' }}
+                                                          <p style="font-size: 14px;">{{ $log->notesTextarea ?? '' }}</p>  
                                                         </div>
                                                     </div> 
                                                     <small class="text-muted">
@@ -244,7 +244,7 @@
                                 <input type="hidden" name="organization_id" id="organization_id"
                                     value="{{ $record->id }}">
                                 <textarea id="notesTextarea" class="form-control" rows="4" readonly placeholder="Click here to add notes..."></textarea>
-                                <button id="saveNotesBtn" class="btn btn-primary mt-2 d-none">
+                                <button id="saveNotesBtn" class="btn btn-outline mt-2 d-none">
                                     Save Notes
                                 </button>
                             </div>

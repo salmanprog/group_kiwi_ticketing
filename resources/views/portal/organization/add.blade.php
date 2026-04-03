@@ -482,6 +482,7 @@
         .btn-secondary:hover {
             background: #f9fafb;
             border-color: #9ca3af;
+            color: #374151 !important;
         }
 
         .btn-primary {
