@@ -39,6 +39,8 @@ class UserMailer
         $subject = self::replacePlaceholders($template->subject, $data);
         if($template->identifier == "estimate_email"){
             $subject = $companyName . " - " . $data['estimate_number'];
+        }else if($template->identifier == "contract_email"){
+            $subject = $companyName . " - " . $data['contract_number'];
         }
         // dd($subject);
         $body = self::replacePlaceholders($template->content, $data);

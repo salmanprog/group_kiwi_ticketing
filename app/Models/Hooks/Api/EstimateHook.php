@@ -177,7 +177,7 @@ class EstimateHook
         $client = \App\Models\User::where('id', $estimate->client_id)->first();
         $contractEstimates = \App\Models\ContractEmail::where('auth_code', $estimate->auth_code)->get();
         $company = \App\Models\Company::find($estimate->company_id);
-        $contractNumber = $estimate->id;
+        $contractNumber = $contract->slug;
         
             $pdf = Pdf::loadView('pdf.contract', compact('estimate','contract','company','organization','client'));
             $fileName = 'contracts/contract_'.$estimate->id.'_'.uniqid().'.pdf';
@@ -197,7 +197,8 @@ class EstimateHook
 
                 $data = [
                     'username' => $contractEstimate->name,
-                    'company_name' => $company->name
+                    'company_name' => $company->name,
+                    'contract_number' => $contractNumber
                 ];
 
                 try {
