@@ -206,10 +206,10 @@ class ThirdPartyApiService
             'response_time'=> $responseTime,
         ]);
 
-        // if($response->json()['status']['errorCode'] !== 0) {
+        if($response->json()['status']['errorCode'] !== 0) {
             $companyName = DB::table('company')->where('auth_code', $data['AuthCode'])->value('name') ?? 'Unknown Company';
             $this->sendOrderFailedEmail($data, $response->json(),'Order Add Failed', $companyName);
-        // }
+        }
         
         return $response;
     }
