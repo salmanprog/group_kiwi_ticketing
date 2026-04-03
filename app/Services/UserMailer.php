@@ -34,7 +34,7 @@ class UserMailer
             throw new \Exception("Template '{$templateIdentifier}' not found or inactive.");
         }
 
-        $companyName = DB::table('companies')->where('auth_code', $auth_code)->value('name');
+        $companyName = DB::table('company')->where('auth_code', $auth_code)->value('name');
 
         $subject = self::replacePlaceholders($template->subject, $data);
         if($template->identifier == "estimate_email"){
