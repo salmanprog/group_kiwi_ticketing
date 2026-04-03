@@ -38,6 +38,7 @@ class UserMailer
         if($template->subject == "estimate_email"){
             $subject = $template->subject . " - " . $data['estimate_number'];
         }
+        dd($subject);
         $body = self::replacePlaceholders($template->content, $data);
 
         // Fetch SMTP config for user
