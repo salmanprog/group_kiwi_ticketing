@@ -98,7 +98,7 @@ class UserMailer
 
             public function build()
             {
-                $mail = $this->from($this->fromEmail, 'No Reply')
+                $mail = $this->from($this->fromEmail, $companyName)
                              ->subject($this->subject)
                              ->html($this->body)
                              ->to($this->toEmails);
