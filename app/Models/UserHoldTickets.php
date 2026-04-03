@@ -145,7 +145,7 @@ class UserHoldTickets extends Model
                      
                         $seat_count++;
                         // Add each seat purchase to array
-                        $seats .= $seat->sectionId . $seat_count < count($hold_ticket_item->hold_ticket_item_seats) ? "," : "";
+                        $seats .= $seat->sectionId . ($seat_count < count($hold_ticket_item->hold_ticket_item_seats) ? "," : "");
                     }
                     $purchase['sectionId'] = $seats;
                     $purchases[] = $purchase;                    
