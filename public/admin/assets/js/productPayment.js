@@ -83,7 +83,7 @@ $(document).ready(function() {
         if (totalAmount > 0) {
             $errorBox.text("Please set total amount adjust in installment.").show();
             return;
-        }
+        } 
 
         $.ajax({
             url: $(this).attr('action'),

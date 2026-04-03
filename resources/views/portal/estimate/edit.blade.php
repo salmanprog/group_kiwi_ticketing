@@ -486,7 +486,7 @@
                                     <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
                                         Payment Schdule
                                     </h5>
-                                    <form id="paymentScheduleForm" method="POST" action="{{ route('estimate.installments.save', $estimate->id) }}">
+                                    <form id="paymentScheduleFormEdit" method="POST" action="{{ route('estimate.installments.save', $estimate->id) }}">
                                         <div class="sec-css">
                                         @csrf
                                         <input type="hidden" name="total_amount" id="total_amount" value="{{ $estimate->total_amount }}">
@@ -1016,63 +1016,91 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
 <script>
 $(document).ready(function () {
+console.log('Script loaded');
+let isSubmitting = false;
 
-    $('#paymentScheduleForm').on('submit', function(e) {
-        e.preventDefault();
-        var form = $(this);
-        var btn = $('#savePaymentScheduleBtn');
-        var msgEl = $('#paymentScheduleMessage');
-        btn.prop('disabled', true);
-        btn.find('.btn-schedule-text').hide();
-        btn.find('.btn-schedule-loading').show();
-        msgEl.hide().removeClass('text-success text-danger');
+// bind safely (works even with dynamic DOM / modal)
+$(document).off('submit', '#paymentScheduleFormEdit')
+.on('submit', '#paymentScheduleFormEdit', function(e) {
+    e.preventDefault();
 
-        $.ajax({
-            url: form.attr('action'),
-            type: 'POST',
-            data: form.serialize(),
-            dataType: 'json',
-            success: function(res) {
-                btn.prop('disabled', false);
-                btn.find('.btn-schedule-loading').hide();
-                btn.find('.btn-schedule-text').show();
-                if (res.status === true) {
-                    Toastify({
-                            text: res.message,
-                            duration: 3000,
-                            gravity: "top",
-                            position: "right",
-                            className: "toast-success"
-                        }).showToast();
-                    msgEl.text(res.message || 'Payment schedule saved successfully!').addClass('text-success').show();
-                } else {
-                    Toastify({
-                            text: res.message,
-                            duration: 3000,
-                            gravity: "top",
-                            position: "right",
-                            className: "toast-error"
-                        }).showToast();
-                    msgEl.text(res.message || 'Something went wrong.').addClass('text-danger').show();
-                }
-            },
-            error: function(xhr) {
+    console.log('Submit triggered');
 
-                btn.prop('disabled', false);
-                btn.find('.btn-schedule-loading').hide();
-                btn.find('.btn-schedule-text').show();
-                var res = (xhr.responseJSON || {});
-                msgEl.text(res.message || (xhr.responseText || 'Request failed.')).addClass('text-danger').show();
-                 Toastify({
-                            text: res.message,
-                            duration: 3000,
-                            gravity: "top",
-                            position: "right",
-                            className: "toast-error"
-                        }).showToast();
+    // prevent multiple API calls
+    if (isSubmitting) return;
+    isSubmitting = true;
+
+    var form = $(this);
+    var btn = $('#savePaymentScheduleBtn');
+    var msgEl = $('#paymentScheduleMessage');
+
+    // UI state
+    btn.prop('disabled', true);
+    btn.find('.btn-schedule-text').hide();
+    btn.find('.btn-schedule-loading').show();
+    msgEl.hide().removeClass('text-success text-danger');
+
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: form.serialize(),
+        dataType: 'json',
+
+        success: function(res) {
+            if (res.status === true) {
+                Toastify({
+                    text: res.message || 'Payment schedule saved successfully!',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
+
+                msgEl.text(res.message || 'Payment schedule saved successfully!')
+                     .addClass('text-success')
+                     .show();
+            } else {
+                Toastify({
+                    text: res.message || 'Something went wrong.',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+
+                msgEl.text(res.message || 'Something went wrong.')
+                     .addClass('text-danger')
+                     .show();
             }
-        });
+        },
+
+        error: function(xhr) {
+            var res = (xhr.responseJSON || {});
+            var message = res.message || xhr.responseText || 'Request failed.';
+
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                className: "toast-error"
+            }).showToast();
+
+            msgEl.text(message)
+                 .addClass('text-danger')
+                 .show();
+        },
+
+        complete: function() {
+            // always reset
+            isSubmitting = false;
+
+            btn.prop('disabled', false);
+            btn.find('.btn-schedule-loading').hide();
+            btn.find('.btn-schedule-text').show();
+        }
     });
+});
 
     var $saveNoteBtnActive = null;
     $(document).on('click', '.save-note', function() {

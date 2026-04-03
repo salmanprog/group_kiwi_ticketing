@@ -120,13 +120,27 @@ class EstimateInstallmentController extends CRUDCrontroller
     public function savePaymentSchedule(Request $request, $estimateId)
     {
         $estimate = EstimateInstallment::where('estimate_id',$estimateId)->delete();
-
+        // dd('work');
         if(!$request->has('installments')) {
             return response()->json([
                 'status' => false,
                 'message' => 'No installments provided. Payment not saved'
             ], 400);
         }
+        
+        $total_amount = 0;
+        foreach ($request->installments as $inst) {
+            $total_amount += $inst['amount'];
+        }
+
+        if($total_amount != $request->total_amount) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Total amount does not match with installments amount. Payment not saved'
+            ], 400);
+        }
+
+      
         
         $request->validate([
             'installments' => 'required|array',

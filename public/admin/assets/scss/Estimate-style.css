@@ -757,6 +757,10 @@ label {
     letter-spacing: 0.3px;
 }
 
+#paymentScheduleFormEdit h5 {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
 
 
 #dynamicInputsContainer .installment-row {
@@ -772,7 +776,19 @@ label {
     font-size: 14px;
 }
 
+#paymentScheduleFormEdit .form-control {
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    height: 38px;
+    font-size: 14px;
+}
+
 #paymentScheduleForm .form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+#paymentScheduleFormEdit .form-control:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
@@ -789,8 +805,24 @@ label {
 }
 
 
+#paymentScheduleFormEdit .btn-remove {
+    height: 38px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0;
+    font-weight: 400;
+}
+
+
+
 
 #paymentScheduleForm hr {
+    margin: 15px 0;
+    border-color: #e5e7eb;
+}
+
+#paymentScheduleFormEdit hr {
     margin: 15px 0;
     border-color: #e5e7eb;
 }
@@ -801,6 +833,12 @@ label {
     font-weight: 600;
     color: #374151;
 }
+
+#paymentScheduleFormEdit h6 {
+    font-weight: 600;
+    color: #374151;
+}
+
 
 
 
@@ -819,6 +857,11 @@ label {
     font-size: 15px;
 }
 
+#paymentScheduleFormEdit .d-flex strong {
+    color: #374151;
+    font-size: 15px;
+}
+
 #remainingTotal {
     font-weight: 600;
     font-size: 15px;
@@ -828,6 +871,15 @@ label {
 
 
 #paymentScheduleForm .btn-warning {
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    float: right;
+    margin-top: 10px;
+}
+
+
+#paymentScheduleFormEdit .btn-warning {
     font-size: 13px;
     padding: 6px 12px;
     border-radius: 6px;
@@ -853,6 +905,12 @@ label {
     #paymentScheduleForm .btn-remove {
         font-size: 16px;
     }
+
+    #paymentScheduleFormEdit .btn-remove {
+        font-size: 16px;
+    }
+
+
 
     #remainingTotal {
         display: block;
