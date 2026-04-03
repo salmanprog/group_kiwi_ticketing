@@ -143,7 +143,7 @@
 
     <div class="container">
         <div class="header">
-            <h2>❌ Order Failed</h2>
+            <h2>❌ {{ $error_message ?? 'Unknown error occurred' }}</h2>
             <p>{{ $company_name }}</p>
             <div class="status-badge">⚠️ Action Required</div>
         </div>
