@@ -15,11 +15,11 @@
             <div class="card-body p-4"> 
                 <div id="invoice-calendar"></div>
 
-                <div class="calendar-legend mt-4">
+                <!-- <div class="calendar-legend mt-4">
                     <span class="legend-item"><span class="legend-color contracts"></span> Contracts</span>
                     <span class="legend-item"><span class="legend-color estimates"></span> Estimates</span>
                     <span class="legend-item"><span class="legend-color cabana"></span> Cabana</span>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
