@@ -26,6 +26,7 @@ class UserMailer
     {
         // Fetch email template
         $template = EmailTemplate::where('identifier', $templateIdentifier)
+            ->where('auth_code', $auth_code)
             ->where('status', 1)
             ->first();
 
