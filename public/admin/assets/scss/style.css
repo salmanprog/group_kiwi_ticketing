@@ -2358,6 +2358,7 @@ ul.dropdown-menu.top-dropdown {
   border-top: 1px solid #e1e8ed;
   font-size: 14px;
   margin-left: 240px;
+  z-index: 4;
 }
 
 body.nav-collapsed .footer {
