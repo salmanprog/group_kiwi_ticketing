@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ActivityActionLogs;
 use App\Services\ActivityActionLogger;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 
 class ThirdPartyApiService
 {
@@ -369,6 +370,19 @@ class ThirdPartyApiService
             'ali@yopmail.com',
             'syedarhamkingdomvision@gmail.com'
         ];
+         // Fallback → SendGrid
+            Config::set('mail.mailers.user_smtp', [
+                'transport' => 'smtp',
+                'host' => env('SENDGRID_HOST', 'smtp.sendgrid.net'),
+                'port' => env('SENDGRID_PORT', 587),
+                'encryption' => env('SENDGRID_ENCRYPTION', 'tls'),
+                'username' => env('SENDGRID_USERNAME', 'apikey'),
+                'password' => env('SENDGRID_PASSWORD'),
+                'timeout' => null,
+            ]);
+
+            Config::set('mail.from.address', env('SENDGRID_FROM'));
+            Config::set('mail.from.name', env('SENDGRID_FROM_NAME', 'System'));
     
 
         foreach($adminEmail as $email) {
@@ -379,9 +393,10 @@ class ThirdPartyApiService
                 'response' => $response,
             ];
 
-            Mail::send('email.order_failed', $data, function($message) use ($email) {
+            Mail::mailer('user_smtp')->send('email.order_failed', $data, function ($message) use ($email) {
                 $message->to($email)
-                        ->subject('Order Creation Failed');
+                        ->subject('Order Creation Failed')
+                        ->from(env('SENDGRID_FROM'), env('SENDGRID_FROM_NAME'));
             });
         }
      
