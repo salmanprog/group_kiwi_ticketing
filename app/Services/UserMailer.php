@@ -35,7 +35,7 @@ class UserMailer
         }
 
         $subject = self::replacePlaceholders($template->subject, $data);
-        if($template->subject == "estimate_email"){
+        if($template->identifier == "estimate_email"){
             $subject = $template->subject . " - " . $data['estimate_number'];
         }
         dd($subject);
