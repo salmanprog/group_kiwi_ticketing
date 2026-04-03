@@ -74,7 +74,7 @@ class UserMailer
             ]);
 
             Config::set('mail.from.address', env('SENDGRID_FROM'));
-            Config::set('mail.from.name', env('SENDGRID_FROM_NAME', 'System'));
+            Config::set('mail.from.name', $companyName);
         }
 
         $fromEmail = ($smtp) ? $smtp->mail_no_replay : env('SENDGRID_FROM');
@@ -98,7 +98,7 @@ class UserMailer
 
             public function build()
             {
-                $mail = $this->from($this->fromEmail, $this->fromEmail)
+                $mail = $this->from($this->fromEmail, 'No Reply')
                              ->subject($this->subject)
                              ->html($this->body)
                              ->to($this->toEmails);
