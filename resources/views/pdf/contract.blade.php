@@ -51,10 +51,10 @@ body {
 .summary-modern { width: 100%; margin-top: 10px; }
 .summary-modern table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .summary-modern td { padding: 5px; }
-.summary-modern .label { text-align: right; width: 75%; font-weight: 500; }
-.summary-modern .amount { text-align: right; width: 25%; font-weight: 500; }
-.summary-modern .total-label { font-size: 14px; font-weight: 700; }
-.summary-modern .total-amount { font-size: 14px; font-weight: 700; }
+.summary-modern .label { text-align: right; width: 75%; }
+.summary-modern .amount { text-align: right; width: 25%;  }
+.summary-modern .total-label { font-size: 14px; }
+.summary-modern .total-amount { font-size: 14px; }
 
 /* Footer */
 .footer-modern { margin-top: 40px; text-align: center; font-size: 10px; color: #999; }
