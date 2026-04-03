@@ -22,21 +22,21 @@ body {
   padding-bottom: 15px;
   border-bottom: 2px solid #f0f0f0;
 }
-.main-title { font-size: 42px; font-weight: 300; letter-spacing: 8px;font-family: 'Poppins', sans-serif !important; }
+.main-title { font-size: 42px; letter-spacing: 8px;font-family: 'Poppins', sans-serif !important; }
 .estimate-number { font-size: 14px; color: #666; }
 
 /* Top Section: From | Bill To | Client */
 .grid-3 { display: table; width: 100%; margin-bottom: 30px; }
 .grid-3 .info-card { display: table-cell; width: 33%; vertical-align: top; border: 1px solid #f0f0f0; padding: 15px; }
 .card-label { font-size: 10px; color: #999; margin-bottom: 5px; text-transform: uppercase; }
-.card-value { font-size: 14px; font-weight: 500; }
+.card-value { font-size: 14px; }
 .card-sub { font-size: 11px; color: #666; margin-bottom: 2px; }
 
 /* Dates Section */
 .grid-4 { display: table; width: 100%; margin-bottom: 30px; }
 .grid-4 .date-item { display: table-cell; width: 33%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
 .date-label { font-size: 9px; color: #999; }
-.date-value { font-size: 12px; font-weight: 500; }
+.date-value { font-size: 12px; }
 
 /* Products & Services Table */
 .section-title-modern { font-size: 16px; margin: 25px 0 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
