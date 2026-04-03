@@ -530,7 +530,8 @@ class EstimateController extends CRUDCrontroller
                             $data = [
                                 'username' => $mail_params['username'],
                                 'company_name' => $mail_params['company_name'],
-                                'link' => $mail_params['link']
+                                'link' => $mail_params['link'],
+                                'estimate_number' => strtoupper($getEstimate->slug)
                             ];
                             
                             try {

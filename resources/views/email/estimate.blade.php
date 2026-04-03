@@ -37,7 +37,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>Your Visit Estimate – {{ $company_name }}</h1>
+        <h1>Your Visit Estimate – {{ $company_name }}</h1> 
     </div>
     
     <div class="content">
