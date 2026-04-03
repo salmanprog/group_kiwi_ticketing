@@ -59,7 +59,7 @@ class UserMailer
             ]);
 
             Config::set('mail.from.address', $smtp->mail_no_replay);
-            Config::set('mail.from.name', 'No Reply');
+            Config::set('mail.from.name', $companyName);
 
         } else {
             // Fallback → SendGrid
@@ -98,7 +98,7 @@ class UserMailer
 
             public function build()
             {
-                $mail = $this->from($this->fromEmail, 'No Reply')
+                $mail = $this->from($this->fromEmail, $this->fromEmail)
                              ->subject($this->subject)
                              ->html($this->body)
                              ->to($this->toEmails);
