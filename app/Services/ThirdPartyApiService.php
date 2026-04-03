@@ -350,19 +350,27 @@ class ThirdPartyApiService
     
    private function sendOrderFailedEmail(array $payload, array $response, string $errorMessage, string $companyName)
     {
-        $adminEmail = 'dev@ideaseat.com';
-        // $adminEmail = 'ali@yopmail.com';
-        $data = [
-            'company_name' => $companyName,
-            'error_message' => $errorMessage,
-            'payload' => $payload,
-            'response' => $response,
+        $adminEmail = [
+            'dev@ideaseat.com',
+            'ali@yopmail.com',
+            'syedarhamkingdomvision@gmail.com'
         ];
+    
 
-        Mail::send('email.order_failed', $data, function($message) use ($adminEmail) {
-            $message->to($adminEmail)
-                    ->subject('Order Creation Failed');
-        });
+        foreach($adminEmail as $email) {
+            $data = [
+                'company_name' => $companyName,
+                'error_message' => $errorMessage,
+                'payload' => $payload,
+                'response' => $response,
+            ];
+
+            Mail::send('email.order_failed', $data, function($message) use ($email) {
+                $message->to($email)
+                        ->subject('Order Creation Failed');
+            });
+        }
+     
     }
 
 
