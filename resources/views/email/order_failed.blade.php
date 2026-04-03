@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Order Failed - {{ $company_name }}</title>
+    <title>{{ $error_message ?? 'Unknown error occurred' }} - {{ $company_name }}</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
