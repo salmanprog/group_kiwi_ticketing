@@ -221,7 +221,6 @@ body {
 <!-- Note Section -->
  @if(!empty($estimate->note))
 <div class="section-title-modern">Note</div>
-@if(!empty($estimate->note))
     <div style="font-family: 'Open Sans', Arial, sans-serif; font-size:12px; color:#000; line-height:1.5;">
         {!! strip_tags($estimate->note, '<p><br><strong><em><ul><ol><li>') !!}
     </div>
