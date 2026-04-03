@@ -219,25 +219,20 @@ body {
 
 <!-- Notes -->
 <!-- Note Section -->
+ @if(!empty($estimate->note))
 <div class="section-title-modern">Note</div>
-
 @if(!empty($estimate->note))
     <div style="font-family: 'Open Sans', Arial, sans-serif; font-size:12px; color:#000; line-height:1.5;">
         {!! strip_tags($estimate->note, '<p><br><strong><em><ul><ol><li>') !!}
     </div>
-@else
-    <div>N/A</div>
 @endif
 
 <!-- Terms & Conditions Section -->
+ @if(!empty($estimate->terms))
 <div class="section-title-modern">Terms & Conditions</div>
-
-@if(!empty($estimate->terms))
     <div style="font-family: 'Open Sans', Arial, sans-serif; font-size:12px; color:#000; line-height:1.5;">
         {!! strip_tags($estimate->terms, '<p><br><strong><em><ul><ol><li>') !!}
     </div>
-@else
-    <div>N/A</div>
 @endif
 <!-- Footer -->
 <div class="footer-modern">
