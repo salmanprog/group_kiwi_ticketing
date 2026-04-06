@@ -55,7 +55,16 @@ class OrganizationController extends CRUDCrontroller
             case 'PUT':
                 $validator = Validator::make($this->__request->all(), [
                     '_method' => 'required|in:PUT',
-                    'name' => 'required|min:2|max:50',
+                      'name' => 'required|min:2|max:50',
+                    'organization_type_id' => 'required',
+                    'event_type_id' => 'required',
+                    'contact' => 'required',
+                    'department' => 'required',
+                    'city' => 'required',
+                    'state' => 'required',
+                    'country' => 'required',
+                    'zip' => 'required',
+                    'address_one' => 'required',
                 ]);
                 break;
         }
