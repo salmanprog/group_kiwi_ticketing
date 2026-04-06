@@ -916,7 +916,7 @@
                                                     </div> -->
 
                     <div class="address-box">
-                        <h4><i class="fas fa-user me-2"></i>Invioce To</h4>
+                        <h4><i class="fas fa-building me-2"></i>Invioce To</h4>
                         <!-- <p>
                                 <strong>{{ $record->client->name }}</strong><br>
                                 <i class="fas fa-envelope me-1"></i> {{ $record->client->email ?? '-' }}<br>
