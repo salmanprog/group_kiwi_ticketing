@@ -31,7 +31,7 @@ class OrganizationController extends CRUDCrontroller
     {
         $validator = [];
         $custom_messages = [
-            'event_type_id.required' => 'Please select event type',
+            'event_type_id.required' => 'Please select group type',
             'organization_type_id.required' => 'Please select organization type',
         ];
         switch ($action) {
@@ -148,7 +148,6 @@ class OrganizationController extends CRUDCrontroller
                                                 $query->whereIn('created_by', [1])
                                                     ->orWhere('auth_code', Auth::user()->auth_code);
                                             })
-                                            ->where('status', 1)
                                             ->get();
         $this->__data['organization_events'] = Event::where(function($query) {
                                                     $query->whereIn('created_by', [1])
@@ -156,7 +155,11 @@ class OrganizationController extends CRUDCrontroller
                                                 })
                                                 ->where('status', 1)
                                                 ->get();
-        $this->__data['organization_history_events'] = EventHistoryType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+        $this->__data['organization_history_events'] = EventHistoryType::where(function($query) {
+                                                    $query->whereIn('created_by', [1]);
+                                                })
+                                                ->where('status', 1)
+                                                ->get();
 
          
     }
@@ -177,9 +180,24 @@ class OrganizationController extends CRUDCrontroller
     public function beforeRenderEditView($slug)
     {
         $company = CompanyUser::getCompany(Auth::user()->id);
-        $this->__data['organization_types'] = OrganizationType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
-        $this->__data['organization_events'] = Event::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
-         $this->__data['organization_history_events'] = EventHistoryType::whereIn('created_by', [1,$company->id])->where('status', 1)->get();
+        // $this->__data['organization_types'] = OrganizationType::whereIn('created_by', [1,$company->id])->get();
+
+          $this->__data['organization_types'] = OrganizationType::where(function($query) {
+                                                $query->whereIn('created_by', [1])
+                                                    ->orWhere('auth_code', Auth::user()->auth_code);
+                                            })
+                                            ->get();
+        $this->__data['organization_events'] = Event::where(function($query) {
+                                                    $query->whereIn('created_by', [1])
+                                                            ->orWhere('auth_code', Auth::user()->auth_code);
+                                                })
+                                                ->where('status', 1)
+                                                ->get();
+         $this->__data['organization_history_events'] = EventHistoryType::where(function($query) {
+                                                    $query->whereIn('created_by', [1]);
+                                                })
+                                                ->where('status', 1)
+                                                ->get();
          $this->__data['organization_contacts'] = Client::select('organization_users.*')->join('organizations', 'organizations.id', '=', 'organization_users.organization_id')->where('organizations.slug', $slug)->get();
     
          $record = Organization::where('slug', $slug)->first();

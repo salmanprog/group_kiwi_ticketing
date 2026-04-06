@@ -28,7 +28,7 @@ class Contract extends JsonResource
             'slug' => $this->slug,
             'contract_number' => $this->contract_number, 
             'event_date' => $this->event_date,
-            'note' => $this->note,
+            'note' => $this->notes,
             'terms' => $this->terms,
             'status' => $this->status,
             'is_accept' => $this->is_accept,

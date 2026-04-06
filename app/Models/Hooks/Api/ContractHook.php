@@ -57,7 +57,8 @@ class ContractHook
                         'estimates.installments',      // estimate -> installments
                         'invoices.installmentPlan.payments',
                         'invoices.creditNotes',
-                    ])->where('client_id',$request['user']->id)->where('is_accept','accepted');
+                    ])
+                    ->where('client_id',$request['user']->id)->where('is_accept','accepted');
     }
  
     /*

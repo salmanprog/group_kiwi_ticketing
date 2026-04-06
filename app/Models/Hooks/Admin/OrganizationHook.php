@@ -93,6 +93,7 @@ class OrganizationHook
         $postdata['created_by'] = Auth::user()->id;
         $postdata['slug'] = uniqid() . time();
         $postdata['auth_code'] = Auth::user()->auth_code;
+        $postdata['organization_type_id'] = $request->organization_type_id;
     }
 
     /*

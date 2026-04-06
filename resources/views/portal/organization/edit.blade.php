@@ -201,7 +201,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label">Organization Type</label>
+                                            <label class="form-label">Organization Type {{$record->organization_type_id}}</label>
                                             <select name="organization_type_id" class="form-control select2">
                                                 <option value="">-- Select Type --</option>
                                                 @foreach ($organization_types as $organization_type)
