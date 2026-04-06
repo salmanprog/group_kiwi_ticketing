@@ -119,7 +119,7 @@
                         </div> 
 
                         <div class="address-box">
-                            <h4><i class="fas fa-building me-2"></i>Invoice To</h4>
+                            <h4><i class="fas fa-user me-2"></i>Invoice To</h4>
                              <p>
                         <strong>{{ $estimate->organization->name }}</strong><br>
                         @if($estimate_user->first_name)
@@ -135,7 +135,13 @@
                         <br>
                         @endif
                     </p>
-                       @if($estimate->organization->city || $estimate->organization->state || $estimate->organization->zip)
+                    
+
+                          @if($estimate->organization->address_one)
+                        <strong>Address:</strong> {{ ($estimate->organization->address_one) ? $estimate->organization->address_one : 'N/A' }}
+                        <br>
+                        @endif
+                         @if($estimate->organization->city || $estimate->organization->state || $estimate->organization->zip)
                             {{ $estimate->organization->city }}
                             @if($estimate->organization->state), {{ $estimate->organization->state }}@endif
                             @if($estimate->organization->zip) {{ $estimate->organization->zip }}@endif

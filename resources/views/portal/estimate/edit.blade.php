@@ -147,7 +147,7 @@
                     </p>
                 </div>
                 <div class="address-box">
-                    <h4><i class="fas fa-building me-2"></i> Invoice To</h4>
+                    <h4><i class="fas fa-user me-2"></i> Invoice To</h4>
                     <p>
                         <strong>{{ $record->organization_name }}</strong><br>
                          <!-- Account Name: {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }} -->
@@ -174,8 +174,8 @@
                         <strong>Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
                         <br>
                         @endif
-                        @if($estimate_user->address)
-                        <strong>Address:</strong> {{ ($estimate_user->address) ? $estimate_user->address : 'N/A' }}
+                        @if($record->organization->address_one)
+                        <strong>Address:</strong> {{ ($record->organization->address_one) ? $record->organization->address_one : 'N/A' }}
                         <br>
                         @endif
                          @if($record->organization->city || $record->organization->state || $record->organization->zip)
