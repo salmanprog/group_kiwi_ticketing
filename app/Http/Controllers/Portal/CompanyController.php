@@ -195,7 +195,7 @@ class CompanyController extends CRUDCrontroller
         $company->email = $request->email;
         $company->mobile_no = $request->mobile_no;
         $company->address = $request->address;
-        $company->address_2 = $request->address_2 ? $request->address_2 : "N/A";
+        $company->address_2 = $request->address_2 ? $request->address_2 : null;
         $company->city = $request->city;
         $company->state = $request->state;
         $company->zip = $request->zip;
