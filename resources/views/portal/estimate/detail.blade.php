@@ -135,6 +135,16 @@
                         <br>
                         @endif
                     </p>
+                       @if($estimate->organization->city || $estimate->organization->state || $estimate->organization->zip)
+                            {{ $estimate->organization->city }}
+                            @if($estimate->organization->state), {{ $estimate->organization->state }}@endif
+                            @if($estimate->organization->zip) {{ $estimate->organization->zip }}@endif
+                            <br>
+                        @endif
+
+                        @if($estimate->organization->country)
+                            {{ $estimate->organization->country }}
+                        @endif
                         </div>
                     </div>
                     <div class="estimate-info">

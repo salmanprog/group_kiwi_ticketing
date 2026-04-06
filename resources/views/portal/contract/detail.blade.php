@@ -940,6 +940,17 @@
                                 {{ $estimate_user->mobile_no ? $estimate_user->mobile_no : 'N/A' }}
                                 <br>
                             @endif
+
+                            @if($record->organization->city || $record->organization->state || $record->organization->zip)
+                                {{ $record->organization->city }}
+                                @if($record->organization->state), {{ $record->organization->state }}@endif
+                                @if($record->organization->zip) {{ $record->organization->zip }}@endif
+                                <br>
+                            @endif
+
+                            @if($record->organization->country)
+                                {{ $record->organization->country }}
+                            @endif
                         </p>
                     </div>
                 </div>
