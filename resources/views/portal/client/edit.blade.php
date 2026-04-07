@@ -530,7 +530,7 @@
         .form-label {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0px;
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 8px;
@@ -636,7 +636,7 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
         }
-
+       
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-content {
