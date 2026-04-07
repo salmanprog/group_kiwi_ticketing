@@ -12,15 +12,15 @@ class ContractModifiedItem extends Model
     protected $table = 'contract_modified_items';
 
     protected $fillable = [
-        'contract_id',
+        'contract_id', 
         'contract_modified_id',
+        'product_id',
+        'description',
         'name',
         'quantity',
         'unit',
         'price',
         'total_price',
-        'is_modified',
-        'invoice_id',
     ];
 
     /**
@@ -42,6 +42,12 @@ class ContractModifiedItem extends Model
     /**
      * Get the invoice associated with this item.
      */
+
+    public function itemTaxes()
+    {
+        return $this->hasMany(ContractModifiedItemTax::class, 'contract_modified_item_id', 'id');
+    }
+    
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);

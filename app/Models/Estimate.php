@@ -44,7 +44,7 @@ class Estimate extends Model
     {
         return $this->hasMany(EstimateItem::class, 'user_estimate_id', 'id');
     }
-
+ 
     public function taxes()
     {
         return $this->hasMany(EstimateTax::class, 'estimate_id', 'id');

@@ -326,3 +326,17 @@ Route::post('/print-ticket', [ContractController::class, 'printTicket'])->name('
 
 Route::get('media/ajax-listing', [MediaController::class, 'ajaxListing'])->name('media.ajax-listing');
 Route::resource('media', MediaController::class);
+
+Route::get('/contract-modify/{slug}', [ContractController::class, 'getContractModifyPage'])->name('contract.contract-modify');
+Route::post('/contract/modify/add-product', [ContractController::class, 'modifyContractAddProducts'])->name('contract.modify.add-product');
+Route::post('/contract/modify/update-product', [ContractController::class, 'modifyContractUpdateProducts'])->name('contract.modify.update-product');
+Route::post('/contract/modify/delete-product', [ContractController::class, 'modifyContractDeleteProduct'])->name('contract.modify.delete-product');
+Route::get('/contract/modify-products/get', [ContractController::class, 'getContractModifyProducts'])->name('contract.modify.products.get');
+Route::post('/contract/modify/add-tax', [ContractController::class, 'modifyContractAddTax'])->name('contract.modify.add-tax');
+Route::delete('/contract-tax/{tax}', [ContractController::class, 'deleteTax'])->name('contract.modify.tax-delete');
+Route::get('/get-contract-tax/get-item', [ContractController::class, 'editGetItem'])->name('contract.tax.get');
+Route::post('/contract-tax/update', [ContractController::class, 'productModifyTaxUpdate'])->name('contract.modify.tax.update');
+Route::post('/contract-product-discount/add', [ContractController::class, 'productDiscountAdd'])->name('contract.modify.product.discount.add');
+Route::get('/contract-get-product-discount/get-item', [ContractController::class, 'getItem'])->name('contract.modify.product.discount.get');
+Route::post('/contract-get-product-discount/update',[ContractController::class, 'updateDiscount'])->name('contract.modify.product.discount.update');
+Route::delete('/contract-get-product-discount/{id}/delete',[ContractController::class, 'deleteDiscount'])->name('contract.modify.product.discount.delete');

@@ -15,7 +15,9 @@ class ContractModified extends Model
     protected $fillable = [
         'contract_id',
         'created_by',
-        'slug'
+        'user_estimate_id',
+        'slug',
+        'status'
     ];
 
     // Automatically assign the user ID when creating
@@ -30,6 +32,11 @@ class ContractModified extends Model
     {
         return $this->hasMany(ContractModifiedItem::class, 'contract_modified_id');
     }
+    
+    public function taxes()
+    {
+        return $this->hasMany(ContractModifiedTax::class, 'contract_modified_id');
+    } 
 
     public function contract()
     {
@@ -39,5 +46,10 @@ class ContractModified extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function discounts()
+    {
+        return $this->hasMany(ContractModifiedDiscount::class, 'contract_modified_id');
     }
 }

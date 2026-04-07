@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Portal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Models\{Organization,Company,CompanyUser,Client, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes};
+use App\Models\{Organization,Company,CompanyUser,Client, Contract, Invoice, CreditNote, Estimate, EstimateItem, EstimateTax, UserEstimateItemTax, EstimateInstallment, InstallmentPlan, AccountActivityLog,InvoiceItem, ContractItem,InvoiceTax,ContractTaxes, Product};
 use Auth;
 use DB;
 use App\Services\ThirdPartyApiService;
 use App\Services\UserMailer;
+use App\Models\{ContractModified,ContractModifiedItem,ContractModifiedTax,ContractModifiedDiscount};
 
 
 class ContractController extends CRUDCrontroller
@@ -391,7 +392,7 @@ class ContractController extends CRUDCrontroller
         ]);
 
         $get_estimate = Estimate::where('contract_id', $request->contract_id)->first();
-
+        // dd($request->all());
         $create_items = EstimateItem::create([
             'user_estimate_id' => $get_estimate->id,
             'product_id' => $request->product,
@@ -641,7 +642,7 @@ class ContractController extends CRUDCrontroller
         $estimatecheck = Estimate::where('contract_id', $request->cont_id)->first();
 
         $estimateItemValidation = EstimateItem::where('user_estimate_id', $estimatecheck->id)->where('is_modify', 1)->first();
-        // dd($estimateItemValidation);
+        // dd($estimatecheck->id);
         if(empty($estimateItemValidation)){
             return response()->json([
                 'status' => false,
@@ -686,15 +687,15 @@ class ContractController extends CRUDCrontroller
                 
                 if ($get_estimate) {
                     EstimateItem::where('user_estimate_id', $get_estimate->id)
-                        ->where('is_modify', 1)
+                        ->where('is_modify', '1')
                         ->update(['is_modify' => 0]);
                         
                     EstimateTax::where('estimate_id', $get_estimate->id)
-                        ->where('is_modify', 1)
+                        ->where('is_modify', '1')
                         ->update(['is_modify' => 0]);
                     
                     EstimateInstallment::where('estimate_id', $get_estimate->id)
-                        ->where('is_modify', 1)
+                        ->where('is_modify', '1')
                         ->update(['is_modify' => 0]);
 
                     $get_updated_estimate = Estimate::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('contract_id', $request->cont_id)->firstOrFail();
@@ -751,6 +752,7 @@ class ContractController extends CRUDCrontroller
                     foreach ($get_estimate->items as $item) {
                         InvoiceItem::create([
                             'invoice_id' => $get_update_invoice->id,
+                            'product' => $item->product_id,
                             'name' => $item->name,
                             'quantity' => $item->quantity,
                             'price' => $item->price,
@@ -760,6 +762,7 @@ class ContractController extends CRUDCrontroller
                         ContractItem::create([
                             'contract_id' => $request->cont_id,
                             'name' => $item->name,
+                            'product_id' => $item->product_id,
                             'quantity' => $item->quantity,
                             'unit' => $item->unit,
                             'price' => $item->price,
@@ -767,7 +770,8 @@ class ContractController extends CRUDCrontroller
                             'taxes' => $item->tax,
                             'product_price' => $item->product_price,
                             'gratuity' => $item->gratuity,
-                            'accepted_by_client' => 1,
+                            'accepted_by_client' => '1',
+                            'modified' => '1',
                             'invoice_id' => $get_update_invoice->id,
                         ]);
                     }
@@ -1047,6 +1051,504 @@ class ContractController extends CRUDCrontroller
         
         return response()->json(['message' => ($apiResponse->json()['errorMessage']) ? $apiResponse->json()['errorMessage'] : 'Ticket printed successfully.'],200);
 
+    }
+
+    public function getContractModifyPage($slug)
+    {
+        $contract = Contract::where('slug', $slug)->first();
+        if(!$contract){
+            return response()->json(['message' => 'Contract not found.'], 404);
+        }
+        $ContractModified = ContractModified::where('contract_id', $contract->id)->where('status','pending')->first();
+        if(!$ContractModified){
+            $ContractModifiedCount = ContractModified::where('contract_id', $contract->id)->count();
+
+            $estimate = Estimate::where('contract_id', $contract->id)->first();
+            ContractModified::create([
+                'contract_id' => $contract->id,
+                'user_estimate_id' => $estimate->id,
+                'status' => 'pending',
+                'slug' => $slug . '-' . ($ContractModifiedCount+1),
+            ]);
+        }
+
+        $data = ContractModified::with('items.itemTaxes','taxes','discounts')
+                                ->where('contract_id', $contract->id)
+                                ->where('status','pending')
+                                ->first();
+        // dd($data);
+        $products = Product::where('auth_code',  Auth::user()->auth_code)->get();
+        
+        return view('portal.contract.modify-edit', compact('data','products'));
+    }
+
+
+
+
+     public function modifyContractAddProducts(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'contract_modified_id' => 'required',
+            'products' => 'required|array'
+        ]);
+
+        $contract_modified_id = $request->input('contract_modified_id');
+        $addedItems = [];
+        $duplicateProducts = [];
+
+        foreach ($request->products as $productData) {
+            $product = Product::find($productData['product_id']);
+            if (!$product) {
+                continue; // skip if product not found
+            }
+
+            // Check if product already exists for this estimate
+            $exists = ContractModifiedItem::where('contract_modified_id', $contract_modified_id)
+                                ->where('product_id', $product->id)
+                                ->first();
+
+            if ($exists) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Product '{$exists['name']}' is already added to this estimate."
+                ]);
+            }
+            $ContractModified = ContractModified::find($contract_modified_id);
+            $contract = Contract::find($ContractModified->contract_id);
+            $item = ContractModifiedItem::create([
+                'contract_id' => $contract->id,
+                'contract_modified_id' => $contract_modified_id,
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'quantity' => (int) $productData['qty'],
+                'unit' => $productData['unit'] ?? 'pcs',
+                'price' => (float) $productData['price'],
+                'total_price' => (int) $productData['qty'] * (float) $productData['price'],
+                'product_price' => (float) $productData['price'],
+            ]);
+
+            $addedItems[] = $item;
+        }
+
+        if (!empty($duplicateProducts)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'These products are already added: ' . implode(', ', $duplicateProducts),
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Products added successfully',
+            'items' => $addedItems
+        ]);
+    }
+
+
+     public function modifyContractUpdateProducts(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'item_id' => 'required',
+            'quantity' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+            'unit' => 'nullable|string|max:10',
+            'contract_modified_id' => 'required'
+        ]);
+
+        $item = ContractModifiedItem::findOrFail($request->item_id);
+        $item->quantity = $request->quantity;
+        $item->unit = ($request->unit) ? $request->unit : 'pcs';
+        $item->price = $request->price;
+        $item->total_price = $request->quantity * $request->price;
+        $item->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Product updated successfully',
+            'item' => $item
+        ]);
+    }
+
+
+    public function modifyContractDeleteProduct(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required',
+            'contract_modified_id' => 'required'
+        ]);
+
+        $item = ContractModifiedItem::findOrFail($request->item_id);
+        $item->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Product deleted successfully'
+        ]);
+    }
+
+     public function getContractModifyProducts(Request $request)
+    {
+        // dd($request->all());
+        $item = ContractModifiedItem::where('contract_modified_id', $request->contract_modified_id)->get();
+
+        return response()->json([
+            'status' => true,
+            'item' => $item
+        ]);
+    }
+
+      public function modifyContractAddTax(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'contract_modified_id' => 'required|integer',
+            'products' => 'required|array|min:1',
+            'products.*.id' => 'required|integer',
+            'products.*.tax_name' => 'required|string',
+            'products.*.tax_percent' => 'required|numeric|min:0',
+            'products.*.price' => 'required|numeric|min:0'
+        ]);
+
+        // dd($request->all());
+
+        $contractModifiedId = $request->input('contract_modified_id');
+        $products = $request->input('products');
+        $taxPercent = $products[0]['tax_percent'];
+        $taxName = $products[0]['tax_name'];
+
+        $totalTaxAmount = 0;
+        foreach ($products as $product) {
+           $productDetails = DB::table('contract_modified_items')->where('id', $product['id'])->first();
+        //    $productDetails->total_price = $productDetails->price * $productDetails->quantity;
+           $totalTaxAmount += ($productDetails->total_price * $taxPercent / 100);
+        }
+
+        try {
+            
+            $estimateTaxId = \DB::table('contract_modified_taxes')->insertGetId([
+                'contract_modified_id' => $contractModifiedId,
+                'name' => $taxName,
+                'percent' => $taxPercent,
+                'amount' => $totalTaxAmount,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Attach selected products to this tax
+            foreach ($products as $product) {
+                \DB::table('contract_modified_item_taxes')->insert([
+                    'contract_modified_tax_id' => $estimateTaxId,
+                    'contract_modified_item_id' => $product['id'],
+                    'name' => $taxName,
+                    'percentage' => $taxPercent,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Tax added successfully',
+                'tax_id' => $estimateTaxId
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong while adding tax',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function productTaxUpdate(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'tax_id' => 'required|integer', // ID of the existing tax
+            'products' => 'required|array|min:1',
+            'products.*.id' => 'required|integer',
+            'products.*.tax_name' => 'required|string',
+            'products.*.tax_percent' => 'required|numeric|min:0',
+            'products.*.price' => 'required|numeric|min:0'
+        ]);
+
+        $taxId = $request->input('tax_id');
+        $products = $request->input('products');
+
+        $taxPercent = $products[0]['tax_percent'];
+        $taxName = $products[0]['tax_name'];
+
+        $totalTaxAmount = 0;
+        foreach ($products as $product) {
+            $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
+            $totalTaxAmount += ($productDetails->total_price * $taxPercent / 100);
+        }
+            dd($totalTaxAmount);
+
+        try {
+            // Update main tax record
+            \DB::table('contract_modified_taxes')
+                ->where('id', $taxId)
+                ->update([
+                    'name' => $taxName,
+                    'percent' => $taxPercent,
+                    'amount' => $totalTaxAmount,
+                    'updated_at' => now(),
+                ]);
+
+            // Remove old product-tax relations for this tax
+            \DB::table('contract_modified_item_taxes')
+                ->where('contract_modified_tax_id', $taxId)
+                ->delete();
+
+            // Re-insert updated products
+            foreach ($products as $product) {
+                \DB::table('contract_modified_item_taxes')->insert([
+                    'contract_modified_tax_id' => $taxId,
+                    'contract_modified_item_id' => $product['id'],
+                    'name' => $taxName,
+                    'percentage' => $taxPercent,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Tax updated successfully',
+                'tax_id' => $taxId
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong while updating tax',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function deleteTax(Request $request, $taxId)
+    {
+        try {
+            // Delete tax and related item_taxes
+            \DB::table('contract_modified_item_taxes')->where('contract_modified_tax_id', $taxId)->delete();
+            \DB::table('contract_modified_taxes')->where('id', $taxId)->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Tax deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+     public function editGetItem(Request $request)
+    {
+      
+
+        $items = ContractModifiedItem::with('itemTaxes')
+            ->where('contract_modified_id', $request->contract_modified_id)
+            ->get();
+
+        $tax = ContractModifiedTax::where('id', $request->tax_id)
+            ->first();
+
+
+        return response()->json([
+            'status' => true,
+            'item' => $items,
+            'tax' => $tax
+        ]);
+    }
+
+     public function productModifyTaxUpdate(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'tax_id' => 'required|integer', // ID of the existing tax
+            'products' => 'required|array|min:1',
+            'products.*.id' => 'required|integer',
+            'products.*.tax_name' => 'required|string',
+            'products.*.tax_percent' => 'required|numeric|min:0',
+            'products.*.price' => 'required|numeric|min:0'
+        ]);
+
+        $taxId = $request->input('tax_id');
+        $products = $request->input('products');
+
+        $taxPercent = $products[0]['tax_percent'];
+        $taxName = $products[0]['tax_name'];
+
+        $totalTaxAmount = 0;
+        foreach ($products as $product) {
+            $productDetails = DB::table('contract_modified_items')->where('id', $product['id'])->first();
+            $totalTaxAmount += ($productDetails->total_price * $taxPercent / 100);
+        }
+            // dd($totalTaxAmount);
+
+        try {
+            // Update main tax record
+            \DB::table('contract_modified_taxes')
+                ->where('id', $taxId)
+                ->update([
+                    'name' => $taxName,
+                    'percent' => $taxPercent,
+                    'amount' => $totalTaxAmount,
+                    'updated_at' => now(),
+                ]);
+
+            // Remove old product-tax relations for this tax
+            \DB::table('contract_modified_item_taxes')
+                ->where('contract_modified_tax_id', $taxId)
+                ->delete();
+
+            // Re-insert updated products
+            foreach ($products as $product) {
+                \DB::table('contract_modified_item_taxes')->insert([
+                    'contract_modified_tax_id' => $taxId,
+                    'contract_modified_item_id' => $product['id'],
+                    'name' => $taxName,
+                    'percentage' => $taxPercent,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Tax updated successfully',
+                'tax_id' => $taxId
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong while updating tax',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+
+    public function productDiscountAdd(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'contract_modified_id' => 'required|integer',
+            'products.*.discount_name' => 'required|string',
+            'products.*.discount_value' => 'required|numeric|min:0',
+        ]);
+
+        $contract_modified_id = $request->input('contract_modified_id');
+        $products = $request->input('products');
+        $discountType = $request->input('discount_type', 'percent');
+
+        // // Calculate total discount amount 
+        $totalDiscount = 0;
+        foreach ($products as $product) {
+            // if ($product['discount_type'] === 'percent') {
+            //     $totalDiscount += ($product['price'] * $product['discount_value'] / 100);
+            // } else { // fixed
+                $totalDiscount += $product['discount_value'];
+            //}
+        }
+
+        try {
+            // Insert discount record
+            $discountId = \DB::table('contract_modified_discounts')->insertGetId([
+                'contract_modified_id' => $contract_modified_id,
+                'name' => $products[0]['discount_name'],
+                'type' => $discountType,
+                'value' => $products[0]['discount_value'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+         
+            return response()->json([
+                'status' => true,
+                'message' => 'Discount applied successfully',
+                'discount_id' => $discountId
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong while adding discount',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+     public function getItem(Request $request)
+    {
+        $item = ContractModifiedDiscount::where('id', $request->id)->get();
+        // dd($item);
+        return response()->json([
+            'status' => true,
+            'item' => $item
+        ]);
+    }
+
+     public function updateDiscount(Request $request)
+    {
+        $request->validate([
+            'discount_id' => 'required',
+            'contract_modified_id' => 'required',
+            'name'        => 'required|string|max:255',
+            'value'       => 'required|numeric|min:0',
+        ]);
+
+        $discount = ContractModifiedDiscount::where('id', $request->discount_id)
+            ->where('contract_modified_id', $request->contract_modified_id)
+            ->first();
+
+        if (!$discount) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Discount not found'
+            ], 404);
+        }
+
+        $discount->update([
+            'name'  => $request->name,
+            'value' => $request->value,
+            'type'  => $request->type,
+        ]);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Discount updated successfully',
+            'item'    => $discount
+        ]);
+    }
+
+    public function deleteDiscount(Request $request, $id)
+    {
+        $discount = ContractModifiedDiscount::find($id);
+
+        if (!$discount) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Discount not found'
+            ], 404);
+        }
+
+        $discount->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Discount deleted successfully'
+        ]);
     }
 
 

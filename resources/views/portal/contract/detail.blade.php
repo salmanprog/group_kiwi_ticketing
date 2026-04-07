@@ -1030,7 +1030,15 @@
                                     <i class="fas fa-plus me-1"></i>Modify Contract
                                 </button>
                             </div>
+
+                            <div>
+                                <a href="{{ route('contract.contract-modify', $record->slug) }}"
+                                    class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Modify Contract page
+                                </a>
+                            </div>
                         @endif
+
                     </div>
                 </div>
                 <div class="card">
@@ -1751,7 +1759,7 @@
                         <input type="hidden" name="contract_id" value="{{ $record->id }}">
 
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header"> 
                                 <h5 class="modal-title">Modify Contract</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
