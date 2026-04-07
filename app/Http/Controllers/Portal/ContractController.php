@@ -985,7 +985,7 @@ class ContractController extends CRUDCrontroller
                 'new_data' => json_encode($contract->toArray()),
             ]);
         
-        return response()->json(['message' => 'Ticket enabled successfully.'], 200);
+        return response()->json(['message' => 'Tickets delivery enabled via distribution system.'], 200);
     }
 
 
@@ -1045,7 +1045,7 @@ class ContractController extends CRUDCrontroller
             ]);
         
         
-        return response()->json(['message' => ($apiResponse->json()['errorMessage']) ? $apiResponse->json()['errorMessage'] : 'Ticket printed successfully.'],200);
+        return response()->json(['message' => ($apiResponse->json()['errorMessage']) ? $apiResponse->json()['errorMessage'] : 'Tickets delivery enabled via Boca printer.'],200);
 
     }
 
