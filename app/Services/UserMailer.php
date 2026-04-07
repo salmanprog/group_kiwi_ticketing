@@ -130,9 +130,11 @@ class UserMailer
      */
     protected static function replacePlaceholders($text, $data)
     {
+        $currentYear = date('Y');
         foreach ($data as $key => $value) {
             $text = str_replace(['{{ $'.$key.' }}', '{{'.$key.'}}'], $value, $text);
         }
+        $text = str_replace(['{{ $currentYear }}', '{{currentYear}}'], $currentYear, $text);
         return $text;
     }
 }
