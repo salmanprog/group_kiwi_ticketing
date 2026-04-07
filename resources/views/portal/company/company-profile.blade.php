@@ -134,7 +134,7 @@
                                     <img 
                                         id="logoPreview"
                                         src="{{ ($company->logo_url && Storage::disk('public')->exists($company->logo_url)) 
-                                            ? asset('uploads/company_logo/' . $company->logo_url) 
+                                            ? Storage::url($company->logo_url) 
                                             : asset('images/kiwi-logo.png') }}"
                                         alt="Logo"
                                         style="max-width: 150px; max-height: 150px;"
