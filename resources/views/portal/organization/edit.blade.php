@@ -163,10 +163,14 @@
                                             <li class="list-group-item">
                                                 <div class="d-flex justify-content-between">
                                                     <div>
-                                                        <small style="font-size: 10px;">{{ ucfirst($log->createdBy->name ?? 'Activity') }}</small>
-                                                        <div class="text-muted small">
-                                                          <p style="font-size: 14px;"> {{ $log->notesTextarea ?? '' }} </p>
+                                                        {{-- <div class="text-muted small">
+                                                          <p>  </p>
                                                         </div>
+                                                        <small></small> --}}
+                                                        <strong>
+                                                           {{ $log->notesTextarea ?? '' }}
+                                                        </strong>
+                                                        <div class="text-muted small">{{ ucfirst($log->createdBy->name ?? 'Activity') }}</div>
                                                     </div> 
                                                     <small class="text-muted">
                                                         {{ $log->created_at->timezone('America/Los_Angeles')->diffForHumans() }}
