@@ -52,4 +52,9 @@ class ContractModified extends Model
     {
         return $this->hasMany(ContractModifiedDiscount::class, 'contract_modified_id');
     }
+
+    public function installments()
+    {
+        return $this->hasMany(ContractModifiedInstallment::class, 'contract_modified_id');
+    }
 }

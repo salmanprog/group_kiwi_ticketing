@@ -10,7 +10,7 @@ use Auth;
 use DB;
 use App\Services\ThirdPartyApiService;
 use App\Services\UserMailer;
-use App\Models\{ContractModified,ContractModifiedItem,ContractModifiedTax,ContractModifiedDiscount};
+use App\Models\{ContractModified,ContractModifiedItem,ContractModifiedTax,ContractModifiedDiscount,ContractModifiedInstallment};
 
 
 class ContractController extends CRUDCrontroller
@@ -1072,7 +1072,7 @@ class ContractController extends CRUDCrontroller
             ]);
         }
 
-        $data = ContractModified::with('items.itemTaxes','taxes','discounts')
+        $data = ContractModified::with('items.itemTaxes','taxes','discounts','installments')
                                 ->where('contract_id', $contract->id)
                                 ->where('status','pending')
                                 ->first();
@@ -1551,5 +1551,70 @@ class ContractController extends CRUDCrontroller
         ]);
     }
 
+    public function savePaymentSchedule(Request $request, $ContractModifiedId)
+    {
+        $estimate = ContractModifiedInstallment::where('contract_modified_id',$ContractModifiedId)->delete();
+        // dd('work');
+        if(!$request->has('installments')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No installments provided. Payment not saved'
+            ], 400);
+        }
+        
+        $total_amount = 0;
+        foreach ($request->installments as $inst) {
+            $total_amount += $inst['amount'];
+        }
+
+        if($total_amount != $request->total_amount) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Total amount does not match with installments amount. Payment not saved'
+            ], 400);
+        }
+
+      
+        
+        $request->validate([
+            'installments' => 'required|array',
+            'installments.*.amount' => 'required|numeric|min:0.01',
+            'installments.*.date' => 'required|date',
+        ]);
+
+       // dd($request->all());
+        // Remove old installments (soft delete)
+        //$estimate->installments()->delete();
+
+        // Use parallel processing to create installments
+        $installments = array_map(function($inst) use ($ContractModifiedId) {
+            return [
+                'contract_modified_id' => $ContractModifiedId,
+                'amount' => $inst['amount'],
+                'installment_date' => $inst['date'],
+            ];
+        }, $request->installments);
+
+        collect($installments)->chunk(100)->each(function($chunk) {
+            ContractModifiedInstallment::insert($chunk->toArray());
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Payment schedule saved successfully!'
+        ]);
+    }
+
+    public function deletePaymentSchedule(Request $request, $ContractModifiedId)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+        ContractModifiedInstallment::where('id',$request->id)->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Payment schedule deleted successfully!'
+        ]);
+    }
 
 }

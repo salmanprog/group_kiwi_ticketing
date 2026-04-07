@@ -1905,7 +1905,7 @@
 
                                 <div id="dynamicInputsContainer">
 
-                                </div>
+                                </div> 
 
                                 <hr>
                                 <div class="d-flex justify-content-between align-items-center mb-2">

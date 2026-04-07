@@ -305,7 +305,7 @@
                                     <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
                                         Payment Schdule
                                     </h5>
-                                    <form id="paymentScheduleFormEdit" method="POST" action="{{ route('estimate.installments.save', $data->id) }}">
+                                    <form id="paymentScheduleFormEdit" method="POST" action="{{ route('contract.installments.save', $data->id) }}">
                                         <div class="sec-css">
                                         @csrf
                                         <input type="hidden" name="total_amount" id="total_amount" value="{{ $data->total_amount }}">
@@ -387,25 +387,7 @@
                                         Please schedule a payment first.
                                     </div>
 
-                                    <div class="action-buttons">
-                                           <form id="clientConfirmationForm" method="POST" action="{{ route('contract.modify.save') }}"
-                                                    class="fbd-f">
-                                                    <input type="hidden" name="cont_id" id="cont_id" value="">
-                                                    <div class="mt-4 pt-3 border-top">
-                                                        <label class="form-label font-weight-bold">Client Confirmation Status</label>
-                                                        <select name="confirmed_with_client" class="form-select" required>
-                                                            <option value="0">Yes, I don't need to ask / Approved</option>
-                                                            <option value="1">No, haven't asked yet</option>
-                                                        </select>
-                                                        <small class="text-muted text-info">Please select "Yes" if you have verbal or written approval for
-                                                            these changes.</small>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-success px-4">Save All Changes</button>
-                                                    </div>
-                                                </form>
-                                    </div>
+                                  
                                 </div>
                             </div>
                        </div>
@@ -911,9 +893,96 @@ $(document).on('click', '.remove-modify-item', function(){
 
 
 
+let isSubmitting = false;
+
+// bind safely (works even with dynamic DOM / modal)
+$(document).off('submit', '#paymentScheduleFormEdit')
+.on('submit', '#paymentScheduleFormEdit', function(e) {
+    e.preventDefault();
+
+    console.log('Submit triggered');
+
+    // prevent multiple API calls
+    if (isSubmitting) return;
+    isSubmitting = true;
+
+    var form = $(this);
+    var btn = $('#savePaymentScheduleBtn');
+    var msgEl = $('#paymentScheduleMessage');
+
+    // UI state
+    btn.prop('disabled', true);
+    btn.find('.btn-schedule-text').hide();
+    btn.find('.btn-schedule-loading').show();
+    msgEl.hide().removeClass('text-success text-danger');
+
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: form.serialize(),
+        dataType: 'json',
+
+        success: function(res) {
+            if (res.status === true) {
+                Toastify({
+                    text: res.message || 'Payment schedule saved successfully!',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
+
+                msgEl.text(res.message || 'Payment schedule saved successfully!')
+                     .addClass('text-success')
+                     .show();
+            } else {
+                Toastify({
+                    text: res.message || 'Something went wrong.',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+
+                msgEl.text(res.message || 'Something went wrong.')
+                     .addClass('text-danger')
+                     .show();
+            }
+        },
+
+        error: function(xhr) {
+            var res = (xhr.responseJSON || {});
+            var message = res.message || xhr.responseText || 'Request failed.';
+
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                className: "toast-error"
+            }).showToast();
+
+            msgEl.text(message)
+                 .addClass('text-danger')
+                 .show();
+        },
+
+        complete: function() {
+            // always reset
+            isSubmitting = false;
+
+            btn.prop('disabled', false);
+            btn.find('.btn-schedule-loading').hide();
+            btn.find('.btn-schedule-text').show();
+        }
+    });
+});
 
 
 </script>
- @endpush
+
+
+@endpush
 @endsection
+
 
