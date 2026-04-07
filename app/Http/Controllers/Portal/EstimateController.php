@@ -480,7 +480,7 @@ class EstimateController extends CRUDCrontroller
         if(!$holdTicket) {
             return response()->json([
                 'status' => false,
-                'message' => 'Please hold ticket first'
+                'message' => 'Please hold tickets for this estimate.'
             ]);
         }
 

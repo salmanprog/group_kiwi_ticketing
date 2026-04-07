@@ -843,7 +843,7 @@ $(document).ready(function(){
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">close</button>
                 </div>
             </div>
         </div>
