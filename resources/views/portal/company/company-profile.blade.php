@@ -123,6 +123,23 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Logo <span class="required">*</span></label>
+                                        <input type="file" name="logo_url" class="form-control" id="logoInput">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <img 
+                                        id="logoPreview"
+                                        src="{{ ($company->logo_url && Storage::disk('public')->exists($company->logo_url)) 
+                                            ? Storage::url($company->logo_url) 
+                                            : asset('images/kiwi-logo.png') }}"
+                                        alt="Logo"
+                                        style="max-width: 150px; max-height: 150px;"
+                                    >
+                                </div>
                                 </div>
                             </div>
 
