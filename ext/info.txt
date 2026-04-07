@@ -58,6 +58,7 @@ CREATE TABLE `company_media` (
 ALTER TABLE `company_media` ADD `slug` VARCHAR(200) NOT NULL AFTER `id`;
 
 
+ALTER TABLE `company` ADD `logo_url` TEXT NULL AFTER `login_url`;
 
 
 kiwiticketing

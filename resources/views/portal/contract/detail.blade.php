@@ -745,22 +745,20 @@
                                         </a>
                                     </div> -->
 
-                            @if ($record->ticket_enable == 1 || $record->isAllowedForPrinting == 1)
-                                @if ($record->ticket_enable == 1)
-                                    <span class="badge"
-                                        style="padding: 10px; background-color: #9FC23F; color: white; border-radius: 50px;">Ticket
-                                        Enabled from client side</span>
+                        @if ($record->ticket_enable == 1 || $record->isAllowedForPrinting == 1)
+
+                                @if($record->ticket_enable == 1)
+                                    <span class="badge" style="padding: 10px; background-color: #9FC23F; color: white; border-radius: 50px;">Tickets delivery enabled via distribution system</span>
+
                                 @endif
 
-                                @if ($record->isAllowedForPrinting == 1)
-                                    <span class="badge"
-                                        style="padding: 10px; background-color: #9FC23F; color: white; border-radius: 50px;">Enable
-                                        Printing</span>
+                                @if($record->isAllowedForPrinting == 1)
+                                    <span class="badge" style="padding: 10px; background-color: #9FC23F; color: white; border-radius: 50px;">Tickets delivery enabled via Boca printer</span>
                                 @endif
                             @else
                                 <div class="contract-title">
                                     <button type="button" class="btn btn-primary" id="deliverTicketBtn">
-                                        <i class="fas fa-ticket-alt mr-2"></i>Deliver Ticket
+                                        <i class="fas fa-ticket-alt mr-2"></i>Deliver Tickets
                                     </button>
                                 </div>
                             @endif
@@ -772,7 +770,7 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">
-                                                <i class="fas fa-ticket-alt me-2"></i>Deliver Ticket
+                                                <i class="fas fa-ticket-alt me-2"></i>Deliver Tickets
                                             </h5>
                                             <button type="button" class="btn-close" id="modalCloseBtn" aria-label="Close"
                                                 onclick="closeModal('confirmationModal')"></button>

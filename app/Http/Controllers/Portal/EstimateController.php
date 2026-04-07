@@ -422,6 +422,7 @@ class EstimateController extends CRUDCrontroller
             'note' => 'nullable|string',
         ]);
         
+        
         if($request->note != ""){
         Estimate::where('id', $request->estimate_id)
             ->update(['note' => $request->note]);
@@ -431,10 +432,10 @@ class EstimateController extends CRUDCrontroller
         Estimate::where('id', $request->estimate_id)
             ->update(['terms' => $request->terms_and_condition]);
         }
-
+        $message = "Information has been updated successfully.";
         return response()->json([
             'status' => true,
-            'message' => 'Note saved successfully'
+            'message' => $message
         ]);
     }
 
@@ -480,7 +481,7 @@ class EstimateController extends CRUDCrontroller
         if(!$holdTicket) {
             return response()->json([
                 'status' => false,
-                'message' => 'Please hold ticket first'
+                'message' => 'Please hold tickets for this estimate.'
             ]);
         }
 

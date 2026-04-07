@@ -133,12 +133,12 @@ class EstimateInstallmentController extends CRUDCrontroller
             $total_amount += $inst['amount'];
         }
 
-        if($total_amount != $request->total_amount) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Total amount does not match with installments amount. Payment not saved'
-            ], 400);
-        }
+        // if($total_amount != $request->total_amount) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Total amount does not match with installments amount. Payment not saved'
+        //     ], 400);
+        // }
 
       
         
