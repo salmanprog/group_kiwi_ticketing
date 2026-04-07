@@ -26,12 +26,12 @@
                             <div class="form-section">
                                 <div class="section-header">
                                     {{-- <i class="fas fa-user-circle"></i> --}}
-                                    <h5>Contact Details</h5>
+                                    <h5>Account Selection</h5>
                                     <span class="section-badge">Required Fields</span>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    {{-- <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 Title
@@ -40,8 +40,8 @@
                                             <input required type="text" name="title" value="{{ $record->title }}"
                                                 class="form-control" placeholder="Enter title">
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
+                                    </div> --}}
+                                    {{-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 Salutation <span class="required">*</span>
@@ -60,8 +60,8 @@
                                                     Prof</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
+                                    </div> --}}
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 {{-- <i class="fas fa-building"></i> --}}
@@ -98,10 +98,10 @@
                                             <li class="list-group-item">
                                                 <div class="d-flex justify-content-between">
                                                     <div>
-                                                        <strong>{{ ucfirst($log->createdBy->name ?? 'Activity') }}</strong>
-                                                        <div class="text-muted small">
+                                                        <strong>
                                                             {{ $log->notesTextarea ?? '' }}
-                                                        </div>
+                                                        </strong>
+                                                        <div class="text-muted small">{{ ucfirst($log->createdBy->name ?? 'Activity') }}</div>
                                                     </div> 
                                                     <small class="text-muted">
                                                         {{ $log->created_at->timezone('America/Los_Angeles')->diffForHumans() }}
@@ -219,6 +219,16 @@
                                     <h5>Contact Information</h5>
                                 </div>
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Job Title
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input required type="text" name="title" value="{{ $record->title }}"
+                                                class="form-control" placeholder="Enter title">
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
@@ -287,7 +297,7 @@
                                                 Ticket Rate
                                                 <!-- <span class="required">*</span> -->
                                             </label>
-                                            <input required type="text" name="ticket_rate"
+                                            <input  type="text" name="ticket_rate"
                                                 value="{{ $record->ticket_rate }}" class="form-control"
                                                 placeholder="Enter ticket rate">
                                         </div>
@@ -299,7 +309,7 @@
                                                 Catering Menu
                                                 <!-- <span class="required">*</span> -->
                                             </label>
-                                            <input required type="text" name="catering_menu"
+                                            <input  type="text" name="catering_menu"
                                                 value="{{ $record->catering_menu }}" class="form-control"
                                                 placeholder="Enter catering menu">
                                         </div>
@@ -307,28 +317,28 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Catering Price</label>
-                                            <input required type="text" name="catering_price" class="form-control"
+                                            <input  type="text" name="catering_price" class="form-control"
                                                 value="{{ $record->catering_price }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Deposite Amount</label>
-                                            <input required type="text" name="deposite_amount" class="form-control"
+                                            <input  type="text" name="deposite_amount" class="form-control"
                                                 value="{{ $record->deposite_amount }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Hours</label>
-                                            <input required type="text" name="hours" class="form-control"
+                                            <input  type="text" name="hours" class="form-control"
                                                 value="{{ $record->hours }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Alt Contacts</label>
-                                            <input required type="text" name="alt_contact" class="form-control"
+                                            <input  type="text" name="alt_contact" class="form-control"
                                                 value="{{ $record->alt_contact }}">
                                         </div>
                                     </div>
