@@ -422,7 +422,7 @@
                                                             @endforeach
                                                         </div>
                                                     </th>
-                                                    <th id="tax_amount">${{bcdiv($estimate->taxes->sum('amount'), 1, 2) }}</th>
+                                                    <th id="tax_amount">${{bcdiv($estimate->taxes->sum('amount'), 1, 4) }}</th>
                                                     {{-- <th></th> --}}
                                                 </tr>
                                                 @endif
