@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Models\{CompanyAdmin,Company,CompanyUser};
+use App\Helpers\CustomHelper;
 
 class CompanyController extends CRUDCrontroller
 {
@@ -190,6 +191,9 @@ class CompanyController extends CRUDCrontroller
                         ->withErrors($validator)
                         ->withInput();
         }
+        if($request->file('logo_url')){
+            $uploadedFile = CustomHelper::uploadMedia('company_logo',$request->file('logo_url'));
+        }
         $company = Company::where('id',$request->company_id)->first();
         $company->name = $request->name;
         $company->email = $request->email;
@@ -202,6 +206,9 @@ class CompanyController extends CRUDCrontroller
         $company->country = $request->country;
         $company->login_url = $request->login_url;
         $company->auth_code = Auth::user()->auth_code;
+        if(isset($uploadedFile)){
+            $company->logo_url = $uploadedFile;
+        }
         $company->save();
         return redirect()->back()->with('success', 'Company updated successfully');
     }

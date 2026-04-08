@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\PublicUser;
 use App\Http\Resources\Organization;
+use App\Http\Resources\Company;
 use Carbon\Carbon;
 
 class Estimate extends JsonResource
@@ -62,7 +63,7 @@ class Estimate extends JsonResource
             'tax_total' => $taxTotal,
             'signature' => $this->signature,
             'is_estimate_expire'=> $isEstimateExpire,
-            'company' => $this->company,
+            'company' => new Company($this->company),
             'createdBy' => new PublicUser($this->createdBy),
             'client' => new PublicUser($this->client),
             'organization' => new Organization($this->organization),
@@ -78,6 +79,7 @@ class Estimate extends JsonResource
                         return [
                             'name' => $tax->name,
                             'rate' => $tax->percentage,
+                            'amount' => $tax->amount,
                         ];
                     }),
                 ];
@@ -88,6 +90,7 @@ class Estimate extends JsonResource
                     'id' => $tax->id,
                     'name' => $tax->name,
                     'rate' => $tax->percent,
+                    'amount' => $tax->amount,
                 ];
             }),
 

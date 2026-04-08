@@ -58,6 +58,7 @@ CREATE TABLE `company_media` (
 ALTER TABLE `company_media` ADD `slug` VARCHAR(200) NOT NULL AFTER `id`;
 
 
+ALTER TABLE `company` ADD `logo_url` TEXT NULL AFTER `login_url`;
 
 ALTER TABLE `contract_modified` ADD `status` ENUM('pending','accept_by_client','accept_by_company','reject') NOT NULL AFTER `contract_id`;
 ALTER TABLE `contract_modified` ADD `user_estimate_id` INT(11) NOT NULL AFTER `id`;
@@ -132,6 +133,8 @@ CREATE TABLE `contract_modified_installments` (
 
 
 
+ALTER TABLE `user_estimate_item_taxes` ADD `amount` INT(11) NOT NULL DEFAULT '0' AFTER `percentage`
+ALTER TABLE `user_estimate_item_taxes` CHANGE `amount` `amount` DECIMAL(10,3) NOT NULL DEFAULT '0.00';
 
 kiwiticketing
 u2-nqewjfywa1fd@c1102859.sgvps.net

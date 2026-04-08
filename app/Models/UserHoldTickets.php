@@ -274,7 +274,7 @@ class UserHoldTickets extends Model
             "subscriptionId" => (string) $data['subscription_id'] ?? "0",
             "subscriptionStatus" => $data['status'],
             "subscriptionEndDate" => $dueDate,
-            "numberOfInstallments" => $data['number_of_Installments'],
+            "numberOfInstallments" => (int) $data['number_of_Installments'],
             "isSubscriptionCompleted" => false,
             "invoices" => [
                 [

@@ -24,12 +24,12 @@
                             <div class="form-section">
                                 <div class="section-header">
                                     {{-- <i class="fas fa-user-circle"></i> --}}
-                                    <h5>Contact Details</h5>
+                                    <h5>Contact Information</h5>
                                     <span class="section-badge">Required Fields</span>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    {{-- <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 Title
@@ -38,8 +38,8 @@
                                             <input required type="text" name="title" value="{{ old('title') }}"
                                                 class="form-control" placeholder="Enter title">
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
+                                    </div> --}}
+                                    {{-- <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 Salutation <span class="required">*</span>
@@ -58,8 +58,8 @@
                                                     Prof</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
+                                    </div> --}}
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 {{-- <i class="fas fa-building"></i> --}}
@@ -171,6 +171,18 @@
                                     <h5>Contact Information</h5>
                                 </div>
                                 <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                           Job Title
+                                            <span class="required">*</span>
+                                        </label>
+                                        <input required type="text" name="title" value="{{ old('title') }}"
+                                            class="form-control" placeholder="Enter title">
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
@@ -201,7 +213,7 @@
                                             <label class="form-label">Email<span class="required">*</span>
                                             </label>
                                             <input required type="email" name="email" class="form-control"
-                                                value="{{ old('email') }}" >
+                                                value="{{ old('email') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -222,7 +234,7 @@
                                         <div class="form-group">
                                             <label class="form-label">Rep</label>
                                             <input type="text" name="rep" class="form-control"
-                                                value="{{ old('rep') }}" >
+                                                value="{{ old('rep') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -455,7 +467,7 @@
         .form-label {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0px;
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 8px;
@@ -497,7 +509,7 @@
         /* Select2 Customization */
         .select2-container--default .select2-selection--single {
             border: 1px solid #dce4e0;
-            border-radius: 6px;
+            border-radius: 0px;
             padding: 8px 15px;
             height: auto;
             background: #fff;
@@ -562,6 +574,11 @@
             box-shadow: 0 4px 12px rgba(160, 194, 66, 0.4);
         }
 
+         .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable{
+            background-color: #9fc23f !important;
+        }
+
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-content {
@@ -615,6 +632,9 @@
         /* Input focus animations */
         .form-control:focus {
             transform: translateY(-1px);
+        }
+        .select2-container{
+            width: 100% !important;
         }
     </style>
 @endsection

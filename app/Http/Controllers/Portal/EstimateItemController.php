@@ -196,6 +196,37 @@ class EstimateItemController extends CRUDCrontroller
         $item->total_price = $request->quantity * $request->price;
         $item->save();
 
+        //price 
+
+        $taxes = DB::table('user_estimate_taxes')
+            ->where('estimate_id', $item->user_estimate_id)
+            ->get();
+
+        if ($taxes->isNotEmpty()) {
+            foreach ($taxes as $tax) {
+                $singleProductTaxAmount = ($item->total_price * $tax->percent / 100);
+                $user_estimate_item_taxes = DB::table('user_estimate_item_taxes')
+                    ->where('estimate_tax_id', $tax->id)
+                    ->where('user_estimate_item_id', $item->id)
+                    ->first();
+
+                if ($user_estimate_item_taxes) {
+                    DB::table('user_estimate_item_taxes')
+                        ->where('estimate_tax_id', $tax->id)
+                        ->where('user_estimate_item_id', $item->id)
+                        ->update(['amount' => $singleProductTaxAmount]);
+                }
+
+                DB::table('user_estimate_taxes')
+                    ->where('id', $tax->id)
+                    ->update([
+                        'amount' => $tax->amount - ($user_estimate_item_taxes ? $user_estimate_item_taxes->amount : 0) + $singleProductTaxAmount
+                    ]);
+            }
+        }
+        
+        // dd($item);
+
         return response()->json([
             'status' => true,
             'message' => 'Product updated successfully',
