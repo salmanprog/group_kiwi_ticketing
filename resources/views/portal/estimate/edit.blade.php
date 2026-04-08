@@ -292,7 +292,7 @@
                                                                                                 ]'>
                                                                                 Apply Taxes: 
                                                                                 @foreach($item->itemTaxes as $tax)
-                                                                                    {{ $tax->name }} ({{ $tax->amount }})  @if(!$loop->last), @endif
+                                                                                    {{ $tax->name }} ({{ bcdiv($tax->amount, 1, 2) }})  @if(!$loop->last), @endif
                                                                                 @endforeach
                                                                     </small>
                                                                 @endif
