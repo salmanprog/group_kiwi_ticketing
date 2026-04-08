@@ -138,6 +138,7 @@
                                             : asset('images/kiwi-logo.png') }}"
                                         alt="Logo"
                                         style="max-width: 150px; max-height: 150px;"
+                                        mime-type="image/*"
                                     >
                                 </div>
                                 </div>
