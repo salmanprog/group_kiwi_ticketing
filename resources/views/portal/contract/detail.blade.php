@@ -726,6 +726,9 @@
             cursor: pointer;
             margin-left: 8px;
         }
+        .form-check-input {
+            border: 2px solid #9fc242 !important;
+        }
     </style>
 
     <section class="main-content">
