@@ -313,7 +313,7 @@ $(document).on('click', '.edit-item', function() {
 $('#editProductForm').on('submit', function(e){
     e.preventDefault();
     let btn = $('#saveChangesBtn');
-    btn.prop('disabled', true).text('Saving...');
+    // btn.prop('disabled', true).text('Saving...');
     let modal = $('#editProductModal');
     let csrfToken = modal.data('csrf');
     let estimateId = $(this).data('estimateid');

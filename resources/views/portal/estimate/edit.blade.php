@@ -292,7 +292,7 @@
                                                                                                 ]'>
                                                                                 Apply Taxes: 
                                                                                 @foreach($item->itemTaxes as $tax)
-                                                                                    {{ $tax->name }}  @if(!$loop->last), @endif
+                                                                                    {{ $tax->name }} ({{ $tax->amount }})  @if(!$loop->last), @endif
                                                                                 @endforeach
                                                                     </small>
                                                                 @endif

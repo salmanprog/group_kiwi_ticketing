@@ -79,6 +79,7 @@ class Estimate extends JsonResource
                         return [
                             'name' => $tax->name,
                             'rate' => $tax->percentage,
+                            'amount' => $tax->amount,
                         ];
                     }),
                 ];
@@ -89,6 +90,7 @@ class Estimate extends JsonResource
                     'id' => $tax->id,
                     'name' => $tax->name,
                     'rate' => $tax->percent,
+                    'amount' => $tax->amount,
                 ];
             }),
 

@@ -196,6 +196,8 @@ function addTax() {
 
     if (products.length === 0) {
         showModalMessage(modal, 'Please select at least one product', 'danger');
+        btn.disabled = false;
+        btn.innerHTML = 'Add Tax';
         return;
     }
 
@@ -220,6 +222,8 @@ function addTax() {
         error: function (xhr) {
             if (xhr.responseJSON && xhr.responseJSON.errors) {
                 // Compile all validation errors
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Adding...';
                 const errors = xhr.responseJSON.errors;
                 let errorMessages = '';
                 for (const key in errors) {

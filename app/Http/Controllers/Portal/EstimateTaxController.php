@@ -135,11 +135,14 @@ class EstimateTaxController extends CRUDCrontroller
         $taxName = $products[0]['tax_name'];
 
         $totalTaxAmount = 0;
+        
         foreach ($products as $product) {
            $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
         //    $productDetails->total_price = $productDetails->price * $productDetails->quantity;
            $totalTaxAmount += ($productDetails->total_price * $taxPercent / 100);
         }
+
+        // dd($totalTaxAmount);
 
         try {
             
@@ -154,11 +157,15 @@ class EstimateTaxController extends CRUDCrontroller
 
             // Attach selected products to this tax
             foreach ($products as $product) {
+                $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
+                $singleProductTaxAmount = ($productDetails->total_price * $taxPercent / 100);
+
                 \DB::table('user_estimate_item_taxes')->insert([
                     'estimate_tax_id' => $estimateTaxId,
                     'user_estimate_item_id' => $product['id'],
                     'name' => $taxName,
                     'percentage' => $taxPercent,
+                    'amount' => $singleProductTaxAmount,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -221,11 +228,15 @@ class EstimateTaxController extends CRUDCrontroller
 
             // Re-insert updated products
             foreach ($products as $product) {
+                $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
+                $singleProductTaxAmount = ($productDetails->total_price * $taxPercent / 100);
+                
                 \DB::table('user_estimate_item_taxes')->insert([
                     'estimate_tax_id' => $taxId,
                     'user_estimate_item_id' => $product['id'],
                     'name' => $taxName,
                     'percentage' => $taxPercent,
+                    'amount' => $singleProductTaxAmount,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
