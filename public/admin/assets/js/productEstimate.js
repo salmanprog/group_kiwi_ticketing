@@ -144,11 +144,10 @@ function updateTotals() {
         const taxesData = $(this).find('small[data-taxes]').data('taxes') || [];
         taxesData.forEach(tax => {
             const percent = parseFloat(tax.percent) || 0;
-            const taxAmount = parseFloat((rowTotal * (percent / 100)).toFixed(2)); // round per-item-tax
+            const taxAmount = rowTotal * (percent / 100);
             totalTax += taxAmount;
         });
     });
-
     // 2️⃣ Discounts (percent discounts applied on subtotal + tax)
     totalDiscount = 0;
     $('.discount_percent').each(function () {
@@ -179,7 +178,7 @@ function updateTotals() {
 
     // 6️⃣ Update UI
     $('#subtotal').text('$' + subtotal.toFixed(2));
-    $('#tax_amount').text('$' + totalTax.toFixed(2));
+    $('#tax_amount').text('$' + Math.floor(totalTax * 100) / 100);
     $('#discount_amount').text('-$' + totalDiscount.toFixed(2));
     if($('#gratuity').length) {
         $('#gratuity').text('$' + gratuityAmount.toFixed(2));
