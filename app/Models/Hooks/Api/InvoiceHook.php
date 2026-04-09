@@ -41,7 +41,15 @@ class InvoiceHook
                             'company',          
                             'client',
                         ]);
-                    }
+                    },
+                    'modifiedContact' => function ($q) {
+                        $q->with([
+                            'items.itemTaxes',   
+                            'taxes',             
+                            'discounts',         
+                            'installments',
+                        ]);
+                    },
                     ])->where('client_id',$request['user']->id);
 
     }

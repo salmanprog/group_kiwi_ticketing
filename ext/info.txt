@@ -161,6 +161,34 @@ MODIFY estimate_id BIGINT UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE installment_payments 
 MODIFY estimate_id BIGINT UNSIGNED NULL DEFAULT NULL;
 
+ALTER TABLE `contract_modified` CHANGE `subtotal` `subtotal` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_modified` CHANGE `total` `total` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_modified` CHANGE `discount_total` `discount_total` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_modified` CHANGE `tax_total` `tax_total` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_items` ADD `description` LONGTEXT NULL AFTER `name`;
+
+
+CREATE TABLE `contract_item_taxes` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `contract_tax_id` BIGINT(20) UNSIGNED NOT NULL, 
+    `contract_item_id` BIGINT(20) UNSIGNED NOT NULL, 
+    `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `percentage` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    `amount` DECIMAL(10,3) NOT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `contract_taxes` ADD `amount` DECIMAL(10,3) NOT NULL AFTER `invoice_id`;
+
 
 
 

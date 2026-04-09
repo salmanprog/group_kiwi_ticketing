@@ -83,8 +83,7 @@ class Contract extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'contract_id')
-            ->join('user_estimate as estimates', 'estimates.id', '=', 'user_invoices.estimate_id')
-            ->select('user_invoices.*', 'estimates.slug as estimate_slug')
+            ->select('user_invoices.*')
             ->orderby('user_invoices.created_at', 'desc');
     }
 
@@ -97,5 +96,6 @@ class Contract extends Model
     {
         return $this->hasMany(ContractTaxes::class, 'contract_id');
     }
+
     
 }

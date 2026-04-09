@@ -462,9 +462,15 @@
                             @endphp
                             <a class="admin-logo c" href="{{ route('company.dashboard') }}">
                                 <h1>
+                                    @if(session('companyDetails'))
                                     <img style="width: 205px;" alt="logo"
                                         src="{{ session('companyDetails')['logo'] }}"
                                         class="toggle-none hidden-xs">
+                                    @else
+                                    <img style="width: 205px;" alt="logo"
+                                        src="https://kiwiticketing.com/wp-content/uploads/2024/09/Kiwi-Ticketing-logo-1.png"
+                                        class="toggle-none hidden-xs">
+                                    @endif
                                     <img style="width: 45px;display:none;padding-top: 10px;" alt="logo"
                                         src="https://i.ibb.co/Fq5kfj8n/imageasdasdasdasd.png" class="for-coll">
                                     <!-- Large logo -->

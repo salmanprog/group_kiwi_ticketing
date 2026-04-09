@@ -12,10 +12,10 @@
     border-radius: 6px;
 }
 
-.editable-description {
+.modify-editable-description {
     cursor: pointer;
 }
-.editable-description:hover {
+.modify-editable-description:hover {
     background: #f8f9fa;
 }
 
@@ -44,7 +44,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.editable-description.loading {
+.modify-editable-description.loading {
     opacity: 0.6;
     pointer-events: none;
 }
@@ -107,9 +107,9 @@
                                                                 @endif
                                                             </td>
                                                             <!-- <td>{{ $item->description }}</td> -->
-                                                             <td class="editable-description" 
+                                                             <td class="modify-editable-description" 
                                                                 data-id="{{ $item->id }}"
-                                                                data-url="{{ route('estimate.products.update-description') }}"
+                                                                data-url="{{ route('contract.products.update-description') }}"
                                                                 data-csrf="{{ csrf_token() }}">
                                                                 
                                                                 <span class="desc-text">{{ $item->description }}</span>
@@ -1116,7 +1116,89 @@ $(document).ready(function() {
     });
 }); 
 </script>
+<script>
+    
+$(document).on('click', '.modify-editable-description', function () {
+    let td = $(this);
+    // alert(td);
+    // prevent multiple inputs
+    if (td.find('input').length) return;
 
+    let text = td.find('.desc-text').text().trim();
+
+    td.html(`<input type="text" class="form-control modify-desc-input" value="${text}" />`);
+
+    td.find('input').focus();
+});
+let isModifySaving = false;
+
+$(document).on('blur', '.modify-desc-input', function () {
+    if (!isModifySaving) {
+        saveDescription($(this));
+    }
+});
+
+$(document).on('keypress', '.modify-desc-input', function (e) {
+    if (e.which === 13) {
+        isModifySaving = true;
+        saveDescription($(this));
+        $(this).blur(); // trigger blur safely
+    }
+});
+
+
+function saveDescription(input) {
+    let td = input.closest('td');
+    let newValue = input.val();
+
+    let id = td.data('id');
+    let url = td.data('url');
+    let csrf = td.data('csrf');
+
+    // ✅ Show loader + disable input
+    input.prop('disabled', true);
+
+    td.addClass('loading');
+    td.append(`<span class="spinner"></span>`);
+
+    $.ajax({
+        url: url,
+        method: "POST",
+        data: {
+            _token: csrf,
+            id: id,
+            description: newValue
+        },
+        success: function (res) {
+
+            td.removeClass('loading');
+            td.html(`<span class="desc-text fade-in">${newValue}</span>`);
+
+            Toastify({
+                text: res.message || "Updated",
+                duration: 2000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#2ecc71" }
+            }).showToast();
+        },
+        error: function () {
+
+            td.removeClass('loading');
+            td.html(`<span class="desc-text fade-in">${newValue}</span>`);
+
+            Toastify({
+                text: "Update failed",
+                duration: 2000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#e74c3c" }
+            }).showToast();
+        }
+    });
+}
+
+    </script>
 
 @endpush
 @endsection

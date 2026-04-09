@@ -140,68 +140,22 @@ class ContractController extends CRUDCrontroller
 
     }
 
-    public function show($slug)
+     public function show($slug)
     {
-        // $this->__data['record'] = Contract::with([
-        //     'organization',
-        //     'company',
-        //     'client',
-        //     'estimates.items',
-        //     'invoices.installmentPlan.payments',
-        //     'invoices.creditNotes',
-        //     'items',
-        //     'taxes'
-        // ])
-        //     ->where('slug', $slug)
-        //     ->first();
-
-        // $this->__data['record'] = Contract::with([
-        //                     'organization',
-        //                     'company',
-        //                     'client',
-        //                     // Load estimates and all the same relationships you used before
-        //                     'estimates.items.itemTaxes',   // nested: items -> itemTaxes
-        //                     'estimates.taxes',             // estimate -> taxes
-        //                     'estimates.discounts',          // estimate -> discounts
-        //                     'estimates.installments',      // estimate -> installments
-        //                     // Other relationships
-        //                     'invoices.installmentPlan.payments',
-        //                     'invoices.creditNotes',
-        //                     'items',
-        //                     'taxes'
-        //                 ])
-        //                 ->where('slug', $slug)
-        //                 ->first();
-
-        
-
         $this->__data['record'] = Contract::with([
                                     'organization',
-                                    'contractModified',
                                     'company',
                                     'client',
                                     'invoices.installmentPlan.payments',
                                     'invoices.creditNotes',
                                     'items',
                                     'taxes',
-
-                                    'estimates' => function ($estimateQuery) {
-                                        $estimateQuery->with([
-                                            'items' => function ($itemQuery) {
-                                                $itemQuery->where('is_modify', 0)
-                                                        ->with('itemTaxes');
-                                            },
-                                            'taxes' => function ($taxQuery) {
-                                                $taxQuery->where('is_modify', 0);
-                                            },
-                                            'discounts',
-                                            'installments',
-                                        ]);
-                                    } 
-
+                                    'estimates'
                                 ])
                                 ->where('slug', $slug)
                                 ->first();
+
+        // dd($this->__data['record']);
         $this->__data['estimate_user'] = Client::where('client_id', $this->__data['record']->client_id)->first();
 
         if (Auth::user()->user_type == 'client') {
@@ -217,13 +171,61 @@ class ContractController extends CRUDCrontroller
             $this->__data['logs'] = \App\Models\ActivityLog::where('module_id', $this->__data['record']->id)->where('module', 'contract')->orderBy('id', 'desc')->get();
 
         }
-
-        // dd($this->__data['record']->company);
-
         $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','contracts')->where('module_id',$this->__data['record']->id)->get();
 
         return $this->__cbAdminView($this->__detailView, $this->__data);
     }
+
+    // public function show($slug)
+    // {
+    //     $this->__data['record'] = Contract::with([
+    //                                 'organization',
+    //                                 'company',
+    //                                 'client',
+    //                                 'invoices.installmentPlan.payments',
+    //                                 'invoices.creditNotes',
+    //                                 'items',
+    //                                 'taxes',
+
+    //                                 'estimates' => function ($estimateQuery) {
+    //                                     $estimateQuery->with([
+    //                                         'items' => function ($itemQuery) {
+    //                                             $itemQuery->where('is_modify', 0)
+    //                                                     ->with('itemTaxes');
+    //                                         },
+    //                                         'taxes' => function ($taxQuery) {
+    //                                             $taxQuery->where('is_modify', 0);
+    //                                         },
+    //                                         'discounts',
+    //                                         'installments',
+    //                                     ]);
+    //                                 } 
+
+    //                             ])
+    //                             ->where('slug', $slug)
+    //                             ->first();
+    //     $this->__data['estimate_user'] = Client::where('client_id', $this->__data['record']->client_id)->first();
+
+    //     if (Auth::user()->user_type == 'client') {
+    //         $this->__data['products'] = [];
+    //     } else {
+    //         $this->__data['products'] = \App\Models\Product::where('auth_code', Auth::user()->auth_code)->get();
+
+    //     }
+
+    //     if (Auth::user()->user_type == 'client') {
+    //         $this->__data['logs'] = [];
+    //     } else {
+    //         $this->__data['logs'] = \App\Models\ActivityLog::where('module_id', $this->__data['record']->id)->where('module', 'contract')->orderBy('id', 'desc')->get();
+
+    //     }
+
+    //     // dd($this->__data['record']->company);
+
+    //     $this->__data['activityLog'] = AccountActivityLog::with('createdBy')->where('module','contracts')->where('module_id',$this->__data['record']->id)->get();
+
+    //     return $this->__cbAdminView($this->__detailView, $this->__data);
+    // }
 
     public function acceptContract($slug)
     {
@@ -789,6 +791,7 @@ class ContractController extends CRUDCrontroller
                             'name' => $tax->name,
                             'percent' => $tax->percent,
                             'invoice_id' => $get_update_invoice->id,
+                            'amount' => $tax->amount,
                         ]);
                     }
                 }
@@ -1680,6 +1683,23 @@ class ContractController extends CRUDCrontroller
         return response()->json([
             'status' => true,
             'message' => 'Payment schedule deleted successfully!'
+        ]);
+    }
+
+    public function updateItemDescription(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'description' => 'required|string',
+        ]);
+
+        $item = ContractModifiedItem::findOrFail($request->id);
+        $item->description = $request->description;
+        $item->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Description updated successfully'
         ]);
     }
 

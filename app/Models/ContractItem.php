@@ -23,6 +23,7 @@ class ContractItem extends Model
         'invoice_id',
         'is_accepted_by_client',
         'product_price',
+        'description',
         'taxes',
         'gratuity',
         'product_id',
@@ -32,6 +33,12 @@ class ContractItem extends Model
     {
         return $this->belongsTo(Contract::class);
     }
+
+    public function itemTaxes()
+    {
+        return $this->hasMany(ContractItemTax::class, 'contract_item_id');
+    }
+    
     
 
 }

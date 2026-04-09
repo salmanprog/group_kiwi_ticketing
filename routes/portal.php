@@ -342,3 +342,4 @@ Route::post('/contract-get-product-discount/update',[ContractController::class, 
 Route::delete('/contract-get-product-discount/{id}/delete',[ContractController::class, 'deleteDiscount'])->name('contract.modify.product.discount.delete');
 Route::post('/contract-installment/{contract}/payment-save', [ContractController::class, 'savePaymentSchedule'])->name('contract.installments.save');
 Route::post('/contract-send-to-client', [ContractController::class, 'sendToClient'])->name('contract.send.to.client');
+Route::post('/contract-products/update-description', [ContractController::class, 'updateItemDescription'])->name('contract.products.update-description');

@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ContractTaxes extends Model
+class ContractDiscount extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'contract_taxes';
+    protected $table = 'contract_discounts';
 
     protected $fillable = [
         'contract_id',

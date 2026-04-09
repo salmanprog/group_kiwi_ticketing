@@ -51,10 +51,11 @@ class ContractHook
                         'organization',
                         'company',
                         'client', 
-                        'estimates.items.itemTaxes',   // nested: items -> itemTaxes
-                        'estimates.taxes',             // estimate -> taxes
-                        'estimates.discounts',          // estimate -> discounts
-                        'estimates.installments',      // estimate -> installments
+                        'items.itemTaxes',
+                        // 'estimates.items.itemTaxes',   // nested: items -> itemTaxes
+                        // 'estimates.taxes',             // estimate -> taxes
+                        // 'estimates.discounts',          // estimate -> discounts
+                        // 'estimates.installments',      // estimate -> installments
                         'invoices.installmentPlan.payments',
                         'invoices.creditNotes',
                     ])

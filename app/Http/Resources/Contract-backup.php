@@ -10,14 +10,14 @@ class Contract extends JsonResource
 {
     public function toArray($request)
     {
-        // dd($this->items);
-        $subtotal = $this->items->sum(fn($item) => $item->total_price);
-        // $taxTotal = $this->items->sum(fn($item) => 
-        //     $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
-        // );
-         $taxTotal = 0;
-        // $discountPercent = $this->items->sum(fn($item) => $item->discounts->sum(fn($discount) => $discount->value));
-        $discountPercent = 0;
+
+        $subtotal = $this->estimates->sum(fn($estimate) => $estimate->items->sum(fn($item) => $item->total_price));
+        $taxTotal = $this->estimates->sum(fn($estimate) => 
+            $estimate->items->sum(fn($item) => 
+                $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
+            )
+        );
+        $discountPercent = $this->estimates->sum(fn($estimate) => $estimate->discounts->sum(fn($discount) => $discount->value));
         $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
         $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
 
@@ -44,41 +44,58 @@ class Contract extends JsonResource
             'organization' => new Organization($this->organization),
 
             // Contract Items
-            'items' => $this->items->map(function ($item) {
-                    return [
-                        'id'       => $item->id,
-                        'name'     => $item->name,
-                        'quantity' => $item->quantity,
-                        'unit'     => $item->unit,
-                        'price'    => $item->price,
-                        'total'    => $item->total_price,
-                        'description' => $item->description,
-                         'taxes'    => $item->itemTaxes->map(function ($tax) use ($item) {
+            'details' => $this->estimates->map(function ($estimate) {
+                return [
+                    'id'              => $estimate->id,
+                    'auth_code'       => $estimate->auth_code,
+                    'slug'            => $estimate->slug,
+                    'estimate_number' => $estimate->estimate_number,
+                    'status'          => $estimate->status,
+
+                    // Items + nested itemTaxes
+                    'items' => $estimate->items->map(function ($item) {
+                        return [
+                            'id'       => $item->id,
+                            'name'     => $item->name,
+                            'quantity' => $item->quantity,
+                            'unit'     => $item->unit,
+                            'price'    => $item->price,
+                            'total'    => $item->total_price,
+                            'description' => $item->description,
+                            'taxes'    => $item->itemTaxes->map(function ($tax) use ($item) {
                                 return [
                                     'id'      => $tax->id,
                                     'name'    => $tax->name,
                                     'percent' => $tax->percentage,
-                                    'amount'  => $tax->amount,
+                                    'amount'  => round($item->total_price * ($tax->percentage / 100), 2),
                                 ];
                             }),
-                    ];
-            }),
-              'taxes' => $this->taxes->map(function ($tax) {
+                        ];
+                    }),
+
+                    'taxes' => $estimate->taxes->map(function ($tax) {
                         return [
                             'id'      => $tax->id,
                             'name'    => $tax->name,
                             'percent' => $tax->percent,
                         ];
                     }),
-                    // 'discounts'    => $this->discounts->map(function ($discount) {
-                    //     return [
-                    //         'id'    => $discount->id,
-                    //         'name'  => $discount->name,
-                    //         'value' => $discount->value,
-                    //     ];
-                    // }),
-                    'discount'=>[],
-                    // 'installments'=>[],
+                    'discounts'    => $estimate->discounts->map(function ($discount) {
+                        return [
+                            'id'    => $discount->id,
+                            'name'  => $discount->name,
+                            'value' => $discount->value,
+                        ];
+                    }),
+                    'installments' => $estimate->installments->map(function ($installment) {
+                        return [
+                            'id'       => $installment->id,
+                            'amount'   => $installment->amount,
+                            'due_date' => $installment->installment_date,
+                        ];
+                    }),
+                ];
+            }),
             // Invoices
             'invoices' => $this->whenLoaded('invoices', function () {
                 return $this->invoices->map(function ($invoice) {

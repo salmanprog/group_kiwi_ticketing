@@ -136,6 +136,11 @@ class Invoice extends Model
         return $this->hasMany(CreditNote::class, 'invoice_id', 'id');
     }
 
+    public function modifiedContact()
+    {
+        return $this->hasOne(ContractModified::class, 'id', 'modified_contact_id');
+    }
+
 
     public static function generateInvoice($request, $estimate, $contract,$auth_code=null)
     {
@@ -514,9 +519,9 @@ class Invoice extends Model
 
     public static function generateModifyInvoice($contractId, $request,$auth_code=null)
     {
-        $ContractModified = ContractModified::with('items', 'taxes', 'discounts','installments')->where('contract_id', $contractId)->first();
+        $ContractModified = ContractModified::with('items.itemTaxes', 'taxes', 'discounts','installments')->where('id', $request->contract_modified_id)->first();
         $contract = Contract::find($ContractModified->contract_id);
-        // dd($contract);
+        // dd($request);
           DB::beginTransaction();
 
             $slug = self::generateInvoiceNumber();
@@ -576,20 +581,24 @@ class Invoice extends Model
                     'unit' => $item->unit,
                     'total_price' => $item->total_price,
                 ]);
-                ContractItem::create([
-                    'contract_id' => $contract->id,
-                    'name' => $item->name,
-                    'quantity' => $item->quantity,
-                    'unit' => $item->unit,
-                    'price' => $item->price,
-                    'total_price' => $item->total_price,
-                    'taxes' => ($item->tax) ? $item->tax : 0,
-                    'product_price' => $item->price,
-                    'gratuity' => ($item->gratuity) ? $item->gratuity : 0,
-                    'accepted_by_client' => 1,
-                    'invoice_id' => $invoice->id,
-                    'product_id' => $item->product_id,
-                ]);
+                 $contractItem = ContractItem::create([
+                            'contract_id' => $contract->id,
+                            'name' => $item->name,
+                            'quantity' => $item->quantity,
+                            'unit' => $item->unit,
+                            'price' => $item->price,
+                            'total_price' => $item->total_price,
+                            'description' => $item->description,
+                            'taxes' => $item->tax ?? 0,
+                            'product_price' => $item->price,
+                            'gratuity' => $item->gratuity ?? 0,
+                            'accepted_by_client' => 1,
+                            'invoice_id' => $invoice->id,
+                            'product_id' => $item->product_id,
+                        ]);
+
+                        // map old item id to new one
+                        $itemMap[$item->id] = $contractItem->id;
             }
 
             foreach ($ContractModified->taxes as $tax) {
@@ -599,12 +608,34 @@ class Invoice extends Model
                     'percent' => $tax->percent,
                 ]);
 
-                ContractTaxes::create([
+                $contratTax = ContractTaxes::create([
                     'contract_id' => $contract->id,
                     'name' => $tax->name,
                     'percent' => $tax->percent,
                     'invoice_id' => $invoice->id,
+                    'amount' => $tax->amount,
                 ]);
+
+                // foreach ($ContractModified->items as $item) {
+
+
+                //     foreach ($item->itemTaxes as $itemTax) {
+
+                //         if (
+                //             strtolower($itemTax->name) === strtolower($tax->name)
+                //         ) {
+                //             ContractItemTax::create([
+                //                 'contract_item_id' => $itemMap[$item->id],
+                //                 'contract_tax_id' => $contratTax->id,
+                //                 'name' => $itemTax->name,
+                //                 'percent' => $itemTax->percentage,
+                //                 'amount' => $itemTax->amount,
+                //             ]);
+                //         }
+                //     }
+                // }
+
+                
             }
 
             foreach ($ContractModified->discounts as $discount) {
