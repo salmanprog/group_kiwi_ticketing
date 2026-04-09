@@ -177,6 +177,7 @@ class ContractController extends CRUDCrontroller
 
         $this->__data['record'] = Contract::with([
                                     'organization',
+                                    'contractModified',
                                     'company',
                                     'client',
                                     'invoices.installmentPlan.payments',
@@ -1688,8 +1689,8 @@ class ContractController extends CRUDCrontroller
             'contract_modified_id' => 'required',
             'confirmed_with_client' => 'required|string',
         ]);
-        // dd($request->all());
-         $products = DB::table('contract_modified_items')->where('contract_modified_id',$request->contract_modified_id)->count();
+
+        $products = DB::table('contract_modified_items')->where('contract_modified_id',$request->contract_modified_id)->count();
         if($products == 0) {
             return response()->json([
                 'status' => false,
@@ -1704,8 +1705,6 @@ class ContractController extends CRUDCrontroller
                 'message' => 'Please add payment plan first'
             ]);
         }
-        dd($ContractModifiedInstallment);
-
     
         // $holdTicket = DB::table('user_hold_tickets')
         //                 ->where('estimate_id', $request->estimate_id)
@@ -1718,77 +1717,77 @@ class ContractController extends CRUDCrontroller
         //     ]);
         // }
 
+        $status = ($request->confirmed_with_client == '1') ? "sent" : 'accept_by_company';
 
-        $status = ($request->status == 'draft') ? "draft" : 'revised';
-
+        $ContractModified = ContractModified::where('id', $request->contract_modified_id)->first();
+        $ContractModified->status = $status;
+        $ContractModified->save();
       
-        $estimate->issue_date = $request->issue_date;
-        $estimate->valid_until = $request->valid_until;
-        $estimate->is_installment = $request->is_installment;
-        $estimate->is_adjusted = $request->status;
-        //$estimate->status = 'sent';
-        $estimate->is_adjusted = 1;
-        $estimate->save();
-
-        
-        if(Auth::user()->user_type != 'client') {
-            if(!empty($request->mail_send) && $request->mail_send == '1') {
-                
-                    $getEstimate = Estimate::where('slug', $request->slug)->first();
-                    $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('auth_code', Auth::user()->auth_code)->first();
-                    $user = User::where('email', $getClientEmail->email)->first();
-                    $getCompany = CompanyUser::getCompany(Auth::user()->id);
-                    // dd($getCompany->login_url);
-                    if ($user) {
-                        $companyDetails = session('companyDetails');
-                        $mail_params['company_name'] = $getCompany->name;
-                        $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
-                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email),'login_url' => Crypt::encrypt($getCompany->login_url)]) : (($getCompany->login_url) ? $getCompany->login_url : config('constants.client_login_url'));
-                        $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
-                        $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
-                        // if($companyDetails) {
-                        //     $mail_params['link'] = $companyDetails['companyDomain'];
-                        // }
-                        // dd($user->email);
-                        // $check_mail = sendMail(
-                        //     $user->email,
-                        //     'estimate',
-                        //     'New Estimate',
-                        //     $mail_params
-                        // );
-                            $auth_code = Auth::user()->auth_code;
-                            $toEmails = $user->email;
-                            // $toEmails = 'ali@yopmail.com';
-                            $templateIdentifier = 'estimate_email';
-
-                            $data = [
-                                'username' => $mail_params['username'],
-                                'company_name' => $mail_params['company_name'],
-                                'link' => $mail_params['link'],
-                                'estimate_number' => strtoupper($getEstimate->slug)
-                            ];
-                            
-                            try {
-                                UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
-                            } catch (\Exception $e) {
-                                return response()->json([
-                                        'status' => false,
-                                        'message' => 'Error: '.$e->getMessage()
-                                    ]);
-                            }
-                        
-                    }
-
-                    Estimate::where('slug', $request->slug)->update([
-                        'status' => 'sent'
-                    ]);
-            }   
+        if($request->confirmed_with_client == '0') {
+            $this->generateUpdateContract($ContractModified->contract_id, $request);
+            $message = "Modify has been update.";
+        }else{
+            //send to client email
+            $message = "Contract Modification has been sent to client.";
         }
 
         return response()->json([
             'status' => true,
-            'message' => 'Estimate send successfully'
+            'message' => $message
         ]);
+    }
+
+    public function generateUpdateContract($contractId, $request)
+    {
+        //   try {
+            $contract = Contract::findOrFail($contractId);
+
+            $ContractModified = ContractModified::with([
+                                    'items',
+                                    'taxes' ,
+                                    'installments',
+                                    'discounts'
+                                ])->where('id',$request->contract_modified_id)->first();
+                
+
+                if ($ContractModified) {
+                   
+
+                    $get_updated_estimate = ContractModified::with('items.itemTaxes')->with('taxes')->with('discounts')->with('installments')->where('id', $request->contract_modified_id)->firstOrFail();
+
+                    $subtotal = $get_updated_estimate->items->sum(fn($item) => $item->total_price);
+
+                    $taxTotal = $get_updated_estimate->items->sum(fn($item) => 
+                        $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
+                    );
+
+                    
+                    $discountPercent = $get_updated_estimate->discounts->sum(fn($discount) => $discount->value);
+                    $total = ($subtotal + $taxTotal) * (1 - ($discountPercent / 100));
+                    $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
+
+                    $get_updated_estimate->update(['subtotal' => $subtotal,'total' => $total,'discount_total' => $discountAmount,'tax_total' => $taxTotal]);
+
+                    $update_contract = Contract::find($contractId);
+                    $update_contract->total += $get_updated_estimate->total;
+                    $update_contract->save();
+
+                    Invoice::generateModifyInvoice($contractId,$request);                    
+                }
+
+                 return response()->json([
+                    'status' => true,
+                    'message' => 'Contract updated successfully',
+                ]);
+
+         
+
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Error: '.$e->getMessage(),
+        //     ], 500);
+        // }
     }
 
 }

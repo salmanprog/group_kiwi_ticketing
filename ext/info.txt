@@ -140,6 +140,30 @@ ALTER TABLE `user_estimate_item_taxes` CHANGE `amount` `amount` DECIMAL(10,3) NO
 ALTER TABLE `contract_modified_item_taxes` ADD `amount` DECIMAL(10,3) NOT NULL AFTER `percentage`;
 
 
+ALTER TABLE `contract_modified` ADD `subtotal` DECIMAL(12,2) NOT NULL AFTER `created_by`, ADD `total` DECIMAL(12,2) NOT NULL AFTER `subtotal`, ADD `discount_total` DECIMAL(12,2) NOT NULL AFTER `total`, ADD `tax_total` DECIMAL(12,2) NOT NULL AFTER `discount_total`;
+
+
+ALTER TABLE `user_invoices` CHANGE `estimate_id` `estimate_id` BIGINT(20) UNSIGNED NULL DEFAULT '0';
+
+ALTER TABLE `user_invoices` ADD `contract_modified_id` INT(11) NOT NULL DEFAULT '0' AFTER `id`, ADD `module_type` ENUM('estimate','modified_contract') NOT NULL DEFAULT 'estimate' AFTER `contract_modified_id`;
+
+ALTER TABLE `installment_plans` CHANGE `estimate_id` `estimate_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0';
+
+
+ALTER TABLE `installment_plans` ADD `contract_modified_id` INT(11) NOT NULL DEFAULT '0' AFTER `id`, ADD `module_type` ENUM('estimate','modified_contract') NOT NULL DEFAULT 'estimate' AFTER `contract_modified_id`;
+
+
+ALTER TABLE `installment_payments` ADD `contract_modified_id` INT(11) NOT NULL DEFAULT '0' AFTER `contract_id`;
+
+ALTER TABLE installment_plans 
+MODIFY estimate_id BIGINT UNSIGNED NULL DEFAULT NULL;
+
+ALTER TABLE installment_payments 
+MODIFY estimate_id BIGINT UNSIGNED NULL DEFAULT NULL;
+
+
+
+
 kiwiticketing
 u2-nqewjfywa1fd@c1102859.sgvps.net
 18765

@@ -1232,7 +1232,7 @@
                                         $discountTotal = 0;
                                     @endphp
 
-                                    @if ($estimate && $estimate->items->count())
+                                    @if ($record && $estimate->items->count())
                                         @foreach ($estimate->items as $item)
                                             @php
                                                 $subtotal += $item->total_price;

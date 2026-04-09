@@ -34,6 +34,8 @@ class Invoice extends Model
     protected $fillable = [
         'client_id',
         'slug',
+        'module_type',
+        'contract_modified_id',
         'auth_code',
         'created_by',
         'estimate_number',
@@ -507,5 +509,114 @@ class Invoice extends Model
         }
 
         return true;
+    }
+
+
+    public static function generateModifyInvoice($contractId, $request,$auth_code=null)
+    {
+        $ContractModified = ContractModified::with('items', 'taxes', 'discounts','installments')->where('contract_id', $contractId)->first();
+        $contract = Contract::find($ContractModified->contract_id);
+        // dd($contract);
+          DB::beginTransaction();
+
+            $slug = self::generateInvoiceNumber();
+            $invoice = new Invoice();
+            $invoice->invoice_number = $slug;
+            $invoice->slug = $slug;
+            $invoice->auth_code = $auth_code ?? Auth::user()->auth_code;
+            $invoice->client_id = $contract->client_id;
+            $invoice->company_id = $contract->company_id;
+            $invoice->created_by = $ContractModified->created_by;
+            $invoice->contract_modified_id = $ContractModified->id;
+            $invoice->module_type = 'modified_contract';
+            $invoice->issue_date = now();
+            $invoice->due_date = now()->addDays(15);
+            $invoice->subtotal = $ContractModified->subtotal;
+            $invoice->total = $ContractModified->total;
+            $invoice->contract_id = $contract->id;
+            $invoice->status = 'unpaid';
+            $invoice->save();
+         
+
+            $installments = $ContractModified->installments;
+
+            if ($installments->isNotEmpty()) {
+
+                $plan = \App\Models\InstallmentPlan::create([
+                    'invoice_id' => $invoice->id,
+                    'total_amount' => $ContractModified->total,
+                    'installment_count' => $installments->count(),
+                    'start_date' => $installments->first()->installment_date,
+                    'contract_modified_id' => $ContractModified->id,
+                    'module_type' => 'modified_contract',
+                ]);
+
+                foreach ($installments as $index => $installment) {
+                    \App\Models\InstallmentPayment::create([
+                        'installment_plan_id' => $plan->id,
+                        'installment_number' => $index + 1,
+                        'invoice_id' => $invoice->id,
+                        'contract_modified_id' => $ContractModified->id,
+                        'contract_id' => $contract->id,
+                        'due_date' => $installment->installment_date,
+                        'amount' => $installment->amount,
+                        'is_paid' => false,
+                    ]);
+                }
+            }
+
+
+            foreach ($ContractModified->items as $item) {
+                // dd($item);
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'name' => $item->name,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'unit' => $item->unit,
+                    'total_price' => $item->total_price,
+                ]);
+                ContractItem::create([
+                    'contract_id' => $contract->id,
+                    'name' => $item->name,
+                    'quantity' => $item->quantity,
+                    'unit' => $item->unit,
+                    'price' => $item->price,
+                    'total_price' => $item->total_price,
+                    'taxes' => ($item->tax) ? $item->tax : 0,
+                    'product_price' => $item->price,
+                    'gratuity' => ($item->gratuity) ? $item->gratuity : 0,
+                    'accepted_by_client' => 1,
+                    'invoice_id' => $invoice->id,
+                    'product_id' => $item->product_id,
+                ]);
+            }
+
+            foreach ($ContractModified->taxes as $tax) {
+                InvoiceTax::create([
+                    'invoice_id' => $invoice->id,
+                    'name' => $tax->name,
+                    'percent' => $tax->percent,
+                ]);
+
+                ContractTaxes::create([
+                    'contract_id' => $contract->id,
+                    'name' => $tax->name,
+                    'percent' => $tax->percent,
+                    'invoice_id' => $invoice->id,
+                ]);
+            }
+
+            foreach ($ContractModified->discounts as $discount) {
+                InvoiceDiscount::create([
+                    'invoice_id' => $invoice->id,
+                    'name' => $discount->name,
+                    'value' => $discount->value,
+                ]);
+
+            }
+        
+        DB::commit();
+        return $invoice;
     }
 }
