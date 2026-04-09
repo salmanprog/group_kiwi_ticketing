@@ -324,7 +324,7 @@ Route::get('/estimate/hold-dates/{id}', [EstimateController::class,'getEstimateD
 Route::post('/update-expiry-date', [EstimateController::class, 'updateExpiryDate'])->name('update-expiry-date');
 Route::post('/print-ticket', [ContractController::class, 'printTicket'])->name('contract.print-tickets');
 
-Route::get('media/ajax-listing', [MediaController::class, 'ajaxListing'])->name('media.ajax-listing');
+Route::get('media/ajax-listing', [MediaController::class, 'ajaxListing'])->name('media.ajax-listing'); 
 Route::resource('media', MediaController::class);
 
 Route::get('/contract-modify/{slug}', [ContractController::class, 'getContractModifyPage'])->name('contract.contract-modify');
@@ -341,3 +341,4 @@ Route::get('/contract-get-product-discount/get-item', [ContractController::class
 Route::post('/contract-get-product-discount/update',[ContractController::class, 'updateDiscount'])->name('contract.modify.product.discount.update');
 Route::delete('/contract-get-product-discount/{id}/delete',[ContractController::class, 'deleteDiscount'])->name('contract.modify.product.discount.delete');
 Route::post('/contract-installment/{contract}/payment-save', [ContractController::class, 'savePaymentSchedule'])->name('contract.installments.save');
+Route::post('/contract-send-to-client', [ContractController::class, 'sendToClient'])->name('contract.send.to.client');

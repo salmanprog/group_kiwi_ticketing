@@ -101,7 +101,7 @@
                                                                                                 ]'>
                                                                                 Apply Taxes: 
                                                                                 @foreach($item->itemTaxes as $tax)
-                                                                                    {{ $tax->name }}  @if(!$loop->last), @endif
+                                                                                    {{ $tax->name }} (${{ bcdiv($tax->amount, 1, 2) }})  @if(!$loop->last), @endif
                                                                                 @endforeach
                                                                     </small>
                                                                 @endif
@@ -386,13 +386,53 @@
                                         style="display:none;">
                                         Please schedule a payment first.
                                     </div>
-
-                                  
                                 </div>
                             </div>
-                       </div>
-                            
 
+                          <div class="row">
+                                <div class="col-md-12">
+                                    
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
+
+                                            <h5 class="section-title">
+                                                Client Confirmation Status
+                                            </h5>
+
+                                            <div class="form-group-custom">
+                                                <label for="clientConfirmation">
+                                                    Select Confirmation Status
+                                                </label>
+
+                                                <select id="clientConfirmation" name="confirmed_with_client" class="form-control custom-select" required>
+                                                    <option value="" disabled selected>
+                                                        -- Choose Status --
+                                                    </option>
+                                                    <option value="0">
+                                                        ✔ Approved (No confirmation needed)
+                                                    </option>
+                                                    <option value="1">
+                                                        ❌ Not yet confirmed with client
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                              <button id="sendToClientBtn" type="button"
+                                                class="btn btn-success"
+                                                data-url="{{ route('contract.send.to.client') }}"
+                                                data-csrf="{{ csrf_token() }}"
+                                                data-contractModifyId="{{ $data->id }}"
+                                                data-slug="{{ $data->slug }}"
+                                                data-confirmed_with_client=""
+                                                disabled>
+                                            Update
+                                            </button>
+                       </div>
                     </div>
                    
                 </div>
@@ -978,7 +1018,103 @@ $(document).off('submit', '#paymentScheduleFormEdit')
     });
 });
 
+</script>
 
+<script>
+$(document).ready(function() {
+    const select = $('#clientConfirmation');
+    const button = $('#sendToClientBtn');
+
+    // Update button when dropdown changes
+    select.on('change', function() {
+        const value = $(this).val();
+
+        if (value !== "") {
+            button.prop('disabled', false); // enable button
+            button.attr('data-confirmed_with_client', value); // update data attribute
+            // Optional: update button text dynamically
+            if (value === "0") {
+                button.text('Send Approved Status');
+            } else if (value === "1") {
+                button.text('Request Confirmation');
+            }
+        } else {
+            button.prop('disabled', true);
+            button.text('Update');
+            button.attr('data-confirmed_with_client', "0"); // reset to default
+        }
+    });
+
+    // AJAX call when button clicked
+    button.on('click', function() {
+        const btn = $(this);
+        const url = btn.data('url');
+        const csrf = btn.data('csrf');
+        const contractmodifyid = btn.data('contractmodifyid');
+        const confirmedStatus = btn.attr('data-confirmed_with_client');
+
+        if (!confirmedStatus) { 
+             Toastify({
+                    text: "Please select a confirmation status",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+                return;
+            }
+
+        if (confirmedStatus === "0") {
+            btn.text('Sending Approved Status...');
+        } else if (confirmedStatus === "1") {
+            btn.text('Sending Request Confirmation...');
+        }
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                _token: csrf,
+                contract_modified_id: contractmodifyid,
+                confirmed_with_client: confirmedStatus
+            },
+            success: function(response) {
+                if(confirmedStatus === "0") {
+                    btn.text('Sent Approved Status');
+                } else if (confirmedStatus === "1") {
+                    btn.text('Sent Request Confirmation');
+                }
+                btn.removeClass('btn-success').addClass('btn-primary');
+                btn.prop('disabled', false);
+
+                Toastify({
+                    text: response.message || 'Contract sent successfully.',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-success"
+                }).showToast();
+            },
+            error: function(xhr, status, error) {
+                if(confirmedStatus === "0") {
+                    btn.text('Send Approved Status');
+                } else if (confirmedStatus === "1") {
+                    btn.text('Request Confirmation');   
+                }
+                btn.prop('disabled', false);
+                console.error(error);
+                Toastify({
+                    text: 'Something went wrong. Please try again.',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+            }
+        });
+    });
+}); 
 </script>
 
 

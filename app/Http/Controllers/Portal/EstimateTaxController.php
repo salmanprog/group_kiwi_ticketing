@@ -159,7 +159,7 @@ class EstimateTaxController extends CRUDCrontroller
             foreach ($products as $product) {
                 $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
                 $singleProductTaxAmount = ($productDetails->total_price * $taxPercent / 100);
-
+ 
                 \DB::table('user_estimate_item_taxes')->insert([
                     'estimate_tax_id' => $estimateTaxId,
                     'user_estimate_item_id' => $product['id'],

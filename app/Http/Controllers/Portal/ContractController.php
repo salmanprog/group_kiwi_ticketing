@@ -1165,6 +1165,36 @@ class ContractController extends CRUDCrontroller
         $item->total_price = $request->quantity * $request->price;
         $item->save();
 
+
+        $taxes = DB::table('contract_modified_taxes')
+            ->where('contract_modified_id', $item->contract_modified_id)
+            ->get();
+
+        if ($taxes->isNotEmpty()) {
+            foreach ($taxes as $tax) {
+                $singleProductTaxAmount = ($item->total_price * $tax->percent / 100);
+                $user_estimate_item_taxes = DB::table('contract_modified_item_taxes')
+                    ->where('contract_modified_tax_id', $tax->id)
+                    ->where('contract_modified_item_id', $item->id)
+                    ->first();
+
+                if ($user_estimate_item_taxes) {
+                    DB::table('contract_modified_item_taxes')
+                        ->where('contract_modified_tax_id', $tax->id)
+                        ->where('contract_modified_item_id', $item->id)
+                        ->update(['amount' => $singleProductTaxAmount]);
+                }
+
+                DB::table('contract_modified_taxes')
+                    ->where('id', $tax->id)
+                    ->update([
+                        'amount' => $tax->amount - ($user_estimate_item_taxes ? $user_estimate_item_taxes->amount : 0) + $singleProductTaxAmount
+                    ]);
+            }
+        }
+ 
+
+
         return response()->json([
             'status' => true,
             'message' => 'Product updated successfully',
@@ -1181,6 +1211,33 @@ class ContractController extends CRUDCrontroller
         ]);
 
         $item = ContractModifiedItem::findOrFail($request->item_id);
+
+          $taxes = DB::table('contract_modified_taxes')
+            ->where('contract_modified_id', $item->contract_modified_id)
+            ->get();
+
+        if ($taxes->isNotEmpty()) {
+            foreach ($taxes as $tax) {
+                $user_estimate_item_taxes = DB::table('contract_modified_item_taxes')
+                    ->where('contract_modified_tax_id', $tax->id)
+                    ->where('contract_modified_item_id', $item->id)
+                    ->first();
+
+                if ($user_estimate_item_taxes) {
+                    DB::table('contract_modified_item_taxes')
+                        ->where('contract_modified_tax_id', $tax->id)
+                        ->where('contract_modified_item_id', $item->id)
+                        ->delete();
+
+                    DB::table('contract_modified_taxes')
+                        ->where('id', $tax->id)
+                        ->update([
+                            'amount' => $tax->amount - $user_estimate_item_taxes->amount
+                        ]);
+                }
+            }
+        }
+      
         $item->delete();
 
         return response()->json([
@@ -1188,7 +1245,7 @@ class ContractController extends CRUDCrontroller
             'message' => 'Product deleted successfully'
         ]);
     }
-
+ 
      public function getContractModifyProducts(Request $request)
     {
         // dd($request->all());
@@ -1239,11 +1296,15 @@ class ContractController extends CRUDCrontroller
 
             // Attach selected products to this tax
             foreach ($products as $product) {
+                $productDetails = DB::table('contract_modified_items')->where('id', $product['id'])->first();
+                $singleProductTaxAmount = ($productDetails->total_price * $taxPercent / 100);
+
                 \DB::table('contract_modified_item_taxes')->insert([
                     'contract_modified_tax_id' => $estimateTaxId,
                     'contract_modified_item_id' => $product['id'],
                     'name' => $taxName,
                     'percentage' => $taxPercent,
+                    'amount' => $singleProductTaxAmount,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -1286,7 +1347,7 @@ class ContractController extends CRUDCrontroller
             $productDetails = DB::table('user_estimate_items')->where('id', $product['id'])->first();
             $totalTaxAmount += ($productDetails->total_price * $taxPercent / 100);
         }
-            dd($totalTaxAmount);
+            // dd($totalTaxAmount);
 
         try {
             // Update main tax record
@@ -1413,10 +1474,14 @@ class ContractController extends CRUDCrontroller
 
             // Re-insert updated products
             foreach ($products as $product) {
+                $productDetails = DB::table('contract_modified_items')->where('id', $product['id'])->first();
+                $singleProductTaxAmount = ($productDetails->total_price * $taxPercent / 100);
+ 
                 \DB::table('contract_modified_item_taxes')->insert([
                     'contract_modified_tax_id' => $taxId,
                     'contract_modified_item_id' => $product['id'],
                     'name' => $taxName,
+                    'amount'=>$singleProductTaxAmount,
                     'percentage' => $taxPercent,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -1614,6 +1679,115 @@ class ContractController extends CRUDCrontroller
         return response()->json([
             'status' => true,
             'message' => 'Payment schedule deleted successfully!'
+        ]);
+    }
+
+    public function sendToClient(Request $request)
+    {
+        $request->validate([
+            'contract_modified_id' => 'required',
+            'confirmed_with_client' => 'required|string',
+        ]);
+        // dd($request->all());
+         $products = DB::table('contract_modified_items')->where('contract_modified_id',$request->contract_modified_id)->count();
+        if($products == 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please add products first'
+            ]);
+        }
+
+        $ContractModifiedInstallment = ContractModifiedInstallment::where('contract_modified_id',$request->contract_modified_id)->count();
+        if($ContractModifiedInstallment == 0) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please add payment plan first'
+            ]);
+        }
+        dd($ContractModifiedInstallment);
+
+    
+        // $holdTicket = DB::table('user_hold_tickets')
+        //                 ->where('estimate_id', $request->estimate_id)
+        //                 ->join('user_hold_ticket_items', 'user_hold_tickets.id', '=', 'user_hold_ticket_items.user_hold_ticket_id')
+        //                 ->first();
+        // if(!$holdTicket) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Please hold tickets for this estimate.'
+        //     ]);
+        // }
+
+
+        $status = ($request->status == 'draft') ? "draft" : 'revised';
+
+      
+        $estimate->issue_date = $request->issue_date;
+        $estimate->valid_until = $request->valid_until;
+        $estimate->is_installment = $request->is_installment;
+        $estimate->is_adjusted = $request->status;
+        //$estimate->status = 'sent';
+        $estimate->is_adjusted = 1;
+        $estimate->save();
+
+        
+        if(Auth::user()->user_type != 'client') {
+            if(!empty($request->mail_send) && $request->mail_send == '1') {
+                
+                    $getEstimate = Estimate::where('slug', $request->slug)->first();
+                    $getClientEmail = Client::where('client_id', $getEstimate->client_id)->where('auth_code', Auth::user()->auth_code)->first();
+                    $user = User::where('email', $getClientEmail->email)->first();
+                    $getCompany = CompanyUser::getCompany(Auth::user()->id);
+                    // dd($getCompany->login_url);
+                    if ($user) {
+                        $companyDetails = session('companyDetails');
+                        $mail_params['company_name'] = $getCompany->name;
+                        $mail_params['username'] = $getClientEmail->first_name . ' ' . $getClientEmail->last_name;
+                        $mail_params['link']     = ($user->password == null) ? route('admin.create-password', ['any' => Crypt::encrypt($user->email),'login_url' => Crypt::encrypt($getCompany->login_url)]) : (($getCompany->login_url) ? $getCompany->login_url : config('constants.client_login_url'));
+                        $mail_params['message'] = ($getEstimate->status == 'draft') ? 'You have a new estimate from ' . "$getCompany->name" : 'company review estimate from ' . "$getCompany->name";
+                        $subject = $getEstimate->status == 'draft' ? "New Draft from " . $getCompany->name : "New Estimate from " . $getCompany->name;
+                        // if($companyDetails) {
+                        //     $mail_params['link'] = $companyDetails['companyDomain'];
+                        // }
+                        // dd($user->email);
+                        // $check_mail = sendMail(
+                        //     $user->email,
+                        //     'estimate',
+                        //     'New Estimate',
+                        //     $mail_params
+                        // );
+                            $auth_code = Auth::user()->auth_code;
+                            $toEmails = $user->email;
+                            // $toEmails = 'ali@yopmail.com';
+                            $templateIdentifier = 'estimate_email';
+
+                            $data = [
+                                'username' => $mail_params['username'],
+                                'company_name' => $mail_params['company_name'],
+                                'link' => $mail_params['link'],
+                                'estimate_number' => strtoupper($getEstimate->slug)
+                            ];
+                            
+                            try {
+                                UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+                            } catch (\Exception $e) {
+                                return response()->json([
+                                        'status' => false,
+                                        'message' => 'Error: '.$e->getMessage()
+                                    ]);
+                            }
+                        
+                    }
+
+                    Estimate::where('slug', $request->slug)->update([
+                        'status' => 'sent'
+                    ]);
+            }   
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Estimate send successfully'
         ]);
     }
 
