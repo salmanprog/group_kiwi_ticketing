@@ -1077,16 +1077,17 @@ class ContractController extends CRUDCrontroller
         }
 
         $estimate = Estimate::where('contract_id', $contract->id)->first();
-        $user_hold_tickets = UserHoldTickets::with('user_hold_ticket_items')
-                                            ->where('auth_code',  Auth::user()->auth_code)
-                                            ->where('estimate_id', $estimate->id)
-                                            ->first();
-
         $data = ContractModified::with('items.itemTaxes','taxes','discounts','installments')
                                 ->where('contract_id', $contract->id)
                                 ->where('status','pending')
                                 ->first();
-        // dd($data);
+        $user_hold_tickets = UserHoldTickets::with(['user_hold_ticket_items' => function($query)use($data){
+                                            $query->where('modified_contract_id', $data->id);
+                                        }])
+                                            ->where('auth_code',  Auth::user()->auth_code)
+                                            ->where('estimate_id', $estimate->id)
+                                            ->first();
+        // dd($user_hold_tickets);
         $products = Product::where('auth_code',  Auth::user()->auth_code)->get();
         
         return view('portal.contract.modify-edit', compact('data','products','estimate','user_hold_tickets'));
@@ -1732,16 +1733,18 @@ class ContractController extends CRUDCrontroller
             ]);
         }
     
-        // $holdTicket = DB::table('user_hold_tickets')
-        //                 ->where('estimate_id', $request->estimate_id)
-        //                 ->join('user_hold_ticket_items', 'user_hold_tickets.id', '=', 'user_hold_ticket_items.user_hold_ticket_id')
-        //                 ->first();
-        // if(!$holdTicket) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Please hold tickets for this estimate.'
-        //     ]);
-        // }
+        $holdTicket = DB::table('user_hold_tickets')
+                        ->join('user_hold_ticket_items', 'user_hold_tickets.id', '=', 'user_hold_ticket_items.user_hold_ticket_id')
+                        ->where('user_hold_tickets.estimate_id', $request->estimate_id)
+                        ->where('user_hold_ticket_items.modified_contract_id',$request->contract_modified_id)
+                        ->first();
+        // dd($request->all());
+        if(!$holdTicket) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please hold tickets for this in modify contract.'
+            ]);
+        }
 
         $status = ($request->confirmed_with_client == '1') ? "sent" : 'accept_by_company';
 
@@ -1801,6 +1804,16 @@ class ContractController extends CRUDCrontroller
                     Invoice::generateModifyInvoice($contractId,$request);                    
                 }
 
+
+                // $data =[
+                //     'contract_modify_id'=>$ContractModified->id,
+                //     'authCode'=>$contract->auth_code,
+                //     'date'=>$contract->event_date,                    
+                // ];
+                // $payload = UserHoldTickets::updateOrderPayload($data);
+                // $this->apiService->updateOrder($payload);
+
+                dd($payload);
                  return response()->json([
                     'status' => true,
                     'message' => 'Contract updated successfully',

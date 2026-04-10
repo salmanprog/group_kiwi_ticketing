@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use DB;
 
 class UserHoldTickets extends Model
 {
@@ -258,6 +259,115 @@ class UserHoldTickets extends Model
         return $payload;
     }
 
+    public static function updateOrderPayload($data)
+    {
+        // Initialize purchases array
+        $ticketChanges = [];
+
+        $contractModified = ContractModified::find($data['contract_modify_id']);
+        $contract = Contract::find($contractModified->contract_id);
+        $estimate = Estimate::where('contract_id', $contractModified->contract_id)->first();
+
+        // Get hold tickets with relationships
+        $HoldTickets = UserHoldTickets::with([
+            'user_hold_ticket_items' => function ($query) use ($data) {
+                $query->where('modified_contract_id', $data['contract_modify_id']);
+            }
+        ])
+            ->where('estimate_id', $estimate->id)
+            ->first();
+
+        $session_id = 0;
+
+        if (!$HoldTickets) {
+            Log::warning('No hold tickets found for estimate: ' . $estimate->id);
+            $ticketChanges = [];
+        } else {
+            foreach ($HoldTickets->user_hold_ticket_items as $hold_ticket_item) {
+                // Get session ID (only if not zero)
+                $session_id = ($hold_ticket_item->session_id != '0') ? $hold_ticket_item->session_id : null;
+
+                // Determine ticket type/slug
+                $ticketType = $hold_ticket_item->slug ?? $hold_ticket_item->hold_ticket_item_product_id;
+
+                // Check if tickets have seats
+                if ($hold_ticket_item->hold_ticket_item_seats->isEmpty()) {
+                    // Case 1: No seats - create single entry for the quantity
+                    $ticketChanges[] = [
+                        "ticketType" => $ticketType,
+                        "visualId" => "string",
+                        "date" => $contract->event_date,
+                        "sectionId" => "0",
+                        "capacityId" => $hold_ticket_item->capacity_id,
+                        "amount" => $hold_ticket_item->quantity,
+                        "isSeasonPass" => 0
+                    ];
+
+                    Log::info('Added purchase without seats', [
+                        'ticketType' => $ticketType,
+                        'quantity' => $hold_ticket_item->quantity
+                    ]);
+                } else {
+                    // Case 2: Has seats - create one entry per seat
+                    foreach ($hold_ticket_item->hold_ticket_item_seats as $seat) {
+                        $ticketChanges[] = [
+                            "ticketType" => $ticketType,
+                            "visualId" => "string",
+                            "date" => $contract->event_date,
+                            "sectionId" => $seat->sectionId,
+                            "capacityId" => $hold_ticket_item->capacity_id,
+                            "amount" => 1,
+                            "isSeasonPass" => 0
+                        ];
+                    }
+
+                    Log::info('Added purchases with seats', [
+                        'ticketType' => $ticketType,
+                        'seatCount' => count($hold_ticket_item->hold_ticket_item_seats),
+                        'seatIds' => implode(',', $hold_ticket_item->hold_ticket_item_seats->pluck('sectionId')->toArray())
+                    ]);
+                }
+            }
+        }
+
+        // Now $ticketChanges is ready to use in your payload
+
+        $installment = \App\Models\InstallmentPlan::with('payments')->where('contract_modified_id', $data['contract_modify_id'])->first();
+        $payload = [
+            "sessionId" => $session_id,
+            "previousOrderNumber" => $estimate->slug,
+            "orderNumber" => $estimate->slug,
+            "transactionId" => "string",
+            "authCode" => $data['authCode'],
+            "isterminalPayment" => true,
+            "posStaffIdentity" => "string",
+            "date" => $estimate->event_date,
+            "makeThisAddonsAsChild" => true,
+            "isPaymentThroughSubscriptionPlan" => 0,
+            "totalInstallments" => 0,
+            "installmentType" => "string",
+            "isModifyingExistingOrder" => 0,
+            "ticketChanges" => $ticketChanges,
+            "payment" => [
+                "cardholerName" => "string",
+                "billingStreet" => "string",
+                "billingZipCode" => "string",
+                "expDate" => "string",
+                "paymentCode" => "string",
+                "amount" => 0,
+                "staffTip" => 0,
+                "tax" => 0,
+                "serviceCharges" => 0,
+                "transactionId" => "string",
+                "ccNumber" => "string",
+                "cvn" => "string",
+                "paymentMethodId" => "string"
+            ],
+            "easyPayPlanContractSignature" => "string"
+        ];
+
+        return $payload;
+    }
 
     public static function createUpdateInvoicePayload($data)
     {

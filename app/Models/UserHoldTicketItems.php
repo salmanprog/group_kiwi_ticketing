@@ -28,7 +28,7 @@ class UserHoldTicketItems extends Model
      * @var array
      */
     protected $fillable = [
-        'user_hold_ticket_id','product_id','name','slug','quantity','category','price','created_at', 'updated_at', 'deleted_at','auth_code','slug','session_id','capacity_id'
+        'user_hold_ticket_id','modified_contract_id','product_id','name','slug','quantity','category','price','created_at', 'updated_at', 'deleted_at','auth_code','slug','session_id','capacity_id'
     ];
 
     /**

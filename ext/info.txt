@@ -190,6 +190,10 @@ COLLATE=utf8mb4_unicode_ci;
 ALTER TABLE `contract_taxes` ADD `amount` DECIMAL(10,3) NOT NULL AFTER `invoice_id`;
 
 
+ALTER TABLE `user_hold_ticket_items` ADD `modified_contract_id` INT(11) NOT NULL DEFAULT '0' AFTER `user_hold_ticket_id`;
+
+
+
 
 
 kiwiticketing

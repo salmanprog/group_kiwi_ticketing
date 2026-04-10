@@ -179,7 +179,6 @@ class UserHoldTicketsController extends CRUDCrontroller
             'quantity'     => 'required|integer|min:1',
             'estimate_id'  => 'required'
         ]);
-
         $product = Product::where('slug', $request->product_slug)->first();
         $seats = $request->seats ? implode(',', $request->seats) : null;
         if($product->hasSeats == '1'){
@@ -200,9 +199,9 @@ class UserHoldTicketsController extends CRUDCrontroller
                 'slug' =>$product->ticketSlug,
                 'quantity' => $request->quantity,
                 'category' => $product->ticketCategory,
-                'price' => $product->price
+                'price' => $product->price,
+                'modified_contract_id' => ($request->modified_contract_id) ? $request->modified_contract_id : 0,
             ]);
-
               return response()->json([
                 'status'  => true,
                 'message' => 'Ticket held successfully',
@@ -295,6 +294,8 @@ class UserHoldTicketsController extends CRUDCrontroller
                 'quantity' => $qty,
                 'price' => ($estimateItem) ? $estimateItem->price : $product->price,
                 'category' => $product->ticketCategory,
+                'modified_contract_id' => ($request->modified_contract_id) ? $request->modified_contract_id : 0,
+
 
             ]);
             // dd($result['data']);

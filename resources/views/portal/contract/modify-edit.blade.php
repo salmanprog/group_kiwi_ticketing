@@ -515,6 +515,7 @@
                                                 data-csrf="{{ csrf_token() }}"
                                                 data-contractModifyId="{{ $data->id }}"
                                                 data-slug="{{ $data->slug }}"
+                                                data-estimate_id="{{ $user_hold_tickets->estimate_id}}"
                                                 data-confirmed_with_client=""
                                                 disabled>
                                             Update
@@ -657,7 +658,7 @@
                                 @foreach($products as $product)
                                     <tr>
                                         <td class="text-center">
-                                            <input type="checkbox" class="product-checkbox">
+                                            <input type="checkbox" class="modify-product-checkbox">
                                         </td>
                                         <td>{{ $product->name }}</td>
                                         <td>
@@ -1199,6 +1200,7 @@ $(document).ready(function() {
         const csrf = btn.data('csrf');
         const contractmodifyid = btn.data('contractmodifyid');
         const confirmedStatus = btn.attr('data-confirmed_with_client');
+        const estimateId = btn.attr('data-estimate_id');
 
         if (!confirmedStatus) { 
              Toastify({
@@ -1224,7 +1226,8 @@ $(document).ready(function() {
             data: {
                 _token: csrf,
                 contract_modified_id: contractmodifyid,
-                confirmed_with_client: confirmedStatus
+                confirmed_with_client: confirmedStatus,
+                estimate_id: estimateId
             },
             success: function(response) {
                 if(confirmedStatus === "0") {
@@ -1234,13 +1237,13 @@ $(document).ready(function() {
                 }
                 btn.removeClass('btn-success').addClass('btn-primary');
                 btn.prop('disabled', false);
-
+                let className = (response.status == false) ? "toast-error" : "toast-success"
                 Toastify({
                     text: response.message || 'Contract sent successfully.',
                     duration: 3000,
                     gravity: "top",
                     position: "right",
-                    className: "toast-success"
+                    className: className
                 }).showToast();
             },
             error: function(xhr, status, error) {
@@ -1347,6 +1350,242 @@ function saveDescription(input) {
 
     </script>
 
+
+  <script>
+    $(document).ready(function(){
+
+        // Checkbox click
+        $(document).on('change', '.modify-product-checkbox', function () {
+            let $checkbox = $(this);
+            let $row = $checkbox.closest('tr');
+            let $btn = $row.find('.hold-btn');
+            let $validationRow = $row.next('.validation-row');
+            let $validationBox = $validationRow.find('.validation-message');
+
+            let productSlug = $btn.data('product-slug');
+            let holdDate = $btn.data('hold-date');
+
+            if ($checkbox.is(':checked')) {
+                $.ajax({
+                    url: "{{ route('hold-tickets.check') }}",
+                    type: "POST",
+                    data: { _token: "{{ csrf_token() }}", product_slug: productSlug, hold_date: holdDate },
+                    beforeSend: function () {
+                        $checkbox.prop('disabled', true);
+                        $btn.prop('disabled', true).text('Checking...');
+                        $validationRow.addClass('d-none');
+                        $row.next('.cabana-row').remove();
+                    },
+                    success: function (response) {
+                        if (!response.status) {
+                            $btn.prop('disabled', true).text('Hold');
+                            $checkbox.prop('checked', false);
+                            $validationBox.html(response.message);
+                            $validationRow.removeClass('d-none');
+                            $row.next('.cabana-row').remove();
+                        } else {
+                            $btn.prop('disabled', false)
+                                .removeClass('btn-secondary')
+                                .addClass('btn-primary')
+                                .text('Hold');
+                            $validationRow.addClass('d-none');
+
+                            // Insert cabana seats HTML inline
+                            $row.next('.cabana-row').remove();
+                            if(response.html){
+                                let cabanaRow = `<tr class="cabana-row">
+                                                    <td colspan="4">
+                                                        <div style="padding: 15px; background: #f9fafb; border-radius: 6px; margin-top: 10px;">
+                                                            <h6 style="margin-bottom: 10px; font-weight: 600;">Select Seats</h6>
+                                                            ${response.html}
+                                                        </div>
+                                                    </td>
+                                                </tr>`;
+                                $row.after(cabanaRow);
+                            }
+                        }
+                    },
+                    error: function () {
+                        $btn.prop('disabled', true).text('Hold');
+                        $checkbox.prop('checked', false);
+                        $validationBox.html('Something went wrong. Please try again.');
+                        $validationRow.removeClass('d-none');
+                        $row.next('.cabana-row').remove();
+                    },
+                    complete: function () {
+                        $checkbox.prop('disabled', false);
+                    }
+                });
+
+            } else {
+                $btn.prop('disabled', true)
+                    .removeClass('btn-primary btn-success')
+                    .addClass('btn-secondary')
+                    .text('Hold');
+
+                $validationRow.addClass('d-none');
+                $row.next('.cabana-row').remove();
+            }
+        });
+
+        // Seat button click with Toastify
+        $(document).on('click', '.seat-btn', function(){
+            let $btn = $(this);
+            let $row = $btn.closest('.cabana-row').prev('tr');
+            let quantity = parseInt($row.find('.product-qty').val());
+
+            if($btn.data('selected') == 0){
+                let selectedCount = $btn.closest('td').find('.seat-btn.selected').length;
+                if(selectedCount >= quantity){
+                    Toastify({
+                        text: 'You have already selected maximum seats for this product.',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        className: 'toastify-error',
+                        style: {
+                            background: '#ef4444'
+                        }
+                    }).showToast();
+                    return;
+                }
+                $btn.addClass('selected');
+                $btn.data('selected', 1);
+            } else {
+                $btn.removeClass('selected');
+                $btn.data('selected', 0);
+            }
+        });
+
+        // Hold button click with Toastify
+        $(document).on('click', '.hold-btn', function(){
+            let $btn = $(this);
+            let $row = $btn.closest('tr');
+            let $validationRow = $row.nextAll('.validation-row').first();
+            let $validationBox = $validationRow.find('.validation-message');
+            let quantity = parseInt($row.find('.product-qty').val());
+
+            // Get selected seats
+            let selectedSeats = [];
+            $row.next('.cabana-row').find('.seat-btn.selected').each(function(){
+                selectedSeats.push($(this).data('seat'));
+            });
+
+            if($btn.data('has-seats') == 'true') {
+                if(selectedSeats.length != quantity){
+                    Toastify({
+                        text: 'Please select exactly ' + quantity + ' seats.',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        className: 'toastify-error',
+                        style: {
+                            background: '#ef4444'
+                        }
+                    }).showToast();
+                    return;
+                }
+            }
+
+            $btn.prop('disabled', true).text('Processing...');
+            $validationBox.html('');
+            $validationRow.addClass('d-none');
+
+            $.ajax({
+                url: "{{ route('hold-tickets-item') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: $btn.data('product-id'),
+                    product_slug: $btn.data('product-slug'),
+                    quantity: quantity,
+                    seats: selectedSeats,
+                    estimate_id: $btn.data('estimate-id'),
+                    hold_date: $btn.data('hold-date'),
+                    expiry_date: $btn.data('expiry-date'),
+                    user_hold_ticket_id: $btn.data('user_hold_ticket_id'),
+                    modified_contract_id: {{ $data->id }}
+                },
+                dataType: "json",
+                success: function(res){
+                    if(res.status === true){
+                        $btn.text('Held ✓').removeClass('btn-primary').addClass('btn-success');
+                        $btn.prop('disabled', true);
+
+                        Toastify({
+                            text: 'Product added successfully!',
+                            duration: 3000,
+                            gravity: 'top',
+                            position: 'right',
+                            className: 'toastify-success',
+                            style: {
+                                background: '#A0C242'
+                            }
+                        }).showToast();
+
+                        let productId = $btn.data('product-id');
+                        let productName = $row.find('td:nth-child(2)').text();
+
+                        $('#selectedProductsTable tbody .no-record').remove();
+
+                        let existingRow = $('#selectedProductsTable tbody').find(`tr[data-product-id="${productId}"]`);
+                        if(!existingRow.length){
+                            let newRow = `<tr data-product-id="${productId}">
+                                              <td>${productName}</td>
+                                              <td>${quantity}</td>
+                                            </tr>`;
+                            $('#selectedProductsTable tbody').append(newRow);
+                        }
+                    } else {
+                        $btn.prop('disabled', false).text('Hold');
+                        $validationBox.html(res.message);
+                        $validationRow.removeClass('d-none');
+                        
+                        Toastify({
+                            text: res.message,
+                            duration: 3000,
+                            gravity: 'top',
+                            position: 'right',
+                            className: 'toastify-error',
+                            style: {
+                                background: '#ef4444'
+                            }
+                        }).showToast();
+                    }
+                },
+                error: function(xhr){
+                    $btn.prop('disabled', false).text('Hold');
+
+                    let errorHtml = '';
+                    if(xhr.status === 422 && xhr.responseJSON.errors){
+                        $.each(xhr.responseJSON.errors, function(key,value){
+                            errorHtml += `<div>${value[0]}</div>`;
+                        });
+                    } else if(xhr.responseJSON && xhr.responseJSON.message){
+                        errorHtml = xhr.responseJSON.message;
+                    } else {
+                        errorHtml = 'Something went wrong. Please try again.';
+                    }
+
+                    $validationBox.html(errorHtml);
+                    $validationRow.removeClass('d-none');
+                    
+                    Toastify({
+                        text: errorHtml,
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        className: 'toastify-error',
+                        style: {
+                            background: '#ef4444'
+                        }
+                    }).showToast();
+                }
+            });
+        });
+
+    });
+    </script>
 @endpush
 @endsection
 
