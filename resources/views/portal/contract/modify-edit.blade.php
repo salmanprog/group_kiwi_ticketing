@@ -422,6 +422,93 @@
 
                                 </div>
                             </div>
+
+
+                            <div class="card-body">
+                        <!-- Top Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h5>Ticket Information</h5>
+                                <span class="section-badge">Read Only</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Estimate
+                                            <span class="required">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" name="estimate_slug" 
+                                            value="{{ $estimate->slug }}" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Hold Date
+                                            <span class="required">*</span>
+                                        </label>
+                                        <input type="date" class="form-control" name="hold_date" 
+                                            value="{{ $estimate->hold_date }}" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Expiry Date
+                                            <span class="required">*</span>
+                                        </label>
+                                        <input type="date" class="form-control" name="expiry_date" 
+                                            value="{{ $estimate->expiry_date }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected Products Table -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h5>Product Details</h5>
+                                <span class="section-badge">Manage Products</span>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="selectedProductsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th width="120">Quantity / Seats</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if($user_hold_tickets->user_hold_ticket_items->isEmpty())
+                                            <tr class="no-record">
+                                                <td colspan="2" class="text-center">No record found</td>
+                                            </tr>
+                                        @else
+                                            @foreach($user_hold_tickets->user_hold_ticket_items as $p)
+                                                <tr data-product-id="{{ $p->id }}">
+                                                    <td>{{ $p->name }}</td>
+                                                    <td>{{ $p->quantity }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="form-actions" style="margin-top: 20px; justify-content: flex-start;">
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#producHoldtModal">
+                                    Add Hold Product
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
                               <button id="sendToClientBtn" type="button"
                                                 class="btn btn-success"
                                                 data-url="{{ route('contract.send.to.client') }}"
@@ -547,6 +634,66 @@
                 </form>
             </div>
         </div>
+
+        <div class="modal fade" id="producHoldtModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Products</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body modal-body-scroll">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="50">Select</th>
+                                    <th>Product Name</th>
+                                    <th width="120">Quantity</th>
+                                    <th width="100">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($products as $product)
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="product-checkbox">
+                                        </td>
+                                        <td>{{ $product->name }}</td>
+                                        <td>
+                                            <input type="number" class="form-control form-control-sm product-qty" min="1" value="1" style="width: 100px;">
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-sm hold-btn"
+                                                    disabled
+                                                    data-user_hold_ticket_id="{{ $user_hold_tickets->id }}"
+                                                    data-product-id="{{ $product->id }}"
+                                                    data-product-slug="{{ $product->slug }}"
+                                                    data-estimate-id="{{ $user_hold_tickets->estimate_id }}"
+                                                    data-hold-date="{{ $user_hold_tickets->hold_date }}"
+                                                    data-expiry-date="{{ $user_hold_tickets->expiry_date }}"
+                                                    data-has-seats="{{ $product->hasSeats == 1 ? 'true' : 'false' }}">
+                                                Hold
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="validation-row d-none">
+                                        <td colspan="4">
+                                            <div class="alert alert-danger validation-message mb-0"></div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
         {{-- Add Tax Modals --}}
         <div class="modal fade" id="taxModifyModal" tabindex="-1" role="dialog" aria-labelledby="taxModifyModalLabel"

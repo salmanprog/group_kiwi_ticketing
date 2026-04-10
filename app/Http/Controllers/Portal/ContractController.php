@@ -10,7 +10,7 @@ use Auth;
 use DB;
 use App\Services\ThirdPartyApiService;
 use App\Services\UserMailer;
-use App\Models\{ContractModified,ContractModifiedItem,ContractModifiedTax,ContractModifiedDiscount,ContractModifiedInstallment};
+use App\Models\{ContractModified,ContractModifiedItem,ContractModifiedTax,ContractModifiedDiscount,ContractModifiedInstallment,UserHoldTickets};
 
 
 class ContractController extends CRUDCrontroller
@@ -1076,6 +1076,12 @@ class ContractController extends CRUDCrontroller
             ]);
         }
 
+        $estimate = Estimate::where('contract_id', $contract->id)->first();
+        $user_hold_tickets = UserHoldTickets::with('user_hold_ticket_items')
+                                            ->where('auth_code',  Auth::user()->auth_code)
+                                            ->where('estimate_id', $estimate->id)
+                                            ->first();
+
         $data = ContractModified::with('items.itemTaxes','taxes','discounts','installments')
                                 ->where('contract_id', $contract->id)
                                 ->where('status','pending')
@@ -1083,7 +1089,7 @@ class ContractController extends CRUDCrontroller
         // dd($data);
         $products = Product::where('auth_code',  Auth::user()->auth_code)->get();
         
-        return view('portal.contract.modify-edit', compact('data','products'));
+        return view('portal.contract.modify-edit', compact('data','products','estimate','user_hold_tickets'));
     }
 
 
