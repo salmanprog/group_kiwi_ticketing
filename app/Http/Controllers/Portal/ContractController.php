@@ -1813,7 +1813,7 @@ class ContractController extends CRUDCrontroller
                 // $payload = UserHoldTickets::updateOrderPayload($data);
                 // $this->apiService->updateOrder($payload);
 
-                dd($payload);
+                // dd($payload);
                  return response()->json([
                     'status' => true,
                     'message' => 'Contract updated successfully',
