@@ -33,7 +33,8 @@ class ContractModifiedHook
             'contract.client',
             'contract.company',
             'contract.organization',
-            'contract.client'
+            'contract.client',
+            'contract.estimateone'
         ])
         ->where('contract_modified.status', '!=', 'pending');
         $query->where('contracts.client_id', $request['user']['id']);

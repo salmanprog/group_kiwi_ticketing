@@ -34,18 +34,18 @@ class ContractModified extends JsonResource
         $company = ($this->contract && $this->contract->company) ? new Company($this->contract->company) : null;
         $client = ($this->contract && $this->contract->client) ? new PublicUser($this->contract->client) : null;
         $organization = ($this->contract && $this->contract->organization) ? new Organization($this->contract->organization) : null;
-        
+        $estimate_slug = ($this->contract && $this->contract->estimateone) ? $this->contract->estimateone->slug : null;
         return [
             'id'         => $this->id,
             'auth_code'  => $this->auth_code,
             'slug'       => $this->slug,
+            'estimate_number' => $estimate_slug,
             'issue_date' => $this->issue_date,
             'valid_until' => $this->valid_until,
             'event_date'       => $this->event_date,
             'note'       => $this->note,
             'terms'       => $this->terms,
             'status'       => $status,
-            'estimate_number'       => $this->estimate_number,
             'subtotal' => $subtotal,
             'total' => $total,
             'discount_total' => $discountAmount,
