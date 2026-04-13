@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class ContractModified extends Model
 {
     use SoftDeletes;
+    use CRUDGenerator;
 
     protected $table = 'contract_modified';
 
@@ -27,6 +28,7 @@ class ContractModified extends Model
             $model->created_by = Auth::id();
         });
     }
+
 
     public function items()
     {
@@ -57,4 +59,11 @@ class ContractModified extends Model
     {
         return $this->hasMany(ContractModifiedInstallment::class, 'contract_modified_id');
     }
+    
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+
 }
