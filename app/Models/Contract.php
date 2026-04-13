@@ -75,6 +75,11 @@ class Contract extends Model
         return $this->hasMany(Estimate::class, 'contract_id')->whereIn('status', ['approved', 'revised']);
     }
 
+    public function contractModified()
+    {
+        return $this->hasMany(ContractModified::class, 'contract_id')->where('status', '!=', 'pending');
+    }
+
     public function estimateone()
     {
         return $this->hasOne(Estimate::class, 'contract_id')->whereIn('status', ['approved', 'revised']);

@@ -10,7 +10,7 @@ class Contract extends JsonResource
 {
     public function toArray($request)
     {
-        // dd($this->items);
+        // dd($this->estimates);
         $subtotal = $this->items->sum(fn($item) => $item->total_price);
         // $taxTotal = $this->items->sum(fn($item) => 
         //     $item->itemTaxes->sum(fn($tax) => round($item->total_price * ($tax->percentage / 100), 2))
@@ -38,6 +38,22 @@ class Contract extends JsonResource
             'tax_total' => $taxTotal, 
             'signature' => $this->signature,
             'company' => $this->company,
+            'user_estimate' => ($this->estimates[0] ?? null) ? [
+                'slug' => $this->estimates[0]->slug,
+                'issue_date' => $this->estimates[0]->issue_date,
+                'valid_until' => $this->estimates[0]->valid_until,
+                'event_date' => $this->estimates[0]->event_date,
+
+            ] : null,
+
+            'contract_modified' => $this->contractModified->map(function ($contractModified) {
+                return [
+                    'id' => $contractModified->id,
+                    'slug' => $contractModified->slug,
+                    'status' => $contractModified->status,
+                    'created_at' => $contractModified->created_at,
+                ];
+            }),
 
             // Users
             'client' => new PublicUser($this->client),
