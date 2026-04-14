@@ -517,7 +517,7 @@ class Invoice extends Model
     }
 
 
-    public static function generateModifyInvoice($contractId, $request,$auth_code=null)
+    public static function generateModifyInvoice($contractId, $request,$auth_code=null) 
     {
         $ContractModified = ContractModified::with('items.itemTaxes', 'taxes', 'discounts','installments')->where('id', $request->contract_modified_id)->first();
         $contract = Contract::find($ContractModified->contract_id);

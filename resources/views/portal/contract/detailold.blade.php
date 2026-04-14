@@ -219,6 +219,7 @@
                         @endif
                     </tbody>
                 </table>
+                
 
                 @if (Auth::user()->user_type == 'company')
                     <div class="mt-3 text-end">

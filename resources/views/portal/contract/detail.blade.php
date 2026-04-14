@@ -1112,6 +1112,76 @@
 
                     </div>
                 </div>
+
+
+                 <!-- Linked Estimates -->
+                <div class="card">
+                    <div class="card-header">
+                        {{-- <i class="fas fa-file-invoice-dollar me-2"></i> --}}
+                        Modify Contracts
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Estimate #</th>
+                                        <th>Issue Date</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if ($record->contractModified && $record->contractModified->count())
+                                        @foreach ($record->contractModified as $modify)
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ route('contract.contract-modify-detail', $modify->slug) }}"
+                                                        class="btn btn-xs btn-info" target='blank'>
+                                                        <i class="fas fa-external-link-alt me-1 ss"></i>
+                                                        {{ strtoupper($modify->slug) }}
+                                                    </a>
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($modify->created_at)->format('F j, Y') }}
+                                                </td>
+                                                <td>
+                                                      @php
+                                                            $status = match ($modify->status) {
+                                                                'sent' => ['label' => 'Sent', 'color' => 'orange'],
+                                                                'accept_by_client', 'accept_by_company' => ['label' => 'Approved', 'color' => 'green'],
+                                                                'reject' => ['label' => 'Rejected', 'color' => 'red'],
+                                                                default => ['label' => 'Pending', 'color' => 'gray'],
+                                                            };
+                                                        @endphp
+                                                        <span class="estimate-number" style="color: {{ $status['color'] }};">{{ ucfirst($status['label']) }}</span>
+                                                </td>
+                                           @php
+                                            $subtotal = $modify->items->sum('total_price') ?: (float) ($modify->total ?? 0);
+                                            $taxes = $modify->taxes ?? collect(); // force collection
+                                            $taxAmount = $taxes->sum('amount');
+                                            $total = $subtotal + $taxAmount;
+                                        @endphp
+
+                                                <td class="fw-semibold">
+                                                    ${{ number_format($total, 2) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">
+                                                <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                                <em>No modify contracts linked to this contract.</em>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
                 <div class="card">
 
                     <div class="card-header">

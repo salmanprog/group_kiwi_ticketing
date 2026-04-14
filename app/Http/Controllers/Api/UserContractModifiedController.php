@@ -34,7 +34,7 @@ class UserContractModifiedController extends RestController
                 break;
             case 'PUT':
                 $validator = Validator::make($this->__request->all(), [
-                    'attribute'     => 'required',
+                    'status'     => 'required|in:approved,rejected',
                 ]);
                 break;
         }

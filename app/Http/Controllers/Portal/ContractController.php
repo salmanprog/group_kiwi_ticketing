@@ -11,6 +11,7 @@ use DB;
 use App\Services\ThirdPartyApiService;
 use App\Services\UserMailer;
 use App\Models\{ContractModified,ContractModifiedItem,ContractModifiedTax,ContractModifiedDiscount,ContractModifiedInstallment,UserHoldTickets};
+use App\Models\ActivityLog;
 
 
 class ContractController extends CRUDCrontroller
@@ -150,7 +151,8 @@ class ContractController extends CRUDCrontroller
                                     'invoices.creditNotes',
                                     'items',
                                     'taxes',
-                                    'estimates'
+                                    'estimates',
+                                    'contractModified'
                                 ])
                                 ->where('slug', $slug)
                                 ->first();
@@ -1063,16 +1065,24 @@ class ContractController extends CRUDCrontroller
         if(!$contract){
             return response()->json(['message' => 'Contract not found.'], 404);
         }
+ 
         $ContractModified = ContractModified::where('contract_id', $contract->id)->where('status','pending')->first();
         if(!$ContractModified){
             $ContractModifiedCount = ContractModified::where('contract_id', $contract->id)->count();
 
             $estimate = Estimate::where('contract_id', $contract->id)->first();
-            ContractModified::create([
+            $newContractModified = ContractModified::create([
                 'contract_id' => $contract->id,
                 'user_estimate_id' => $estimate->id,
                 'status' => 'pending',
                 'slug' => $slug . '-' . ($ContractModifiedCount+1),
+            ]);
+
+            ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $contract->id,
+                'description' => "Contract modify  $newContractModified->slug  created by " . auth()->user()->name,
+                'user_id' => auth()->user()->id,
             ]);
         }
 
@@ -1091,6 +1101,29 @@ class ContractController extends CRUDCrontroller
         $products = Product::where('auth_code',  Auth::user()->auth_code)->get();
         
         return view('portal.contract.modify-edit', compact('data','products','estimate','user_hold_tickets'));
+    }
+
+
+     public function getContractModifyDetailPage($slug)
+    {
+        $contract = ContractModified::where('slug', $slug)->first();
+        if(!$contract){
+            return redirect()->back()->with('error', "$slug".' Modify not found.');
+        }
+       
+        $estimate = Estimate::where('contract_id', $contract->contract_id)->first();
+        $data = ContractModified::with('items.itemTaxes','taxes','discounts','installments')
+                                ->where('slug', $slug)
+                                ->first();
+        $user_hold_tickets = UserHoldTickets::with(['user_hold_ticket_items' => function($query)use($data){
+                                            $query->where('modified_contract_id', $data->id);
+                                        }])
+                                            ->where('auth_code',  Auth::user()->auth_code)
+                                            ->where('estimate_id', $estimate->id)
+                                            ->first();
+        $products = Product::where('auth_code',  Auth::user()->auth_code)->get();
+        
+        return view('portal.contract.modify-view', compact('data','products','estimate','user_hold_tickets'));
     }
 
 
@@ -1751,12 +1784,25 @@ class ContractController extends CRUDCrontroller
         $ContractModified = ContractModified::where('id', $request->contract_modified_id)->first();
         $ContractModified->status = $status;
         $ContractModified->save();
-      
+       
         if($request->confirmed_with_client == '0') {
             $this->generateUpdateContract($ContractModified->contract_id, $request);
+            ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $ContractModified->contract_id,
+                'description' => "Contract modify  $ContractModified->slug  updated by " . auth()->user()->name,
+                'user_id' => auth()->user()->id,
+            ]);
             $message = "Modify has been update.";
+
         }else{
             //send to client email
+            ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $ContractModified->contract_id,
+                'description' => "Contract modify  $ContractModified->slug sent to client by " . auth()->user()->name,
+                'user_id' => auth()->user()->id,
+            ]);
             $message = "Contract Modification has been sent to client.";
         }
 

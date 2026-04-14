@@ -328,6 +328,7 @@ Route::get('media/ajax-listing', [MediaController::class, 'ajaxListing'])->name(
 Route::resource('media', MediaController::class);
 
 Route::get('/contract-modify/{slug}', [ContractController::class, 'getContractModifyPage'])->name('contract.contract-modify');
+Route::get('/contract-modify-detail/{slug}', [ContractController::class, 'getContractModifyDetailPage'])->name('contract.contract-modify-detail');
 Route::post('/contract/modify/add-product', [ContractController::class, 'modifyContractAddProducts'])->name('contract.modify.add-product');
 Route::post('/contract/modify/update-product', [ContractController::class, 'modifyContractUpdateProducts'])->name('contract.modify.update-product');
 Route::post('/contract/modify/delete-product', [ContractController::class, 'modifyContractDeleteProduct'])->name('contract.modify.delete-product');

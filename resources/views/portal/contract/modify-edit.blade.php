@@ -409,10 +409,10 @@
                                                         -- Choose Status --
                                                     </option>
                                                     <option value="0">
-                                                        ✔ Approved (No confirmation needed)
+                                                        ✔ Update Contract
                                                     </option>
                                                     <option value="1">
-                                                        ❌ Not yet confirmed with client
+                                                        ⏳ Sent for Approval
                                                     </option>
                                                 </select>
                                             </div>

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models\Hooks\Api;
+use App\Models\ContractModified;
+use App\Models\ActivityLog;
 
 class ContractModifiedHook
 {
@@ -74,8 +76,12 @@ class ContractModifiedHook
     |
     */
     public function hook_before_edit($request, $slug, &$postData)
-    {
-
+    {   
+        if($request->status == 'rejected'){
+          $postData['status'] = 'reject';
+        }else{
+          $postData['status'] = 'accept_by_client';
+        }
     }
 
     /*
@@ -87,7 +93,24 @@ class ContractModifiedHook
     |
     */
     public function hook_after_edit($request, $slug) {
-        //Your code here
+        if($request->status == 'rejected'){
+          $postData['status'] = 'reject';
+        }else{
+          $postData['status'] = 'accept_by_client';
+          $contractModified = ContractModified::where('slug', $slug)->first();
+          $data = [
+            'contract_modified_id' => $contractModified->id,
+            'contract_id' => $contractModified->contract_id
+          ];
+          ContractModified::updateModifyOrder($data);
+
+            ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $contractModified->contract_id,
+                'description' => "Contract modify {$contractModified->slug} accepted by client",
+                'user_id' => $request['user']->id,
+            ]);
+        }
     }
 
     /*
