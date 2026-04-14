@@ -88,8 +88,7 @@ class Contract extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'contract_id')
-            ->select('user_invoices.*')
-            ->orderby('user_invoices.created_at', 'desc');
+            ->select('user_invoices.*');
     }
 
     public function items()

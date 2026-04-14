@@ -378,6 +378,7 @@ class Auth0LoginController extends Controller
             $contractBody = file_get_contents(resource_path('views/email/contract_email.blade.php'));
             $ticketEmailSend = file_get_contents(resource_path('views/email/ticket_email_send.blade.php')); 
             $enableTicketEmailBody = file_get_contents(resource_path('views/email/enable_ticket_email.blade.php'));
+            $modifyEmailBody = file_get_contents(resource_path('views/email/modify_email.blade.php'));
 
             // Define all templates
             $defaultEmail = [
@@ -400,6 +401,11 @@ class Auth0LoginController extends Controller
                     'identifier' => 'enable_ticket_email',
                     'subject' => 'Enable Ticket',
                     'content' => $enableTicketEmailBody,
+                ],
+                [
+                    'identifier' => 'modify_email',
+                    'subject' => 'Modify Contract',
+                    'content' => $modifyEmailBody,
                 ],
             ];
 

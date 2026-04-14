@@ -1797,6 +1797,26 @@ class ContractController extends CRUDCrontroller
 
         }else{
             //send to client email
+            $companyName = Company::where('auth_code',Auth::user()->auth_code)->first();
+            $userContract = Contract::with('client')->where('id', $ContractModified->contract_id)->first();
+            $toEmails = $userContract->client->email;
+            $auth_code = Auth::user()->auth_code;
+            $templateIdentifier = 'modify_email';
+
+            $data = [
+                'username' => $userContract->client->username,
+                'company_name' => $companyName->name,
+                'contract_number' => $userContract->slug,
+                'contract_modify_number'=>$ContractModified->slug
+            ];
+            
+            
+            try {
+                UserMailer::sendTemplate($auth_code, $toEmails, $templateIdentifier, $data);
+            } catch (\Exception $e) {
+                return false;
+            }
+
             ActivityLog::create([
                 'module' => 'contract',
                 'module_id' => $ContractModified->contract_id,

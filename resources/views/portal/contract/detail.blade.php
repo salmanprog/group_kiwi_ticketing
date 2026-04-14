@@ -1255,7 +1255,7 @@
                                     @if ($record && $record->items->count())
                                         @foreach ($record->items as $item)
                                             <tr data-id="{{ $item->id }}">
-                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $item->name }} @if($item->is_modified != 0)   <span class="badge bg-warning">M</span> @endif</td>
                                                 <td>{{ $item->description ?? 'N/A' }}</td>
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>${{ number_format($item->price, 2) }}</td>

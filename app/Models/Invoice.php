@@ -593,6 +593,7 @@ class Invoice extends Model
                             'product_price' => $item->price,
                             'gratuity' => $item->gratuity ?? 0,
                             'accepted_by_client' => 1,
+                            'is_modified' => '1',
                             'invoice_id' => $invoice->id,
                             'product_id' => $item->product_id,
                         ]);
