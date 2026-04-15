@@ -109,10 +109,10 @@ class ThirdPartyApiService
                 'response_time' => $responseTime,
             ]);
 
-        if($response->json()['status']['errorCode'] !== 0) {
+        // if($response->json()['status']['errorCode'] !== 0) {
             $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
             $this->sendOrderFailedEmail($body, $response->json(),'Ticket Hold Failed', $companyName);
-        }
+        // }
 
         return $response;
 
@@ -386,7 +386,7 @@ class ThirdPartyApiService
    private function sendOrderFailedEmail(array $payload, array $response, string $errorMessage, string $companyName)
     {
         $adminEmail = [
-            'dev@ideaseat.com',
+            // 'dev@ideaseat.com',
             'ali@yopmail.com',
             'syedarhamkingdomvision@gmail.com'
         ];
