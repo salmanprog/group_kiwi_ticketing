@@ -413,13 +413,11 @@ class ThirdPartyApiService
                 'response' => $response,
             ];
 
-            $mail = Mail::mailer('user_smtp')->send('email.order_failed', $data, function ($message) use ($email, $errorMessage) {
+            Mail::mailer('user_smtp')->send('email.order_failed', $data, function ($message) use ($email, $errorMessage) {
                 $message->to($email)
                         ->subject($errorMessage)
                         ->from(env('SENDGRID_FROM'), env('SENDGRID_FROM_NAME'));
             });
-
-            dd($mail);
         }
      
     }
