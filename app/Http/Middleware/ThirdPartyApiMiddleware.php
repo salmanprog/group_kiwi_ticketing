@@ -58,7 +58,7 @@ class ThirdPartyApiMiddleware
                         'domain'      => env('THIRD_PARTY_DOMAIN_URL'),
                     ]));
                 // dd($response->json());
-                // dd($response->body());
+                dd($response->body());
                 // dd($platform['platformPages']);
                 if ($response->successful()) {
                     $data = json_decode($response->body(), true);
