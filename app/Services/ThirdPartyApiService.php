@@ -387,7 +387,7 @@ class ThirdPartyApiService
     {
         $adminEmail = [
             // 'dev@ideaseat.com',
-            'ali@yopmail.com',
+            'alihassanno@yopmail.com',
             'syedarhamkingdomvision@gmail.com'
         ];
          // Fallback → SendGrid
