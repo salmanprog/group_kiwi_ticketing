@@ -30,6 +30,7 @@ class UserOrderTickets extends Model
     protected $fillable = [
         'user_order_id',
         'estimate_id',
+        'modified_id',
         'visualId',
         'childVisualId',
         'parentVisualId',

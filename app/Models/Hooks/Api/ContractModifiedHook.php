@@ -3,14 +3,20 @@
 namespace App\Models\Hooks\Api;
 use App\Models\ContractModified;
 use App\Models\ActivityLog;
+use App\Models\Contract;
+use App\Models\UserHoldTickets;
+use App\Models\UserOrders;
+use App\Services\ThirdPartyApiService;
 
 class ContractModifiedHook
 {
     private $_model;
+    private $apiService;
 
-    public function __construct($model)
+    public function __construct($model, ThirdPartyApiService $apiService = NULL)
     {
         $this->_model = $model;
+        $this->apiService = $apiService ?: new ThirdPartyApiService();
     }
 
     /*
@@ -103,6 +109,20 @@ class ContractModifiedHook
             'contract_id' => $contractModified->contract_id
           ];
           ContractModified::updateModifyOrder($data);
+
+          $contract = Contract::find($contractModified->contract_id);
+        
+            $data =[
+                'contract_modify_id'=>$contractModified->id,
+                'authCode'=>$contract->auth_code,
+                'date'=>$contract->event_date,                    
+            ];
+            $payload = UserHoldTickets::updateOrderPayload($data);
+            $response = $this->apiService->updateOrder($payload);
+
+            if($response['tickets']){
+                UserOrders::updateStoreOrder($response['tickets'],$contractModified->id);
+            }
 
             ActivityLog::create([
                 'module' => 'contract',

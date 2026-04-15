@@ -11,7 +11,7 @@ use DB;
 use App\Services\ThirdPartyApiService;
 use App\Services\UserMailer;
 use App\Models\{ContractModified,ContractModifiedItem,ContractModifiedTax,ContractModifiedDiscount,ContractModifiedInstallment,UserHoldTickets};
-use App\Models\ActivityLog;
+use App\Models\{ActivityLog,UserOrders};
 
 
 class ContractController extends CRUDCrontroller
@@ -1876,13 +1876,17 @@ class ContractController extends CRUDCrontroller
                 }
 
 
-                // $data =[
-                //     'contract_modify_id'=>$ContractModified->id,
-                //     'authCode'=>$contract->auth_code,
-                //     'date'=>$contract->event_date,                    
-                // ];
-                // $payload = UserHoldTickets::updateOrderPayload($data);
-                // $this->apiService->updateOrder($payload);
+                $data =[
+                    'contract_modify_id'=>$ContractModified->id,
+                    'authCode'=>$contract->auth_code,
+                    'date'=>$contract->event_date,                    
+                ];
+                $payload = UserHoldTickets::updateOrderPayload($data);
+                $response = $this->apiService->updateOrder($payload);
+
+                if($response['tickets']){
+                    UserOrders::updateStoreOrder($response['tickets'],$ContractModified->id);
+                }
 
                 // dd($payload);
                  return response()->json([

@@ -109,10 +109,10 @@ class ThirdPartyApiService
                 'response_time' => $responseTime,
             ]);
 
-        // if($response->json()['status']['errorCode'] !== 0) {
+        if($response->json()['status']['errorCode'] !== 0) {
             $companyName = DB::table('company')->where('auth_code', $authCode)->value('name') ?? 'Unknown Company';
             $this->sendOrderFailedEmail($body, $response->json(),'Ticket Hold Failed', $companyName);
-        // }
+        }
 
         return $response;
 
@@ -429,12 +429,9 @@ class ThirdPartyApiService
         // dd(json_encode($data));
         $response = Http::acceptJson()
             ->contentType('application/json')
-            ->post($this->baseUrl . '/Pricing/UpdateOrder', $data);
-
-        dd($response->json());
+            ->post($this->baseUrl . '/Pricing/contract-based-group-order/upsert-tickets', $data);
 
         $responseTime = round((microtime(true) - $startTime) * 1000, 2);
-
         // Log activity
         ActivityActionLogger::log([
             'auth_code'    => $data['authCode'],
@@ -443,17 +440,15 @@ class ThirdPartyApiService
             'url'          => $this->baseUrl . 'Pricing/UpdateOrder',
             'payload'      => json_encode($data),
             'response'     => json_encode($response->json()),
-            'status'       => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+            'status'       => $response->json()['tickets'] ? 'success' : 'error',
             'status_code'  => $response->status(),
-            'error_message'=> $response->json()['status']['errorCode'] === 0 
-                                ? null 
-                                : $response->json()['status']['errorMessage'] ?? null,
+            'error_message'=> $response->json()['tickets'] ? null : $response->json(),
             'ip'           => request()->ip(),
             'response_time'=> $responseTime,
         ]);
 
-        if($response->json()['status']['errorCode'] !== 0) {
-            $companyName = DB::table('company')->where('auth_code', $data['AuthCode'])->value('name') ?? 'Unknown Company';
+        if(!$response->json()['tickets']) {
+            $companyName = DB::table('company')->where('auth_code', $data['authCode'])->value('name') ?? 'Unknown Company';
             $this->sendOrderFailedEmail($data, $response->json(),'Order Update Failed', $companyName);
         }
         

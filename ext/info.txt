@@ -192,7 +192,7 @@ ALTER TABLE `contract_taxes` ADD `amount` DECIMAL(10,3) NOT NULL AFTER `invoice_
 
 ALTER TABLE `user_hold_ticket_items` ADD `modified_contract_id` INT(11) NOT NULL DEFAULT '0' AFTER `user_hold_ticket_id`;
 
-
+ALTER TABLE `user_order_tickets` ADD `modified_id` INT(11) NOT NULL DEFAULT '0' AFTER `estimate_id`;
 
 
 

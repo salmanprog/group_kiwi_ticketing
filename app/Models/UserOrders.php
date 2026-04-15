@@ -140,4 +140,65 @@ class UserOrders extends Model
 
             return $recordList;
     }
+
+     public static function updateStoreOrder($data,$modify_id)
+    {
+        $modify = DB::table('contract_modified')->where('id', $modify_id)->first();    
+        if(!$modify){
+            return null;
+        }
+        $estimate = DB::table('user_estimate')->where('id', $modify->user_estimate_id)->first();
+        $contract = DB::table('contracts')->where('id', $modify->contract_id)->first();
+
+    
+            DB::transaction(function () use ($data, &$recordList,$estimate,$modify) {
+
+                $record = self::where('estimate_id', $estimate->id)->first();
+                if (!$record) {
+                    // $record = self::create([
+                    //     'estimate_id' => $estimate->id,
+                    //     'slug'        => self::generateUniqueSlug(uniqid()),
+                    //     'session_id'  => $data['sessionId'] ?? null,
+                    //     'order_number' => $estimate->slug,
+                    // ]);
+                }
+
+                $dataArr = [];
+                // dd($data);
+                if(isset($data) && is_array($data)) {
+                foreach ($data as $item) {
+
+                    $dataArr[] = [
+                        'user_order_id' => $record->id,
+                        'estimate_id' => $estimate->id,
+                        'modified_id' => $modify->id,
+                        'visualId' => $item['visualId'] ?? null,
+                        'childVisualId' => $item['childVisualId'] ?? null,
+                        'parentVisualId' => $item['parentVisualId'] ?? null,
+                        'ticketType' => $item['ticketType'] ?? null,
+                        'ticketSlug' => $item['ticketSlug'] ?? null,
+                        'description' => $item['description'] ?? null,
+                        'seat' => $item['seat'] ?? null,
+                        'price' => $item['price'] ?? null,
+                        'ticketDate' => $item['ticketDate'] ?? null,
+                        'ticketDisplayDate' => $item['ticketDisplayDate'] ?? null,
+                        'orderDate' => $item['orderDate'] ?? null,
+                        'orderDisplayDate' => $item['orderDisplayDate'] ?? null,
+                        'firstName' => $item['firstName'] ?? null,
+                        'lastName' => $item['lastName'] ?? null,
+                        'email' => $item['email'] ?? null,
+                        'phone' => $item['phone'] ?? null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                }
+
+                UserOrderTickets::insert($dataArr);
+
+                $recordList = self::with('userOrderTickets')->find($record->id);
+            });
+
+            return $recordList;
+    }
 }

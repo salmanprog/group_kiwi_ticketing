@@ -334,19 +334,9 @@ class UserHoldTickets extends Model
 
         $installment = \App\Models\InstallmentPlan::with('payments')->where('contract_modified_id', $data['contract_modify_id'])->first();
         $payload = [
-            "sessionId" => $session_id,
-            "previousOrderNumber" => $estimate->slug,
             "orderNumber" => $estimate->slug,
-            "transactionId" => "string",
             "authCode" => $data['authCode'],
-            "isterminalPayment" => true,
-            "posStaffIdentity" => "string",
-            "date" => $estimate->event_date,
-            "makeThisAddonsAsChild" => true,
-            "isPaymentThroughSubscriptionPlan" => 0,
-            "totalInstallments" => 0,
-            "installmentType" => "string",
-            "isModifyingExistingOrder" => 0,
+            "orderDateFor" => $estimate->event_date,
             "ticketChanges" => $ticketChanges,
             "payment" => [
                 "cardholerName" => "string",
@@ -363,7 +353,9 @@ class UserHoldTickets extends Model
                 "cvn" => "string",
                 "paymentMethodId" => "string"
             ],
-            "easyPayPlanContractSignature" => "string"
+            "payment" => [
+                "amount" => 0
+            ]
         ];
 
         return $payload;
