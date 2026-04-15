@@ -408,14 +408,14 @@ class ThirdPartyApiService
         foreach($adminEmail as $email) {
             $data = [
                 'company_name' => $companyName,
-                'error_message' => $errorMessage,
+                'error_message' => $errorMessage, 
                 'payload' => $payload,
                 'response' => $response,
             ];
 
-            Mail::mailer('user_smtp')->send('email.order_failed', $data, function ($message) use ($email) {
+            Mail::mailer('user_smtp')->send('email.order_failed', $data, function ($message) use ($email, $errorMessage) {
                 $message->to($email)
-                        ->subject('Order Creation Failed')
+                        ->subject($errorMessage)
                         ->from(env('SENDGRID_FROM'), env('SENDGRID_FROM_NAME'));
             });
         }
