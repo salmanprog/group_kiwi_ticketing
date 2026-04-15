@@ -51,12 +51,11 @@ class ContractHook
                         'organization',
                         'company',
                         'client', 
-                        'estimates.items.itemTaxes',   // nested: items -> itemTaxes
-                        'estimates.taxes',             // estimate -> taxes
-                        'estimates.discounts',          // estimate -> discounts
-                        'estimates.installments',      // estimate -> installments
+                        'items.itemTaxes',
+                        'estimates', 
                         'invoices.installmentPlan.payments',
                         'invoices.creditNotes',
+                        'contractModified'
                     ])
                     ->where('client_id',$request['user']->id)->where('is_accept','accepted');
     }

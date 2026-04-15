@@ -33,6 +33,8 @@ class InstallmentPlan extends Model
         'installment_count',
         'start_date',
         'status',
+        'contract_modified_id',
+        'module_type',
         'created_at',
         'updated_at',
         'estimate_id'

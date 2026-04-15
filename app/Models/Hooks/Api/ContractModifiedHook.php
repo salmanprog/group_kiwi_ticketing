@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Models\Hooks\Api;
+use App\Models\ContractModified;
+use App\Models\ActivityLog;
 
-class InvoiceHook
+class ContractModifiedHook
 {
     private $_model;
 
@@ -20,38 +22,24 @@ class InvoiceHook
    |
    */
     public function hook_query_index(&$query,$request, $slug=NULL) {
-        //Your code here
-
-           $query->with([
-                    'invoiceItems',
-                    'invoiceTax',
-                    'invoiceDiscount', 
-                    'company',
-                    'client',
-                    'installmentPlan.payments',
-                    'estimate' => function ($q) {
-                        $q->with([
-                            'items.itemTaxes',   
-                            'taxes',             
-                            'discounts',         
-                            'installments',      
-                            'organization' => function ($q2) {
-                                $q2->withTrashed(); 
-                            },
-                            'company',          
-                            'client',
-                        ]);
-                    },
-                    'modifiedContact' => function ($q) {
-                        $q->with([
-                            'items.itemTaxes',   
-                            'taxes',             
-                            'discounts',         
-                            'installments',
-                        ]);
-                    },
-                    ])->where('client_id',$request['user']->id);
-
+        //Your code here 
+        $query->select('contract_modified.*');
+        $query->join('contracts', 'contracts.id', '=', 'contract_modified.contract_id');
+        $query->with([
+            'createdBy',
+            'contract',
+            'items.itemTaxes',
+            'taxes',
+            'discounts',
+            'installments',
+            'contract.client',
+            'contract.company',
+            'contract.organization',
+            'contract.client',
+            'contract.estimateone'
+        ])
+        ->where('contract_modified.status', '!=', 'pending');
+        $query->where('contracts.client_id', $request['user']['id']);
     }
 
     /*
@@ -88,8 +76,12 @@ class InvoiceHook
     |
     */
     public function hook_before_edit($request, $slug, &$postData)
-    {
-
+    {   
+        if($request->status == 'rejected'){
+          $postData['status'] = 'reject';
+        }else{
+          $postData['status'] = 'accept_by_client';
+        }
     }
 
     /*
@@ -101,7 +93,24 @@ class InvoiceHook
     |
     */
     public function hook_after_edit($request, $slug) {
-        //Your code here
+        if($request->status == 'rejected'){
+          $postData['status'] = 'reject';
+        }else{
+          $postData['status'] = 'accept_by_client';
+          $contractModified = ContractModified::where('slug', $slug)->first();
+          $data = [
+            'contract_modified_id' => $contractModified->id,
+            'contract_id' => $contractModified->contract_id
+          ];
+          ContractModified::updateModifyOrder($data);
+
+            ActivityLog::create([
+                'module' => 'contract',
+                'module_id' => $contractModified->contract_id,
+                'description' => "Contract modify {$contractModified->slug} accepted by client",
+                'user_id' => $request['user']->id,
+            ]);
+        }
     }
 
     /*
@@ -132,6 +141,6 @@ class InvoiceHook
     public function create_cache_signature($request)
     {
         $cache_params = $request->except(['user','api_token']);
-        return 'FaqHook' . md5(implode('',$cache_params));
+        return 'ContractModifiedHook' . md5(implode('',$cache_params));
     }
 }

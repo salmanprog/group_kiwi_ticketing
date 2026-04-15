@@ -417,6 +417,7 @@ $(document).on('click', '.remove-item', function(){
             if(res.status){
                 $('#productTable tbody tr[data-id="'+itemId+'"]').remove();
                 updateTotals();
+                window.location.reload();
                 showModalMessage($('#productModal'), res.message, 'success');
             } else {
                 showModalMessage($('#productModal'), 'Unable to delete item', 'danger');

@@ -40,6 +40,7 @@ class InstallmentPayment extends Model
         'estimate_id',
         'contract_id',
         'payment_type',
+        'contract_modified_id',
         'notes',
         'transaction_id'
     ];

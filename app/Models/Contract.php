@@ -75,12 +75,20 @@ class Contract extends Model
         return $this->hasMany(Estimate::class, 'contract_id')->whereIn('status', ['approved', 'revised']);
     }
 
+    public function contractModified()
+    {
+        return $this->hasMany(ContractModified::class, 'contract_id')->where('status', '!=', 'pending');
+    }
+
+    public function estimateone()
+    {
+        return $this->hasOne(Estimate::class, 'contract_id')->whereIn('status', ['approved', 'revised']);
+    }
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'contract_id')
-            ->join('user_estimate as estimates', 'estimates.id', '=', 'user_invoices.estimate_id')
-            ->select('user_invoices.*', 'estimates.slug as estimate_slug')
-            ->orderby('user_invoices.created_at', 'desc');
+            ->select('user_invoices.*');
     }
 
     public function items()
@@ -92,5 +100,6 @@ class Contract extends Model
     {
         return $this->hasMany(ContractTaxes::class, 'contract_id');
     }
+
     
 }

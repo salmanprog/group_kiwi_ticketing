@@ -324,5 +324,23 @@ Route::get('/estimate/hold-dates/{id}', [EstimateController::class,'getEstimateD
 Route::post('/update-expiry-date', [EstimateController::class, 'updateExpiryDate'])->name('update-expiry-date');
 Route::post('/print-ticket', [ContractController::class, 'printTicket'])->name('contract.print-tickets');
 
-Route::get('media/ajax-listing', [MediaController::class, 'ajaxListing'])->name('media.ajax-listing');
+Route::get('media/ajax-listing', [MediaController::class, 'ajaxListing'])->name('media.ajax-listing'); 
 Route::resource('media', MediaController::class);
+
+Route::get('/contract-modify/{slug}', [ContractController::class, 'getContractModifyPage'])->name('contract.contract-modify');
+Route::get('/contract-modify-detail/{slug}', [ContractController::class, 'getContractModifyDetailPage'])->name('contract.contract-modify-detail');
+Route::post('/contract/modify/add-product', [ContractController::class, 'modifyContractAddProducts'])->name('contract.modify.add-product');
+Route::post('/contract/modify/update-product', [ContractController::class, 'modifyContractUpdateProducts'])->name('contract.modify.update-product');
+Route::post('/contract/modify/delete-product', [ContractController::class, 'modifyContractDeleteProduct'])->name('contract.modify.delete-product');
+Route::get('/contract/modify-products/get', [ContractController::class, 'getContractModifyProducts'])->name('contract.modify.products.get');
+Route::post('/contract/modify/add-tax', [ContractController::class, 'modifyContractAddTax'])->name('contract.modify.add-tax');
+Route::delete('/contract-tax/{tax}', [ContractController::class, 'deleteTax'])->name('contract.modify.tax-delete');
+Route::get('/get-contract-tax/get-item', [ContractController::class, 'editGetItem'])->name('contract.tax.get');
+Route::post('/contract-tax/update', [ContractController::class, 'productModifyTaxUpdate'])->name('contract.modify.tax.update');
+Route::post('/contract-product-discount/add', [ContractController::class, 'productDiscountAdd'])->name('contract.modify.product.discount.add');
+Route::get('/contract-get-product-discount/get-item', [ContractController::class, 'getItem'])->name('contract.modify.product.discount.get');
+Route::post('/contract-get-product-discount/update',[ContractController::class, 'updateDiscount'])->name('contract.modify.product.discount.update');
+Route::delete('/contract-get-product-discount/{id}/delete',[ContractController::class, 'deleteDiscount'])->name('contract.modify.product.discount.delete');
+Route::post('/contract-installment/{contract}/payment-save', [ContractController::class, 'savePaymentSchedule'])->name('contract.installments.save');
+Route::post('/contract-send-to-client', [ContractController::class, 'sendToClient'])->name('contract.send.to.client');
+Route::post('/contract-products/update-description', [ContractController::class, 'updateItemDescription'])->name('contract.products.update-description');

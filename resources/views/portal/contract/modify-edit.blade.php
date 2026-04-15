@@ -12,15 +12,11 @@
     border-radius: 6px;
 }
 
-.editable-description {
+.modify-editable-description {
     cursor: pointer;
 }
-.editable-description:hover {
+.modify-editable-description:hover {
     background: #f8f9fa;
-}
-
-td.editable-description {
-    width: 350px;
 }
 
 .spinner {
@@ -48,7 +44,7 @@ td.editable-description {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.editable-description.loading {
+.modify-editable-description.loading {
     opacity: 0.6;
     pointer-events: none;
 }
@@ -66,205 +62,14 @@ td.editable-description {
             {{-- Header --}}
             <div class="estimate-header">
                 <div class="estimate-title">
-                    <i class="fas fa-file-invoice-dollar me-2"></i>Estimate
+                    <i class="fas fa-file-invoice-dollar me-2"></i>Modify Contract
                 </div>
-                @if ($record->organization_deleted_at)
-                    <div class="deleted-alert">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Deleted:</strong> Organization has been deleted.
-                    </div>
-                @endif
-
+              
                 <div class="estimate-meta">
-                    <span class="estimate-number">#{{ ucfirst($record->slug) }}</span>
-                    @switch($record->status)
-                        @case('draft')
-                            <span class="status draft">
-                                <i class="fas fa-edit me-1"></i> Draft
-                            </span>
-                        @break
-
-                        @case('sent')
-                            @if ($estimate->status == 'sent' && \Carbon\Carbon::now() > $estimate->valid_until)
-                                <span class="status expired">
-                                    <i class="fas fa-exclamation-triangle me-1"></i> Expired
-                                </span>
-                            @else
-                                <span class="status sent">
-                                    <i class="fas fa-paper-plane me-1"></i> Sent
-                                </span>
-                            @endif
-                        @break
-
-                        @case('approved')
-                            <span class="status approved">
-                                <i class="fas fa-check-circle me-1"></i> Approved
-                            </span>
-                        @break
-
-                        @case('rejected')
-                            <span class="status rejected">
-                                <i class="fas fa-times-circle me-1"></i> Rejected
-                            </span>
-                        @break
-
-                        @case('revised')
-                            <span class="status revised">
-                                <i class="fas fa-redo me-1"></i> Revised
-                            </span>
-                        @break
-                    @endswitch
+                    <span class="estimate-number">#{{ ucfirst($data->slug) }}</span>
                 </div>
             </div>
-            {{-- Address Section --}}
-            <div class="address-section">
-                <div class="address-box">
-                    <h4><i class="fas fa-building me-2"></i> From</h4>
-                    <p>
-                        <strong>{{ $record->company->name }}</strong><br>
-                        <strong>Email:</strong> {{ $record->company->email }}
-                        <br>
-                        <strong>Phone:</strong> {{ $record->company->mobile_no }}
-                        @if($record->company->address || $record->company->address_2)
-                            <br>
-                            <strong>Address:</strong>
-                        @endif
-
-                        @if($record->company->address)
-                            {{ $record->company->address }}<br>
-                        @endif
-
-                        @if($record->company->address_2)
-                            {{ $record->company->address_2 }}<br>
-                        @endif
-
-                        @if($record->company->city || $record->company->state || $record->company->zip)
-                            {{ $record->company->city }}
-                            @if($record->company->state), {{ $record->company->state }}@endif
-                            @if($record->company->zip) {{ $record->company->zip }}@endif
-                            <br>
-                        @endif
-
-                        @if($record->company->country)
-                            {{ $record->company->country }}
-                        @endif
-                    </p>
-                </div>
-                <div class="address-box">
-                    <h4><i class="fas fa-user me-2"></i> Invoice To</h4>
-                    <p>
-                        <strong>{{ $record->organization_name }}</strong><br>
-                         <!-- Account Name: {{ ($invoice_user->name) ? $invoice_user->name : 'N/A' }} -->
-                        <!-- <br> -->
-                        <!-- {{-- <strong>Email:</strong> --}}
-                        {{ ($invoice_user->email) ? $invoice_user->email : 'N/A' }}
-                        <br>
-                        {{-- <strong>Phone:</strong> --}}
-                         {{ ($invoice_user->phone) ? $invoice_user->phone : 'Not available' }}
-                        <br>
-                        {{-- <strong>Address:</strong>  --}}
-                        {{ $record->organization_address_one }}
-                           <br> -->
-
-                        @if($estimate_user->first_name)
-                        <strong>Name:</strong> {{ ($estimate_user->first_name) ? $estimate_user->first_name . ' ' . ($estimate_user->last_name ?? '') : 'N/A' }}
-                        <br>
-                        @endif
-                        @if($estimate_user->email)
-                        <strong>Email:</strong> {{ ($estimate_user->email) ? $estimate_user->email : 'N/A' }}
-                        <br>
-                        @endif
-                        @if($estimate_user->mobile_no)
-                        <strong>Phone:</strong> {{ ($estimate_user->mobile_no) ? $estimate_user->mobile_no : 'N/A' }}
-                        <br>
-                        @endif
-                        @if($record->organization->address_one)
-                        <strong>Address:</strong> {{ ($record->organization->address_one) ? $record->organization->address_one : 'N/A' }}
-                        <br>
-                        @endif
-                         @if($record->organization->city || $record->organization->state || $record->organization->zip)
-                            {{ $record->organization->city }}
-                            @if($record->organization->state), {{ $record->organization->state }}@endif
-                            @if($record->organization->zip) {{ $record->organization->zip }}@endif
-                            <br>
-                        @endif
-
-                        @if($record->organization->country)
-                            {{ $record->organization->country }}
-                        @endif
-                    </p>
-                </div>
-            </div>
-
-                    {{-- Estimate Start --}}
-                    <div class="form-section">
-                        
-                                                    <div class="form-row">
-                                @if ($record->contract_id == null)
-                                    <div class="form-group">
-                                        <label for="client_id">Client</label>
-                                        <select name="client_id" id="client_id" class="form-control select2">
-                                            <option value="">-- Select Client --</option>
-                                            @foreach ($clients as $client)
-                                                <option value="{{ $client->client_id }}"
-                                                    {{ $record->client_id == $client->client_id ? 'selected' : '' }}>
-                                                    {{ $client->first_name }} {{ $client->last_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="print-value">
-                                            <strong>Client:</strong>
-                                            {{ optional($clients->firstWhere('id', $record->client_id))->first_name ?? '' }}
-                                            {{ optional($clients->firstWhere('id', $record->client_id))->last_name ?? '' }}
-                                        </div>
-                                    </div>
-                                @else
-                                    <input type="hidden" name="client_id" value="{{ $record->client_id }}">
-                                @endif
-
-                                <div class="form-group">
-                                    <label for="estimate_date">Estimate Date</label>
-                                    <input required type="date" name="estimate_date" class="form-control"
-                                        value="{{ $record->issue_date }}">
-                                    <div class="print-value">
-                                        <strong>Estimate Date:</strong>
-                                        {{ \Carbon\Carbon::parse($record->issue_date)->format('F j, Y') }}
-                                    </div>
-                                </div>
-                                @if ($record->contract_id == null)
-                                    <div class="form-group">
-                                        <label for="event_date">Event Date</label>
-                                        <input required type="date" name="event_date" class="form-control"
-                                            value="{{ $record->event_date }}">
-                                        <div class="print-value">
-                                            <strong>Event Date:</strong>
-                                            {{ \Carbon\Carbon::parse($record->event_date)->format('F j, Y') }}
-                                        </div>
-                                    </div>
-                                @endif
-                                <div class="form-group">
-                                    <label for="expiration_date">Expiry Date</label>
-                                   <input 
-                                        required 
-                                        type="date" 
-                                        id="expiration_date" 
-                                        name="expiration_date" 
-                                        class="form-control"
-                                        data-id="{{ $record->slug }}"
-                                        value="{{ $record->valid_until }}" 
-                                        min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                                    >
-
-                                    <div class="print-value">
-                                        <strong>Expiry Date:</strong>
-                                        <span id="expiry_text">
-                                            {{ \Carbon\Carbon::parse($record->valid_until)->format('F j, Y') }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                                                        {{-- Product Table --}}
+        
                             <div class="form-row mt-4">
                                 <div class="col-12">
                                     <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
@@ -283,8 +88,8 @@ td.editable-description {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @if($estimate && $estimate->items->count())
-                                                    @foreach($estimate->items as $item)
+                                                @if($data->items && $data->items->count())
+                                                    @foreach($data->items as $item)
                                                         <tr data-id="{{ $item->id }}">
                                                             <td>
                                                                 {{ $item->name }}
@@ -302,9 +107,9 @@ td.editable-description {
                                                                 @endif
                                                             </td>
                                                             <!-- <td>{{ $item->description }}</td> -->
-                                                             <td class="editable-description" 
+                                                             <td class="modify-editable-description" 
                                                                 data-id="{{ $item->id }}"
-                                                                data-url="{{ route('estimate.products.update-description') }}"
+                                                                data-url="{{ route('contract.products.update-description') }}"
                                                                 data-csrf="{{ csrf_token() }}">
                                                                 
                                                                 <span class="desc-text">{{ $item->description }}</span>
@@ -314,9 +119,9 @@ td.editable-description {
                                                             <td class="item-total">${{ number_format($item->total_price, 2) }}</td>
                                                             <td class="no-print">
                                                                 <span class="f-line for-d-g">
-                                                                    <button class="btn btn-sm btn-primary edit-item foest-edit"
+                                                                    <button class="btn btn-sm btn-primary edit-item-modify foest-edit"
                                                                             data-url="{{ route('estimate.products.update') }}"
-                                                                            data-estimateid="{{ $estimate->id }}"
+                                                                            data-contractmodifiedid="{{ $data->id }}"
                                                                             data-csrf="{{ csrf_token() }}"
                                                                             data-id="{{ $item->id }}"
                                                                             data-name="{{ $item->name }}"
@@ -336,10 +141,10 @@ td.editable-description {
                                                                             </svg>
                                                                         </a>
                                                                     </button>
-                                                                    <button class="btn btn-sm btn-danger remove-item cust-btn-delete"
-                                                                            data-url="{{ route('estimate.products.delete') }}"
+                                                                    <button class="btn btn-sm btn-danger remove-modify-item cust-btn-delete"
+                                                                            data-url="{{ route('contract.modify.delete-product') }}"
                                                                             data-id="{{ $item->id }}"
-                                                                            data-estimateid="{{ $estimate->id }}"
+                                                                            data-contractmodifiedid="{{ $data->id }}"
                                                                             data-csrf="{{ csrf_token() }}">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="12"
                                                                             height="12" viewBox="0 0 24 24" fill="none"
@@ -371,11 +176,11 @@ td.editable-description {
                                                     {{-- <th></th> --}}
                                                 </tr>
 
-                                                @if($estimate && $estimate->taxes->count())
+                                                @if($data && $data->taxes->count())
                                                 <tr>
                                                     <th colspan="4" class="text-end">Tax:
                                                         <div class="d-flex flex-wrap gap-2 justify-content-end">
-                                                            @foreach($estimate->taxes as $tax)
+                                                            @foreach($data->taxes as $tax)
                                                                 <div class="border rounded px-2 py-1 d-flex align-items-center gap-1"
                                                                     data-tax-id="{{ $tax->id }}">
 
@@ -389,12 +194,12 @@ td.editable-description {
 
                                                                     <button class="btn btn-sm btn-link text-primary edit-tax"
                                                                             data-tax-id="{{ $tax->id }}"
-                                                                            data-url="{{ route('estimate.tax.get') }}"
+                                                                            data-url="{{ route('contract.tax.get') }}"
                                                                             data-update-url="dsfsdf"
                                                                             data-csrf="{{ csrf_token() }}"
-                                                                            data-estimateid="{{ $estimate->id }}"
+                                                                            data-contractmodifiedid="{{ $data->id }}"
                                                                             data-toggle="modal"
-                                                                            data-target="#editTaxModal">
+                                                                            data-target="#editTaxModifyModal">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -406,8 +211,8 @@ td.editable-description {
                                                                         </svg>
                                                                     </button>
 
-                                                                    <button class="btn btn-sm btn-link text-danger p-0 modify-delete-tax"
-                                                                            data-url="{{ route('estimate.tax.delete', $tax->id) }}"
+                                                                    <button class="btn btn-sm btn-link text-danger p-0 delete-tax"
+                                                                            data-url="{{ route('contract.modify.tax-delete', $tax->id) }}"
                                                                             data-csrf="{{ csrf_token() }}">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="12"
                                                                             height="12" viewBox="0 0 24 24" fill="none"
@@ -426,18 +231,18 @@ td.editable-description {
                                                             @endforeach
                                                         </div>
                                                     </th>
-                                                    <th id="tax_amount">${{ number_format($estimate->taxes->sum('amount'), 2) }}</th>
+                                                    <th id="tax_amount">${{ number_format($data->taxes->sum('amount'), 2) }}</th>
                                                     {{-- <th></th> --}}
                                                 </tr>
                                                 @endif
-                                               @if($estimate && $estimate->discounts->count())
+                                               @if($data->discounts && $data->discounts->count())
                                                 <tr class="fw-bold discount-row">
-                                                    @foreach($estimate->discounts as $discount)
+                                                    @foreach($data->discounts as $discount)
                                                         <th colspan="3" class="text-end">
                                                             <span class="dist-all">
                                                                 Discount {{ $discount->name }}
-                                                                <button class="btn btn-sm btn-link text-danger p-0 delete-discount"
-                                                                        data-url="{{ route('estimate.product.discount.delete', $discount->id) }}"
+                                                                <button class="btn btn-sm btn-link text-danger p-0 delete-modify-discount"
+                                                                        data-url="{{ route('contract.modify.product.discount.delete', $discount->id) }}"
                                                                         data-csrf="{{ csrf_token() }}">
                                                                     <i class="fas fa-trash"></i>
                                                                 </button>
@@ -458,33 +263,28 @@ td.editable-description {
                                             </tfoot>
 
                                         </table>
-
-
-
+                                        
                                     </div>
                                     <div class="action-buttons">
-                                        <!-- <button type="button" class="btn btn-success btn-sm no-print" onclick="addRow()">
-                                            <i class="fas fa-plus me-1"></i>Add Field
-                                        </button> -->
                                         <button type="button" class="btn btn-primary btn-sm no-print"
                                             data-toggle="modal" data-target="#productModal">
                                             <i class="fas fa-cube me-1"></i>Add Product
                                         </button>
                                         <button class="btn btn-info btn-sm no-print"
                                                 data-toggle="modal"
-                                                data-target="#taxModal"
-                                                data-url="{{ route('estimate.products.get') }}"
+                                                data-target="#taxModifyModal"
+                                                data-url="{{ route('contract.modify.products.get') }}"
                                                 data-csrf="{{ csrf_token() }}"
-                                                data-estimateid="{{ $estimate->id }}">
+                                                data-contractmodifiedid="{{ $data->id }}">
                                             <i class="fas fa-percentage me-1"></i>Add Tax
                                         </button>
-                                        @if($estimate && $estimate->discounts->count())
-                                            @foreach($estimate->discounts as $discounts)
+                                        @if($data && $data->discounts->count())
+                                            @foreach($data->discounts as $discounts)
                                                 <button type="button" class="btn btn-warning btn-sm no-print"
-                                                    data-toggle="modal" data-target="#editdiscountModal"
-                                                    data-url="{{ route('estimate.product.discount.get') }}"
+                                                    data-toggle="modal" data-target="#editmodifydiscountModal"
+                                                    data-url="{{ route('contract.modify.product.discount.get') }}"
                                                     data-csrf="{{ csrf_token() }}"
-                                                    data-estimateid="{{ $estimate->id }}"
+                                                    data-contractmodifiedid="{{ $data->id }}"
                                                     data-discountid="{{ $discounts->id }}"
                                                 >
                                                     <i class="fas fa-tag me-1"></i>Edit Discount
@@ -492,24 +292,25 @@ td.editable-description {
                                             @endforeach
                                         @else
                                         <button type="button" class="btn btn-warning btn-sm no-print"
-                                            data-toggle="modal" data-target="#discountModal">
+                                            data-toggle="modal" data-target="#discountModifyModal">
                                             <i class="fas fa-tag me-1"></i>Add Discount
                                         </button>
                                         @endif
                                     </div>
                                 </div>
                             </div>
+                                        
                             <div class="row">
                                 <div class="col-md-12">
                                     <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
                                         Payment Schdule
                                     </h5>
-                                    <form id="paymentScheduleFormEdit" method="POST" action="{{ route('estimate.installments.save', $estimate->id) }}">
+                                    <form id="paymentScheduleFormEdit" method="POST" action="{{ route('contract.installments.save', $data->id) }}">
                                         <div class="sec-css">
                                         @csrf
-                                        <input type="hidden" name="total_amount" id="total_amount" value="{{ $estimate->total_amount }}">
+                                        <input type="hidden" name="total_amount" id="total_amount" value="{{ $data->total_amount }}">
                                         @php
-                                        $installments = $estimate->installments ?? collect();
+                                        $installments = $data->installments ?? collect();
                                         @endphp
 
                                         <div id="dynamicInputsContainer">
@@ -562,7 +363,7 @@ td.editable-description {
                                         <div class="d-flex justify-content-between">
                                             <strong>Remaining Total:</strong>
                                             <span id="remainingTotal">$1,000.00</span>
-                                            <input type="hidden" name="remaining_total" id="remaining_total" value="{{ $estimate->total_amount }}">
+                                            <input type="hidden" name="remaining_total" id="remaining_total" value="{{ $data->total_amount }}">
                                         </div>
                                     </div>
                                         <button type="submit" id="savePaymentScheduleBtn" class="btn btn-warning btn-sm no-print">
@@ -580,117 +381,146 @@ td.editable-description {
 
                             <div class="form-row mt-4">
                                 <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Note
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea id="estimate_note" name="note" class="form-control editor" rows="4">{{ $estimate->note }}</textarea>
-                                        <div class="print-value">
-                                            <strong>Note:</strong>
-                                            {!! $estimate->note !!}
-                                        </div>
-                                        <button type="button"
-                                                class="btn btn-warning btn-sm no-print save-note"
-                                                data-url="{{ route('estimate.note.save') }}"
-                                                data-csrf="{{ csrf_token() }}"
-                                                data-estimateid="{{ $estimate->id }}">
-                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Note</span>
-                                            <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
-                                        </button>
-
-                                        <!-- <div id="formMessage" class="mt-2" style="display:none;"></div> -->
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-row mt-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3" style="color: #1f2937;font-size: 18px;">
-                                        Terms & Conditions
-                                    </h5>
-                                    <div class="forref">
-                                        <textarea id="terms_and_condition" name="terms_and_condition" class="form-control editor" rows="4" placeholder="Enter terms and conditions">
-                                            {!! $estimate->terms ?? ($default_terms_and_condition->content ?? '') !!}</textarea>
-                                        
-                                        <button type="button"
-                                                class="btn btn-warning btn-sm no-print save-note"
-                                                data-url="{{ route('estimate.note.save') }}"
-                                                data-csrf="{{ csrf_token() }}"
-                                                data-estimateid="{{ $estimate->id }}">
-                                            <span class="btn-note-text"><i class="fas fa-save me-1"></i> Save Terms and Conditions</span>
-                                            <span class="btn-note-loading" style="display:none;"><span class="schedule-spinner"></span> Saving…</span>
-                                        </button>
-                                        <div class="print-value mt-3">
-                                            <strong>Terms & Conditions (Preview):</strong>
-                                            <div class="preview-content">
-                                                @if (!empty($estimate->terms_and_condition))
-                                                    {!! $estimate->terms_and_condition !!}
-                                                @else
-                                                    {!! $default_terms_and_condition->content ?? '' !!}
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                                                        {{-- Action Buttons --}}
-                            <div class="form-row mt-4">
-                                <div class="col-12">
                                     <div id="installmentValidationError"
                                         class="text-danger mt-2"
                                         style="display:none;">
                                         Please schedule a payment first.
                                     </div>
-
-                                    <div class="action-buttons">
-                                        @if ($estimate->status != 'approved')
-                                            <!-- <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-save me-1"></i>Save
-                                            </button> -->
-                                        @endif
-
-                                        @if ($estimate->status == 'approved')
-                                            <input type="hidden" name="adjust" value="1">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-edit me-1"></i>Adjust
-                                            </button>
-                                        @endif
-
-                                        @if ($estimate->status != 'approved')
-                                            <input type="hidden" name="mail_send" value="1">
-                                            <button type="button"
-                                                class="btn btn-success send-to-client"
-                                                data-url="{{ route('estimates.send.to.client', ['estimate' => $estimate->slug]) }}"
-                                                data-csrf="{{ csrf_token() }}"
-                                                data-estimateid="{{ $estimate->id }}"
-                                                data-slug="{{ $estimate->slug }}"
-                                                data-slug="{{ $estimate->status }}">
-                                            Send to Client
-                                            </button>
-                                            <!-- <button type="button" class="btn btn-success" onclick="submitSentForm()">
-                                                    <i class="fas fa-paper-plane me-1"></i>Send
-                                                </button> -->
-                                        @endif
-                                        <!-- <button type="button" class="btn btn-outline-secondary no-print cust-bd"
-                                            onclick="window.print()">
-                                            <i class="fas fa-print me-1"></i>Print
-                                        </button> -->
-                                    </div>
                                 </div>
                             </div>
 
-                            {{-- Hidden form for Send action --}}
-                        @if ($record->status != 'approved')
-                            <form id="sentForm" method="POST" action="{{ route('estimate.save') }}"
-                                style="display: none;">
-                                @csrf
-                                <input type="hidden" name="slug" value="{{ $record->slug }}">
-                            </form>
-                        @endif
-                    </div>
-                            
+                          <div class="row">
+                                <div class="col-md-12">
+                                    
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
 
+                                            <h5 class="section-title">
+                                                Client Confirmation Status
+                                            </h5>
+
+                                            <div class="form-group-custom">
+                                                <label for="clientConfirmation">
+                                                    Select Confirmation Status
+                                                </label>
+
+                                                <select id="clientConfirmation" name="confirmed_with_client" class="form-control custom-select" required>
+                                                    <option value="" disabled selected>
+                                                        -- Choose Status --
+                                                    </option>
+                                                    <option value="0">
+                                                        ✔ Update Contract
+                                                    </option>
+                                                    <option value="1">
+                                                        ⏳ Sent for Approval
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="card-body">
+                        <!-- Top Section -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h5>Ticket Information</h5>
+                                <span class="section-badge">Read Only</span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Estimate
+                                            <span class="required">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" name="estimate_slug" 
+                                            value="{{ $estimate->slug }}" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Hold Date
+                                            <span class="required">*</span>
+                                        </label>
+                                        <input type="date" class="form-control" name="hold_date" 
+                                            value="{{ $estimate->hold_date }}" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            Expiry Date
+                                            <span class="required">*</span>
+                                        </label>
+                                        <input type="date" class="form-control" name="expiry_date" 
+                                            value="{{ $estimate->expiry_date }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected Products Table -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <h5>Product Details</h5>
+                                <span class="section-badge">Manage Products</span>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="selectedProductsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th width="120">Quantity / Seats</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if($user_hold_tickets->user_hold_ticket_items->isEmpty())
+                                            <tr class="no-record">
+                                                <td colspan="2" class="text-center">No record found</td>
+                                            </tr>
+                                        @else
+                                            @foreach($user_hold_tickets->user_hold_ticket_items as $p)
+                                                <tr data-product-id="{{ $p->id }}">
+                                                    <td>{{ $p->name }}</td>
+                                                    <td>{{ $p->quantity }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="form-actions" style="margin-top: 20px; justify-content: flex-start;">
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#producHoldtModal">
+                                    Add Hold Product
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                              <button id="sendToClientBtn" type="button"
+                                                class="btn btn-success"
+                                                data-url="{{ route('contract.send.to.client') }}"
+                                                data-csrf="{{ csrf_token() }}"
+                                                data-contractModifyId="{{ $data->id }}"
+                                                data-slug="{{ $data->slug }}"
+                                                data-estimate_id="{{ $user_hold_tickets->estimate_id}}"
+                                                data-confirmed_with_client=""
+                                                disabled>
+                                            Update
+                                            </button>
+                       </div>
                     </div>
                    
                 </div>
@@ -754,12 +584,12 @@ td.editable-description {
                     <div class="modal-footer">
                         <div id="modalAlert" class="alert d-none w-100 mb-2" role="alert"></div>
                         <button class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
-                        <button id="addProductsBtn" class="btn btn-primary btn-sm"
-                            data-url="{{ route('estimate.products.add') }}"
-                            data-estimateid="{{ $estimate->id }}" 
+                        <button id="addProductsModifyBtn" class="btn btn-primary btn-sm"
+                            data-url="{{ route('contract.modify.add-product') }}"
+                            data-contractmodifiedid="{{ $data->id }}" 
                             data-csrf="{{ csrf_token() }}">
                         <i class="fas fa-plus me-1"></i> Add Selected
-                        </button>
+                        </button> 
                     </div>
 
                 </div>
@@ -768,9 +598,9 @@ td.editable-description {
 
         {{-- Edit Product Modals --}}
 
-        <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade" id="editProductModifyModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
-                <form id="editProductForm">
+                <form id="editProductModifyForm">
                     @csrf
                     <input type="hidden" name="item_id">
                     <div class="modal-content">
@@ -806,8 +636,68 @@ td.editable-description {
             </div>
         </div>
 
+        <div class="modal fade" id="producHoldtModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Products</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body modal-body-scroll">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="50">Select</th>
+                                    <th>Product Name</th>
+                                    <th width="120">Quantity</th>
+                                    <th width="100">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($products as $product)
+                                    <tr>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="modify-product-checkbox">
+                                        </td>
+                                        <td>{{ $product->name }}</td>
+                                        <td>
+                                            <input type="number" class="form-control form-control-sm product-qty" min="1" value="1" style="width: 100px;">
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-secondary btn-sm hold-btn"
+                                                    disabled
+                                                    data-user_hold_ticket_id="{{ $user_hold_tickets->id }}"
+                                                    data-product-id="{{ $product->id }}"
+                                                    data-product-slug="{{ $product->slug }}"
+                                                    data-estimate-id="{{ $user_hold_tickets->estimate_id }}"
+                                                    data-hold-date="{{ $user_hold_tickets->hold_date }}"
+                                                    data-expiry-date="{{ $user_hold_tickets->expiry_date }}"
+                                                    data-has-seats="{{ $product->hasSeats == 1 ? 'true' : 'false' }}">
+                                                Hold
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="validation-row d-none">
+                                        <td colspan="4">
+                                            <div class="alert alert-danger validation-message mb-0"></div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-dismiss="modal">close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
         {{-- Add Tax Modals --}}
-        <div class="modal fade" id="taxModal" tabindex="-1" role="dialog" aria-labelledby="taxModalLabel"
+        <div class="modal fade" id="taxModifyModal" tabindex="-1" role="dialog" aria-labelledby="taxModifyModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -851,9 +741,9 @@ td.editable-description {
 
                                 </div>
                                 <div class="modal-footer">
-                                    <button id="addTaxBtn" class="btn btn-primary btn-sm"
-                                            data-url="{{ route('estimate.tax.add') }}"
-                                            data-estimateid="{{ $estimate->id }}"
+                                    <button id="addTaxModifyBtn" class="btn btn-primary btn-sm"
+                                            data-url="{{ route('contract.modify.add-tax') }}"
+                                            data-contractmodifiedid="{{ $data->id }}"
                                             data-csrf="{{ csrf_token() }}">
                                         <i class="fas fa-plus me-1"></i> Add Tax
                                     </button>
@@ -864,7 +754,7 @@ td.editable-description {
                 </div>
 
         {{-- Edit Tax Modals --}}
-        <div class="modal fade" id="editTaxModal" tabindex="-1" role="dialog" aria-labelledby="taxModalLabel"
+        <div class="modal fade" id="editTaxModifyModal" tabindex="-1" role="dialog" aria-labelledby="taxModifyModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -883,12 +773,12 @@ td.editable-description {
                                     <div id="modalAlert" class="alert d-none" role="alert"></div>
                                     <div class="form-group">
                                         <label for="taxName">Tax Name</label>
-                                        <input type="text" id="edittaxName" class="form-control" placeholder="e.g. VAT"
+                                        <input type="text" id="editmodifytaxName" class="form-control" placeholder="e.g. VAT"
                                             required>
                                     </div>
                                     <div class="form-group">
                                         <label for="taxPercent">Tax Percent (%)</label>
-                                        <input type="number" id="edittaxPercent" class="form-control" placeholder="e.g. 10"
+                                        <input type="number" id="editmodifytaxPercent" class="form-control" placeholder="e.g. 10"
                                             min="0" step="0.01" required>
                                     </div>
                                     <table class="table product-table" id="editTaxTable">
@@ -909,8 +799,8 @@ td.editable-description {
                                 </div>
                                 <div class="modal-footer">
                                     <button id="updateTaxBtn" class="btn btn-primary btn-sm"
-                                            data-url="{{ route('estimate.tax.update') }}"
-                                            data-estimateid="{{ $estimate->id }}"
+                                            data-url="{{ route('contract.modify.tax.update') }}"
+                                            data-contractmodifiedid="{{ $data->id }}"
                                             data-csrf="{{ csrf_token() }}">
                                         <i class="fas fa-plus me-1"></i> Update Tax
                                     </button>
@@ -920,11 +810,11 @@ td.editable-description {
                     </div>
                 </div>
                 {{-- Add Disscount Modals --}}
-                <div class="modal fade" id="discountModal" tabindex="-1" role="dialog"
+                <div class="modal fade" id="discountModifyModal" tabindex="-1" role="dialog"
                     aria-labelledby="discountModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
-                            <form id="discountForm" onsubmit="event.preventDefault(); addProductDiscount();">
+                            <form id="discountForm" onsubmit="event.preventDefault(); addProductDiscountModify();">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="discountModalLabel">
                                         <i class="fas fa-tag me-2"></i>Add Discount
@@ -956,9 +846,9 @@ td.editable-description {
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary btn-sm"
                                         data-dismiss="modal">Cancel</button>
-                                    <button id="addDiscount" class="btn btn-primary btn-sm"
-                                            data-url="{{ route('estimate.product.discount.add') }}"
-                                            data-estimateid="{{ $estimate->id }}"
+                                    <button id="addDiscountmodify" class="btn btn-primary btn-sm"
+                                            data-url="{{ route('contract.modify.product.discount.add') }}"
+                                            data-contractmodifiedid="{{ $data->id }}"
                                             data-csrf="{{ csrf_token() }}">
                                         <i class="fas fa-plus me-1"></i> Apply Discount
                                     </button>
@@ -968,7 +858,7 @@ td.editable-description {
                     </div>
                 </div>
                 {{-- Edit Disscount Modals --}}
-                <div class="modal fade" id="editdiscountModal" tabindex="-1" role="dialog"
+                <div class="modal fade" id="editmodifydiscountModal" tabindex="-1" role="dialog"
                     aria-labelledby="discountModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -1007,8 +897,8 @@ td.editable-description {
                                     <button type="button"
                                         id="updateDiscount"
                                         class="btn btn-primary btn-sm"
-                                        data-url="{{ route('estimate.product.discount.update') }}"
-                                        data-estimateid="{{ $estimate->id }}"
+                                        data-url="{{ route('contract.modify.product.discount.update') }}"
+                                        data-contractmodifiedid="{{ $data->id }}"
                                         data-csrf="{{ csrf_token() }}">
                                         <i class="fas fa-save me-1"></i> Update Discount
                                     </button>
@@ -1032,9 +922,165 @@ td.editable-description {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-bs4.min.js"></script>
+<script src="{{ asset('admin/assets/js/taxProductModify.js') }}"></script>
+<script src="{{ asset('admin/assets/js/productDiscountModify.js') }}"></script>
 <script>
-$(document).ready(function () {
-console.log('Script loaded');
+// Add products dynamically
+$('#addProductsModifyBtn').on('click', function (e) {
+    e.preventDefault();
+    let products = [];
+
+    $('.product-checkbox:checked').each(function () {
+        let productId = $(this).data('id');
+        let qty = $('.product-qty[data-id="' + productId + '"]').val();
+        let price = $(this).data('price');
+        let name = $(this).data('name');
+
+        products.push({
+            product_id: productId,
+            qty: qty,
+            price: price,
+            name: name,
+        });
+    });
+
+    if (products.length === 0) {
+        showModalMessage($('#productModal'), 'Please select at least one product', 'danger');
+        return;
+    }
+ 
+    let btn = $(this);
+
+    btn.text('Saving...').prop('disabled', true);
+
+    let url = $(this).data('url');       
+    let csrfToken = $(this).data('csrf'); 
+    let contractModifiedId = $(this).data('contractmodifiedid');
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {
+            _token: csrfToken,
+            contract_modified_id: contractModifiedId,
+            products: products
+        },
+        success: function (res) {
+            btn.text('Add Products').prop('disabled', false);
+
+            if(res.status){
+                // Close modal
+                $('#productModal').modal('hide');
+                // Update totals
+                updateTotals();
+                window.location.reload();
+            } else {
+                showModalMessage($('#productModal'), res.message || 'Unable to add products', 'danger');
+            }
+        },
+        error: function(err){
+            btn.text('Add Products').prop('disabled', false);
+            console.error(err.responseText);
+            showModalMessage($('#productModal'), 'Something went wrong', 'danger');
+        }
+    });
+});
+
+
+// Edit item
+$(document).on('click', '.edit-item-modify', function() {
+    let btn = $(this);
+    let modal = $('#editProductModifyModal');
+
+    modal.find('input[name="item_id"]').val(btn.data('id'));
+    modal.find('input[name="name"]').val(btn.data('name'));
+    modal.find('input[name="quantity"]').val(btn.data('quantity'));
+    modal.find('input[name="unit"]').val(btn.data('unit'));
+    modal.find('input[name="price"]').val(btn.data('price'));
+
+    modal.data('url', btn.data('url'));
+    modal.data('csrf', btn.data('csrf'));
+    modal.data('estimateid', btn.data('estimateid'));
+
+    modal.modal('show');
+});
+
+
+// Submit edited item
+$('#editProductModifyForm').on('submit', function(e){
+    e.preventDefault();
+    let btn = $('#saveChangesBtn');
+    btn.prop('disabled', true).text('Saving...');
+    let modal = $('#editProductModifyModal');
+    let csrfToken = modal.data('csrf');
+    let contract_modified_id = {{ $data->id }};
+    let url = '{{ route("contract.modify.update-product") }}';
+    // alert(contract_modified_id);
+    let formData = {
+        _token: modal.data('csrf'),
+        item_id: modal.find('input[name="item_id"]').val(),
+        quantity: modal.find('input[name="quantity"]').val(),
+        unit: modal.find('input[name="unit"]').val(),
+        price: modal.find('input[name="price"]').val(),
+        contract_modified_id: contract_modified_id
+    };
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: formData,
+        success: function(res){
+            showModalMessage(modal, res.message, 'success');
+            btn.prop('disabled', false).text('Save Changes');
+            setTimeout(() => modal.modal('hide'), 1000);
+            updateTotals();
+            window.location.reload();
+        },
+        error: function(err){
+            btn.prop('disabled', false).text('Save Changes');
+            showModalMessage(modal, 'Something went wrong', 'danger');
+        }
+    });
+});
+
+
+$(document).on('click', '.remove-modify-item', function(){
+    if(!confirm('Are you sure?')) return;
+
+    let btn = $(this);
+    let url = btn.data('url');
+    let csrf = btn.data('csrf');
+    let itemId = btn.data('id');
+    let contractModifiedId = {{ $data->id }};
+    
+    let row = $(this).closest('tr');
+    let deleteBtn = row.find('.cust-btn-delete');
+
+    deleteBtn.prop('disabled', true);
+    deleteBtn.html('<i class="fa fa-spinner fa-spin"></i> Deleting...');
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: { _token: csrf, item_id: itemId, contract_modified_id: contractModifiedId },
+        success: function(res){
+            if(res.status){
+                $('#productTable tbody tr[data-id="'+itemId+'"]').remove();
+                updateTotals();
+                window.location.reload();
+                // showModalMessage($('#productModal'), res.message, 'success');
+            } else {
+                // showModalMessage($('#productModal'), 'Unable to delete item', 'danger');
+            }
+        },
+        error: function(err){
+            // showModalMessage($('#productModal'), 'Something went wrong', 'danger');
+        }
+    });
+});
+
+
+
 let isSubmitting = false;
 
 // bind safely (works even with dynamic DOM / modal)
@@ -1120,87 +1166,430 @@ $(document).off('submit', '#paymentScheduleFormEdit')
     });
 });
 
-    var $saveNoteBtnActive = null;
-    $(document).on('click', '.save-note', function() {
-        var btn = $(this);
-        $saveNoteBtnActive = btn;
-        btn.prop('disabled', true);
-        btn.find('.btn-note-text').hide();
-        btn.find('.btn-note-loading').show();
-    });
-    $(document).ajaxComplete(function(event, xhr, settings) {
-        var url = (settings.url || '').toString();
-        if ((url.indexOf('note/save') !== -1 || url.indexOf('estimate.note.save') !== -1) && $saveNoteBtnActive && $saveNoteBtnActive.length) {
-            $saveNoteBtnActive.prop('disabled', false);
-            $saveNoteBtnActive.find('.btn-note-loading').hide();
-            $saveNoteBtnActive.find('.btn-note-text').show();
-            $saveNoteBtnActive = null;
-        }
-        if (url.indexOf('estimates-send-to-client') !== -1 && $sendToClientBtnActive && $sendToClientBtnActive.length) {
-            $sendToClientBtnActive.prop('disabled', false);
-            $sendToClientBtnActive.find('.btn-send-loading').hide();
-            $sendToClientBtnActive.find('.btn-send-text').show();
-            $sendToClientBtnActive = null;
+</script>
+
+<script>
+$(document).ready(function() {
+    const select = $('#clientConfirmation');
+    const button = $('#sendToClientBtn');
+
+    // Update button when dropdown changes
+    select.on('change', function() {
+        const value = $(this).val();
+
+        if (value !== "") {
+            button.prop('disabled', false); // enable button
+            button.attr('data-confirmed_with_client', value); // update data attribute
+            // Optional: update button text dynamically
+            if (value === "0") {
+                button.text('Send Approved Status');
+            } else if (value === "1") {
+                button.text('Request Confirmation');
+            }
+        } else {
+            button.prop('disabled', true);
+            button.text('Update');
+            button.attr('data-confirmed_with_client', "0"); // reset to default
         }
     });
 
-    var $sendToClientBtnActive = null;
-    $(document).on('click', '.send-to-client', function() {
-        var btn = $(this);
-        $sendToClientBtnActive = btn;
+    // AJAX call when button clicked
+    button.on('click', function() {
+        const btn = $(this);
+        const url = btn.data('url');
+        const csrf = btn.data('csrf');
+        const contractmodifyid = btn.data('contractmodifyid');
+        const confirmedStatus = btn.attr('data-confirmed_with_client');
+        const estimateId = btn.attr('data-estimate_id');
+
+        if (!confirmedStatus) { 
+             Toastify({
+                    text: "Please select a confirmation status",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+                return;
+            }
+
+        if (confirmedStatus === "0") {
+            btn.text('Sending Approved Status...');
+        } else if (confirmedStatus === "1") {
+            btn.text('Sending Request Confirmation...');
+        }
         btn.prop('disabled', true);
-        btn.find('.btn-send-text').hide();
-        btn.find('.btn-send-loading').show();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                _token: csrf,
+                contract_modified_id: contractmodifyid,
+                confirmed_with_client: confirmedStatus,
+                estimate_id: estimateId
+            },
+            success: function(response) {
+                if(confirmedStatus === "0") {
+                    btn.text('Sent Approved Status');
+                } else if (confirmedStatus === "1") {
+                    btn.text('Sent Request Confirmation');
+                }
+                btn.removeClass('btn-success').addClass('btn-primary');
+                btn.prop('disabled', false);
+                let className = (response.status == false) ? "toast-error" : "toast-success"
+                Toastify({
+                    text: response.message || 'Contract sent successfully.',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: className
+                }).showToast();
+                if(response.status == true) {
+                    window.location.href = response.redirect_url;
+                }
+            },
+            error: function(xhr, status, error) {
+                if(confirmedStatus === "0") {
+                    btn.text('Send Approved Status');
+                } else if (confirmedStatus === "1") {
+                    btn.text('Request Confirmation');   
+                }
+                btn.prop('disabled', false);
+                
+                Toastify({
+                    text: 'Something went wrong. Please try again.',
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    className: "toast-error"
+                }).showToast();
+            }
+        });
     });
+}); 
+</script>
+<script>
     
-    $('#estimate_note').summernote({
-        height: 180,
-        placeholder: 'Write note here...',
-        toolbar: [
-            ['style', ['bold', 'italic', 'underline']],
-            ['para', ['ul', 'ol']],
-            ['insert', ['link']],
-            ['view', ['codeview']]
-        ]
-    });
+$(document).on('click', '.modify-editable-description', function () {
+    let td = $(this);
+    // alert(td);
+    // prevent multiple inputs
+    if (td.find('input').length) return;
 
-    $('#terms_and_condition').summernote({
-        height: 180,
-        placeholder: 'Write note here...',
-        toolbar: [
-            ['style', ['bold', 'italic', 'underline']],
-            ['para', ['ul', 'ol']],
-            ['insert', ['link']],
-            ['view', ['codeview']]
-        ]
-    });
+    let text = td.find('.desc-text').text().trim();
+
+    td.html(`<input type="text" class="form-control modify-desc-input" value="${text}" />`);
+
+    td.find('input').focus();
+});
+let isModifySaving = false;
+
+$(document).on('blur', '.modify-desc-input', function () {
+    if (!isModifySaving) {
+        saveDescription($(this));
+    }
+});
+
+$(document).on('keypress', '.modify-desc-input', function (e) {
+    if (e.which === 13) {
+        isModifySaving = true;
+        saveDescription($(this));
+        $(this).blur(); // trigger blur safely
+    }
 });
 
 
-$(document).on('change', '#expiration_date', function () {
-    let date = $(this).val();
-    let id = $(this).data('id');
+function saveDescription(input) {
+    let td = input.closest('td');
+    let newValue = input.val();
+
+    let id = td.data('id');
+    let url = td.data('url');
+    let csrf = td.data('csrf');
+
+    // ✅ Show loader + disable input
+    input.prop('disabled', true);
+
+    td.addClass('loading');
+    td.append(`<span class="spinner"></span>`);
+
     $.ajax({
-        url: '{{ route("update-expiry-date") }}',
-        type: 'POST',
+        url: url,
+        method: "POST",
         data: {
-            _token: '{{ csrf_token() }}',
-            slug: id,
-            expiration_date: date
+            _token: csrf,
+            id: id,
+            description: newValue
         },
-        success: function (response) {
-            if (response.status) {
-                // Update UI text
-                $('#expiry_text').text(response.formatted_date);
-            }
+        success: function (res) {
+
+            td.removeClass('loading');
+            td.html(`<span class="desc-text fade-in">${newValue}</span>`);
+
+            Toastify({
+                text: res.message || "Updated",
+                duration: 2000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#2ecc71" }
+            }).showToast();
         },
         error: function () {
-            alert('Something went wrong');
+
+            td.removeClass('loading');
+            td.html(`<span class="desc-text fade-in">${newValue}</span>`);
+
+            Toastify({
+                text: "Update failed",
+                duration: 2000,
+                gravity: "top",
+                position: "right",
+                style: { background: "#e74c3c" }
+            }).showToast();
         }
     });
-});
+}
 
-</script>
- @endpush
+    </script>
+
+
+  <script>
+    $(document).ready(function(){
+
+        // Checkbox click
+        $(document).on('change', '.modify-product-checkbox', function () {
+            let $checkbox = $(this);
+            let $row = $checkbox.closest('tr');
+            let $btn = $row.find('.hold-btn');
+            let $validationRow = $row.next('.validation-row');
+            let $validationBox = $validationRow.find('.validation-message');
+
+            let productSlug = $btn.data('product-slug');
+            let holdDate = $btn.data('hold-date');
+
+            if ($checkbox.is(':checked')) {
+                $.ajax({
+                    url: "{{ route('hold-tickets.check') }}",
+                    type: "POST",
+                    data: { _token: "{{ csrf_token() }}", product_slug: productSlug, hold_date: holdDate },
+                    beforeSend: function () {
+                        $checkbox.prop('disabled', true);
+                        $btn.prop('disabled', true).text('Checking...');
+                        $validationRow.addClass('d-none');
+                        $row.next('.cabana-row').remove();
+                    },
+                    success: function (response) {
+                        if (!response.status) {
+                            $btn.prop('disabled', true).text('Hold');
+                            $checkbox.prop('checked', false);
+                            $validationBox.html(response.message);
+                            $validationRow.removeClass('d-none');
+                            $row.next('.cabana-row').remove();
+                        } else {
+                            $btn.prop('disabled', false)
+                                .removeClass('btn-secondary')
+                                .addClass('btn-primary')
+                                .text('Hold');
+                            $validationRow.addClass('d-none');
+
+                            // Insert cabana seats HTML inline
+                            $row.next('.cabana-row').remove();
+                            if(response.html){
+                                let cabanaRow = `<tr class="cabana-row">
+                                                    <td colspan="4">
+                                                        <div style="padding: 15px; background: #f9fafb; border-radius: 6px; margin-top: 10px;">
+                                                            <h6 style="margin-bottom: 10px; font-weight: 600;">Select Seats</h6>
+                                                            ${response.html}
+                                                        </div>
+                                                    </td>
+                                                </tr>`;
+                                $row.after(cabanaRow);
+                            }
+                        }
+                    },
+                    error: function () {
+                        $btn.prop('disabled', true).text('Hold');
+                        $checkbox.prop('checked', false);
+                        $validationBox.html('Something went wrong. Please try again.');
+                        $validationRow.removeClass('d-none');
+                        $row.next('.cabana-row').remove();
+                    },
+                    complete: function () {
+                        $checkbox.prop('disabled', false);
+                    }
+                });
+
+            } else {
+                $btn.prop('disabled', true)
+                    .removeClass('btn-primary btn-success')
+                    .addClass('btn-secondary')
+                    .text('Hold');
+
+                $validationRow.addClass('d-none');
+                $row.next('.cabana-row').remove();
+            }
+        });
+
+        // Seat button click with Toastify
+        $(document).on('click', '.seat-btn', function(){
+            let $btn = $(this);
+            let $row = $btn.closest('.cabana-row').prev('tr');
+            let quantity = parseInt($row.find('.product-qty').val());
+
+            if($btn.data('selected') == 0){
+                let selectedCount = $btn.closest('td').find('.seat-btn.selected').length;
+                if(selectedCount >= quantity){
+                    Toastify({
+                        text: 'You have already selected maximum seats for this product.',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        className: 'toastify-error',
+                        style: {
+                            background: '#ef4444'
+                        }
+                    }).showToast();
+                    return;
+                }
+                $btn.addClass('selected');
+                $btn.data('selected', 1);
+            } else {
+                $btn.removeClass('selected');
+                $btn.data('selected', 0);
+            }
+        });
+
+        // Hold button click with Toastify
+        $(document).on('click', '.hold-btn', function(){
+            let $btn = $(this);
+            let $row = $btn.closest('tr');
+            let $validationRow = $row.nextAll('.validation-row').first();
+            let $validationBox = $validationRow.find('.validation-message');
+            let quantity = parseInt($row.find('.product-qty').val());
+
+            // Get selected seats
+            let selectedSeats = [];
+            $row.next('.cabana-row').find('.seat-btn.selected').each(function(){
+                selectedSeats.push($(this).data('seat'));
+            });
+
+            if($btn.data('has-seats') == 'true') {
+                if(selectedSeats.length != quantity){
+                    Toastify({
+                        text: 'Please select exactly ' + quantity + ' seats.',
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        className: 'toastify-error',
+                        style: {
+                            background: '#ef4444'
+                        }
+                    }).showToast();
+                    return;
+                }
+            }
+
+            $btn.prop('disabled', true).text('Processing...');
+            $validationBox.html('');
+            $validationRow.addClass('d-none');
+
+            $.ajax({
+                url: "{{ route('hold-tickets-item') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: $btn.data('product-id'),
+                    product_slug: $btn.data('product-slug'),
+                    quantity: quantity,
+                    seats: selectedSeats,
+                    estimate_id: $btn.data('estimate-id'),
+                    hold_date: $btn.data('hold-date'),
+                    expiry_date: $btn.data('expiry-date'),
+                    user_hold_ticket_id: $btn.data('user_hold_ticket_id'),
+                    modified_contract_id: {{ $data->id }}
+                },
+                dataType: "json",
+                success: function(res){
+                    if(res.status === true){
+                        $btn.text('Held ✓').removeClass('btn-primary').addClass('btn-success');
+                        $btn.prop('disabled', true);
+
+                        Toastify({
+                            text: 'Product added successfully!',
+                            duration: 3000,
+                            gravity: 'top',
+                            position: 'right',
+                            className: 'toastify-success',
+                            style: {
+                                background: '#A0C242'
+                            }
+                        }).showToast();
+
+                        let productId = $btn.data('product-id');
+                        let productName = $row.find('td:nth-child(2)').text();
+
+                        $('#selectedProductsTable tbody .no-record').remove();
+
+                        let existingRow = $('#selectedProductsTable tbody').find(`tr[data-product-id="${productId}"]`);
+                        if(!existingRow.length){
+                            let newRow = `<tr data-product-id="${productId}">
+                                              <td>${productName}</td>
+                                              <td>${quantity}</td>
+                                            </tr>`;
+                            $('#selectedProductsTable tbody').append(newRow);
+                        }
+                    } else {
+                        $btn.prop('disabled', false).text('Hold');
+                        $validationBox.html(res.message);
+                        $validationRow.removeClass('d-none');
+                        
+                        Toastify({
+                            text: res.message,
+                            duration: 3000,
+                            gravity: 'top',
+                            position: 'right',
+                            className: 'toastify-error',
+                            style: {
+                                background: '#ef4444'
+                            }
+                        }).showToast();
+                    }
+                },
+                error: function(xhr){
+                    $btn.prop('disabled', false).text('Hold');
+
+                    let errorHtml = '';
+                    if(xhr.status === 422 && xhr.responseJSON.errors){
+                        $.each(xhr.responseJSON.errors, function(key,value){
+                            errorHtml += `<div>${value[0]}</div>`;
+                        });
+                    } else if(xhr.responseJSON && xhr.responseJSON.message){
+                        errorHtml = xhr.responseJSON.message;
+                    } else {
+                        errorHtml = 'Something went wrong. Please try again.';
+                    }
+
+                    $validationBox.html(errorHtml);
+                    $validationRow.removeClass('d-none');
+                    
+                    Toastify({
+                        text: errorHtml,
+                        duration: 3000,
+                        gravity: 'top',
+                        position: 'right',
+                        className: 'toastify-error',
+                        style: {
+                            background: '#ef4444'
+                        }
+                    }).showToast();
+                }
+            });
+        });
+
+    });
+    </script>
+@endpush
 @endsection
+
 

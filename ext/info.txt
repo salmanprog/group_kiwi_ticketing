@@ -60,8 +60,141 @@ ALTER TABLE `company_media` ADD `slug` VARCHAR(200) NOT NULL AFTER `id`;
 
 ALTER TABLE `company` ADD `logo_url` TEXT NULL AFTER `login_url`;
 
+ALTER TABLE `contract_modified` ADD `status` ENUM('pending','sent','accept_by_client','accept_by_company','reject') NOT NULL AFTER `contract_id`;
+ALTER TABLE `contract_modified` ADD `user_estimate_id` INT(11) NOT NULL AFTER `id`;
+ALTER TABLE `contract_modified_items` ADD `product_id` INT(11) NOT NULL AFTER `contract_modified_id`;
+ALTER TABLE `contract_modified_items` ADD `description` LONGTEXT NOT NULL AFTER `product_id`;
+
+
+ALTER TABLE `contract_modified_items` CHANGE `description` `description` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
+
+CREATE TABLE `contract_modified_taxes` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `contract_modified_id` BIGINT(20) UNSIGNED NOT NULL,
+    `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `percent` DECIMAL(5,2) NOT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    `amount` DECIMAL(10,3) NOT NULL,
+    `is_modify` INT(11) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    INDEX (`contract_modified_id`)
+) ENGINE=InnoDB 
+DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `contract_modified_item_taxes` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `contract_modified_tax_id` BIGINT(20) UNSIGNED NOT NULL COMMENT 'Link to the master contract tax',
+    `contract_modified_item_id` BIGINT(20) UNSIGNED NOT NULL COMMENT 'Link to the specific item in the contract',
+    `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tax name, e.g., VAT, GST, Sales Tax',
+    `percentage` DECIMAL(5,2) NOT NULL DEFAULT 0.00 COMMENT 'Tax rate percentage (e.g., 15.50)',
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX (`contract_modified_tax_id`),
+    INDEX (`contract_modified_item_id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `contract_modified_discounts` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `contract_modified_id` BIGINT(20) UNSIGNED NOT NULL,
+    `type` ENUM('fixed', 'percent') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'fixed',
+    `value` DECIMAL(10,2) NOT NULL,
+    `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT NULL,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    INDEX (`contract_modified_id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+
+
+CREATE TABLE `contract_modified_installments` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `contract_modified_id` BIGINT(20) UNSIGNED NOT NULL,
+    `amount` DECIMAL(15,2) NOT NULL,
+    `installment_date` DATE NOT NULL,
+    `is_modify` INT(11) NOT NULL DEFAULT 0,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` TIMESTAMP NULL DEFAULT NULL,
+    
+    PRIMARY KEY (`id`),
+    INDEX `idx_contract_modified_id` (`contract_modified_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
 ALTER TABLE `user_estimate_item_taxes` ADD `amount` INT(11) NOT NULL DEFAULT '0' AFTER `percentage`
 ALTER TABLE `user_estimate_item_taxes` CHANGE `amount` `amount` DECIMAL(10,3) NOT NULL DEFAULT '0.00';
+
+
+ALTER TABLE `contract_modified_item_taxes` ADD `amount` DECIMAL(10,3) NOT NULL AFTER `percentage`;
+
+
+ALTER TABLE `contract_modified` ADD `subtotal` DECIMAL(12,2) NOT NULL AFTER `created_by`, ADD `total` DECIMAL(12,2) NOT NULL AFTER `subtotal`, ADD `discount_total` DECIMAL(12,2) NOT NULL AFTER `total`, ADD `tax_total` DECIMAL(12,2) NOT NULL AFTER `discount_total`;
+
+
+ALTER TABLE `user_invoices` CHANGE `estimate_id` `estimate_id` BIGINT(20) UNSIGNED NULL DEFAULT '0';
+
+ALTER TABLE `user_invoices` ADD `contract_modified_id` INT(11) NOT NULL DEFAULT '0' AFTER `id`, ADD `module_type` ENUM('estimate','modified_contract') NOT NULL DEFAULT 'estimate' AFTER `contract_modified_id`;
+
+ALTER TABLE `installment_plans` CHANGE `estimate_id` `estimate_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0';
+
+
+ALTER TABLE `installment_plans` ADD `contract_modified_id` INT(11) NOT NULL DEFAULT '0' AFTER `id`, ADD `module_type` ENUM('estimate','modified_contract') NOT NULL DEFAULT 'estimate' AFTER `contract_modified_id`;
+
+
+ALTER TABLE `installment_payments` ADD `contract_modified_id` INT(11) NOT NULL DEFAULT '0' AFTER `contract_id`;
+
+ALTER TABLE installment_plans 
+MODIFY estimate_id BIGINT UNSIGNED NULL DEFAULT NULL;
+
+ALTER TABLE installment_payments 
+MODIFY estimate_id BIGINT UNSIGNED NULL DEFAULT NULL;
+
+ALTER TABLE `contract_modified` CHANGE `subtotal` `subtotal` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_modified` CHANGE `total` `total` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_modified` CHANGE `discount_total` `discount_total` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_modified` CHANGE `tax_total` `tax_total` DECIMAL(12,2) NOT NULL DEFAULT '0';
+
+ALTER TABLE `contract_items` ADD `description` LONGTEXT NULL AFTER `name`;
+
+
+CREATE TABLE `contract_item_taxes` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `contract_tax_id` BIGINT(20) UNSIGNED NOT NULL, 
+    `contract_item_id` BIGINT(20) UNSIGNED NOT NULL, 
+    `name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `percentage` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    `amount` DECIMAL(10,3) NOT NULL,
+    `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `contract_taxes` ADD `amount` DECIMAL(10,3) NOT NULL AFTER `invoice_id`;
+
+
+ALTER TABLE `user_hold_ticket_items` ADD `modified_contract_id` INT(11) NOT NULL DEFAULT '0' AFTER `user_hold_ticket_id`;
+
+
+
+
 
 kiwiticketing
 u2-nqewjfywa1fd@c1102859.sgvps.net

@@ -259,6 +259,33 @@ class EstimateItemController extends CRUDCrontroller
         ]);
 
         $item = EstimateItem::findOrFail($request->item_id);
+        
+        $taxes = DB::table('user_estimate_taxes')
+            ->where('estimate_id', $item->user_estimate_id)
+            ->get();
+
+        if ($taxes->isNotEmpty()) {
+            foreach ($taxes as $tax) {
+                $user_estimate_item_taxes = DB::table('user_estimate_item_taxes')
+                    ->where('estimate_tax_id', $tax->id)
+                    ->where('user_estimate_item_id', $item->id)
+                    ->first();
+
+                if ($user_estimate_item_taxes) {
+                    DB::table('user_estimate_item_taxes')
+                        ->where('estimate_tax_id', $tax->id)
+                        ->where('user_estimate_item_id', $item->id)
+                        ->delete();
+
+                    DB::table('user_estimate_taxes')
+                        ->where('id', $tax->id)
+                        ->update([
+                            'amount' => $tax->amount - $user_estimate_item_taxes->amount
+                        ]);
+                }
+            }
+        }
+      
         $item->delete();
 
         return response()->json([

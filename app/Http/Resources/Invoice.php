@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Company;
+use App\Models\Estimate;
 use DB;
 
 class Invoice extends JsonResource
@@ -16,21 +17,19 @@ class Invoice extends JsonResource
      */
     public function toArray($request)
     {
+        $invoice = Invoice::findOrFail($this->id);
+        $estimate = Estimate::where('contract_id', $invoice->contract_id)->first();
+        $getCompanyAdmin = Company::getCompanyAdmin($invoice->company_id);
 
-
-        $getCompanyAdmin = Company::getCompanyAdmin($this->company_id);
-
-        $companyAccount = DB::table('company_account_config')->where('company_id', $this->company_id)->first();
+        $companyAccount = DB::table('company_account_config')->where('company_id', $invoice->company_id)->first();
         $stripeKeyStatus = [
             'test_publishable_key' => $companyAccount?->test_publishable_key ?? null,
             'live_publishable_key' => $companyAccount?->live_publishable_key ?? null,
             'stripe_key_status' => $companyAccount?->stripe_key_status ?? null,
         ];
 
-        $estimate = $this->estimate;
-
-        // Prevent errors if estimate not loaded
-        $items = $estimate?->items ?? collect();
+        // Prevent errors if items not loaded
+        $items = $this->invoiceItems ?? collect();
 
         /*
         |--------------------------------------------------------------------------
@@ -38,30 +37,28 @@ class Invoice extends JsonResource
         |--------------------------------------------------------------------------
         */
 
-        $subtotal = $items->sum(fn ($item) => $item->total_price);
+        $subtotal = $this->invoiceItems->sum(fn ($item) => $item->total_price);
 
-        $taxTotal = $items->sum(function ($item) {
-            return $item->itemTaxes->sum(function ($tax) use ($item) {
-                return $item->total_price * ($tax->percentage / 100);
-            });
-        });
+        $taxTotal = 0;
+        // dd($taxTotal);
 
-        $discountPercent = $estimate?->discounts?->sum('value') ?? 0;
+        $discountPercent = $invoice->discounts?->sum('value') ?? 0;
 
         $discountAmount = ($subtotal + $taxTotal) * ($discountPercent / 100);
 
         $total = ($subtotal + $taxTotal) - $discountAmount;
+
         return [
-            'id' => $this->id,
-            'payment_type' => $this->payment_type,
-            'description' => $this->description,
-            'slug' => $this->slug,
-            'auth_code' => $this->auth_code,
-            'invoice_number' => $this->invoice_number,
-            'issue_date' => $this->issue_date,
-            'due_date' => $this->due_date,
-            'status' => $this->status,
-            'is_installment' => $this->is_installment,
+            'id' => $invoice->id,
+            'payment_type' => $invoice->payment_type,
+            'description' => $invoice->description,
+            'slug' => $invoice->slug,
+            'auth_code' => $invoice->auth_code,
+            'invoice_number' => $invoice->invoice_number,
+            'issue_date' => $invoice->issue_date,
+            'due_date' => $invoice->due_date,
+            'status' => $invoice->status,
+            'is_installment' => $invoice->is_installment,
 
             /*
             |--------------------------------------------------------------------------
@@ -72,15 +69,15 @@ class Invoice extends JsonResource
             'tax_total' => round($taxTotal, 2),
             'discount_total' => round($discountAmount, 2),
             'total' => round($total, 2),
-            'paid_amount' => $this->paid_amount,
+            'paid_amount' => $invoice->paid_amount,
 
             /*
             |--------------------------------------------------------------------------
             | Company & Client
             |--------------------------------------------------------------------------
             */
-            'company' => $this->whenLoaded('company'),
-            'client'  => new PublicUser($this->whenLoaded('client')),
+            'company' => $invoice->company,
+            'client'  => new PublicUser($invoice->client),
             'stripe_key_status' => $stripeKeyStatus,
 
             /*
@@ -88,56 +85,21 @@ class Invoice extends JsonResource
             | Estimate Details
             |--------------------------------------------------------------------------
             */
-            'details' => $this->whenLoaded('estimate', function () use ($estimate) {
-
-                return [
-                    'id'              => $estimate->id,
+            'details' =>  [
+                    'id'              => $invoice->id,
                     'estimate_id'     => $estimate->id,
-                    'auth_code'       => $estimate->auth_code,
-                    'slug'            => $estimate->slug,
+                    'auth_code'       => $invoice->auth_code,
+                    'slug'            => $invoice->slug,
                     'estimate_number' => $estimate->estimate_number,
-                    'status'          => $estimate->status,
+                    'status'          => $invoice->status,
 
-                    'items' => $estimate->items->map(function ($item) {
-                        return [
-                            'id'       => $item->id,
-                            'name'     => $item->name,
-                            'quantity' => $item->quantity,
-                            'unit'     => $item->unit,
-                            'price'    => $item->price,
-                            'total'    => $item->total_price,
+                    'items' => $items ?? [],
 
-                            'taxes' => $item->itemTaxes->map(function ($tax) use ($item) {
-                                return [
-                                    'id'      => $tax->id,
-                                    'name'    => $tax->name,
-                                    'percent' => $tax->percentage,
-                                    'amount'  => round(
-                                        $item->total_price * ($tax->percentage / 100),
-                                        2
-                                    ),
-                                ];
-                            }),
-                        ];
-                    }),
+                    'taxes' => $invoice->taxes ?? [],
 
-                    'taxes' => $estimate->taxes->map(function ($tax) {
-                        return [
-                            'id'      => $tax->id,
-                            'name'    => $tax->name,
-                            'percent' => $tax->percent,
-                        ];
-                    }),
+                    'discounts' => $invoice->discounts ?? [],
 
-                    'discounts' => $estimate->discounts->map(function ($discount) {
-                        return [
-                            'id'    => $discount->id,
-                            'name'  => $discount->name ?? null,
-                            'value' => $discount->value ?? 0,
-                        ];
-                    }),
-
-                    'installments' => $this->installmentPlan?->payments->map(function ($installment) {
+                    'installments' => $invoice->installmentPlan?->payments->map(function ($installment) {
                         return [
                             'id'       => $installment->id,
                             'amount'   => $installment->amount,
@@ -145,8 +107,7 @@ class Invoice extends JsonResource
                             'due_date' => $installment->due_date,
                         ];
                     }) ?? [],
-                ];
-            }),
+                ]
         ];
     }
 

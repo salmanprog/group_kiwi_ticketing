@@ -161,7 +161,7 @@ class EstimateController extends CRUDCrontroller
      * data pass on view eg: $this->__data['title'] = 'Title';
      * @param string @slug
      */
-    public function beforeRenderEditView($slug)
+    public function beforeRenderEditView($slug) 
     {
         $company = CompanyUser::getCompany(Auth::user()->id);
         $estimate = Estimate::with('items.itemTaxes')->with('organization')->with('taxes')->with('discounts')->with('installments')->where('slug', $slug)->first();

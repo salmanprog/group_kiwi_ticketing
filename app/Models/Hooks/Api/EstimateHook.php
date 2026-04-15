@@ -191,7 +191,7 @@ class EstimateHook
 
             foreach($contractEstimates as $contractEstimate){
                 
-                $auth_code = $estimate->auth_code;
+                $auth_code = $estimate->auth_code; 
                 $toEmails = $contractEstimate->email;
                 $templateIdentifier = 'contract_email';
 

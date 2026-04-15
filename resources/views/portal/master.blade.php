@@ -461,7 +461,7 @@
                                 $company_logo = $company ? $company->image_url : null;
                             @endphp
                             <a class="admin-logo c" href="{{ route('company.dashboard') }}">
-                                 <h1>
+                                <h1>
                                     @if(session('companyDetails'))
                                     <img style="width: 205px;" alt="logo"
                                         src="{{ session('companyDetails')['logo'] }}"

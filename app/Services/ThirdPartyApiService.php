@@ -423,5 +423,44 @@ class ThirdPartyApiService
     }
 
 
+     public function updateOrder(array $data)
+     {
+        $startTime = microtime(true); 
+        // dd(json_encode($data));
+        $response = Http::acceptJson()
+            ->contentType('application/json')
+            ->post($this->baseUrl . '/Pricing/UpdateOrder', $data);
+
+        dd($response->json());
+
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+
+        // Log activity
+        ActivityActionLogger::log([
+            'auth_code'    => $data['authCode'],
+            'action'       => 'update_order_ticket',
+            'method'       => 'POST',
+            'url'          => $this->baseUrl . 'Pricing/UpdateOrder',
+            'payload'      => json_encode($data),
+            'response'     => json_encode($response->json()),
+            'status'       => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+            'status_code'  => $response->status(),
+            'error_message'=> $response->json()['status']['errorCode'] === 0 
+                                ? null 
+                                : $response->json()['status']['errorMessage'] ?? null,
+            'ip'           => request()->ip(),
+            'response_time'=> $responseTime,
+        ]);
+
+        if($response->json()['status']['errorCode'] !== 0) {
+            $companyName = DB::table('company')->where('auth_code', $data['AuthCode'])->value('name') ?? 'Unknown Company';
+            $this->sendOrderFailedEmail($data, $response->json(),'Order Update Failed', $companyName);
+        }
+        
+        return $response;
+    }
+
+
+
     
 }
