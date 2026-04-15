@@ -85,7 +85,7 @@ class ThirdPartyApiMiddleware
             }
 
             // ------------------- Permission Check -------------------
-            dd($apiData);
+            // dd($apiData);
 
             if ($apiData) {
                 $platformId = config('services.third_party.platform_id');
