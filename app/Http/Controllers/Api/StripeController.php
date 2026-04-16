@@ -264,7 +264,7 @@ class StripeController extends RestController
     {
 
         $request     = $this->__request;
-        $param_rule['invoice_id']   = 'required';
+        $param_rule['invoice_id']   = 'required|exists:user_invoices,id';
         $param_rule['invoice_type'] = 'required|in:invoice,installment';
         $param_rule['status'] = 'required|in:paid,failed';
         $param_rule['transaction_id'] = 'required';
