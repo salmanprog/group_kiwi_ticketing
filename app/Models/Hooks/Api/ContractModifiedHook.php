@@ -122,6 +122,9 @@ class ContractModifiedHook
 
             if($response['tickets']){
                 UserOrders::updateStoreOrder($response['tickets'],$contractModified->id);
+
+                $invoicPayload = UserHoldTickets::updateInvoiceOrderPayload($data);
+                $invoiceResponse = $this->apiService->updateModifyOrderInvoice($invoicPayload,$contract->auth_code);
             }
 
             ActivityLog::create([

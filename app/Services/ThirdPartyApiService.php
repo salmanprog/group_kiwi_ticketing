@@ -455,6 +455,40 @@ class ThirdPartyApiService
         return $response;
     }
 
+       public function updateModifyOrderInvoice(array $data,$authCode)
+     {
+        $startTime = microtime(true); 
+        $response = Http::acceptJson()
+            ->withHeaders([
+                'accept' => '*/*',
+                'Content-Type' => 'application/json',
+            ])
+            ->post($this->baseUrl . '/api/InstallmentPlan/update-subscription-invoices?authCode=' . $authCode,$data);
+
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+        // dd($response->json());
+        // Log activity
+        ActivityActionLogger::log([
+            'auth_code'    => $authCode,
+            'action'       => 'update_modify_order_invoice',
+            'method'       => 'POST',
+            'url'          => $this->baseUrl . 'Pricing/UpdateModifyOrderInvoice',
+            'payload'      => json_encode($data),
+            'response'     => json_encode($response->json()),
+            'status'       => $response->json()['status']['errorCode'] === 0 ? 'success' : 'error',
+            'status_code'  => $response->status(),
+            'error_message'=> $response->json()['status']['errorCode'] === 0 ? null : $response->json(),
+            'ip'           => request()->ip(),
+            'response_time'=> $responseTime,
+        ]);
+
+        if($response->json()['status']['errorCode'] !== 0) {
+            $companyName = DB::table('company')->where('auth_code', $data['authCode'])->value('name') ?? 'Unknown Company';
+            $this->sendOrderFailedEmail($data, $response->json(),'Order Modify Invoice Update Failed', $companyName);
+        }
+        
+        return $response;
+    }
 
 
     

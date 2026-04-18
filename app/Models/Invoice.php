@@ -516,8 +516,7 @@ class Invoice extends Model
         return true;
     }
 
-
-    public static function generateModifyInvoice($contractId, $request,$auth_code=null) 
+        public static function generateModifyInvoice($contractId, $request,$auth_code=null) 
     {
         $ContractModified = ContractModified::with('items.itemTaxes', 'taxes', 'discounts','installments')->where('id', $request->contract_modified_id)->first();
         $contract = Contract::find($ContractModified->contract_id);
@@ -570,9 +569,10 @@ class Invoice extends Model
                 }
             }
 
+            $itemMap = [];
 
             foreach ($ContractModified->items as $item) {
-                // dd($item);
+
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
                     'name' => $item->name,
@@ -581,63 +581,66 @@ class Invoice extends Model
                     'unit' => $item->unit,
                     'total_price' => $item->total_price,
                 ]);
-                 $contractItem = ContractItem::create([
-                            'contract_id' => $contract->id,
-                            'name' => $item->name,
-                            'quantity' => $item->quantity,
-                            'unit' => $item->unit,
-                            'price' => $item->price,
-                            'total_price' => $item->total_price,
-                            'description' => $item->description,
-                            'taxes' => $item->tax ?? 0,
-                            'product_price' => $item->price,
-                            'gratuity' => $item->gratuity ?? 0,
-                            'accepted_by_client' => 1,
-                            'is_modified' => '1',
-                            'invoice_id' => $invoice->id,
-                            'product_id' => $item->product_id,
-                        ]);
 
-                        // map old item id to new one
-                        $itemMap[$item->id] = $contractItem->id;
-            }
-
-            foreach ($ContractModified->taxes as $tax) {
-                InvoiceTax::create([
-                    'invoice_id' => $invoice->id,
-                    'name' => $tax->name,
-                    'percent' => $tax->percent,
-                ]);
-
-                $contratTax = ContractTaxes::create([
+                $contractItem = ContractItem::create([
                     'contract_id' => $contract->id,
-                    'name' => $tax->name,
-                    'percent' => $tax->percent,
+                    'name' => $item->name,
+                    'quantity' => $item->quantity,
+                    'unit' => $item->unit,
+                    'price' => $item->price,
+                    'total_price' => $item->total_price,
+                    'description' => $item->description,
+                    'taxes' => $item->tax ?? 0,
+                    'product_price' => $item->price,
+                    'gratuity' => $item->gratuity ?? 0,
+                    'accepted_by_client' => 1,
+                    'is_modified' => 1,
                     'invoice_id' => $invoice->id,
-                    'amount' => $tax->amount,
+                    'product_id' => $item->product_id,
                 ]);
 
-                // foreach ($ContractModified->items as $item) {
-
-
-                //     foreach ($item->itemTaxes as $itemTax) {
-
-                //         if (
-                //             strtolower($itemTax->name) === strtolower($tax->name)
-                //         ) {
-                //             ContractItemTax::create([
-                //                 'contract_item_id' => $itemMap[$item->id],
-                //                 'contract_tax_id' => $contratTax->id,
-                //                 'name' => $itemTax->name,
-                //                 'percent' => $itemTax->percentage,
-                //                 'amount' => $itemTax->amount,
-                //             ]);
-                //         }
-                //     }
-                // }
-
-                
+                // map old item id → new contract item id
+                $itemMap[$item->id] = $contractItem->id;
             }
+
+           $taxMap = [];
+
+                foreach ($ContractModified->taxes as $tax) {
+
+                    InvoiceTax::create([
+                        'invoice_id' => $invoice->id,
+                        'name' => $tax->name,
+                        'percent' => $tax->percent,
+                    ]);
+
+                    $contractTax = ContractTaxes::create([
+                        'contract_id' => $contract->id,
+                        'name' => $tax->name,
+                        'percent' => $tax->percent,
+                        'invoice_id' => $invoice->id,
+                        'amount' => $tax->amount,
+                    ]);
+
+                    // map tax id if needed
+                    $taxMap[$tax->name] = $contractTax->id;
+                }
+
+                foreach ($ContractModified->items as $item) {
+
+                    if (!empty($item->itemTaxes)) {
+
+                        foreach ($item->itemTaxes as $itemTax) {
+
+                            ContractItemTax::create([
+                                'contract_item_id' => $itemMap[$item->id], // correct mapping
+                                'contract_tax_id' => $taxMap[$itemTax->name] ?? null, // match tax
+                                'name' => $itemTax->name,
+                                'percent' => $itemTax->percentage,
+                                'amount' => $itemTax->amount,
+                            ]);
+                        }
+                    }
+                }
 
             foreach ($ContractModified->discounts as $discount) {
                 InvoiceDiscount::create([
@@ -651,4 +654,139 @@ class Invoice extends Model
         DB::commit();
         return $invoice;
     }
+
+    // public static function generateModifyInvoice($contractId, $request,$auth_code=null) 
+    // {
+    //     $ContractModified = ContractModified::with('items.itemTaxes', 'taxes', 'discounts','installments')->where('id', $request->contract_modified_id)->first();
+    //     $contract = Contract::find($ContractModified->contract_id);
+    //     // dd($request);
+    //       DB::beginTransaction();
+
+    //         $slug = self::generateInvoiceNumber();
+    //         $invoice = new Invoice();
+    //         $invoice->invoice_number = $slug;
+    //         $invoice->slug = $slug;
+    //         $invoice->auth_code = $auth_code ?? Auth::user()->auth_code;
+    //         $invoice->client_id = $contract->client_id;
+    //         $invoice->company_id = $contract->company_id;
+    //         $invoice->created_by = $ContractModified->created_by;
+    //         $invoice->contract_modified_id = $ContractModified->id;
+    //         $invoice->module_type = 'modified_contract';
+    //         $invoice->issue_date = now();
+    //         $invoice->due_date = now()->addDays(15);
+    //         $invoice->subtotal = $ContractModified->subtotal;
+    //         $invoice->total = $ContractModified->total;
+    //         $invoice->contract_id = $contract->id;
+    //         $invoice->status = 'unpaid';
+    //         $invoice->save();
+         
+
+    //         $installments = $ContractModified->installments;
+
+    //         if ($installments->isNotEmpty()) {
+
+    //             $plan = \App\Models\InstallmentPlan::create([
+    //                 'invoice_id' => $invoice->id,
+    //                 'total_amount' => $ContractModified->total,
+    //                 'installment_count' => $installments->count(),
+    //                 'start_date' => $installments->first()->installment_date,
+    //                 'contract_modified_id' => $ContractModified->id,
+    //                 'module_type' => 'modified_contract',
+    //             ]);
+
+    //             foreach ($installments as $index => $installment) {
+    //                 \App\Models\InstallmentPayment::create([
+    //                     'installment_plan_id' => $plan->id,
+    //                     'installment_number' => $index + 1,
+    //                     'invoice_id' => $invoice->id,
+    //                     'contract_modified_id' => $ContractModified->id,
+    //                     'contract_id' => $contract->id,
+    //                     'due_date' => $installment->installment_date,
+    //                     'amount' => $installment->amount,
+    //                     'is_paid' => false,
+    //                 ]);
+    //             }
+    //         }
+
+
+    //         foreach ($ContractModified->items as $item) {
+    //             // dd($item);
+    //             InvoiceItem::create([
+    //                 'invoice_id' => $invoice->id,
+    //                 'name' => $item->name,
+    //                 'quantity' => $item->quantity,
+    //                 'price' => $item->price,
+    //                 'unit' => $item->unit,
+    //                 'total_price' => $item->total_price,
+    //             ]);
+    //              $contractItem = ContractItem::create([
+    //                         'contract_id' => $contract->id,
+    //                         'name' => $item->name,
+    //                         'quantity' => $item->quantity,
+    //                         'unit' => $item->unit,
+    //                         'price' => $item->price,
+    //                         'total_price' => $item->total_price,
+    //                         'description' => $item->description,
+    //                         'taxes' => $item->tax ?? 0,
+    //                         'product_price' => $item->price,
+    //                         'gratuity' => $item->gratuity ?? 0,
+    //                         'accepted_by_client' => 1,
+    //                         'is_modified' => '1',
+    //                         'invoice_id' => $invoice->id,
+    //                         'product_id' => $item->product_id,
+    //                     ]);
+
+    //                     // map old item id to new one
+    //                     $itemMap[$item->id] = $contractItem->id;
+    //         }
+
+    //         foreach ($ContractModified->taxes as $tax) {
+    //             InvoiceTax::create([
+    //                 'invoice_id' => $invoice->id,
+    //                 'name' => $tax->name,
+    //                 'percent' => $tax->percent,
+    //             ]);
+
+    //             $contratTax = ContractTaxes::create([
+    //                 'contract_id' => $contract->id,
+    //                 'name' => $tax->name,
+    //                 'percent' => $tax->percent,
+    //                 'invoice_id' => $invoice->id,
+    //                 'amount' => $tax->amount,
+    //             ]);
+
+    //             // foreach ($ContractModified->items as $item) {
+
+
+    //             //     foreach ($item->itemTaxes as $itemTax) {
+
+    //             //         if (
+    //             //             strtolower($itemTax->name) === strtolower($tax->name)
+    //             //         ) {
+    //             //             ContractItemTax::create([
+    //             //                 'contract_item_id' => $itemMap[$item->id],
+    //             //                 'contract_tax_id' => $contratTax->id,
+    //             //                 'name' => $itemTax->name,
+    //             //                 'percent' => $itemTax->percentage,
+    //             //                 'amount' => $itemTax->amount,
+    //             //             ]);
+    //             //         }
+    //             //     }
+    //             // }
+
+                
+    //         }
+
+    //         foreach ($ContractModified->discounts as $discount) {
+    //             InvoiceDiscount::create([
+    //                 'invoice_id' => $invoice->id,
+    //                 'name' => $discount->name,
+    //                 'value' => $discount->value,
+    //             ]);
+
+    //         }
+        
+    //     DB::commit();
+    //     return $invoice;
+    // }
 }

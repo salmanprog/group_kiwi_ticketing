@@ -1499,7 +1499,7 @@
                                                                 <tbody>
                                                                     @foreach ($invoice->installmentPlan->payments as $installment)
                                                                         <tr>
-                                                                            <td>{{ $installment->installment_number }}</td>
+                                                                            <td>{{ $installment->installment_number }} </td>
                                                                             <td>{{ \Carbon\Carbon::parse($installment->due_date)->format('F j, Y') }}
                                                                             </td>
                                                                             <td>${{ number_format($installment->amount, 2) }}
@@ -1523,16 +1523,16 @@
                                                                                     <button type="button"
                                                                                         class="btn btn-primary"
                                                                                         data-bs-toggle="modal"
-                                                                                        data-bs-target="#paymentInstallmentModal"
+                                                                                        data-bs-target="#paymentInstallmentModal{{ $installment->id }}"
                                                                                         data-id="{{ $installment->id }}">
                                                                                         Pay Now
                                                                                     </button>
                                                                                     <div class="modal fade"
-                                                                                        id="paymentInstallmentModal"
+                                                                                        id="paymentInstallmentModal{{ $installment->id }}"
                                                                                         tabindex="-1"
                                                                                         aria-labelledby="paymentInstallmentModalLabel"
                                                                                         aria-hidden="true">
-                                                                                        <div class="modal-dialog">
+                                                                                        <div class="modal-dialog"> 
                                                                                             <form
                                                                                                 action="{{ route('update-installment-status') }}"
                                                                                                 method="POST">

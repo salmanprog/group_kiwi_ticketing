@@ -361,6 +361,41 @@ class UserHoldTickets extends Model
         return $payload;
     }
 
+    public static function updateInvoiceOrderPayload($data)
+    {
+        // Initialize purchases array
+        $ticketChanges = [];
+
+        $contractModified = ContractModified::find($data['contract_modify_id']);
+        $contract = Contract::find($contractModified->contract_id);
+        $estimate = Estimate::where('contract_id', $contractModified->contract_id)->first();
+
+        $installment = \App\Models\InstallmentPlan::with('payments')->where('contract_modified_id', $data['contract_modify_id'])->first();
+
+        $payload = [
+            "subscriptionId" => $estimate->slug,
+            "subscriptionStatus" => "paid",
+            "subscriptionEndDate" => $estimate->event_date,
+            "numberOfInstallments" => (int)($installment->installment_count ?? 0),
+            "isSubscriptionCompleted" => true,
+            ($installment->payments) ? $installment->payments->map(function($item) use($estimate){
+                    return [
+                        "stripeInvoiceId" => $item->id,
+                        "paymentIntentId" => "pi-67478676",
+                        "amountPaid" => 0,
+                        "invoiceStatus" => $item->status,
+                        "notes" => "",
+                        "paidDate" => $item->paid_date,
+                        "paymentMethod" => "",
+                        "amountDue" => 50,
+                        "dueDate" => "2026-04-13T14:49:05.043Z"
+                    ];
+                })->toArray() : [],
+        ];
+
+        return $payload;
+    }
+
     public static function createUpdateInvoicePayload($data)
     {
 

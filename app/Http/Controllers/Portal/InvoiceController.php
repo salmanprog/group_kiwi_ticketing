@@ -331,7 +331,7 @@ class InvoiceController extends CRUDCrontroller
     public function updateInstallmentStatus(Request $request)
     {
         $invoice = Invoice::where('id', $request->invoice_id)->first();
-        // dd($invoice->contract_id);
+        // dd($request->all());
           $installmentPayment = InstallmentPayment::where('id', $request->installment_id)
             ->where('installment_plan_id', $request->plane_id)
             ->firstOrFail();

@@ -1884,9 +1884,13 @@ class ContractController extends CRUDCrontroller
                 $payload = UserHoldTickets::updateOrderPayload($data);
                 $response = $this->apiService->updateOrder($payload);
 
-                if($response['tickets']){
-                    UserOrders::updateStoreOrder($response['tickets'],$ContractModified->id);
-                }
+                // if($response['tickets']){
+                //     UserOrders::updateStoreOrder($response['tickets'],$ContractModified->id);
+                // }
+
+                $invoicPayload = UserHoldTickets::updateInvoiceOrderPayload($data);
+                // dd(json_encode($invoicPayload));
+                $invoiceResponse = $this->apiService->updateModifyOrderInvoice($invoicPayload,$contract->auth_code);
 
                 // dd($payload);
                  return response()->json([

@@ -308,8 +308,8 @@ Route::get('contract-email/ajax-listing', [ContractEmailController::class, 'ajax
 Route::get('/contract-email/search-ajax-listing', [ContractEmailController::class, 'SearchajaxListing'])
      ->name('contract-email.search-ajax-listing');
 
-Route::post('update-invoice-status', [InvoiceController::class, 'updateInvoiceStatus'])->name('update-invoice-status');
-Route::post('update-installment-status', [InvoiceController::class, 'updateInstallmentStatus'])->name('update-installment-status');
+// Route::post('update-invoice-status', [InvoiceController::class, 'updateInvoiceStatus'])->name('update-invoice-status');
+// Route::post('update-installment-status', [InvoiceController::class, 'updateInstallmentStatus'])->name('update-installment-status');
 
 
 Route::post('smtp-config-update', [EmailTemplateController::class, 'createOrupdate'])->name('user-smtp.createOrupdate');
@@ -344,3 +344,4 @@ Route::delete('/contract-get-product-discount/{id}/delete',[ContractController::
 Route::post('/contract-installment/{contract}/payment-save', [ContractController::class, 'savePaymentSchedule'])->name('contract.installments.save');
 Route::post('/contract-send-to-client', [ContractController::class, 'sendToClient'])->name('contract.send.to.client');
 Route::post('/contract-products/update-description', [ContractController::class, 'updateItemDescription'])->name('contract.products.update-description');
+ 
